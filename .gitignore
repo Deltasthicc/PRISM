@@ -1,0 +1,30 @@
+# Frontend
+node_modules/
+.next/
+out/
+.env.local
+*.log
+
+# Python
+.env
+.venv/
+env/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Local data
+*.db
+*.db-shm
+*.db-wal
+*.sqlite3
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+
+# Local Claude Code tooling (dev-server launch config, not part of the app)
+.claude/

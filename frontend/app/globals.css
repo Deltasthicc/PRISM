@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Damp-cave palette: neutral near-black rock instead of a purple "arcane
+     tower" tint. Torch (ember) and glow-crystal (arcane) accents stay warm
+     and cool respectively so they read against the earthy stone tones. */
+  --color-void: #0a0908;
+  --color-stone: #201b16;
+  --color-stone-dark: #18140f;
+  --color-stone-light: #362f27;
+  --color-ember: #ff6b3d;
+  --color-arcane: #6ee7d0;
+  --color-gold: #e8b339;
+  --color-parchment: #ece3cf;
+  --color-blood: #c43d3d;
+}
+
+* {
+  box-sizing: border-box;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+html, body {
+  background-color: var(--color-void);
+  color: var(--color-parchment);
+  font-family: var(--font-vt323), monospace;
+  font-size: 20px;
+  line-height: 1.4;
+  /* Real tileable cave rock-wall art (public/sprites/textures/cave_wall.png,
+     ChatGPT-generated) underneath a torch-lit patch and edge-darkening spot,
+     both still plain CSS gradients since they're per-viewport, not tileable
+     texture detail. */
+  background-image:
+    radial-gradient(circle at 88% 12%, rgba(0, 0, 0, 0.35) 0%, transparent 3%),
+    radial-gradient(ellipse at 50% -20%, rgba(255, 107, 61, 0.06) 0%, transparent 55%),
+    url('/sprites/textures/cave_wall.png');
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: auto, auto, 220px 220px;
+  background-attachment: fixed;
+}
+
+/* Vignette -- darkens the viewport edges so the lit area reads as a torch-lit
+   pocket of a much larger, darker cave. Fixed + pointer-events:none, same
+   pattern as the scanline overlay below. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.72) 100%
+  );
+}
+
+/* Torch-flicker -- a slow, irregular pulse on the overhead ember glow so the
+   cave reads as lit by an actual unsteady flame instead of a static gradient.
+   Separate fixed layer (not part of body's own background-image) so it can
+   animate independently without fighting the rock-texture gradients. */
+.torch-flicker {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  /* Same layering approach as the vignette/scanline overlays above (z-9998/
+     9999) -- just below them so it flickers under the always-on darkening,
+     not over it. */
+  z-index: 9997;
+  background: radial-gradient(ellipse at 50% -10%, rgba(255, 107, 61, 0.16) 0%, transparent 52%);
+  animation: torch-pulse 4s ease-in-out infinite;
+}
+
+@keyframes torch-pulse {
+  0%, 100% { opacity: 0.65; }
+  30% { opacity: 1; }
+  45% { opacity: 0.5; }
+  68% { opacity: 0.85; }
+  82% { opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .torch-flicker { animation: none; opacity: 0.75; }
+}
+
+/* Scanline / CRT atmosphere — subtle, fixed, never blocks interaction */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.12) 0px,
+    rgba(0, 0, 0, 0.12) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-press-start), cursive;
+  letter-spacing: 0.5px;
+}
+
+/* Pixel bevel border — fakes a chunky carved-stone edge without sprite art.
+   The speckle background-image reads as rough rock grain on the panel
+   surface itself, so cards don't sit as flat solid-color rectangles against
+   the textured cave backdrop. */
+.pixel-bevel {
+  border: 4px solid #000;
+  box-shadow:
+    inset 2px 2px 0 0 rgba(255, 255, 255, 0.06),
+    inset -3px -3px 0 0 rgba(0, 0, 0, 0.65),
+    4px 4px 0 0 #000;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(0, 0, 0, 0.4) 0%, transparent 3%),
+    radial-gradient(circle at 82% 62%, rgba(0, 0, 0, 0.35) 0%, transparent 2.5%),
+    radial-gradient(circle at 45% 88%, rgba(0, 0, 0, 0.3) 0%, transparent 2%),
+    radial-gradient(circle at 68% 15%, rgba(255, 255, 255, 0.03) 0%, transparent 2%);
+}
+
+.pixel-bevel-arcane {
+  border: 4px solid var(--color-arcane);
+  box-shadow:
+    inset 2px 2px 0 0 rgba(110, 231, 208, 0.15),
+    4px 4px 0 0 #000;
+}
+
+/* Custom scrollbar to stay in-theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-stone-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-stone);
+  border: 2px solid #000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

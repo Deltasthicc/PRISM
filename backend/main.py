@@ -1,5 +1,5 @@
 """
-SkillQuest Backend — FastAPI entry point.
+Backend entry point — FastAPI app for the SIH Learning Tool.
 """
 import os
 from contextlib import asynccontextmanager
@@ -128,7 +128,7 @@ async def health_check():
 @app.get("/")
 async def root():
     return {
-        "app": "SIH Learning Tool (SkillQuest skill-intelligence engine)",
+        "app": "SIH Learning Tool",
         "version": "0.1.0",
         "docs": "/docs",
         "status": "prototype -- see README.md and docs/ for what's real vs. aspirational",

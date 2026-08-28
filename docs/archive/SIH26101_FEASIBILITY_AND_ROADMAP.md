@@ -1,4 +1,12 @@
-# SIH26101 — SkillQuest feasibility audit and execution roadmap
+> **Archived, pre-rename document.** This audit was written against the project under its former
+> working name (referred to throughout as "SkillQuest") and its GitHub source repository at the
+> time. The project has since been de-branded and that name is no longer used; this document is
+> kept verbatim as a historical record of the audit rather than rewritten, since editing a dated
+> audit's factual description of what it examined would misrepresent it. See
+> [`docs/archive/README.md`](README.md) for what changed since, and the current root
+> [`README.md`](../../README.md) for the project's present state.
+
+# SIH26101 — feasibility audit and execution roadmap (archived)
 
 **Audit date:** 27 August 2026  
 **Repository audited:** `Abhiraj-Agarwal/SkillQuest-AI-Dungeon`  

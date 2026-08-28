@@ -1,5 +1,5 @@
 """
-Game routes — all /game/ endpoints owned by P2.
+Game routes — all /game/ endpoints.
 """
 import os
 import uuid

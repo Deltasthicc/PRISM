@@ -1,4 +1,12 @@
-# SkillQuest SIH26101: Ground-Truth Status and Orchestration Plan
+> **Archived, pre-rename document.** This report was written against the project under its former
+> working name (referred to throughout as "SkillQuest") and its GitHub source repository at the
+> time. The project has since been de-branded and that name is no longer used; this document is
+> kept verbatim as a historical record rather than rewritten, since editing a dated report's
+> factual description of what it examined would misrepresent it. See
+> [`docs/archive/README.md`](README.md) for what changed since, and the current root
+> [`README.md`](../../README.md) for the project's present state.
+
+# SIH26101: Ground-Truth Status and Orchestration Plan (archived)
 
 **Audit date:** 27 August 2026
 

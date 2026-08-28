@@ -69,7 +69,7 @@ def recommend_courses(skill_gaps: list[dict]) -> list[dict]:
 
         courses.append({
             "course_id": f"practice::{competency_id}",
-            "provider": "SkillQuest Practice",
+            "provider": "Internal Practice",
             "provider_type": "internal-practice",
             "title": f"Adaptive practice: {label}",
             "url": f"/dungeon#{competency_id}",

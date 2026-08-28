@@ -1,4 +1,4 @@
-# SkillQuest art prompt v2 — unique per-topic bosses + chain asset
+# Art prompt v2 — unique per-topic bosses + chain asset
 
 Copy everything below into ChatGPT. Send each numbered section as its own generation request (one image per message) so you can regenerate individually if one doesn't land, rather than redoing the whole batch.
 
@@ -6,7 +6,7 @@ Copy everything below into ChatGPT. Send each numbered section as its own genera
 
 ## Context to paste first
 
-I'm building a pixel-art dungeon-crawler game called **SkillQuest: The AI Dungeon** — a data-structures-and-algorithms learning RPG. Right now every "shallow" topic shares one of five recycled monster designs (a generic wraith, skeleton, imp, golem, dragon), reused across multiple topics. I want to replace this with **one fully unique villain per topic**, each one visually themed to the actual CS concept it represents, plus one grand final boss above all of them.
+I'm building a pixel-art dungeon-crawler game (a data-structures-and-algorithms learning RPG, one mode of a larger cross-domain skill-intelligence platform). Right now every "shallow" topic shares one of five recycled monster designs (a generic wraith, skeleton, imp, golem, dragon), reused across multiple topics. I want to replace this with **one fully unique villain per topic**, each one visually themed to the actual CS concept it represents, plus one grand final boss above all of them.
 
 **Style guide (match my last batch exactly):**
 - Painterly pixel art, moody dramatic lighting, dark fantasy tone — not cute or cartoonish.

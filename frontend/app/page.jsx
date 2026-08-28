@@ -7,9 +7,9 @@ import PixelButton from '@/components/ui/PixelButton';
 import PixelBadge from '@/components/ui/PixelBadge';
 
 const PILLARS = [
-  { tone: 'arcane', title: 'LLM monster engine', body: 'Every fight is a fresh, never-repeated question — generated live for the topic you walk into.' },
-  { tone: 'gold', title: 'RL difficulty tuner', body: 'A bandit watches your accuracy and keeps you in the zone — challenged, never crushed.' },
-  { tone: 'ember', title: 'NLP answer judge', body: 'Free-text answers, scored by meaning, not by matching exact keywords.' },
+  { tone: 'arcane', title: 'Explainable gap analysis', body: 'Demonstrated practice evidence blended with self-assessment — every score shows exactly where it came from.' },
+  { tone: 'gold', title: 'Adaptive practice engine', body: 'Fresh, never-repeated questions generated live, at a difficulty tuned to your recent accuracy.' },
+  { tone: 'ember', title: 'Grounded quiz generation', body: 'Upload your own material and get back questions with an exact source citation for every answer.' },
 ];
 
 export default function LandingPage() {
@@ -24,25 +24,26 @@ export default function LandingPage() {
       }}
     >
       <div className="w-full">
-        <PixelBadge tone="arcane" className="mb-4">DATA STRUCTURES & ALGORITHMS</PixelBadge>
+        <PixelBadge tone="arcane" className="mb-4">SKILL-INTELLIGENCE PLATFORM</PixelBadge>
         {/* eslint-disable-next-line @next/next/no-img-element -- fixed local
             asset, not a candidate for next/image's remote optimization pipeline */}
         <img
           src="/sprites/bats/logo.png"
-          alt="SkillQuest: The AI Dungeon"
+          alt="SIH Learning Tool"
           className="mx-auto"
           style={{ imageRendering: 'pixelated', maxWidth: '45%', height: 'auto' }}
         />
       </div>
 
       <p className="font-body text-xl text-parchment-dim max-w-xl">
-        Your stats are a mirror of what you actually know. The dungeon routes its monsters
-        straight at your weakest topics — so studying finally has a feedback loop.
+        Your stats are a mirror of what you actually know. Across Official Statistics, Public
+        Policy, Digital Literacy, and DSA, practice routes straight at your weakest competencies —
+        so studying finally has a feedback loop.
       </p>
 
-      <Link href={isAuthenticated ? '/dungeon' : '/login'}>
+      <Link href={isAuthenticated ? '/academy' : '/login'}>
         <PixelButton variant="primary" className="text-sm">
-          {isAuthenticated ? 'RETURN TO THE DUNGEON' : 'ENTER THE DUNGEON'}
+          {isAuthenticated ? 'RETURN TO THE ACADEMY' : 'ENTER THE ACADEMY'}
         </PixelButton>
       </Link>
 

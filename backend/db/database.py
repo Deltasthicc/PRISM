@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./skillquest.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
 _is_sqlite = "sqlite" in DATABASE_URL
 
 engine = create_engine(
@@ -52,7 +52,7 @@ def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
     Base.metadata.create_all() only creates tables that don't exist yet -- it
     never alters an existing table's schema. Any new column added to a model
     after the demo DB file already has that table (e.g. this repo's seeded
-    skillquest.db) needs this, or every query touching the new column raises
+    app.db) needs this, or every query touching the new column raises
     "no such column" against pre-existing rows. Call once at startup, after
     create_all().
     """

@@ -42,8 +42,8 @@ export default function NavBar() {
   return (
     <nav className="bg-stone-dark border-b-4 border-black sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/dungeon" className="font-display text-arcane text-sm tracking-wider">
-          SKILLQUEST
+        <Link href="/academy" className="font-display text-arcane text-sm tracking-wider">
+          SIH LEARNING TOOL
         </Link>
 
         <button

@@ -21,8 +21,8 @@ const vt323 = VT323({
 });
 
 export const metadata = {
-  title: 'SkillQuest: The AI Dungeon',
-  description: 'An adaptive learning RPG where your real knowledge powers your character.',
+  title: 'SIH Learning Tool',
+  description: 'A cross-domain skill-intelligence platform with an adaptive practice RPG built in.',
 };
 
 export default function RootLayout({ children }) {

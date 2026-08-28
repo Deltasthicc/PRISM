@@ -1,19 +1,21 @@
-# SIH Learning Tool — SkillQuest Skill Intelligence
+# SIH Learning Tool
+
+*(working name — not yet finalized)*
 
 An explainable, cross-domain skill-intelligence platform built for **SIH26101** (MoSPI): it
 builds a role-aware competency profile, runs an explainable gap analysis against a target level,
 orders a prerequisite-aware learning pathway, recommends verified learning catalogs, turns
 uploaded material into source-grounded quizzes, and closes the loop with adaptive practice
-evidence. It is built on top of **SkillQuest**, an adaptive DSA-learning RPG — that game is still
-here, fully playable, and now one of four domains ("Quest mode") rather than the whole product.
+evidence. It's built on top of an adaptive DSA-learning RPG engine — that game is still here,
+fully playable, and now one of four domains ("Quest mode") rather than the whole product.
 
 > **This is a prototype, honestly labeled as one.** iGOT Karmayogi and NSSTA/TPAC are
 > `catalog-fallback` integrations today, not live enrolment/progress syncs — there is no public
 > partner API for either, and this repo never fabricates one. Identity is username-only with no
 > password or server-side authorization check on any route. Neither is safe for real officials or
-> real personnel data. See [`docs/SIH26101_FEASIBILITY_AND_ROADMAP.md`](docs/SIH26101_FEASIBILITY_AND_ROADMAP.md)
-> and [`docs/SIH26101_ORCHESTRATION_PLAN.md`](docs/SIH26101_ORCHESTRATION_PLAN.md) for exactly what
-> that means and the ordered plan to close it.
+> real personnel data. See [`docs/archive/SIH26101_FEASIBILITY_AND_ROADMAP.md`](docs/archive/SIH26101_FEASIBILITY_AND_ROADMAP.md)
+> and [`docs/archive/SIH26101_ORCHESTRATION_PLAN.md`](docs/archive/SIH26101_ORCHESTRATION_PLAN.md)
+> for exactly what that means and the ordered plan to close it.
 
 ## What's real right now (verified in this repo, not just claimed)
 
@@ -85,7 +87,7 @@ session.
 
 The full, itemized version of this list — with acceptance gates, a prioritized backlog, an
 orchestration model, and a judge Q&A stress test — is in
-[`docs/SIH26101_ORCHESTRATION_PLAN.md`](docs/SIH26101_ORCHESTRATION_PLAN.md).
+[`docs/archive/SIH26101_ORCHESTRATION_PLAN.md`](docs/archive/SIH26101_ORCHESTRATION_PLAN.md).
 
 ## How it plays
 
@@ -161,7 +163,7 @@ competency has a globally unique ID, label, description, prerequisites, and targ
 `backend/services/knowledge_graph.py`'s `TOPIC_GRAPH` remains the DSA domain's own graph — kept
 separate deliberately rather than folded into `curricula.py` too, since DSA's seeding, tests, and
 frontend sprite/label mappings all still key off it directly (see
-`docs/SIH26101_FEASIBILITY_AND_ROADMAP.md` §2.3 for why unifying the two is a follow-up, not done
+`docs/archive/SIH26101_FEASIBILITY_AND_ROADMAP.md` §2.3 for why unifying the two is a follow-up, not done
 here).
 
 | Competency (Official Statistics & Data Governance) | Prerequisites |
@@ -252,9 +254,7 @@ Full request/response schemas are served live at `http://localhost:8000/docs`.
 SIH Learning Tool/
 ├── README.md
 ├── docs/
-│   ├── SIH26101_FEASIBILITY_AND_ROADMAP.md   Full PS analysis + engineering audit
-│   ├── SIH26101_ORCHESTRATION_PLAN.md        Weighted ledger, lanes, backlog, gates, timeline
-│   └── CLAUDE_SESSION_DOSSIERS.md            Pointer to the two Claude-authored dossiers
+│   └── archive/                    Pre-rename planning documents (see docs/archive/README.md)
 ├── backend/
 │   ├── .env.example
 │   ├── main.py                    App entry point, CORS, router registration, DB init + seeding
@@ -291,7 +291,7 @@ SIH Learning Tool/
 │   │   └── ...existing game/dashboard components + ui/ Pixel primitives
 │   ├── lib/api/client.js           The ONLY file that calls fetch, now with a `learning` export
 │   └── ...
-└── services/                       Optional standalone AI engine (off by default) — unchanged from SkillQuest
+└── services/                       Optional standalone AI engine (off by default)
 ```
 
 </details>
@@ -308,9 +308,8 @@ SIH Learning Tool/
   network call or exercises the deterministic fallback directly.
 - **CORS**: the backend only allows credentialed requests from `FRONTEND_ORIGINS` — update it
   (comma-separated) if you deploy the frontend somewhere other than `localhost:3000`.
-- **Provenance**: this repository's game engine and UI kernel come from
-  [`SkillQuest-AI-Dungeon`](https://github.com/Abhiraj-Agarwal/SkillQuest-AI-Dungeon); the
-  cross-domain skill-intelligence layer (`services/curricula.py`, `learning_engine.py`,
-  `quiz_generator.py`, `routes/learning.py`, `components/AcademyHub.jsx`) originated in a separate
-  AI-assisted design session and was integrated, completed, and verified here — see
-  `docs/CLAUDE_SESSION_DOSSIERS.md` for the full provenance trail.
+- **Provenance**: this project's dungeon-RPG engine and UI kernel are forked from an earlier,
+  differently-branded adaptive DSA-learning game; the cross-domain skill-intelligence layer
+  (`services/curricula.py`, `learning_engine.py`, `quiz_generator.py`, `routes/learning.py`,
+  `components/AcademyHub.jsx`) originated in a separate AI-assisted design session and was
+  integrated, completed, and verified here — see `docs/archive/README.md` for the full history.

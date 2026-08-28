@@ -14,10 +14,10 @@ CURRICULA = {
     "dsa-fundamentals": {
         "name": "DSA Fundamentals",
         "domain": "Data Structures & Algorithms",
-        "description": "The original SkillQuest path, from arrays through advanced graph and dynamic-programming concepts.",
+        "description": "The original DSA practice path, from arrays through advanced graph and dynamic-programming concepts.",
         "audience": "Computer-science learners and software-engineering candidates",
         "level_band": "Beginner to advanced",
-        "source": "skillquest",
+        "source": "core",
         "competencies": [
             {"id": "arrays", "label": "Arrays", "description": "Indexing, traversal, mutation, and complexity.", "prerequisites": [], "target_level": 2},
             {"id": "linked_lists", "label": "Linked Lists", "description": "Node-based storage and pointer operations.", "prerequisites": ["arrays"], "target_level": 2},
@@ -38,7 +38,7 @@ CURRICULA = {
         "description": "A MoSPI-aligned demonstration path covering the statistical production lifecycle and emerging data capabilities.",
         "audience": "Officials involved in data collection, analysis, dissemination, and policy support",
         "level_band": "Foundation to specialist",
-        "source": "skillquest-demo",
+        "source": "demo",
         "competencies": [
             {"id": "os_statistical_foundations", "label": "Statistical Foundations", "description": "Descriptive statistics, inference, uncertainty, and interpretation.", "prerequisites": [], "target_level": 3},
             {"id": "os_data_collection", "label": "Data Collection", "description": "Administrative data, surveys, instruments, and field operations.", "prerequisites": ["os_statistical_foundations"], "target_level": 3},
@@ -57,7 +57,7 @@ CURRICULA = {
         "description": "Role-relevant learning for evidence-based programme design, delivery, and evaluation.",
         "audience": "Public administrators, programme managers, analysts, and policy professionals",
         "level_band": "Beginner to advanced",
-        "source": "skillquest-demo",
+        "source": "demo",
         "competencies": [
             {"id": "pa_governance_foundations", "label": "Governance Foundations", "description": "Institutions, accountability, ethics, and citizen orientation.", "prerequisites": [], "target_level": 2},
             {"id": "pa_policy_design", "label": "Policy Design", "description": "Problem framing, options, stakeholders, and theory of change.", "prerequisites": ["pa_governance_foundations"], "target_level": 3},
@@ -74,7 +74,7 @@ CURRICULA = {
         "description": "An accessible path for non-technical learners who need safe, practical digital and AI skills.",
         "audience": "Beginners, frontline staff, career switchers, and non-technical professionals",
         "level_band": "Absolute beginner to practitioner",
-        "source": "skillquest-demo",
+        "source": "demo",
         "competencies": [
             {"id": "dl_digital_foundations", "label": "Digital Foundations", "description": "Devices, files, browsers, accounts, and digital workflows.", "prerequisites": [], "target_level": 2},
             {"id": "dl_cyber_hygiene", "label": "Cyber Hygiene", "description": "Passwords, phishing, privacy, safe sharing, and incident reporting.", "prerequisites": ["dl_digital_foundations"], "target_level": 3},

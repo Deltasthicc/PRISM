@@ -8,12 +8,16 @@ import PixelButton from './ui/PixelButton';
 
 const SLIDES = [
   {
-    title: 'WELCOME TO THE DUNGEON',
-    body: "SkillQuest turns learning Data Structures & Algorithms into a dungeon crawl. Your real knowledge is your character sheet — the dungeon routes its monsters straight at whatever topic you're weakest in.",
+    title: 'PROFILE, GAPS, PATHWAY',
+    body: "Build a competency profile in the Academy, run an explainable gap analysis against a target level, and follow a prerequisite-ordered pathway — across DSA, Official Statistics, Public Policy, and Digital Literacy.",
+  },
+  {
+    title: 'WELCOME TO QUEST MODE',
+    body: "Practice turns each competency into a dungeon crawl. Your real knowledge is your character sheet — the dungeon routes its monsters straight at whatever topic you're weakest in.",
   },
   {
     title: 'ONE VILLAIN PER TOPIC',
-    body: "Each room on the map (Arrays, Trees, Graphs...) is guarded by a single fixed villain. Every question you answer chips away at that same villain's health — it does not reset between questions. Enough correct answers and the villain falls, unlocking rooms deeper in the dungeon.",
+    body: "Each room on the map is guarded by a single fixed villain. Every question you answer chips away at that same villain's health — it does not reset between questions. Enough correct answers and the villain falls, unlocking rooms deeper in the dungeon.",
   },
   {
     title: 'ANSWER IN YOUR OWN WORDS',
@@ -29,7 +33,7 @@ const SLIDES = [
   },
   {
     title: 'THE BOSS',
-    body: 'Clear every topic in the dungeon and the door to The Big-O Devourer opens: a final fight that pulls questions from everything you have learned.',
+    body: "Clear every topic in a domain's dungeon and its boss room opens: a final fight that pulls questions from everything you have learned in that domain.",
   },
 ];
 

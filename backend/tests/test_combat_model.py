@@ -20,7 +20,7 @@ Root bugs this guards against:
    tests assert each one still measurably changes damage_dealt.
 
 Builds a standalone FastAPI app around just routes.game's router (not
-main:app) so this never touches the real skillquest.db or triggers demo
+main:app) so this never touches the real app.db or triggers demo
 seeding, and monkeypatches the AI-service calls so no live Gemini/services
 call is made.
 """

@@ -1,0 +1,68 @@
+# CODEOWNERS -- mirrors the six-lane ownership map in SIH26101_TEAM_ORCHESTRATION.md section 2.
+#
+# The handles below (@lane-1-owner ... @lane-6-owner) are PLACEHOLDERS, not real GitHub
+# usernames. GitHub silently ignores a CODEOWNERS entry that does not resolve to a real
+# user/team, so until each placeholder is replaced with the actual teammate assigned to that
+# lane, this file documents intent only and enforces nothing.
+#
+# CODEOWNERS resolves the LAST matching pattern for a given path, most-specific-wins by
+# position, not by pattern specificity -- so broader lane lines are placed first and the
+# handful of deliberate overrides (Lane 4 keeping ai_real.py inside Lane 5's routes tree, Lane
+# 2/3/4/5 owning one file each inside Lane 6's broad docs/ and root-markdown lines) are placed
+# after the line they override. Do not reorder without re-checking this.
+
+# --- Lane 1: Professional Experience & Accessibility ---
+/frontend/ @lane-1-owner
+
+# --- Lane 2: Core Platform, Identity & Data ---
+/backend/db/ @lane-2-owner
+/backend/models/ @lane-2-owner
+/backend/schemas/ @lane-2-owner
+/backend/main.py @lane-2-owner
+/backend/security/ @lane-2-owner
+
+# --- Lane 6: Quality, Security, Release & Evidence (broad docs/root ownership) ---
+# Placed before the Lane 3/4/5 contract-file overrides below, so those more specific lines win.
+/.github/ @lane-6-owner
+/docs/ @lane-6-owner
+/e2e/ @lane-6-owner
+/deploy/ @lane-6-owner
+/docker/ @lane-6-owner
+/backend/tests/conftest.py @lane-6-owner
+/SIH26101_MASTER_CHECKLIST.md @lane-6-owner
+/SIH26101_WINNING_PLAYBOOK.md @lane-6-owner
+/SIH26101_TEAM_ORCHESTRATION.md @lane-6-owner
+/EVIDENCE.md @lane-6-owner
+
+# --- Lane 3: Competency & Learning Intelligence ---
+/backend/services/curricula.py @lane-3-owner
+/backend/services/learning_engine.py @lane-3-owner
+/backend/services/knowledge_graph.py @lane-3-owner
+/backend/services/game_logic.py @lane-3-owner
+/backend/services/heroes.py @lane-3-owner
+/backend/services/monsters.py @lane-3-owner
+/backend/labs/ @lane-3-owner
+/docs/contracts/competency-evidence.md @lane-3-owner
+
+# --- Lane 4: Content AI, RAG & Evaluation ---
+/backend/services/content_ingestion.py @lane-4-owner
+/backend/services/quiz_generator.py @lane-4-owner
+/backend/services/ai_client.py @lane-4-owner
+/services/ @lane-4-owner
+/backend/ai/ @lane-4-owner
+/docs/contracts/content-ai.md @lane-4-owner
+
+# --- Lane 5: Product API, Integrations & Analytics ---
+# Broad routes/ line first; the Lane 4 override for ai_real.py comes after it, below.
+/backend/routes/ @lane-5-owner
+/backend/services/learning_catalog.py @lane-5-owner
+/backend/integrations/ @lane-5-owner
+/backend/analytics/ @lane-5-owner
+/docs/contracts/openapi.json @lane-5-owner
+/docs/contracts/provider-adapter.md @lane-5-owner
+
+# --- Override: Lane 4 keeps ai_real.py even though it lives under backend/routes/ ---
+/backend/routes/ai_real.py @lane-4-owner
+
+# --- Override: Lane 2 keeps its one contract file even though it lives under docs/ ---
+/docs/contracts/data-authorization.md @lane-2-owner

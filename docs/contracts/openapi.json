@@ -1,0 +1,9 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SIH Learning Tool API",
+    "version": "0.0.0-unpublished",
+    "description": "Scaffold only, not the real API surface. Lane 5's immediate package is to publish the actual versioned OpenAPI document here (see SIH26101_TEAM_ORCHESTRATION.md section 5). Until then, the live, accurate schema is served by FastAPI itself at /docs and /openapi.json when the backend is running -- do not treat this file as authoritative or as evidence of a stable public contract."
+  },
+  "paths": {}
+}

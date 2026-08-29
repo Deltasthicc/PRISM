@@ -3,19 +3,24 @@
 *(working name — not yet finalized)*
 
 An explainable, cross-domain skill-intelligence platform built for **SIH26101** (MoSPI): it
-builds a role-aware competency profile, runs an explainable gap analysis against a target level,
-orders a prerequisite-aware learning pathway, recommends verified learning catalogs, turns
+builds an experience-level-aware prototype competency profile, runs an explainable gap analysis against a target level,
+orders a prerequisite-aware learning pathway, produces provider-labelled recommendations, turns
 uploaded material into source-grounded quizzes, and closes the loop with adaptive practice
-evidence. It's built on top of an adaptive DSA-learning RPG engine — that game is still here,
-fully playable, and now one of four domains ("Quest mode") rather than the whole product.
+evidence. It's built on top of an adaptive DSA-learning RPG engine — that game is still here as
+optional "Quest mode," but only its DSA browser path is currently verified end-to-end.
 
 > **This is a prototype, honestly labeled as one.** iGOT Karmayogi and NSSTA/TPAC are
-> `catalog-fallback` integrations today, not live enrolment/progress syncs — there is no public
-> partner API for either, and this repo never fabricates one. Identity is username-only with no
+> `catalog-fallback` integrations today, not live enrolment/progress syncs. Authenticated iGOT
+> interfaces exist, but this project has no approved contract, credentials, or sandbox and never
+> fabricates access. Identity is username-only with no
 > password or server-side authorization check on any route. Neither is safe for real officials or
 > real personnel data. See [`docs/archive/SIH26101_FEASIBILITY_AND_ROADMAP.md`](docs/archive/SIH26101_FEASIBILITY_AND_ROADMAP.md)
-> and [`docs/archive/SIH26101_ORCHESTRATION_PLAN.md`](docs/archive/SIH26101_ORCHESTRATION_PLAN.md)
-> for exactly what that means and the ordered plan to close it.
+> and [`SIH26101_MASTER_CHECKLIST.md`](SIH26101_MASTER_CHECKLIST.md) for exactly what that means;
+> [`SIH26101_TEAM_ORCHESTRATION.md`](SIH26101_TEAM_ORCHESTRATION.md) owns the execution model.
+
+The complete user-supplied build scope is preserved as `PS-01`…`PS-18` in
+[`docs/SIH26101_PROBLEM_STATEMENT.md`](docs/SIH26101_PROBLEM_STATEMENT.md). Read it before scoping
+features; the current demo implements only a subset.
 
 ## What's real right now (verified in this repo, not just claimed)
 
@@ -26,18 +31,19 @@ session.
 - **4 domains, 1 engine.** `backend/services/curricula.py` holds DSA Fundamentals, Official
   Statistics & Data Governance, Public Policy & Programme Evaluation, and Digital & AI Literacy —
   34 competencies total, each with a stable ID, prerequisites, and a 1–5 target level, validated
-  for cycles and dangling references at import time. Every domain is a real, enterable dungeon:
+  for cycles and dangling references at import time. Every domain is materialized as a backend dungeon:
   `db/seed.py`'s `seed_curricula_dungeons()` materializes rooms + a namespaced boss
   (`boss::official-statistics`, not a shared `"boss"` string) for the three new domains alongside
-  DSA's existing seeding.
+  DSA's existing seeding. The Academy-to-Quest browser route is currently broken for the three
+  non-DSA domains; the master checklist records the exact repair.
 - **A working competency-gap engine.** `backend/services/learning_engine.py` blends demonstrated
   quest evidence (65%) with self-assessment (35%) when both exist, explains its evidence source in
   plain text, caps the pathway target by experience level, and orders the resulting gaps
   prerequisite-first — all deterministic, no black box.
-- **Grounded quiz generation that can't silently hallucinate.** `backend/services/quiz_generator.py`
+- **Source-checked quiz generation with a deterministic fallback.** `backend/services/quiz_generator.py`
   validates every Gemini-drafted question against the source text (exactly four unique options, a
-  valid answer index, and a `source_excerpt` that must be an exact substring of the uploaded
-  material); anything that fails validation, or any request with no API key configured, falls back
+  valid answer index, and a `source_excerpt` that must match the uploaded material after
+  whitespace/case normalization); anything that fails validation, or any request with no API key configured, falls back
   to a deterministic extractive generator instead of failing or fabricating.
 - **Bounded file ingestion.** `backend/services/content_ingestion.py` extracts text from TXT, MD,
   PDF, and DOCX uploads with a 5&nbsp;MB cap, a 100-page PDF cap, and a DOCX zip-expansion guard —
@@ -45,9 +51,10 @@ session.
   full extracted text.
 - **An honest integration boundary.** `backend/services/learning_catalog.py` never returns a
   fabricated course ID or enrolment record. Every recommendation is either a link to this app's own
-  adaptive practice quest (real, clickable) or a link to iGOT/NSSTA's public catalog pages, tagged
-  `catalog-fallback` — flip to `configured` only once a real partner adapter exists behind
-  `IGOT_API_BASE_URL` / `NSSTA_API_BASE_URL`.
+  adaptive practice quest or a link to iGOT/NSSTA's public catalog pages, tagged
+  `catalog-fallback`. Environment variables currently change the displayed status but do not
+  constitute a real adapter or successful authenticated health check. Some non-DSA internal links
+  also depend on the P0 routing repair; both limitations are tracked in the master checklist.
 - **A cross-domain room-unlock fix.** The original DSA-only unlock check
   (`routes/game.py::_is_room_unlocked_for_player`) only understood the hardcoded DSA topic graph;
   any non-DSA room would have been permanently locked. It now falls back to
@@ -66,9 +73,10 @@ session.
 
 ## What's aim, not yet reality
 
-- **No live iGOT or NSSTA integration.** There is no public partner API for either today (verified
-  directly against both portals and against APISetu). Production activation needs an approved
-  sandbox, credentials, and a real adapter behind the interface already sketched in
+- **No live iGOT or NSSTA integration.** Public KB-iGOT engineering documentation demonstrates
+  authenticated internal interfaces, but no open partner onboarding contract, credentials, or
+  sandbox is configured here; no NSSTA API was verified. Production activation needs approved
+  access and a real adapter behind the interface already sketched in
   `learning_catalog.py`.
 - **No real identity.** Username-only, no password, no server-derived session, no RBAC on any
   route. A pilot cannot run on this — it needs government-approved OIDC/SAML, server-side subject
@@ -82,12 +90,14 @@ session.
 - **No content-review workflow.** Generated quiz questions are demo-ready, not publish-ready — there
   is no draft/review/approve/retire state yet, so nothing stops an unreviewed item from being
   served.
-- **No real multilingual pipeline, malware scanning, queues, or observability.** All flagged
-  explicitly, none faked.
+- **Several explicit problem-statement capabilities are still absent.** There is no learner
+  assistant, PPTX/video transcript pipeline, virtual lab, real multilingual journey, learning-hours
+  evidence, predictive workforce model, SSO, malware scanning, background queue, or observability.
+  These are mapped to owners and honest demo/pilot boundaries in the requirement contract.
 
-The full, itemized version of this list — with acceptance gates, a prioritized backlog, an
-orchestration model, and a judge Q&A stress test — is in
-[`docs/archive/SIH26101_ORCHESTRATION_PLAN.md`](docs/archive/SIH26101_ORCHESTRATION_PLAN.md).
+The current itemized backlog is [`SIH26101_MASTER_CHECKLIST.md`](SIH26101_MASTER_CHECKLIST.md),
+the strategy is [`SIH26101_WINNING_PLAYBOOK.md`](SIH26101_WINNING_PLAYBOOK.md), and the six-lane
+delivery model is [`SIH26101_TEAM_ORCHESTRATION.md`](SIH26101_TEAM_ORCHESTRATION.md).
 
 ## How it plays
 
@@ -98,12 +108,12 @@ orchestration model, and a judge Q&A stress test — is in
    evidence where it exists and explains exactly how.
 4. **Follow the pathway** — a prerequisite-ordered list of what to close first, each step showing
    its observed level, target, gap, and priority.
-5. **Practice** — enter the matching dungeon room; a fresh AI question is generated at a difficulty
-   chosen from your recent accuracy on that competency.
+5. **Practice** — the DSA Quest path works today; the non-DSA Academy-to-Quest browser paths are a
+   known P0 repair even though their backend dungeons are seeded.
 6. **Answer in free text** — an AI grader judges meaning, not exact wording: correct / partial /
    incorrect.
-7. **Generate a grounded quiz** — upload TXT, Markdown, PDF, or DOCX; every accepted question cites
-   an exact excerpt from your own material.
+7. **Generate a source-checked quiz** — upload TXT, Markdown, PDF, or DOCX; every accepted question
+   cites a passage matched after whitespace/case normalization.
 8. **Check the org view** (`/admin`) — aggregate, PII-free gap demand across every learner.
 
 ## Architecture

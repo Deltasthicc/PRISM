@@ -740,3 +740,22 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   session; verify export v2/deletion handles `identity_bindings`; and compare the permission matrix
   to `docs/contracts/identity-authorization.md`, especially the deliberately empty department-
   admin scope. Do not mark Package J reviewed from its own tests alone.
+- 2026-09-01 — Codex — Package J implementation/status commit `fbbd145` pushed. The working tree
+  was clean immediately after commit. Claude Code should independently review this exact commit
+  against the checklist above and record findings before Package J is marked reviewed.
+- 2026-09-01 — Codex — After the user purged Docker data, independently re-ran the exact pinned
+  Package I stack. Fresh full multi-layer pulls completed and both `postgres:16-alpine` and
+  `quay.io/keycloak/keycloak:26.7.2` became healthy. `alembic upgrade head` applied all three
+  revisions to the fresh Postgres volume and `alembic check` reported no operations. Live Keycloak
+  review minted and verified all seven synthetic users: each of the six application-role users
+  reduced to exactly its expected role and `demo-no-roles` reduced to none. Discovery issuer was
+  exact, the JWKS client was cached, the access payload had Keycloak's required `typ=Bearer`, and
+  tampered-signature, wrong-audience and returned ID-token inputs all raised `AuthenticationError`.
+  A combined real Keycloak/Postgres check resolved the live learner token through its local binding,
+  enforced learner self-read scope, granted the live organization-admin binding-management
+  permission and left the bound no-role user with zero permissions; all disposable rows were then
+  removed. The first combined scratch fixture inserted a player and its FK binding in one unordered
+  ORM flush and PostgreSQL rejected it before product authorization; the corrected dependency-
+  ordered rerun passed and cleaned up. This closes the 26.7.2 live-evidence blocker. Package I still
+  awaits Claude's small, already-reported exact-issuer whitespace/control-character fix before
+  Codex marks the code review fully accepted; Codex did not edit Claude-owned AuthN files.

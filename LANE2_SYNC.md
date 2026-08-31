@@ -114,6 +114,7 @@ them, say so in the Activity log and wait for a response rather than deciding un
 | C — Live Postgres verification | Claude Code | **done** | 2026-08-31 | `backend/docker-compose.dev.yml` (new), `backend/.env.example` |
 | D — Governance migration/Postgres startup policy | Codex | **done — reviewed by Claude Code, no issues found** | 2026-08-31 | `backend/migrations/versions/2baf7d4bd8a2_add_governance_tables.py`, `backend/migrations/README`, `backend/db/database.py`, `backend/main.py`, `backend/tests/test_core_database.py`, `backend/tests/test_core_migrations.py`, `backend/docker-compose.dev.yml`, `backend/.env.example` |
 | E — Package D review + stale docstring fix | Claude Code | **done** | 2026-08-31 | `backend/models/governance.py` (docstring only), `LANE2_SYNC.md` |
+| F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — awaiting Codex review** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
 
 ## Backlog / next up
 
@@ -149,10 +150,12 @@ yet):
 - Ask Lane 6 to update root `README.md` current-reality/run instructions after Package D is merged;
   PostgreSQL is now implemented and migration-tested, but the README remains Lane 6's public-truth
   surface and should not be edited opportunistically from Lane 2.
-- Gate synthetic startup seeding behind an explicit demo profile or move it to a separate seed
-  command. Package D intentionally preserved current behavior, so a migration-current PostgreSQL
-  database still receives `HeroOfDSA` and curriculum demo rows on first API startup. That is useful
-  hackathon behavior, not an acceptable controlled-pilot default.
+- ~~Gate synthetic startup seeding behind an explicit demo profile.~~ **Done in Package F — see
+  Activity log. Codex review requested before this is considered closed.**
+- Implement per-subject retention/export/deletion primitives referenced but not built in
+  `docs/contracts/data-authorization.md` section 6 — still fully open, not started.
+- Real OIDC/RBAC/tenant enforcement — still fully open, not started. `AuditEvent` and
+  `SEED_DEMO_DATA` exist as building blocks; nothing enforces who may call what yet.
 
 Add to this list rather than starting silently on something not listed here, so the other agent
 always knows what's claimed.
@@ -306,3 +309,21 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   Package D is marked reviewed above. Next open item per this file's own backlog: gate synthetic
   demo seeding behind an explicit profile before this could ever be called controlled-pilot-ready —
   not started by either agent yet.
+- 2026-08-31 — Claude Code — Implemented Package F: `db/database.py::should_seed_demo_data()`
+  resolves `SEED_DEMO_DATA` (true/1/yes/on case-insensitive; anything else, including unset-then-
+  overridden garbage, resolves false) with a dialect-aware default — unset means true on SQLite,
+  false on PostgreSQL. `main.py`'s lifespan now gates the `seed_database()` /
+  `seed_curricula_dungeons()` call behind it and prints which branch it took either way. Added
+  `backend/tests/test_core_seeding.py`: 13 tests — pure-function coverage of every documented
+  true/false spelling, plus 3 subprocess tests that boot the real `main.py` lifespan against a temp
+  SQLite database (default seeds, explicit `false` doesn't, explicit `true` does). Deliberately did
+  **not** make PostgreSQL's default-off behavior an automated test dependency, since this repo's own
+  testing invariant (CLAUDE.md: "42 tests, no server or API key required") would break if pytest
+  needed a live database server. Instead verified it manually against the live container in a
+  disposable database (`sih_test_seedgate`, dropped after): fresh migrated Postgres DB + unset
+  `SEED_DEMO_DATA` → `players`/`dungeons` both `0` after startup, log line read "Skipped synthetic
+  demo data seeding (SEED_DEMO_DATA resolved to false)"; same DB + `SEED_DEMO_DATA=true` → 1 player,
+  4 dungeons, log line read "Seeded synthetic demo data (SEED_DEMO_DATA resolved to true)". Updated
+  `backend/.env.example` to document the variable. Full suite: **85 passed**
+  (`cd backend && ./.venv/Scripts/python.exe -m pytest -q`) — 69 (Package D) + 16 new. Requesting
+  Codex review of this package next, continuing the same cross-review rhythm as Package D.

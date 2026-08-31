@@ -65,6 +65,29 @@ def is_sqlite_database() -> bool:
     return _is_sqlite
 
 
+_TRUE_VALUES = {"1", "true", "yes", "on"}
+
+
+def should_seed_demo_data() -> bool:
+    """Whether startup should seed synthetic demo data (a demo player, all
+    curricula/dungeons).
+
+    `SEED_DEMO_DATA` wins either way when set. Left unset, this defaults to
+    True on the SQLite zero-setup demo profile (the README's "Run it locally"
+    promise depends on this) and False on PostgreSQL: a migration-managed
+    database implies something closer to a shared or persistent environment,
+    where silently injecting a fake player and curriculum content is not a
+    safe default. See docs/contracts/data-authorization.md and LANE2_SYNC.md
+    for why this boundary exists -- it is not yet a real controlled-pilot
+    seeding policy, just an explicit off switch for anything other than the
+    local SQLite demo.
+    """
+    override = os.getenv("SEED_DEMO_DATA")
+    if override is not None:
+        return override.strip().lower() in _TRUE_VALUES
+    return _is_sqlite
+
+
 def migration_head_revision() -> str:
     """Return the repository's single Alembic head revision."""
     config = Config(str(_BACKEND_DIRECTORY / "alembic.ini"))

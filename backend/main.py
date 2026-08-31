@@ -15,6 +15,7 @@ from db.database import (
     ensure_columns,
     is_sqlite_database,
     require_database_at_migration_head,
+    should_seed_demo_data,
 )
 
 # Import all models so tables are registered with Base.metadata
@@ -67,9 +68,20 @@ async def lifespan(app: FastAPI):
     # Auto-seed the demo DSA dungeon, then materialize every other curriculum
     # in services/curricula.py as its own dungeon (see db/seed.py's
     # seed_curricula_dungeons for why DSA keeps its own legacy seeding path).
-    from db.seed import seed_database, seed_curricula_dungeons
-    seed_database()
-    seed_curricula_dungeons()
+    # Gated by SEED_DEMO_DATA (see db/database.py::should_seed_demo_data) --
+    # on by default for the SQLite demo, off by default for PostgreSQL, so a
+    # migration-managed database doesn't silently receive a synthetic player
+    # and curriculum content unless that's explicitly asked for.
+    if should_seed_demo_data():
+        from db.seed import seed_database, seed_curricula_dungeons
+        seed_database()
+        seed_curricula_dungeons()
+        print("Seeded synthetic demo data (SEED_DEMO_DATA resolved to true).")
+    else:
+        print(
+            "Skipped synthetic demo data seeding (SEED_DEMO_DATA resolved to false) -- "
+            "see docs/contracts/data-authorization.md."
+        )
 
     yield
 

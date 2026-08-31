@@ -105,6 +105,86 @@ Do not touch: `backend/models/governance.py`, `backend/schemas/governance.py`,
 autogenerate wants to diff against those new tables and you think the baseline should include
 them, say so in the Activity log and wait for a response rather than deciding unilaterally.
 
+## Phase 2 — OIDC/RBAC (identity + authorization)
+
+The user explicitly asked us to scope and build this next, working in parallel, with this file as
+the only channel between us. Same protocol as above: pull before starting, own only your half,
+full suite green before every commit, update this file in the same commit as the code.
+
+**Ground rule carried over from every earlier package:** there is no real government IdP available
+(SIH26101_MASTER_CHECKLIST.md 5.1 is explicit that this is BLOCKED-EXTERNAL for production). What
+we can honestly build is a *real, standards-compliant OIDC identity/RBAC layer tested against a
+real local OIDC provider* — not a fake login, not a hardcoded "trust this header" shortcut. Keycloak
+running in Docker (same pattern as `docker-compose.dev.yml`'s Postgres service) is that real
+provider for local dev/CI. This is a genuine, verifiable local identity system; it is still not a
+government-approved production IdP, and nothing here may claim otherwise.
+
+### The identity/authorization contract (read this before writing either half)
+
+This is the interface boundary between the two halves. Whoever changes it must update this section
+and flag the change to the other agent in the Activity log before relying on it.
+
+```python
+# backend/security/identity.py (AuthN half -- Claude Code)
+@dataclass(frozen=True)
+class AuthenticatedSubject:
+    subject_id: str          # OIDC "sub" claim -- stable, unique, server-verified. The only
+                              # value any authorization or audit code may treat as identity.
+    username: str | None     # "preferred_username" -- display only, NEVER an authorization key.
+    roles: frozenset[str]    # realm roles from the verified token's "realm_access.roles".
+    issuer: str              # verified "iss" claim.
+    expires_at: datetime     # verified "exp" claim.
+    raw_claims: dict[str, Any]  # full claim set, for anything not modeled explicitly.
+
+def get_current_subject(authorization_header: str | None) -> AuthenticatedSubject:
+    """Verify a Bearer JWT against the configured OIDC issuer's JWKS (signature,
+    issuer, audience, expiry) and return the subject it proves. Raises
+    AuthenticationError (never a bare exception) on anything invalid, expired,
+    unsigned, or wrong-issuer. Does not know about roles-based access
+    decisions -- that is Part B's job, not this function's."""
+```
+
+```python
+# backend/security/rbac.py (AuthZ half -- Codex)
+ROLE_NAMES = {"learner", "trainer", "content_reviewer", "department_admin",
+              "organization_admin", "auditor"}  # SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 2
+
+def require_any_role(*allowed_roles: str):
+    """Return a FastAPI-dependency-shaped callable: given an AuthenticatedSubject
+    (produced by Part A's get_current_subject, composed as a FastAPI dependency
+    by whichever lane wires an actual route -- not this module's job), raise
+    AuthorizationError unless subject.roles intersects allowed_roles. Pure
+    authorization logic -- must not itself verify tokens or talk to Keycloak."""
+
+def scoped_to_own_subject(subject: AuthenticatedSubject, requested_player_id: str) -> None:
+    """Raise AuthorizationError unless requested_player_id == subject.subject_id,
+    for endpoints where a learner may only ever act on their own record. A
+    server-derived identity check, not a client-supplied-value trust."""
+```
+
+Both modules live under `backend/security/**`, already Lane 2's owned path — no other lane's files
+are touched by either half. **Neither half attaches anything to an actual FastAPI route.** Wiring
+`get_current_subject`/`require_any_role` into `backend/routes/**` is Lane 5's file to touch, exactly
+like Package H's read endpoint — flag it in the backlog, do not do it here even though it would be
+easy to.
+
+### Split
+
+- **Claude Code — Part A, identity (AuthN):** stand up Keycloak in Docker with a real imported
+  realm/client/test-users-per-role, implement real JWKS-based JWT verification, ship
+  `AuthenticatedSubject`/`get_current_subject`, test against the live Keycloak instance the same way
+  Postgres was tested (plus an offline unit-test path using a locally generated test keypair so the
+  suite doesn't hard-depend on a running Keycloak, matching the `SEED_DEMO_DATA`/Postgres precedent).
+- **Codex — Part B, authorization (AuthZ):** build the role/permission model, `require_any_role`,
+  `scoped_to_own_subject`, and any tenant-row-filter helper the current single-tenant-per-database
+  reality in `data-authorization.md` section 1 actually supports today (do not invent multi-tenant
+  columns that don't exist yet). Test entirely against synthetic `AuthenticatedSubject` values —
+  this half does not need Keycloak running to be fully tested, by design.
+
+This split is intentionally not sequential: Part B can be fully implemented and tested against the
+`AuthenticatedSubject` shape above the moment it's written here, without waiting for Part A's actual
+Keycloak/JWT code to exist.
+
 ## Status board
 
 | Half | Owner | Status | Last updated | Files touched |
@@ -117,6 +197,8 @@ them, say so in the Activity log and wait for a response rather than deciding un
 | F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — reviewed by Codex; one test-isolation fix added** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
 | G — Internal subject export/deletion/retention primitives | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
 | H — Shared latest-assessment repository query | Claude Code | **done — awaiting Codex review** | 2026-08-31 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
+| I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **in progress** | 2026-08-31 | `backend/security/identity.py` (planned), `backend/docker-compose.dev.yml`, `backend/keycloak/` (planned) |
+| J — RBAC/authorization (Part B) | Codex | **available — see Phase 2 contract above** | — | `backend/security/rbac.py` (planned) |
 
 ## Backlog / next up
 

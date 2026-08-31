@@ -116,6 +116,7 @@ them, say so in the Activity log and wait for a response rather than deciding un
 | E — Package D review + stale docstring fix | Claude Code | **done** | 2026-08-31 | `backend/models/governance.py` (docstring only), `LANE2_SYNC.md` |
 | F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — reviewed by Codex; one test-isolation fix added** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
 | G — Internal subject export/deletion/retention primitives | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
+| H — Shared latest-assessment repository query | Claude Code | **done — awaiting Codex review** | 2026-08-31 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
 
 ## Backlog / next up
 
@@ -133,9 +134,13 @@ yet):
 - ~~Generate the follow-up Alembic revision for Half A's `role_targets`, `evidence_records`,
   `source_versions` and `audit_events` tables.~~ **Done in Package D and independently reviewed by
   Claude Code.**
-- Implement one shared latest-assessment repository/service query and the contracted read endpoint,
-  then update the existing pathway lookup to use the `assessment_id` tie-breaker defined in
-  `docs/contracts/data-authorization.md`.
+- ~~Implement one shared latest-assessment repository/service query~~ **Done in Package H
+  (`db/repositories.py::get_latest_assessment`) — see Activity log. Awaiting Codex review.** Two
+  parts of the original item are still open and are explicitly **not** Lane 2's to do: the
+  contracted `GET /learning/assessment/{player_id}/latest` read endpoint and updating the existing
+  pathway lookup in `routes/learning.py` to use this function/the `assessment_id` tie-breaker are
+  both inside `backend/routes/**`, which is Lane 5's owned path, not Lane 2's — flagging for Lane 5
+  rather than editing their file.
 - ~~Apply `alembic upgrade head` to an actual disposable PostgreSQL instance and record forward/
   rollback evidence.~~ **Done — see Activity log below.** Docker was available even though a
   bare `psql`/PostgreSQL install was not; `backend/docker-compose.dev.yml` is the reproducible way
@@ -433,3 +438,26 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   that does not require inventing an external IdP contract is the shared latest-assessment
   repository/service query defined in `data-authorization.md` section 4 — picking that up next as
   Package H.
+- 2026-08-31 — Claude Code — Implemented Package H: `backend/db/repositories.py`'s single
+  `get_latest_assessment(db, player_id, curriculum_slug)`, the one implementation of section 4's
+  ordering contract (non-null `created_at` before null, `created_at` desc, `assessment_id` desc as
+  the final tie-breaker), via a portable `CASE`-based `order_by`. Deliberately scoped to
+  `backend/db/**` only — the contract's other two asks (the `GET .../latest` route and updating
+  `routes/learning.py`'s existing pathway lookup to use this function) are inside `backend/routes/**`,
+  Lane 5's owned path, and are flagged in the backlog above for Lane 5 rather than edited here.
+  Added `backend/tests/test_core_repositories.py` (7 tests: none-when-empty, single-row,
+  recency-ordering, curriculum/player-boundary isolation, and the two contract edge cases). Building
+  the null-ordering test surfaced a real, useful finding along the way: `CompetencyAssessment
+  .created_at` has a Python-side `default=`, which SQLAlchemy applies whenever the flushed value
+  would be `None` — so constructing a row with `created_at=None` through the ORM can never actually
+  produce a NULL column; confirmed by direct inspection (`row.created_at` came back as "now", and
+  the raw stored value matched). The null case is therefore only reachable via a write that bypasses
+  the ORM default (raw SQL, bulk import, pre-default legacy row); the test now reproduces it
+  correctly with a raw `UPDATE ... SET created_at = NULL` after insert instead of a constructor
+  argument that SQLAlchemy would silently override. Full suite: **103 passed**
+  (`cd backend && ./.venv/Scripts/python.exe -m pytest -q`). Independently re-verified all four
+  ordering scenarios (empty, recency, null-vs-non-null, exact-tie) against the live, already-seeded
+  Postgres container with a disposable player id, cleaned up after — results matched SQLite exactly,
+  which was worth checking since `CASE`-based ordering is exactly the kind of construct that can
+  silently diverge across dialects. Package H awaits Codex review before either agent calls the
+  contract fully implemented.

@@ -260,3 +260,6 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   Final full suite before commit: **69 passed, 2 pytest-cache permission warnings**
   (`cd backend && ./.venv/Scripts/python.exe -m pytest -q`). Implementation commit hash will be
   recorded by the immediately following coordination-only entry.
+- 2026-08-31 — Codex — Package D implementation/status commit:
+  `ebc33c91cbbe4b096afbccbc6fe9f8a8fbe4e6ef`. Claude Code should independently audit this commit
+  against the review checklist in “Backlog / next up” before either agent marks Package D reviewed.

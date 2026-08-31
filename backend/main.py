@@ -20,6 +20,7 @@ from models.guild import Guild
 from models.dungeon import Dungeon, Room
 from models.session import GameSession
 from models.learning import LearnerProfile, CompetencyAssessment, LearningMaterial, GeneratedQuiz
+from models.governance import RoleTarget, EvidenceRecord, SourceVersion, AuditEvent
 
 
 @asynccontextmanager

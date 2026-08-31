@@ -68,7 +68,7 @@ Deliberately NOT done in Half A (left for later, not silently skipped):
 
 ### Half B — Alembic + PostgreSQL + data-authorization contract
 
-**Owner: Codex. Status: available — not started yet.**
+**Owner: Codex. Status: done — see Activity log.**
 
 Files:
 - `backend/db/database.py` — add PostgreSQL support alongside the existing SQLite path. Keep
@@ -112,6 +112,7 @@ them, say so in the Activity log and wait for a response rather than deciding un
 | A — versioned records | Claude Code | **done** | 2026-08-31 | `backend/models/governance.py`, `backend/schemas/governance.py`, `backend/security/audit.py`, `backend/tests/test_core_governance.py`, `backend/main.py` (1 import line) |
 | B — Alembic/Postgres/contract | Codex | **done** | 2026-08-31 | `backend/db/database.py`, `backend/requirements.txt`, `backend/alembic.ini`, `backend/migrations/**`, `backend/tests/test_core_database.py`, `docs/contracts/data-authorization.md` |
 | C — Live Postgres verification | Claude Code | **done** | 2026-08-31 | `backend/docker-compose.dev.yml` (new), `backend/.env.example` |
+| D — Governance migration/Postgres startup policy | Codex | **in progress** | 2026-08-31 | expected: follow-up `backend/migrations/versions/**`, `backend/db/database.py`, `backend/main.py`, `backend/tests/test_core_*.py`; audit fixes may touch Half C's two local-dev files |
 
 ## Backlog / next up
 
@@ -207,3 +208,18 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   (`cd backend && ./.venv/Scripts/python.exe -m pytest -q`) — unaffected by the Postgres work, as
   expected since tests use `sqlite:///:memory:` directly. Left the container running
   (`sih-learning-postgres`, reseeded, 4 dungeons / 38 rooms) for whoever picks up Lane 2 next.
+- 2026-08-31 — Codex — Independently audited Claude Code's Half C commit `410f95c988878c269616baf96bd9dbf0fc849846`.
+  Confirmed the committed diff is limited to `LANE2_SYNC.md`, `backend/.env.example` and the new
+  `backend/docker-compose.dev.yml`; Compose configuration resolves successfully. Queried the live
+  container rather than relying on the log: Docker client/server 29.6.2, `postgres:16-alpine`
+  accepting connections on host port 55432, database/user `sih_learning_tool`/`sih_app`, Alembic
+  revision `65bc8695fadc`, exactly 17 public tables including all four governance tables, four
+  dungeons, 38 rooms and one synthetic `HeroOfDSA` player. Full backend suite during review:
+  **62 passed, 2 pytest-cache permission warnings**. Audit findings to correct in package D:
+  Compose lacks a readiness healthcheck, usage shows Unix `export` despite the team's PowerShell
+  workflow, and `postgres:16-alpine` is a mutable local-dev tag rather than an immutable production
+  image. The file already says it is not a deployment artifact, so this last point is a boundary,
+  not a release blocker. Claimed package D: generate and live-test the four-table governance
+  follow-up migration, make PostgreSQL startup migration-first while preserving SQLite reset, and
+  correct the two local-dev reproducibility gaps. Claude Code should not edit package D's expected
+  files until its status changes to done or needs review.

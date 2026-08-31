@@ -115,7 +115,7 @@ them, say so in the Activity log and wait for a response rather than deciding un
 | D — Governance migration/Postgres startup policy | Codex | **done — reviewed by Claude Code, no issues found** | 2026-08-31 | `backend/migrations/versions/2baf7d4bd8a2_add_governance_tables.py`, `backend/migrations/README`, `backend/db/database.py`, `backend/main.py`, `backend/tests/test_core_database.py`, `backend/tests/test_core_migrations.py`, `backend/docker-compose.dev.yml`, `backend/.env.example` |
 | E — Package D review + stale docstring fix | Claude Code | **done** | 2026-08-31 | `backend/models/governance.py` (docstring only), `LANE2_SYNC.md` |
 | F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — reviewed by Codex; one test-isolation fix added** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
-| G — Internal subject export/deletion/retention primitives | Codex | **in progress** | 2026-08-31 | expected: `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
+| G — Internal subject export/deletion/retention primitives | Codex | **done — awaiting Claude Code review** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
 
 ## Backlog / next up
 
@@ -126,12 +126,13 @@ yet):
 - OIDC authentication, server-derived subject, RBAC, tenant filters and immutable audit events
   (the `AuditEvent` table from Half A exists; the *enforcement* — who's allowed to write what —
   does not yet).
-- Retention/deletion/export primitives, encryption/key ownership and backup/restore.
+- Retention schedule/expiry jobs, encryption/key ownership and backup/restore (internal subject
+  export/deletion primitives are Package G).
 - Wire `schemas.governance` into actual `routes/` endpoints once an authorization story exists to
   gate them.
 - ~~Generate the follow-up Alembic revision for Half A's `role_targets`, `evidence_records`,
-  `source_versions` and `audit_events` tables.~~ **Done in Package D; independent Claude review
-  is still required before merge.**
+  `source_versions` and `audit_events` tables.~~ **Done in Package D and independently reviewed by
+  Claude Code.**
 - Implement one shared latest-assessment repository/service query and the contracted read endpoint,
   then update the existing pathway lookup to use the `assessment_id` tie-breaker defined in
   `docs/contracts/data-authorization.md`.
@@ -141,8 +142,8 @@ yet):
   to get one going forward.
 - ~~Decide the PostgreSQL startup policy for Alembic versus `Base.metadata.create_all()`.~~
   **Done in Package D:** PostgreSQL fails startup unless it is at Alembic head; SQLite retains
-  create-all/`ensure_columns()` for the documented zero-setup demo. Independent Claude review is
-  still required before merge.
+  create-all/`ensure_columns()` for the documented zero-setup demo. Independently reviewed by
+  Claude Code.
 - ~~Claude Code review Package D end-to-end~~ **Done — see Activity log. No issues found; two
   scenarios (legacy-adoption and partial-schema-rejection) were additionally re-verified directly
   against live PostgreSQL, since Package D's own regression tests only cover those two via
@@ -153,10 +154,24 @@ yet):
   surface and should not be edited opportunistically from Lane 2.
 - ~~Gate synthetic startup seeding behind an explicit demo profile.~~ **Done in Package F — see
   Activity log. Independently reviewed by Codex; one test-isolation improvement added.**
-- Implement per-subject retention/export/deletion primitives referenced but not built in
-  `docs/contracts/data-authorization.md` section 6 — still fully open, not started.
+- ~~Implement per-subject retention/export/deletion primitives referenced but not built in
+  `docs/contracts/data-authorization.md` section 6.~~ **Internal export/deletion plus explicit
+  retention classification are done in Package G and await Claude review. No HTTP API, retention
+  schedule, backup deletion or compliance claim exists.**
 - Real OIDC/RBAC/tenant enforcement — still fully open, not started. `AuditEvent` and
   `SEED_DEMO_DATA` exist as building blocks; nothing enforces who may call what yet.
+
+Package G review checklist for Claude Code:
+
+- Read `security/data_rights.py` against every current FK/JSON ownership edge; specifically verify
+  deletion order, foreign-owner quiz rejection, guild-assignment scrub and audit retention.
+- Re-run `tests/test_core_data_rights.py` and the full suite; do not rely on Codex's counts.
+- Inspect the `record_audit_event(commit=False)` change for backward compatibility and prove a
+  failed parent transaction does not leave either a deletion or its audit event committed.
+- Re-run export then deletion against a new disposable live PostgreSQL database at Alembic head,
+  verify shared rows survive and both audit events remain, then remove that database.
+- Check section 6 of `docs/contracts/data-authorization.md` for any claim stronger than the code.
+  Do not expose a route: authenticated, server-derived authority/RBAC is still absent.
 
 Add to this list rather than starting silently on something not listed here, so the other agent
 always knows what's claimed.
@@ -343,3 +358,28 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   full suite after the review fix: **86 passed, 2 pytest-cache permission warnings**. Claimed Package
   G for internal, transaction-safe subject export/deletion and explicit retention classification.
   No public endpoint will be added before authenticated authorization exists.
+- 2026-08-31 — Codex — Implemented Package G as internal-only subject-data primitives. Added a
+  versioned, JSON-serializable export of the ten subject-owned table groups, material-linked source
+  versions, guild topic assignments and related audit events; successful exports append
+  `subject_data.export`. Added exact-confirmation deletion that removes the same owned graph in FK
+  order, scrubs guild JSON assignments, rejects a foreign-owned quiz referencing subject material,
+  retains append-only audit rows/shared content, and writes `subject_data.delete` in the same
+  transaction. Extended the audit helper with backward-compatible `commit=False` flush semantics
+  so parent operations own commit/rollback. Section 6 of the data-authorization contract now states
+  the exact inventory, result shapes, deletion boundary and retention classifications, while
+  explicitly saying there is no authenticated API, retention schedule, backup erasure or compliance
+  status. Added 10 focused tests covering complete export, final audit counts, unknown/invalid
+  requests, exact confirmation, owned-versus-shared deletion, cross-owner rejection, forced-commit
+  rollback, uncommitted-audit rollback and the retention inventory. During development, the first
+  fixture used scalar FKs in one `add_all()` and failed before product code because SQLAlchemy could
+  not infer insertion order; it was split into explicit dependency layers. The next focused run
+  found a real draft bug: mutating a dict nested inside an already-flushed JSON audit field left its
+  stored count stale. The export now calculates final audit counts before creating the event. An
+  initial live-PostgreSQL verification script completed the operations but then dereferenced its
+  deleted/expired ORM object; the corrected rerun cached the scalar ID and passed all post-delete
+  assertions. Live proof used a fresh migrated disposable database: export counts were exact,
+  deletion removed the player/profile/evidence/material/source graph, 4 shared dungeons remained,
+  and both related audit events remained; the database was then dropped. Final full suite after an
+  explicit remote pull: **96 passed, 2 pytest-cache permission warnings**. Package G awaits the
+  independent Claude review checklist above; implementation commit hash follows in a coordination-
+  only entry.

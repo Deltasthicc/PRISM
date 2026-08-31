@@ -6,8 +6,9 @@ Consumers: Lanes 3, 4, 5, 6
 
 Change approval: Lanes 5 and 6 (`SIH26101_TEAM_ORCHESTRATION.md` section 4)
 
-Status: **v1 demo contract — storage and query semantics are defined; authentication,
-multi-tenant isolation, RBAC, retention and subject-rights APIs are not implemented.**
+Status: **v1 demo contract — storage and query semantics plus internal subject-data
+export/deletion primitives are defined; authentication, multi-tenant isolation, RBAC,
+retention schedules and subject-rights APIs are not implemented.**
 
 This contract is deliberately explicit about the present boundary. It is safe guidance for the
 local hackathon demo, not evidence of production authorization or compliance.
@@ -146,11 +147,64 @@ RBAC and disclosure policy.
 
 ## 6. Retention, export and deletion reality
 
-There are no per-subject retention, export or deletion APIs today. Records persist until the
-database is manually reset or altered. Deleting the local SQLite demo database is a whole-tenant
-reset, not a subject deletion workflow. PostgreSQL backup, restore, encryption/key ownership and
-retention policy remain unverified backlog items. Lanes must not claim these controls exist based
-on this contract alone.
+`security.data_rights` now provides internal, database-transaction primitives for a verified
+operator to inventory/export or delete one `players.player_id`. They are intentionally **not HTTP
+endpoints**. The product still cannot authenticate a subject or operator, derive an actor from a
+trusted session, or authorize either operation. A route must not accept `actor`, tenant or
+authority from request data and pass it through. Until identity and RBAC land, callers are limited
+to trusted offline/administrative code using a dedicated database session.
+
+### 6.1 Export contract
+
+`export_subject_data(db, player_id, actor=..., reason=...)` returns
+`subject-data-export-v1`, a JSON-serializable object with:
+
+- `generated_at`, `tenant_scope="deployment-database"`, `player_id` and the created
+  `audit_event_id`;
+- `records`, keyed by the exact inventory below, with rows ordered by primary key (audit rows by
+  `created_at`, then `audit_id`);
+- `record_counts`, including the export audit event itself; and
+- `retention_classification`, using the classifications in section 6.3.
+
+The subject-owned inventory is `players`, `learner_profiles`, `competency_assessments`,
+`evidence_records`, `accuracy_history`, `game_sessions`, `submissions`, `learning_materials`,
+`generated_quizzes` and `source_versions` linked through the subject's materials. The export also
+contains the subject's entries from `guilds.raid_topic_assignments` as
+`guild_topic_assignments`, and related `audit_events` where the subject is the actor or the event's
+`entity_type="player"` / `entity_id` matches. Shared curriculum/game content (`dungeons`, `rooms`,
+`questions`, guild definitions and `role_targets`) is not subject-owned and is not exported.
+
+A successful export appends `subject_data.export` to `audit_events` in the same transaction. An
+unknown player or invalid actor/reason writes no event. This is a machine-readable portability
+primitive, not a claim that a legally sufficient access/portability workflow exists.
+
+### 6.2 Verified deletion contract
+
+`delete_subject_data(db, player_id, actor=..., reason=..., confirmation=...)` requires
+`confirmation` to equal `player_id` exactly. It deletes the ten subject-owned table groups listed
+above, scrubs the player's keys from every `guilds.raid_topic_assignments` JSON object, and retains
+shared content and other players' rows. It also retains all `audit_events` as the explicit
+append-only security-log exception and appends `subject_data.delete` atomically with the deletion.
+
+The operation first rejects an unknown subject and rejects a corrupt/cross-owner graph where
+another player's generated quiz references material owned by the deletion subject. Any error
+rolls back the audit event, JSON scrubs and row deletions together. The result reports exact
+deleted counts, guild assignments scrubbed, retained related-audit count and the deletion audit
+ID. Database backups or external replicas are outside this primitive and are not erased by it.
+
+### 6.3 Retention classification and missing policy
+
+The current code classifies the ten subject-owned table groups as
+`delete_with_verified_subject_request`, guild assignment entries as
+`scrub_with_verified_subject_request`, and audit events as
+`retain_append_only_security_log_duration_policy_pending`. This is an inventory/classification,
+not a retention schedule. No legal basis, minimum/maximum duration, litigation hold, expiry job,
+backup-expiry procedure or organization approval is defined.
+
+Deleting the local SQLite demo database remains a whole-tenant reset, not a subject workflow.
+PostgreSQL backup/restore, encryption/key ownership, replica handling and retention policy remain
+unverified backlog items. Lanes must not claim compliance or production subject-rights controls
+based on these internal primitives alone.
 
 ## 7. Change process
 

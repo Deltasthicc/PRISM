@@ -25,9 +25,16 @@ def record_audit_event(
     entity_type: str,
     entity_id: str | None = None,
     details: dict | None = None,
+    *,
+    commit: bool = True,
 ) -> AuditEvent:
     """Insert one append-only audit row and return it. Never updates a
-    previous row -- a correction is always a new event, not an edit."""
+    previous row -- a correction is always a new event, not an edit.
+
+    `commit=False` flushes without committing so a larger security-sensitive
+    operation can keep its audit row in the same transaction. Existing callers
+    retain the original commit-and-refresh behavior by default.
+    """
     event = AuditEvent(
         actor=actor,
         action=action,
@@ -36,6 +43,9 @@ def record_audit_event(
         details=details or {},
     )
     db.add(event)
-    db.commit()
-    db.refresh(event)
+    if commit:
+        db.commit()
+        db.refresh(event)
+    else:
+        db.flush()
     return event

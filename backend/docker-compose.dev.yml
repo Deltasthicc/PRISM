@@ -1,0 +1,27 @@
+# Local PostgreSQL for testing Lane 2's Alembic migrations against a real
+# database instead of SQLite. Not a deployment artifact -- see /docker for
+# that (still an empty scaffold as of this file).
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml up -d
+#   export DATABASE_URL=postgresql://sih_app:sih_dev_local_only@localhost:55432/sih_learning_tool
+#   ./.venv/Scripts/python.exe -m alembic upgrade head
+#   ./.venv/Scripts/python.exe -m uvicorn main:app --reload --port 8000
+#
+# Credentials here are for local dev only -- never reused for anything real
+# (CODEX.md "Never commit a real API key or secret").
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sih-learning-postgres
+    environment:
+      POSTGRES_USER: sih_app
+      POSTGRES_PASSWORD: sih_dev_local_only
+      POSTGRES_DB: sih_learning_tool
+    ports:
+      - "55432:5432"
+    volumes:
+      - sih_learning_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  sih_learning_postgres_data:

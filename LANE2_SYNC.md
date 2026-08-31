@@ -111,6 +111,7 @@ them, say so in the Activity log and wait for a response rather than deciding un
 |---|---|---|---|---|
 | A — versioned records | Claude Code | **done** | 2026-08-31 | `backend/models/governance.py`, `backend/schemas/governance.py`, `backend/security/audit.py`, `backend/tests/test_core_governance.py`, `backend/main.py` (1 import line) |
 | B — Alembic/Postgres/contract | Codex | **done** | 2026-08-31 | `backend/db/database.py`, `backend/requirements.txt`, `backend/alembic.ini`, `backend/migrations/**`, `backend/tests/test_core_database.py`, `docs/contracts/data-authorization.md` |
+| C — Live Postgres verification | Claude Code | **done** | 2026-08-31 | `backend/docker-compose.dev.yml` (new), `backend/.env.example` |
 
 ## Backlog / next up
 
@@ -130,9 +131,10 @@ yet):
 - Implement one shared latest-assessment repository/service query and the contracted read endpoint,
   then update the existing pathway lookup to use the `assessment_id` tie-breaker defined in
   `docs/contracts/data-authorization.md`.
-- Apply `alembic upgrade head` to an actual disposable PostgreSQL instance and record forward/
-  rollback evidence. Half B verified PostgreSQL dialect selection and offline DDL compilation,
-  but this workstation had no `psql` executable or configured PostgreSQL database.
+- ~~Apply `alembic upgrade head` to an actual disposable PostgreSQL instance and record forward/
+  rollback evidence.~~ **Done — see Activity log below.** Docker was available even though a
+  bare `psql`/PostgreSQL install was not; `backend/docker-compose.dev.yml` is the reproducible way
+  to get one going forward.
 - Decide the production startup policy for Alembic versus `Base.metadata.create_all()`. Keep the
   current create-all/`ensure_columns()` behavior for the documented SQLite demo until that policy
   and the governance follow-up revision are complete.
@@ -180,3 +182,28 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
 - 2026-08-31 — Codex — Half B implementation/status commit:
   `76301e0162b9885628fda1e78be8d62536da178f`. This coordination-only entry records the immutable
   hash for the code, generated migration, contract and same-commit status update described above.
+- 2026-08-31 — Claude Code — Audited Half B against the live repo before building on it (per this
+  file's own protocol): read every file Codex touched, confirmed the `__pycache__` files under
+  `backend/migrations/` were never committed, confirmed the baseline migration's 12 tables and the
+  `include_object`/`-x baseline=true` exclusion of the 4 governance tables exactly match the
+  current model set, and confirmed Codex's "no live PostgreSQL was available, so none is claimed"
+  statement was true and not just cautious wording. Then closed that exact gap: Docker Desktop was
+  installed but not running — started it, brought up a real `postgres:16-alpine` container (first
+  via `docker run`, then re-verified from a completely fresh volume via a new
+  `backend/docker-compose.dev.yml`), and ran `alembic upgrade head` against it. Verified via
+  `psql \dt` inside the container: baseline produces exactly the 12 application tables +
+  `alembic_version`, matching Half B's SQLite-only result. Booted the real `uvicorn main:app`
+  against this Postgres instance (`DATABASE_URL=postgresql://...`): startup succeeded, `/health`
+  returned 200, `seed_curricula_dungeons()` created all 4 domains (`GET /game/dungeons` returned
+  all 4 with correct room counts), `create_all()` added the 4 governance tables Alembic's baseline
+  deliberately excludes (confirmed via `\dt`: 17 tables total), and a real `POST
+  /game/player/create` round-tripped into Postgres (confirmed via `SELECT count(*) FROM players`).
+  Also ran `alembic downgrade base` (dropped back to only `alembic_version`) then `alembic upgrade
+  head` again against the same live container to verify the rollback path Half B could only test
+  against SQLite. Added `backend/docker-compose.dev.yml` (Postgres 16, port 55432, same credentials
+  used in this verification) and a commented `DATABASE_URL` line + usage note in
+  `backend/.env.example` so this is reproducible for the rest of the team, not just this session.
+  Full suite after all of this, back on the default SQLite `DATABASE_URL`: **62 passed**
+  (`cd backend && ./.venv/Scripts/python.exe -m pytest -q`) — unaffected by the Postgres work, as
+  expected since tests use `sqlite:///:memory:` directly. Left the container running
+  (`sih-learning-postgres`, reseeded, 4 dungeons / 38 rooms) for whoever picks up Lane 2 next.

@@ -57,6 +57,10 @@ Consequences for every lane:
 - Half A's `AuditEvent` write path supplies an append-only record shape; it does not itself grant
   access or make the existing routes audited.
 
+The in-progress OIDC/RBAC primitives and their route handoff are specified separately in
+`docs/contracts/identity-authorization.md`. That foundation does not protect existing routes until
+Lane 5 composes token verification, active local binding, permission and object-scope checks.
+
 ## 3. Assessment record contract
 
 `competency_assessments` is an append-only sequence of assessment snapshots. Creating an
@@ -157,7 +161,7 @@ to trusted offline/administrative code using a dedicated database session.
 ### 6.1 Export contract
 
 `export_subject_data(db, player_id, actor=..., reason=...)` returns
-`subject-data-export-v1`, a JSON-serializable object with:
+`subject-data-export-v2`, a JSON-serializable object with:
 
 - `generated_at`, `tenant_scope="deployment-database"`, `player_id` and the created
   `audit_event_id`;
@@ -168,11 +172,15 @@ to trusted offline/administrative code using a dedicated database session.
 
 The subject-owned inventory is `players`, `learner_profiles`, `competency_assessments`,
 `evidence_records`, `accuracy_history`, `game_sessions`, `submissions`, `learning_materials`,
-`generated_quizzes` and `source_versions` linked through the subject's materials. The export also
+`generated_quizzes`, `source_versions` linked through the subject's materials, and the local
+`identity_bindings` row linked to that player. The export also
 contains the subject's entries from `guilds.raid_topic_assignments` as
 `guild_topic_assignments`, and related `audit_events` where the subject is the actor or the event's
 `entity_type="player"` / `entity_id` matches. Shared curriculum/game content (`dungeons`, `rooms`,
 `questions`, guild definitions and `role_targets`) is not subject-owned and is not exported.
+
+Version 2 adds `identity_bindings`; consumers of the earlier internal v1 draft must not assume the
+record inventory is unchanged.
 
 A successful export appends `subject_data.export` to `audit_events` in the same transaction. An
 unknown player or invalid actor/reason writes no event. This is a machine-readable portability
@@ -181,7 +189,7 @@ primitive, not a claim that a legally sufficient access/portability workflow exi
 ### 6.2 Verified deletion contract
 
 `delete_subject_data(db, player_id, actor=..., reason=..., confirmation=...)` requires
-`confirmation` to equal `player_id` exactly. It deletes the ten subject-owned table groups listed
+`confirmation` to equal `player_id` exactly. It deletes the eleven subject-owned table groups listed
 above, scrubs the player's keys from every `guilds.raid_topic_assignments` JSON object, and retains
 shared content and other players' rows. It also retains all `audit_events` as the explicit
 append-only security-log exception and appends `subject_data.delete` atomically with the deletion.
@@ -194,7 +202,7 @@ ID. Database backups or external replicas are outside this primitive and are not
 
 ### 6.3 Retention classification and missing policy
 
-The current code classifies the ten subject-owned table groups as
+The current code classifies the eleven subject-owned table groups as
 `delete_with_verified_subject_request`, guild assignment entries as
 `scrub_with_verified_subject_request`, and audit events as
 `retain_append_only_security_log_duration_policy_pending`. This is an inventory/classification,

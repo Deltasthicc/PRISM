@@ -34,8 +34,8 @@ def test_explicit_postgresql_driver_is_preserved():
     assert normalize_database_url(url) == url
 
 
-def test_governance_revision_is_the_single_migration_head():
-    assert migration_head_revision() == "2baf7d4bd8a2"
+def test_identity_binding_revision_is_the_single_migration_head():
+    assert migration_head_revision() == "cf4271f204a3"
 
 
 def test_unversioned_database_is_rejected_with_upgrade_instruction():
@@ -56,7 +56,22 @@ def test_baseline_only_database_is_rejected():
         )
 
     assert database_revision(bind) == "65bc8695fadc"
-    with pytest.raises(RuntimeError, match="required=2baf7d4bd8a2"):
+    with pytest.raises(RuntimeError, match="required=cf4271f204a3"):
+        require_database_at_migration_head(bind)
+
+
+def test_governance_only_database_is_rejected_after_identity_migration():
+    bind = create_engine("sqlite:///:memory:")
+    with bind.begin() as connection:
+        connection.execute(text("CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL)"))
+        connection.execute(
+            text("INSERT INTO alembic_version (version_num) VALUES ('2baf7d4bd8a2')")
+        )
+
+    with pytest.raises(
+        RuntimeError,
+        match="current=2baf7d4bd8a2, required=cf4271f204a3",
+    ):
         require_database_at_migration_head(bind)
 
 
@@ -65,7 +80,7 @@ def test_database_at_head_is_accepted():
     with bind.begin() as connection:
         connection.execute(text("CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL)"))
         connection.execute(
-            text("INSERT INTO alembic_version (version_num) VALUES ('2baf7d4bd8a2')")
+            text("INSERT INTO alembic_version (version_num) VALUES ('cf4271f204a3')")
         )
 
     require_database_at_migration_head(bind)

@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 
 class SubjectDataExport(BaseModel):
-    schema_version: Literal["subject-data-export-v1"] = "subject-data-export-v1"
+    schema_version: Literal["subject-data-export-v2"] = "subject-data-export-v2"
     generated_at: datetime
     tenant_scope: Literal["deployment-database"] = "deployment-database"
     player_id: str
@@ -25,4 +25,3 @@ class SubjectDeletionResult(BaseModel):
     guild_assignments_scrubbed: int = Field(ge=0)
     retained_audit_event_count: int = Field(ge=1)
     audit_event_id: str
-

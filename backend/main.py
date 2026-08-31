@@ -28,6 +28,7 @@ from models.dungeon import Dungeon, Room
 from models.session import GameSession
 from models.learning import LearnerProfile, CompetencyAssessment, LearningMaterial, GeneratedQuiz
 from models.governance import RoleTarget, EvidenceRecord, SourceVersion, AuditEvent
+from models.identity import IdentityBinding
 
 
 @asynccontextmanager

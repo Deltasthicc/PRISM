@@ -12,13 +12,15 @@ from sqlalchemy import create_engine, inspect, text
 
 BACKEND_DIRECTORY = Path(__file__).resolve().parents[1]
 BASELINE_REVISION = "65bc8695fadc"
-HEAD_REVISION = "2baf7d4bd8a2"
+GOVERNANCE_REVISION = "2baf7d4bd8a2"
+HEAD_REVISION = "cf4271f204a3"
 GOVERNANCE_TABLES = {
     "audit_events",
     "evidence_records",
     "role_targets",
     "source_versions",
 }
+IDENTITY_TABLES = {"identity_bindings"}
 
 
 def _database_url(path: Path) -> str:
@@ -58,7 +60,8 @@ def test_full_migration_chain_upgrades_and_downgrades_fresh_database(tmp_path):
 
     assert revision == HEAD_REVISION
     assert GOVERNANCE_TABLES <= names
-    assert len(names) == 17
+    assert IDENTITY_TABLES <= names
+    assert len(names) == 18
 
     _run_alembic(database_url, "downgrade", "base")
     assert inspect(engine).get_table_names() == ["alembic_version"]
@@ -72,7 +75,13 @@ def test_followup_adopts_compatible_tables_from_legacy_create_all(tmp_path):
     create_result = _run_python(
         database_url,
         "-c",
-        "import main; from db.database import Base, engine; Base.metadata.create_all(engine)",
+        (
+            "from db.database import Base, engine; "
+            "from models.governance import AuditEvent, EvidenceRecord, RoleTarget, SourceVersion; "
+            "from models.learning import LearningMaterial; from models.player import Player; "
+            "Base.metadata.create_all(engine, tables=[AuditEvent.__table__, "
+            "EvidenceRecord.__table__, RoleTarget.__table__, SourceVersion.__table__])"
+        ),
     )
     assert create_result.returncode == 0, create_result.stderr
 
@@ -84,6 +93,24 @@ def test_followup_adopts_compatible_tables_from_legacy_create_all(tmp_path):
 
     assert revision == HEAD_REVISION
     assert GOVERNANCE_TABLES <= set(inspect(engine).get_table_names())
+    engine.dispose()
+
+
+def test_identity_followup_downgrades_without_removing_governance(tmp_path):
+    database_url = _database_url(tmp_path / "identity-downgrade.db")
+    _run_alembic(database_url, "upgrade", "head")
+    engine = create_engine(database_url)
+
+    _run_alembic(database_url, "downgrade", GOVERNANCE_REVISION)
+    names = set(inspect(engine).get_table_names())
+    with engine.connect() as connection:
+        revision = connection.execute(
+            text("SELECT version_num FROM alembic_version")
+        ).scalar_one()
+
+    assert revision == GOVERNANCE_REVISION
+    assert GOVERNANCE_TABLES <= names
+    assert IDENTITY_TABLES.isdisjoint(names)
     engine.dispose()
 
 

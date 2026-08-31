@@ -13,6 +13,7 @@ from models.accuracy_history import AccuracyHistory
 from models.dungeon import Dungeon
 from models.governance import AuditEvent, EvidenceRecord, RoleTarget, SourceVersion
 from models.guild import Guild
+from models.identity import IdentityBinding
 from models.learning import (
     CompetencyAssessment,
     GeneratedQuiz,
@@ -124,6 +125,12 @@ def subject_graph(db):
                 evidence_type="diagnostic",
                 value=2,
             ),
+            IdentityBinding(
+                binding_id="identity-target",
+                issuer="https://identity.example.test/realms/sih",
+                subject_id="external-target-subject",
+                player_id=TARGET_PLAYER_ID,
+            ),
             AccuracyHistory(
                 player_id=TARGET_PLAYER_ID,
                 topic="sampling",
@@ -189,6 +196,7 @@ def test_export_is_complete_deterministic_json_and_audited(db, subject_graph):
     )
 
     assert exported.player_id == TARGET_PLAYER_ID
+    assert exported.schema_version == "subject-data-export-v2"
     assert exported.tenant_scope == "deployment-database"
     assert exported.record_counts == {
         name: len(records) for name, records in exported.records.items()
@@ -203,6 +211,7 @@ def test_export_is_complete_deterministic_json_and_audited(db, subject_graph):
     assert exported.record_counts["learning_materials"] == 1
     assert exported.record_counts["generated_quizzes"] == 1
     assert exported.record_counts["source_versions"] == 1
+    assert exported.record_counts["identity_bindings"] == 1
     assert exported.record_counts["guild_topic_assignments"] == 1
     assert exported.record_counts["audit_events"] == 2
     assert exported.records["players"][0]["player_id"] == TARGET_PLAYER_ID
@@ -278,10 +287,12 @@ def test_delete_removes_owned_rows_scrubs_guild_and_retains_audit(db, subject_gr
         "learning_materials": 1,
         "generated_quizzes": 1,
         "source_versions": 1,
+        "identity_bindings": 1,
     }
     assert result.guild_assignments_scrubbed == 1
     assert result.retained_audit_event_count == 2
     assert db.query(Player).filter_by(player_id=TARGET_PLAYER_ID).count() == 0
+    assert db.query(IdentityBinding).filter_by(player_id=TARGET_PLAYER_ID).count() == 0
     assert db.query(Player).filter_by(player_id=OTHER_PLAYER_ID).count() == 1
     assert db.query(AccuracyHistory).filter_by(player_id=OTHER_PLAYER_ID).count() == 1
     assert db.query(Dungeon).count() == 1
@@ -377,6 +388,7 @@ def test_retention_classification_keeps_audit_as_explicit_exception():
         "learning_materials",
         "generated_quizzes",
         "source_versions",
+        "identity_bindings",
         "guild_topic_assignments",
         "audit_events",
     }

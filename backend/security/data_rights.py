@@ -19,6 +19,7 @@ from models.accuracy_history import AccuracyHistory
 from models.dungeon import Dungeon
 from models.governance import AuditEvent, EvidenceRecord, SourceVersion
 from models.guild import Guild
+from models.identity import IdentityBinding
 from models.learning import (
     CompetencyAssessment,
     GeneratedQuiz,
@@ -34,7 +35,7 @@ from security.audit import record_audit_event
 
 
 _REGISTERED_RELATIONSHIP_MODELS = (Dungeon, Question)
-EXPORT_SCHEMA_VERSION = "subject-data-export-v1"
+EXPORT_SCHEMA_VERSION = "subject-data-export-v2"
 
 RETENTION_CLASSIFICATION = {
     "players": "delete_with_verified_subject_request",
@@ -47,6 +48,7 @@ RETENTION_CLASSIFICATION = {
     "learning_materials": "delete_with_verified_subject_request",
     "generated_quizzes": "delete_with_verified_subject_request",
     "source_versions": "delete_with_verified_subject_request",
+    "identity_bindings": "delete_with_verified_subject_request",
     "guild_topic_assignments": "scrub_with_verified_subject_request",
     "audit_events": "retain_append_only_security_log_duration_policy_pending",
 }
@@ -162,6 +164,12 @@ def _subject_records(db: Session, player: Player) -> dict[str, list[dict[str, An
             )
         ],
         "source_versions": [_serialize_row(row) for row in source_versions],
+        "identity_bindings": [
+            _serialize_row(row)
+            for row in _ordered_rows(
+                db, IdentityBinding, IdentityBinding.player_id == player_id
+            )
+        ],
         "guild_topic_assignments": guild_assignments,
     }
 
@@ -324,6 +332,9 @@ def delete_subject_data(
         )
         db.query(LearnerProfile).filter(
             LearnerProfile.player_id == player_id
+        ).delete(synchronize_session=False)
+        db.query(IdentityBinding).filter(
+            IdentityBinding.player_id == player_id
         ).delete(synchronize_session=False)
         db.query(Player).filter(Player.player_id == player_id).delete(
             synchronize_session=False

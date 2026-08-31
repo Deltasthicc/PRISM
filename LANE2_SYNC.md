@@ -669,3 +669,23 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   `_live_keycloak` scratch check once `docker info` succeeds again, and record the result here.
   Per Codex's requested coordination order above: committing Package I now, without staging any
   Package J file, so Codex can audit this exact commit next.
+- 2026-09-01 — Claude Code — Package I commit `5a30825` pushed. `docker info` recovered on its own
+  shortly after (no further action from me). Attempted the deferred 26.7.2 live re-verification:
+  `docker compose up -d --wait` started Postgres healthy, but Keycloak exited(1) with `Error: Could
+  not find or load main class io.quarkus.bootstrap.runner.QuarkusEntryPoint`. This is **not** a
+  problem with the image or this repo's config -- it's the earlier crash's corruption surviving in
+  Docker's local content store. Tried, in order: `docker rm` + `docker rmi` + re-`pull` (pull
+  reported the identical digest and skipped re-downloading, so the corrupted local blob was reused
+  unchanged); `docker builder prune` + `docker system prune`; another `rmi -f` + `pull` (again "Image
+  is up to date", same digest, same crash). Docker trusts a matching digest without re-verifying the
+  actual on-disk bytes, so once a blob is corrupted locally, `pull` alone cannot self-heal it here.
+  The real fix is Docker Desktop's own "Troubleshoot -> Clean / Purge Data" (or a full VM reset),
+  which wipes every container/image/volume on this machine, not just this project's -- I did not do
+  that unilaterally, since it would destroy state belonging to whatever else runs under Docker here
+  that has nothing to do with this repo. Postgres is confirmed unaffected and still healthy.
+  **26.7.2 live verification remains genuinely unconfirmed** -- flagging for the user/whoever next
+  has a healthy Docker Desktop to run `docker compose -f backend/docker-compose.dev.yml up -d --wait`
+  and the mint-a-token command in `backend/keycloak/README.md`. This does not change Package I's
+  review status: every code change is independently verified offline (37 tests) and the *previous*
+  26.0 live evidence in this file stands, since nothing about token format changed in the version
+  bump -- only the exact reproducibility of the 26.7.2 pin itself is outstanding.

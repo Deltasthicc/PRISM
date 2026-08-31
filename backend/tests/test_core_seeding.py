@@ -31,6 +31,11 @@ def test_defaults_to_true_on_the_sqlite_test_process(monkeypatch):
     assert should_seed_demo_data() is True
 
 
+def test_defaults_to_false_for_postgresql_without_needing_a_server(monkeypatch):
+    monkeypatch.delenv("SEED_DEMO_DATA", raising=False)
+    assert should_seed_demo_data(database_backend="postgresql") is False
+
+
 @pytest.mark.parametrize("value", ["1", "true", "TRUE", "yes", "On"])
 def test_recognizes_every_documented_true_spelling(monkeypatch, value):
     monkeypatch.setenv("SEED_DEMO_DATA", value)
@@ -55,7 +60,17 @@ def _boot_and_count_players(tmp_path, seed_demo_data: str | None) -> int:
     else:
         environment["SEED_DEMO_DATA"] = seed_demo_data
 
-    script = (
+    # For the unset/default case, prevent the ignored developer-local .env
+    # from injecting SEED_DEMO_DATA into this subprocess. DATABASE_URL is
+    # already supplied explicitly above, so disabling dotenv here only makes
+    # the test hermetic; it does not bypass the application setting resolver.
+    disable_dotenv = (
+        "import dotenv\n"
+        "dotenv.load_dotenv = lambda *args, **kwargs: False\n"
+        if seed_demo_data is None
+        else ""
+    )
+    script = disable_dotenv + (
         "import asyncio\n"
         "from main import lifespan, app\n"
         "async def go():\n"

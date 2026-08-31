@@ -68,7 +68,7 @@ def is_sqlite_database() -> bool:
 _TRUE_VALUES = {"1", "true", "yes", "on"}
 
 
-def should_seed_demo_data() -> bool:
+def should_seed_demo_data(*, database_backend: str | None = None) -> bool:
     """Whether startup should seed synthetic demo data (a demo player, all
     curricula/dungeons).
 
@@ -85,7 +85,7 @@ def should_seed_demo_data() -> bool:
     override = os.getenv("SEED_DEMO_DATA")
     if override is not None:
         return override.strip().lower() in _TRUE_VALUES
-    return _is_sqlite
+    return (database_backend or _database_backend) == "sqlite"
 
 
 def migration_head_revision() -> str:

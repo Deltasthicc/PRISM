@@ -1,0 +1,315 @@
+"""Bearer-token authentication (AuthN only).
+
+Verifies a Bearer JWT against a real, standards-compliant OIDC issuer's JWKS
+(RFC 7517) via its discovery document (RFC 8414 / OpenID Connect Discovery):
+signature, issuer, audience and expiry are all checked, informed by RFC 8725
+(JWT Best Current Practices) and RFC 9700 (OAuth 2.0 Security BCP) -- an
+unsigned, wrong-issuer, wrong-audience, wrong-algorithm or expired token is
+always rejected, never accepted as a fallback. This is NOT a claim of full
+RFC 9068 (JWT access-token profile) compliance: RFC 9068 mandates a header
+`typ: at+jwt`, and this deployment's Keycloak does not set it. Instead,
+`verify()` REQUIRES the payload-level `typ: Bearer` claim Keycloak always
+sets on its access tokens (and never on ID tokens), as a practical,
+Keycloak-specific mitigation against an ID token being replayed as an access
+token. This is a real, deliberate restriction, not a general OIDC
+guarantee: a token from a different, spec-conformant OIDC provider that
+omits `typ` entirely would be rejected here, not silently accepted.
+
+This module answers only "who verifiably sent this request, per the token".
+It never turns that into an authorization decision, and it never treats its
+`AuthenticatedSubject.subject_id` as equal to an application `players
+.player_id` -- OIDC `sub` is unique only within its issuer.
+security.rbac.resolve_bound_principal() is what turns a verified subject
+into an actual local principal, through an explicit, administrator-created
+binding; see LANE2_SYNC.md's Phase 2 contract for why the two must not be
+conflated.
+
+There is no government-approved IdP available (SIH26101_MASTER_CHECKLIST.md
+section 5.1, BLOCKED-EXTERNAL). Keycloak in backend/docker-compose.dev.yml
+is a real, local OIDC provider used to test this module honestly -- it is
+not a claim of a production identity integration.
+"""
+from __future__ import annotations
+
+import functools
+import os
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
+from urllib.parse import urlparse
+
+import httpx
+import jwt
+from jwt import PyJWKClient
+
+SUPPORTED_ALGORITHMS = ["RS256"]
+DEFAULT_JWKS_CACHE_SECONDS = 300.0
+DEFAULT_DISCOVERY_TIMEOUT_SECONDS = 5.0
+_LOOPBACK_HOSTNAMES = {"localhost", "127.0.0.1", "::1"}
+
+
+def _require_safe_absolute_url(url: str, *, label: str) -> None:
+    """Reject anything that isn't a plain, absolute `scheme://host[:port]/path`
+    issuer or JWKS URL.
+
+    Rejects a relative URL (no host), and rejects userinfo (`user:pass@host`),
+    a query string, or a fragment -- all classic vectors for tricking a URL
+    parser into treating a string as safe when a different parser (or a
+    human) would read it differently. An OIDC issuer/JWKS URL has no
+    legitimate reason to carry any of those.
+    """
+    parsed = urlparse(url)
+    if not parsed.scheme or not parsed.hostname:
+        raise ValueError(f"{label} must be an absolute URL with a host (got {url!r})")
+    if parsed.username or parsed.password:
+        raise ValueError(f"{label} must not contain userinfo (got {url!r})")
+    if parsed.query:
+        raise ValueError(f"{label} must not contain a query string (got {url!r})")
+    if parsed.fragment:
+        raise ValueError(f"{label} must not contain a fragment (got {url!r})")
+
+    if parsed.scheme == "https":
+        return
+    if parsed.scheme == "http" and parsed.hostname in _LOOPBACK_HOSTNAMES:
+        return
+    raise ValueError(
+        f"{label} must use https, or http only for an explicit loopback host "
+        f"for local dev (got {url!r})"
+    )
+
+
+class AuthenticationError(Exception):
+    """Raised when a bearer token is missing, malformed, expired, or fails
+    signature/issuer/audience verification. Callers must treat this as an
+    unauthenticated request (HTTP 401), never partially trust the token."""
+
+
+@dataclass(frozen=True)
+class AuthenticatedSubject:
+    """A verified external identity, exactly as asserted by its issuer.
+
+    Nothing here is an application-level authorization decision. `roles` are
+    IdP-asserted claims, not application permissions -- security.rbac must
+    allowlist them before they mean anything (see effective_roles() there).
+    """
+
+    subject_id: str          # OIDC "sub" -- stable only within `issuer`. Never compared
+                              # to players.player_id; see module docstring.
+    username: str | None     # "preferred_username" -- display only, never an authorization key.
+    roles: frozenset[str]    # raw asserted roles from "realm_access.roles". Unfiltered.
+    issuer: str               # verified "iss" claim.
+    expires_at: datetime      # verified "exp" claim, as a UTC datetime.
+    raw_claims: dict[str, Any]  # full verified claim set, for anything not modeled explicitly.
+
+
+class OIDCVerifier:
+    """Verifies bearer tokens against one configured OIDC issuer.
+
+    One instance per issuer. The JWKS client is cached and only re-fetched
+    after `jwks_cache_seconds`, so normal request handling never re-fetches
+    the discovery document or key set on every request -- but a rotated key
+    is still picked up within that window without a restart.
+    """
+
+    def __init__(
+        self,
+        issuer: str,
+        audience: str,
+        jwks_cache_seconds: float = DEFAULT_JWKS_CACHE_SECONDS,
+        discovery_timeout_seconds: float = DEFAULT_DISCOVERY_TIMEOUT_SECONDS,
+    ) -> None:
+        if not issuer:
+            raise ValueError("issuer is required")
+        if not audience:
+            raise ValueError("audience is required")
+        # No normalization: a trailing slash is rejected outright rather than
+        # silently stripped. OIDC issuer identifiers are canonically written
+        # without one (RFC 8414 / OIDC Discovery); silently rewriting
+        # security-critical identity input -- even in a seemingly harmless
+        # way -- masks real configuration mistakes instead of surfacing them.
+        if issuer.endswith("/"):
+            raise ValueError(
+                f"issuer must not have a trailing slash -- configure it exactly "
+                f"as the provider's canonical issuer identifier (got {issuer!r})"
+            )
+        _require_safe_absolute_url(issuer, label="issuer")
+        self._issuer = issuer
+        self._audience = audience
+        self._jwks_cache_seconds = jwks_cache_seconds
+        self._discovery_timeout_seconds = discovery_timeout_seconds
+        self._jwks_client: PyJWKClient | None = None
+        self._jwks_client_fetched_at = 0.0
+
+    def _discover_jwks_uri(self) -> str:
+        discovery_url = f"{self._issuer}/.well-known/openid-configuration"
+        try:
+            response = httpx.get(discovery_url, timeout=self._discovery_timeout_seconds)
+            response.raise_for_status()
+            document = response.json()
+        except httpx.HTTPError as exc:
+            raise AuthenticationError(
+                f"could not reach OIDC discovery document at {discovery_url}: {exc}"
+            ) from exc
+        except ValueError as exc:  # json.JSONDecodeError subclasses ValueError
+            raise AuthenticationError(
+                f"OIDC discovery document at {discovery_url} is not valid JSON: {exc}"
+            ) from exc
+
+        if not isinstance(document, dict):
+            raise AuthenticationError(
+                f"OIDC discovery document at {discovery_url} is not a JSON object"
+            )
+
+        # OIDC Discovery 1.0 section 4.3: the document's own "issuer" MUST
+        # exactly match the issuer used to locate it. Skipping this check is
+        # exactly the kind of gap that enables an issuer-confusion attack via
+        # a compromised or misconfigured discovery endpoint.
+        document_issuer = document.get("issuer")
+        if document_issuer != self._issuer:
+            raise AuthenticationError(
+                f"OIDC discovery document issuer {document_issuer!r} does not exactly "
+                f"match the configured issuer {self._issuer!r}"
+            )
+
+        jwks_uri = document.get("jwks_uri")
+        if not isinstance(jwks_uri, str) or not jwks_uri:
+            raise AuthenticationError(
+                f"OIDC discovery document at {discovery_url} has no jwks_uri"
+            )
+        try:
+            _require_safe_absolute_url(jwks_uri, label="jwks_uri")
+        except ValueError as exc:
+            raise AuthenticationError(f"OIDC discovery document's jwks_uri is unsafe: {exc}") from exc
+        return jwks_uri
+
+    def _get_jwks_client(self) -> PyJWKClient:
+        now = time.monotonic()
+        stale = (now - self._jwks_client_fetched_at) > self._jwks_cache_seconds
+        if self._jwks_client is None or stale:
+            jwks_uri = self._discover_jwks_uri()
+            self._jwks_client = PyJWKClient(jwks_uri, timeout=self._discovery_timeout_seconds)
+            self._jwks_client_fetched_at = now
+        return self._jwks_client
+
+    def verify(self, bearer_token: str) -> AuthenticatedSubject:
+        """Verify signature, issuer, audience, algorithm and expiry. Raises
+        AuthenticationError on any failure -- never returns a partially
+        trusted subject."""
+        if not bearer_token or not isinstance(bearer_token, str):
+            raise AuthenticationError("bearer token is required")
+
+        try:
+            signing_key = self._get_jwks_client().get_signing_key_from_jwt(bearer_token)
+            claims = jwt.decode(
+                bearer_token,
+                signing_key.key,
+                algorithms=SUPPORTED_ALGORITHMS,
+                audience=self._audience,
+                issuer=self._issuer,
+                options={"require": ["exp", "iat", "iss", "sub"]},
+            )
+        except jwt.PyJWTError as exc:
+            raise AuthenticationError(f"token verification failed: {exc}") from exc
+
+        # `options={"require": [...]}` above only proves "sub" is PRESENT, not
+        # that it's a usable value -- a token with `"sub": ""` would satisfy
+        # that check and then flow through as an empty-string subject_id,
+        # which is not a stable external identity key and could collide
+        # ambiguously with another empty/malformed subject downstream.
+        subject_claim = claims.get("sub")
+        if not isinstance(subject_claim, str) or not subject_claim.strip():
+            raise AuthenticationError("token 'sub' claim must be a non-empty string")
+
+        # Keycloak-specific access-vs-ID-token discriminator (see module
+        # docstring): REQUIRE the payload to assert itself as a Bearer access
+        # token. A missing `typ` is rejected too, not treated as "unknown,
+        # allow it" -- an absent claim is indistinguishable here from an ID
+        # token, which never carries typ="Bearer", so treating "missing" as
+        # "fine" would silently defeat the whole discrimination check this
+        # exists for.
+        token_type = claims.get("typ")
+        if token_type != "Bearer":
+            raise AuthenticationError(f"expected an access token (typ=Bearer), got typ={token_type!r}")
+
+        # realm_access.roles must be a JSON array of strings, ALL of them --
+        # not "salvage whichever entries happen to look like strings". A
+        # cleanly-shaped list[str] is accepted whole; anything else (a dict,
+        # a non-list, or a list with even one non-string entry) fails closed
+        # to zero roles rather than partially trusting a malformed claim.
+        # Cherry-picking the string-looking entries out of a malformed array
+        # is not actually "failing closed" -- it's failing partially open,
+        # and a privileged-looking string sitting in an otherwise-broken
+        # array must not grant that role just because it happened to parse.
+        realm_access = claims.get("realm_access")
+        raw_roles = realm_access.get("roles") if isinstance(realm_access, dict) else None
+        is_clean_string_list = isinstance(raw_roles, list) and all(
+            isinstance(role, str) for role in raw_roles
+        )
+        roles = frozenset(raw_roles) if is_clean_string_list else frozenset()
+
+        return AuthenticatedSubject(
+            subject_id=subject_claim,
+            username=claims.get("preferred_username"),
+            roles=roles,
+            issuer=claims["iss"],
+            expires_at=datetime.fromtimestamp(claims["exp"], tz=timezone.utc),
+            raw_claims=claims,
+        )
+
+
+def verifier_from_env() -> OIDCVerifier:
+    """Build an OIDCVerifier from OIDC_ISSUER / OIDC_AUDIENCE env vars.
+
+    Raises AuthenticationError (not a bare KeyError/ValueError) so a missing
+    configuration surfaces the same way an invalid token would to any code
+    that only expects AuthenticationError from this module.
+    """
+    issuer = os.environ.get("OIDC_ISSUER")
+    audience = os.environ.get("OIDC_AUDIENCE")
+    if not issuer or not audience:
+        raise AuthenticationError(
+            "OIDC_ISSUER and OIDC_AUDIENCE must both be configured to verify bearer tokens"
+        )
+    return OIDCVerifier(issuer=issuer, audience=audience)
+
+
+def extract_bearer_token(authorization_header: str | None) -> str:
+    """Pull the token out of an `Authorization: Bearer <token>` header value.
+
+    Takes the raw header value (not a request object) so this stays
+    framework-agnostic -- FastAPI route wiring is Lane 5's job, not this
+    module's.
+    """
+    if not authorization_header:
+        raise AuthenticationError("missing Authorization header")
+    scheme, _, token = authorization_header.partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        raise AuthenticationError("Authorization header must be 'Bearer <token>'")
+    return token
+
+
+@functools.lru_cache(maxsize=1)
+def _default_verifier() -> OIDCVerifier:
+    """The process-wide default verifier, built once from the environment.
+
+    Without this, every get_current_subject() call with no explicit
+    `verifier` would build a brand new OIDCVerifier -- discarding its JWKS
+    cache and re-running OIDC discovery on every single request, which
+    defeats the whole point of OIDCVerifier's cache. Call
+    `_default_verifier.cache_clear()` (tests only) if OIDC_ISSUER/
+    OIDC_AUDIENCE change within a process lifetime.
+    """
+    return verifier_from_env()
+
+
+def get_current_subject(
+    authorization_header: str | None, verifier: OIDCVerifier | None = None
+) -> AuthenticatedSubject:
+    """Verify a raw `Authorization` header value and return the subject it
+    proves. Pass `verifier` explicitly in tests/callers that already built
+    one; omitted, this reuses one process-wide verifier built from
+    OIDC_ISSUER/OIDC_AUDIENCE (see _default_verifier), not a fresh one per call."""
+    token = extract_bearer_token(authorization_header)
+    verifier = verifier or _default_verifier()
+    return verifier.verify(token)

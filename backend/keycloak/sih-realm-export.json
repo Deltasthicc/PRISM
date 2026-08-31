@@ -1,0 +1,198 @@
+{
+  "realm": "sih-learning-tool",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "accessTokenLifespan": 300,
+  "roles": {
+    "realm": [
+      {
+        "name": "learner",
+        "description": "Learner/officer completing assessments and practice."
+      },
+      {
+        "name": "trainer",
+        "description": "Creates/reviews training content and assessments."
+      },
+      {
+        "name": "content_reviewer",
+        "description": "Approves generated quiz items before they are scored."
+      },
+      {
+        "name": "department_admin",
+        "description": "Views aggregate gap data for one department."
+      },
+      {
+        "name": "organization_admin",
+        "description": "Views aggregate gap data across the organization."
+      },
+      {
+        "name": "auditor",
+        "description": "Read-only access to audit events."
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "sih-backend-dev",
+      "name": "SIH Learning Tool backend (local dev only)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "sih_dev_local_only_client_secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:8000/*"
+      ],
+      "protocolMappers": [
+        {
+          "name": "sih-backend-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "sih-backend-dev",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "demo-learner",
+      "enabled": true,
+      "email": "demo-learner@example.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sih_dev_local_only",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "learner"
+      ],
+      "requiredActions": [],
+      "firstName": "Demo",
+      "lastName": "Learner"
+    },
+    {
+      "username": "demo-trainer",
+      "enabled": true,
+      "email": "demo-trainer@example.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sih_dev_local_only",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "trainer"
+      ],
+      "requiredActions": [],
+      "firstName": "Demo",
+      "lastName": "Trainer"
+    },
+    {
+      "username": "demo-content-reviewer",
+      "enabled": true,
+      "email": "demo-content-reviewer@example.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sih_dev_local_only",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "content_reviewer"
+      ],
+      "requiredActions": [],
+      "firstName": "Demo",
+      "lastName": "Content Reviewer"
+    },
+    {
+      "username": "demo-department-admin",
+      "enabled": true,
+      "email": "demo-department-admin@example.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sih_dev_local_only",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "department_admin"
+      ],
+      "requiredActions": [],
+      "firstName": "Demo",
+      "lastName": "Department Admin"
+    },
+    {
+      "username": "demo-organization-admin",
+      "enabled": true,
+      "email": "demo-organization-admin@example.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sih_dev_local_only",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "organization_admin"
+      ],
+      "requiredActions": [],
+      "firstName": "Demo",
+      "lastName": "Organization Admin"
+    },
+    {
+      "username": "demo-auditor",
+      "enabled": true,
+      "email": "demo-auditor@example.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sih_dev_local_only",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "auditor"
+      ],
+      "requiredActions": [],
+      "firstName": "Demo",
+      "lastName": "Auditor"
+    },
+    {
+      "username": "demo-no-roles",
+      "enabled": true,
+      "email": "demo-no-roles@example.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sih_dev_local_only",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [],
+      "requiredActions": [],
+      "firstName": "Demo",
+      "lastName": "No Roles"
+    }
+  ]
+}

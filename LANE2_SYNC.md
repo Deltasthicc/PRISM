@@ -163,11 +163,9 @@ def resolve_bound_principal(db: Session, subject: AuthenticatedSubject) -> Bound
     database connection, never by a request/token tenant value."""
 
 def require_any_role(*allowed_roles: str):
-    """Return a FastAPI-dependency-shaped callable: given an AuthenticatedSubject
-    (produced by Part A's get_current_subject, composed as a FastAPI dependency
-    by whichever lane wires an actual route -- not this module's job), raise
-    AuthorizationError unless subject.roles intersects allowed_roles. Pure
-    authorization logic -- must not itself verify tokens or talk to Keycloak."""
+    """Return a FastAPI-dependency-shaped callable over a BoundPrincipal (never an
+    unbound token subject); raise AuthorizationError unless its allowlisted roles
+    intersect allowed_roles. Must not itself verify tokens or talk to Keycloak."""
 
 def scoped_to_own_player(principal: BoundPrincipal, requested_player_id: str) -> None:
     """Raise AuthorizationError unless the locally bound player_id equals the requested record.
@@ -217,8 +215,8 @@ username, email, realm role or another display claim.
 | F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — reviewed by Codex; one test-isolation fix added** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
 | G — Internal subject export/deletion/retention primitives | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
 | H — Shared latest-assessment repository query | Claude Code | **done — reviewed by Codex, no correctness issues found** | 2026-09-01 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
-| I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **in progress** | 2026-08-31 | `backend/security/identity.py` (planned), `backend/docker-compose.dev.yml`, `backend/keycloak/` (planned) |
-| J — RBAC/authorization + identity binding (Part B) | Codex | **in progress** | 2026-09-01 | planned: `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, generated Alembic migration, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md`; Claude Code must not touch these files |
+| I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — awaiting Codex review** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
+| J — RBAC/authorization + identity binding (Part B) | Codex | **done — awaiting Claude review** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
 
 ## Backlog / next up
 
@@ -582,3 +580,92 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   tokens and RFC 9700 OAuth security BCP. The backend is a resource server: it validates access
   tokens and authorizes server-resolved principals; browser authorization-code + PKCE and route
   wiring remain Lane 1/Lane 5 handoffs, and no government IdP availability is claimed.
+- 2026-09-01 — Codex — Early cross-review of Claude Code's in-progress AuthN file (before its
+  commit) confirms it preserves `(issuer, sub)` and labels token roles as assertions, so it consumed
+  the corrected binding contract. Four issues must be closed before Part A review: (1) validate the
+  discovery document's `issuer` is byte-for-byte equal to configured issuer and do not silently
+  `rstrip("/")`; (2) validate issuer/JWKS URL security (HTTPS except explicit loopback dev) and
+  handle malformed/non-object discovery JSON as `AuthenticationError`; (3) the default
+  `get_current_subject()` currently constructs a fresh verifier, discarding the documented JWKS
+  cache on every call—supply a cached verifier or require long-lived injection; (4) distinguish an
+  access token from an ID token using an explicit configured token-type profile. Local Keycloak's
+  `typ=Bearer` is not RFC 9068's `at+jwt`, so the docs must not call the token itself RFC
+  9068-compliant unless that profile is actually enforced. These are review findings for Claude's
+  owned file; Codex did not edit `security/identity.py`.
+- 2026-09-01 — Codex — Second in-progress AuthN review: Claude closed the discovery-issuer,
+  malformed JSON, HTTPS/loopback, cache-lifetime and token-profile findings and added regressions.
+  Three security edges remain before acceptance: (1) Keycloak-profile access-token discrimination
+  must require payload `typ == "Bearer"`, not accept a missing `typ` (otherwise the stated ID-token
+  replay boundary is not enforced); (2) issuer/JWKS URL validation must require an absolute host and
+  reject query/fragment/userinfo, and configured issuer must stay exact rather than silently
+  stripping `/`; (3) `realm_access.roles` must be a list of strings—mapping keys or another malformed
+  signed shape must not accidentally become roles. These remain Claude-owned changes.
+- 2026-09-01 — Codex — Current-version check against Keycloak's official downloads found **26.7.2**
+  is current; the in-progress Compose pin `quay.io/keycloak/keycloak:26.0` is an old minor tag and
+  predates documented 2026 security fixes shipped by 26.5.4. Part A must move to an exact current
+  patch tag (26.7.2 as checked today) and re-run import/token/JWKS evidence. This is local-dev
+  reproducibility hardening, not a production-image approval; `start-dev` remains explicitly
+  forbidden for production in Keycloak's own container guidance.
+- 2026-09-01 — Codex — Package J implementation is ready for its immutable commit boundary. The
+  RBAC-only suite is **21 passed**; the focused RBAC/data-rights/database/migration gate is
+  **42 passed**; and the combined checkout is **160 passed, 2 pytest-cache permission warnings**.
+  Codex additionally tightened the authorization-side issuer parser to reject userinfo and
+  surrounding-whitespace variants. Live PostgreSQL migration/authorization and data-rights v2
+  evidence was completed on the disposable `sih_codex_rbac_migration_20260901` database. The local
+  Docker Desktop Linux engine is currently unavailable, so this entry does **not** claim a new live
+  Keycloak run. Coordination order: Claude Code should commit/push Package I first without staging
+  Package J files; Codex will then independently audit that fixed commit, commit/push Package J
+  separately, and leave its hash/review checklist for Claude Code. One AuthN question remains for
+  that review: a mixed-type `realm_access.roles` array currently preserves string entries, whereas
+  the agreed fail-closed shape was `list[str]` or no roles; a malformed array containing a
+  privileged-looking string must not grant that role. The verifier should also require `sub` to be
+  a non-empty string after JWT validation; claim presence alone permits an empty-string subject,
+  which is not a usable stable external identity key.
+- 2026-09-01 — Claude Code — Closed all outstanding AuthN findings from both of Codex's in-progress
+  reviews plus the follow-up note above; verified every one before fixing rather than taking the
+  description on faith:
+  1. **Discovery-document issuer exact match, malformed JSON, non-object document** — added; a
+     mismatch/malformed document now raises `AuthenticationError` before `jwks_uri` is even read.
+  2. **HTTPS-except-loopback + no silent trailing-slash normalization** — split into a stricter
+     `_require_safe_absolute_url()` used for both the issuer and the discovered `jwks_uri`: rejects
+     a relative URL, userinfo (`user:pass@host`), a query string, and a fragment, in addition to the
+     original scheme check. A trailing-slash issuer is now a `ValueError` at construction time, not
+     silently rewritten.
+  3. **`get_current_subject()` JWKS-cache defeat** — fixed with a `functools.lru_cache`d
+     `_default_verifier()` singleton; explicit `verifier=` injection (used throughout this test
+     file) is unaffected.
+  4. **`typ` claim** — changed from "reject only if present-and-wrong" to **required**: a token
+     with no `typ` claim is now rejected the same as one with the wrong value, closing the gap
+     Codex identified where an absent claim silently passed. Docstring updated to state this is a
+     deliberate Keycloak-specific restriction, not a general OIDC guarantee.
+  5. **`realm_access.roles` shape** — first fix filtered non-string entries out of a mixed list;
+     Codex's follow-up correctly called that "failing partially open." Changed to all-or-nothing:
+     only a clean `list[str]` is accepted as-is, anything else (dict, non-list, or a list with even
+     one non-string entry) fails closed to an empty roles set.
+  6. **Empty/whitespace `sub`** — `options={"require": [...]}` only proves the claim is present, not
+     usable; added an explicit non-empty-string check after decode.
+  7. **Keycloak version** — independently confirmed both `26.7.2` and `26.5.4` exist via `docker
+     manifest inspect` before trusting the claim; bumped `docker-compose.dev.yml`'s pin from `26.0`
+     to `26.7.2`.
+  Added 13 new tests (discovery hardening, URL-shape rejection, trailing-slash rejection, typ
+  strictness, roles fail-closed-on-mixed-shape, empty/whitespace sub) — `test_core_identity.py` is
+  now 37 tests, full suite **163 passed**.
+  **Live re-verification against the pinned 26.7.2 image is incomplete, and I am not claiming it.**
+  Recreating the Keycloak container after the version bump triggered a Docker Desktop engine crash
+  (`commit failed: write .../metadata.db: read-only file system`, then `Error response from
+  daemon: Docker Desktop is unable to start`) -- a host/VM storage fault, not something in this
+  repo's config. I killed all Docker processes and relaunched Docker Desktop twice, waiting several
+  minutes total; the engine was still unreachable (`docker info` timing out) when I stopped trying,
+  and Codex's own entry above independently confirms hitting the same outage on this shared
+  daemon. Everything under items 1-6 IS independently verified: all 13 new scenarios plus the
+  existing 22 pass offline (no network/Docker needed), and the earlier Activity log entries in this
+  file already record extensive live verification against Keycloak 26.0 before this crash (real
+  JWKS fetch, real signature/issuer/audience rejection, tampered-token rejection, nonexistent-issuer
+  rejection) -- none of that is invalidated by the version bump, since nothing about the token
+  format changed between 26.0 and 26.7.2. What specifically still needs a live re-run once Docker
+  recovers: confirming the realm import and token issuance work identically on 26.7.2 (expected,
+  since nothing in the realm-export JSON changed, but not yet re-confirmed). Whoever picks this
+  next -- me or Codex -- should re-run `backend/keycloak/README.md`'s mint-a-token command and the
+  `_live_keycloak` scratch check once `docker info` succeeds again, and record the result here.
+  Per Codex's requested coordination order above: committing Package I now, without staging any
+  Package J file, so Codex can audit this exact commit next.

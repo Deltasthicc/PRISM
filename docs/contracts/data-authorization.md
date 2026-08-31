@@ -1,27 +1,161 @@
 # Data, subject and tenant authorization contract
 
 Owner: Lane 2 (Core Platform, Identity & Data)
+
 Consumers: Lanes 3, 4, 5, 6
+
 Change approval: Lanes 5 and 6 (`SIH26101_TEAM_ORCHESTRATION.md` section 4)
 
-Status: **NOT YET DEFINED** — this is a scaffold, not a working contract.
+Status: **v1 demo contract — storage and query semantics are defined; authentication,
+multi-tenant isolation, RBAC, retention and subject-rights APIs are not implemented.**
 
-## What this contract must define once implemented
+This contract is deliberately explicit about the present boundary. It is safe guidance for the
+local hackathon demo, not evidence of production authorization or compliance.
 
-- The identity/subject model: how a request's caller is authenticated and how that identity
-  reaches request handlers. Today there is none — see `CODEX.md` "Current verified reality"
-  (username-only, no password, no server-derived session).
-- Tenant/organization scoping: what a "tenant" means in this product and how every
-  personal/content/evidence query is filtered by it.
-- The versioned schema for `LearnerProfile`, `CompetencyAssessment` and related records,
-  including what "latest assessment" means for a learner (`docs/SIH26101_PROBLEM_STATEMENT.md`
-  PS-01).
-- Retention, export and deletion primitives consumed by Lanes 5 and 6.
-- The append-only audit-event shape for privileged reads/writes, role changes, content approval
-  and exports.
+## 1. Tenant semantics today
 
-## Change process
+A **tenant is one application deployment backed by one database**. The SQLite demo database
+(`backend/app.db`, unless `DATABASE_URL` overrides it) is one tenant. A PostgreSQL database named
+by one deployment's `DATABASE_URL` is likewise one tenant.
 
-Any lane needing a new field, semantic, or authorization rule opens a contract-change proposal
-against this file (`SIH26101_TEAM_ORCHESTRATION.md` section 8, "Cross-lane handoff") instead of
-editing Lane 2's code directly.
+There is currently:
+
+- no `tenant_id` column on `players`, learner records, content records, evidence records or audit
+  events;
+- no tenant identifier accepted in an HTTP path, query, header or body;
+- no row-level tenant filter; and
+- no supported way to place two organizations in the same database and isolate them.
+
+Therefore tenant scope is the database selected by the server, never a value supplied by the
+caller. Until server-derived tenant identity and `tenant_id` migrations exist, every deployed
+database must contain data for at most one organization. Lanes 3-5 must not describe the current
+schema as multi-tenant, add a client-selected tenant parameter, or infer an organization from
+free-text profile fields such as `department`.
+
+The future multi-tenant rule is reserved now so implementations do not diverge: an authenticated
+server-side identity will resolve an immutable tenant key, and every tenant-owned query will
+include `tenant_id = :server_tenant_id`. The key must not be taken from request data. Adding that
+key, backfilling existing rows and defining privileged cross-tenant operations requires a reviewed
+contract change and migration; it is not part of v1.
+
+## 2. Subject and authorization semantics today
+
+`players.player_id` is the learner-record key. It is **not an authenticated subject**. Current
+routes take `player_id` from the URL or form data, and the username-only demo flow does not create
+a server-derived session or token. Possession of a `player_id` therefore proves neither identity
+nor permission.
+
+Consequences for every lane:
+
+- Current `/learning/profile/{player_id}`, `/learning/assessment/{player_id}`,
+  `/learning/pathway/{player_id}` and quiz routes are local-demo interfaces only.
+- `GET /learning/admin/overview` returns aggregates but is not administrator-authorized today.
+- No route may be called production-secure merely because it filters on `player_id`.
+- New privileged or cross-learner routes must wait for OIDC/session identity, server-derived
+  subject binding and RBAC, or explicitly remain disabled outside the demo profile.
+- Half A's `AuditEvent` write path supplies an append-only record shape; it does not itself grant
+  access or make the existing routes audited.
+
+## 3. Assessment record contract
+
+`competency_assessments` is an append-only sequence of assessment snapshots. Creating an
+assessment inserts a new row; consumers must not update an older row to represent a rerun.
+
+The canonical stored and read shape is:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `assessment_id` | string UUID | Unique snapshot ID and deterministic final tie-breaker. |
+| `player_id` | string | Learner-record key; must reference `players.player_id`. |
+| `curriculum_slug` | string | Exact canonical curriculum slug assessed. |
+| `self_ratings` | JSON object `{competency_id: number}` | Submitted 0-5 ratings for this run. |
+| `measured_scores` | JSON object `{competency_id: number}` | 0-5 measurements captured when this row was created. |
+| `skill_gaps` | JSON array | Gap result captured when this row was created. |
+| `recommended_course_ids` | JSON array of strings | Course IDs captured when this row was created. |
+| `created_at` | UTC datetime | Snapshot creation time. Legacy/null values sort older than every timestamped row. |
+
+JSON fields return `{}` or `[]`, never `null`, at a consumer boundary. Unknown competency IDs are
+not silently mapped to a different curriculum. An assessment belongs to exactly one
+`(deployment tenant, player_id, curriculum_slug)` stream.
+
+`LearnerProfile` has different semantics: there is exactly one mutable row per `player_id`,
+enforced by its unique index, and `updated_at` identifies its latest edit. It is not currently a
+versioned history. Learning materials and generated quizzes are separate append-only records and
+must remain filtered by `player_id` within the deployment tenant.
+
+## 4. Exact “latest assessment” rule
+
+For one learner and one curriculum, **latest** means the single row ordered by:
+
+1. non-null `created_at` before null `created_at`;
+2. `created_at` descending; then
+3. `assessment_id` descending using the database's ordinary string ordering.
+
+The portable query contract is:
+
+```sql
+SELECT assessment_id, player_id, curriculum_slug,
+       self_ratings, measured_scores, skill_gaps,
+       recommended_course_ids, created_at
+FROM competency_assessments
+WHERE player_id = :player_id
+  AND curriculum_slug = :curriculum_slug
+ORDER BY CASE WHEN created_at IS NULL THEN 1 ELSE 0 END ASC,
+         created_at DESC,
+         assessment_id DESC
+LIMIT 1;
+```
+
+The tenant predicate is implicit in v1 because the connection selects the deployment's one
+database. After multi-tenant columns exist, `tenant_id = :server_tenant_id` is an additional
+mandatory predicate, not a replacement for either key above.
+
+For a set of learners, use the same ordering with
+`ROW_NUMBER() OVER (PARTITION BY player_id, curriculum_slug ORDER BY ...) = 1`. Do not use
+`MAX(created_at)` and join back without the `assessment_id` tie-breaker, and do not aggregate all
+historical assessment rows as though they represented distinct learners.
+
+The contracted read interface, when Lane 2 exposes it, is:
+
+```text
+GET /learning/assessment/{player_id}/latest?curriculum_slug={canonical_slug}
+```
+
+It returns the eight fields in the table above, with `created_at` as an RFC 3339 UTC string, or
+404 when that stream has no assessment. This endpoint is **not implemented yet**. Until a shared
+repository/service function is introduced, consumers needing this data must implement the query
+order exactly as specified here.
+
+The existing `GET /learning/pathway/{player_id}?curriculum_slug=...` is a derived view: it takes
+`self_ratings` from the latest snapshot but intentionally recomputes measured scores from current
+`AccuracyHistory`. It is not a verbatim read of the stored latest assessment. Its current code
+orders by `created_at` only; adding the `assessment_id` tie-breaker is tracked as follow-up work so
+all consumers converge on this contract.
+
+## 5. Aggregate rules for Lanes 4 and 5
+
+“Assessments completed” may count snapshot rows when the metric is explicitly labeled as runs.
+“Learners assessed”, “current gap”, “top current skill gaps” and similar current-state metrics
+must first select the latest row per `(player_id, curriculum_slug)`, then aggregate. A learner may
+contribute once per curriculum to a current-state curriculum breakdown. Cross-curriculum totals
+must retain the curriculum dimension or explicitly document their deduplication rule.
+
+Aggregate responses must not include learner profile text, raw self-ratings, uploaded excerpts,
+individual evidence, `player_id`, or small-cell drill-downs until Lane 5 defines and enforces the
+RBAC and disclosure policy.
+
+## 6. Retention, export and deletion reality
+
+There are no per-subject retention, export or deletion APIs today. Records persist until the
+database is manually reset or altered. Deleting the local SQLite demo database is a whole-tenant
+reset, not a subject deletion workflow. PostgreSQL backup, restore, encryption/key ownership and
+retention policy remain unverified backlog items. Lanes must not claim these controls exist based
+on this contract alone.
+
+## 7. Change process
+
+Any lane needing a new field, alternate latest-record ordering, tenant representation or
+authorization rule opens a contract-change proposal against this file
+(`SIH26101_TEAM_ORCHESTRATION.md` section 8, “Cross-lane handoff”) instead of editing Lane 2's
+models or silently inventing query semantics. The proposal must identify required migrations,
+backfill behavior, consumers, tests and rollback impact.

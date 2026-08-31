@@ -110,7 +110,7 @@ them, say so in the Activity log and wait for a response rather than deciding un
 | Half | Owner | Status | Last updated | Files touched |
 |---|---|---|---|---|
 | A — versioned records | Claude Code | **done** | 2026-08-31 | `backend/models/governance.py`, `backend/schemas/governance.py`, `backend/security/audit.py`, `backend/tests/test_core_governance.py`, `backend/main.py` (1 import line) |
-| B — Alembic/Postgres/contract | Codex | available | — | — |
+| B — Alembic/Postgres/contract | Codex | **done** | 2026-08-31 | `backend/db/database.py`, `backend/requirements.txt`, `backend/alembic.ini`, `backend/migrations/**`, `backend/tests/test_core_database.py`, `docs/contracts/data-authorization.md` |
 
 ## Backlog / next up
 
@@ -124,6 +124,18 @@ yet):
 - Retention/deletion/export primitives, encryption/key ownership and backup/restore.
 - Wire `schemas.governance` into actual `routes/` endpoints once an authorization story exists to
   gate them.
+- Generate the follow-up Alembic revision for Half A's `role_targets`, `evidence_records`,
+  `source_versions` and `audit_events` tables. The baseline intentionally excludes them; normal
+  autogenerate runs see them through `migrations/env.py`.
+- Implement one shared latest-assessment repository/service query and the contracted read endpoint,
+  then update the existing pathway lookup to use the `assessment_id` tie-breaker defined in
+  `docs/contracts/data-authorization.md`.
+- Apply `alembic upgrade head` to an actual disposable PostgreSQL instance and record forward/
+  rollback evidence. Half B verified PostgreSQL dialect selection and offline DDL compilation,
+  but this workstation had no `psql` executable or configured PostgreSQL database.
+- Decide the production startup policy for Alembic versus `Base.metadata.create_all()`. Keep the
+  current create-all/`ensure_columns()` behavior for the documented SQLite demo until that policy
+  and the governance follow-up revision are complete.
 
 Add to this list rather than starting silently on something not listed here, so the other agent
 always knows what's claimed.
@@ -144,3 +156,24 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   **58 passed** (`cd backend && ./.venv/Scripts/python.exe -m pytest -q`). Verified
   `import main` still succeeds and registers all 16 expected tables including the 4 new ones.
   Created this sync file. Half B is open for Codex.
+- 2026-08-31 — Codex — Implemented Half B. Added additive PostgreSQL handling that preserves the
+  environment-provided `DATABASE_URL`, maps conventional `postgresql://` and legacy `postgres://`
+  URLs to SQLAlchemy's `postgresql+psycopg` dialect, enables PostgreSQL connection pre-ping, and
+  leaves the SQLite WAL pragmas and `ensure_columns()` path intact. Chose
+  `psycopg[binary]==3.2.3` (psycopg 3 is the current driver generation; the binary extra gives
+  reproducible local/CI installs without a system `libpq`) and `alembic==1.14.0`. Created the
+  scaffold with the real `alembic init migrations` command and generated revision
+  `65bc8695fadc` with the real `alembic -x baseline=true revision --autogenerate` command. The
+  one-time baseline filter excludes only Half A's four expected follow-up tables; normal future
+  autogenerate runs include all models. On a fresh temporary SQLite database, upgrade produced 12
+  application tables plus `alembic_version`, `alembic -x baseline=true check` reported no new
+  operations, and downgrade returned to only `alembic_version`. A separate empty-SQLite startup
+  test seeded the demo, registered all 16 current application tables and returned HTTP 200 from
+  `/health`. No live PostgreSQL service was available (`psql` absent; configured URL is SQLite),
+  so no live PostgreSQL migration is claimed; psycopg dialect/driver selection succeeded and the
+  full baseline compiled offline under Alembic's `PostgresqlImpl` with transactional DDL. Replaced
+  the authorization scaffold with exact deployment-tenant, subject, latest-assessment,
+  tie-breaking, aggregate and current-control semantics. Added four focused database tests. Full
+  suite immediately before commit: **62 passed, 2 pytest-cache permission warnings**
+  (`cd backend && ./.venv/Scripts/python.exe -m pytest -q`). Code commit hash is recorded by the
+  immediately following coordination-only entry because a commit cannot contain its own hash.

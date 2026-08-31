@@ -2,22 +2,40 @@
 Database configuration and session management.
 """
 import os
+
 from sqlalchemy import create_engine, event, text
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
-_is_sqlite = "sqlite" in DATABASE_URL
+
+
+def normalize_database_url(database_url: str) -> str:
+    """Select psycopg 3 for conventional and legacy PostgreSQL URLs."""
+    if database_url.startswith("postgresql://"):
+        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    if database_url.startswith("postgres://"):
+        return database_url.replace("postgres://", "postgresql+psycopg://", 1)
+    return database_url
+
+
+SQLALCHEMY_DATABASE_URL = normalize_database_url(DATABASE_URL)
+_database_backend = make_url(SQLALCHEMY_DATABASE_URL).get_backend_name()
+_is_sqlite = _database_backend == "sqlite"
+_is_postgresql = _database_backend == "postgresql"
 
 engine = create_engine(
-    DATABASE_URL,
+    SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread": False} if _is_sqlite else {},
     echo=False,
+    pool_pre_ping=_is_postgresql,
 )
 
 if _is_sqlite:
+
     @event.listens_for(engine, "connect")
     def _set_sqlite_pragmas(dbapi_connection, connection_record):
         # WAL lets readers and the writer proceed concurrently instead of
@@ -56,7 +74,7 @@ def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
     "no such column" against pre-existing rows. Call once at startup, after
     create_all().
     """
-    if "sqlite" not in DATABASE_URL:
+    if not _is_sqlite:
         return
     with engine.connect() as conn:
         existing = {row[1] for row in conn.execute(text(f"PRAGMA table_info({table})"))}

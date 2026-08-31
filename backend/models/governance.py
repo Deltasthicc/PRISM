@@ -3,9 +3,16 @@ Versioned role-target, evidence, source-version and audit records -- Lane 2's
 "minimal versioned records" deliverable (SIH26101_TEAM_ORCHESTRATION.md
 section 5, Lane 2 immediate package; docs/contracts/data-authorization.md).
 
-These are additive, brand-new tables (same situation as models/learning.py --
-see that file's docstring): plain Base.metadata.create_all() in main.py's
-lifespan is enough, no ensure_columns() patching needed.
+These are additive, brand-new tables. On the SQLite demo profile, plain
+Base.metadata.create_all() in main.py's lifespan is still enough -- no
+ensure_columns() patching needed, same as models/learning.py. On PostgreSQL,
+main.py no longer calls create_all() at all: db/database.py's
+require_database_at_migration_head() refuses startup unless the database is
+already at the Alembic head revision, and these four tables are schema-owned
+by migrations/versions/2baf7d4bd8a2_add_governance_tables.py (which safely
+adopts a pre-existing, schema-compatible copy of them rather than colliding
+with one create_all() already made -- see that file's
+_adopt_compatible_preexisting_tables()).
 
 Why these exist as separate tables instead of extending LearnerProfile /
 CompetencyAssessment in place:

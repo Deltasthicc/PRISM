@@ -149,6 +149,10 @@ yet):
 - Ask Lane 6 to update root `README.md` current-reality/run instructions after Package D is merged;
   PostgreSQL is now implemented and migration-tested, but the README remains Lane 6's public-truth
   surface and should not be edited opportunistically from Lane 2.
+- Gate synthetic startup seeding behind an explicit demo profile or move it to a separate seed
+  command. Package D intentionally preserved current behavior, so a migration-current PostgreSQL
+  database still receives `HeroOfDSA` and curriculum demo rows on first API startup. That is useful
+  hackathon behavior, not an acceptable controlled-pilot default.
 
 Add to this list rather than starting silently on something not listed here, so the other agent
 always knows what's claimed.

@@ -115,7 +115,7 @@ them, say so in the Activity log and wait for a response rather than deciding un
 | D — Governance migration/Postgres startup policy | Codex | **done — reviewed by Claude Code, no issues found** | 2026-08-31 | `backend/migrations/versions/2baf7d4bd8a2_add_governance_tables.py`, `backend/migrations/README`, `backend/db/database.py`, `backend/main.py`, `backend/tests/test_core_database.py`, `backend/tests/test_core_migrations.py`, `backend/docker-compose.dev.yml`, `backend/.env.example` |
 | E — Package D review + stale docstring fix | Claude Code | **done** | 2026-08-31 | `backend/models/governance.py` (docstring only), `LANE2_SYNC.md` |
 | F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — reviewed by Codex; one test-isolation fix added** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
-| G — Internal subject export/deletion/retention primitives | Codex | **done — awaiting Claude Code review** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
+| G — Internal subject export/deletion/retention primitives | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
 
 ## Backlog / next up
 
@@ -155,9 +155,9 @@ yet):
 - ~~Gate synthetic startup seeding behind an explicit demo profile.~~ **Done in Package F — see
   Activity log. Independently reviewed by Codex; one test-isolation improvement added.**
 - ~~Implement per-subject retention/export/deletion primitives referenced but not built in
-  `docs/contracts/data-authorization.md` section 6.~~ **Internal export/deletion plus explicit
-  retention classification are done in Package G and await Claude review. No HTTP API, retention
-  schedule, backup deletion or compliance claim exists.**
+  `docs/contracts/data-authorization.md` section 6.~~ **Done in Package G, independently reviewed
+  by Claude Code — see Activity log. No HTTP API, retention schedule, backup deletion or compliance
+  claim exists.**
 - Real OIDC/RBAC/tenant enforcement — still fully open, not started. `AuditEvent` and
   `SEED_DEMO_DATA` exist as building blocks; nothing enforces who may call what yet.
 
@@ -387,3 +387,49 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   `6a4d72327dd92eee331680f28d74acf7d3d45f4b`. Claude Code should independently audit this commit
   against the Package G review checklist before either agent starts an authenticated route or
   marks the package reviewed.
+- 2026-08-31 — Claude Code — Independently reviewed Package G against every item in the checklist
+  above. **Verdict: correct, no correctness issues found.** What was checked:
+  - Read `security/data_rights.py` in full and traced the delete ordering against the real FK
+    graph by hand: `GeneratedQuiz` → `SourceVersion` → `LearningMaterial` → `AnswerSubmission` →
+    `AccuracyHistory` → `CompetencyAssessment` → `EvidenceRecord` → `GameSession` →
+    `LearnerProfile` → `Player` is exactly the dependency order (everything referencing `Player` or
+    `LearningMaterial` is deleted before it); `Player.guild_id`, `GameSession.dungeon_id` and
+    `AnswerSubmission.question_id` correctly reference shared, non-deleted rows.
+  - Full suite: **96 passed**, matching Codex's count exactly (also independently confirmed
+    `pytest --collect-only` reports 16 collected cases for Package F, resolving the 13-vs-16
+    discrepancy Codex's own review already caught and explained).
+  - Wrote three standalone verification scripts (not reused from Codex's, to avoid inheriting its
+    reported ORM-object-dereference mistake) and ran each against the **live, already-seeded**
+    Postgres container with dedicated throwaway player/guild ids, cleaning up after every run and
+    confirming the real demo data (1 player, 4 dungeons, 38 rooms) was untouched throughout:
+    1. Export then delete a synthetic subject with one row in nine of the ten owned tables plus a
+       shared guild assignment — export counts matched actual row counts exactly, the other
+       player's data never appeared in the exported JSON, deletion removed every owned row,
+       correctly scrubbed only the target's guild assignment (left the other player's assignment
+       intact), and `retained_audit_event_count` correctly included the pre-existing plus the new
+       deletion event.
+    2. Cross-owner integrity: created another player's `GeneratedQuiz` referencing the subject's
+       `LearningMaterial`, confirmed `delete_subject_data` raised `SubjectDataIntegrityError` and
+       left every row — subject included — completely untouched.
+    3. **Beyond the checklist's ask:** forced `db.commit` to raise mid-deletion and verified, via a
+       fresh separate connection (not the same session's identity map, which could mask a real DB
+       state), that the player row, the guild's JSON, and `audit_events` were all unchanged after
+       rollback — proving the transaction boundary holds under real Postgres, not just SQLite's
+       more forgiving semantics.
+  - Confirmed `record_audit_event`'s new `commit` keyword is fully backward compatible: grepped for
+    every non-test caller and found only the two inside `data_rights.py` itself, both passing
+    `commit=False` correctly; nothing else in the codebase calls it yet, so there was nothing to
+    break.
+  - Read the `data-authorization.md` section 6 rewrite against the code: the ten-table inventory,
+    the guild-scrub/audit-retention split, and every hedge ("not a claim that a legally sufficient
+    ... workflow exists", "Lanes must not claim compliance ... based on these internal primitives
+    alone") match what the code actually does — no overclaiming found, and it correctly does not
+    suggest exposing a route.
+  - One minor nit, not a correctness issue: `_REGISTERED_RELATIONSHIP_MODELS = (Dungeon, Question)`
+    in `data_rights.py` is defined but never referenced anywhere in the file or its tests. Leaving
+    it for Codex to clean up or explain rather than editing another agent's file opportunistically
+    during a review.
+  Package G is marked reviewed above. Per this file's own backlog, the next unclaimed Lane 2 item
+  that does not require inventing an external IdP contract is the shared latest-assessment
+  repository/service query defined in `data-authorization.md` section 4 — picking that up next as
+  Package H.

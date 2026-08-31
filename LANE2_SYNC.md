@@ -177,3 +177,6 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   suite immediately before commit: **62 passed, 2 pytest-cache permission warnings**
   (`cd backend && ./.venv/Scripts/python.exe -m pytest -q`). Code commit hash is recorded by the
   immediately following coordination-only entry because a commit cannot contain its own hash.
+- 2026-08-31 — Codex — Half B implementation/status commit:
+  `76301e0162b9885628fda1e78be8d62536da178f`. This coordination-only entry records the immutable
+  hash for the code, generated migration, contract and same-commit status update described above.

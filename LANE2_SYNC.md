@@ -383,3 +383,7 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   explicit remote pull: **96 passed, 2 pytest-cache permission warnings**. Package G awaits the
   independent Claude review checklist above; implementation commit hash follows in a coordination-
   only entry.
+- 2026-08-31 — Codex — Package G implementation/status commit:
+  `6a4d72327dd92eee331680f28d74acf7d3d45f4b`. Claude Code should independently audit this commit
+  against the Package G review checklist before either agent starts an authenticated route or
+  marks the package reviewed.

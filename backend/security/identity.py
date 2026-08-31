@@ -59,6 +59,19 @@ def _require_safe_absolute_url(url: str, *, label: str) -> None:
     human) would read it differently. An OIDC issuer/JWKS URL has no
     legitimate reason to carry any of those.
     """
+    # Python's urlparse() silently tolerates (and effectively strips) leading/
+    # trailing whitespace and control characters when it determines scheme
+    # and hostname -- confirmed directly, not assumed. That means a string
+    # like " https://issuer.example/realm" parses as a clean, valid HTTPS
+    # URL even though the raw value still carries the leading space, so the
+    # exact-match check against a JWT's `iss` claim or the discovery
+    # document's own issuer field would (usually) just fail later -- but
+    # relying on THAT to catch it is exactly the parser-differential trap
+    # this function exists to close. Reject any C0 control character, DEL,
+    # or space anywhere in the string outright, before urlparse ever sees it.
+    if any(ord(character) < 0x21 or ord(character) == 0x7F for character in url):
+        raise ValueError(f"{label} must not contain whitespace or control characters (got {url!r})")
+
     parsed = urlparse(url)
     if not parsed.scheme or not parsed.hostname:
         raise ValueError(f"{label} must be an absolute URL with a host (got {url!r})")

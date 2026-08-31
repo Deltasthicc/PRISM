@@ -291,6 +291,26 @@ def test_oidc_verifier_rejects_trailing_slash_issuer_instead_of_silently_strippi
         OIDCVerifier(issuer="https://issuer.example.com/realm/", audience=AUDIENCE)
 
 
+def test_oidc_verifier_rejects_leading_whitespace_issuer_even_though_urlparse_tolerates_it():
+    # urlparse(" https://issuer.example/realm") parses to a clean https URL
+    # with the right hostname -- confirmed directly against this Python
+    # version -- so relying on urlparse alone to catch this would silently
+    # accept a value carrying a leading space that a different HTTP client
+    # or the exact-match check against a real `iss` claim might handle
+    # differently. Found by Codex's review of Package I; verified before
+    # fixing.
+    with pytest.raises(ValueError, match="whitespace or control characters"):
+        OIDCVerifier(issuer=" https://issuer.example.com/realm", audience=AUDIENCE)
+
+
+@pytest.mark.parametrize("control_character", ["\n", "\t", "\r", "\x00", "\x7f"])
+def test_oidc_verifier_rejects_embedded_control_characters_in_issuer(control_character):
+    with pytest.raises(ValueError, match="whitespace or control characters"):
+        OIDCVerifier(
+            issuer=f"https://issuer.example.com/re{control_character}alm", audience=AUDIENCE
+        )
+
+
 @pytest.mark.parametrize(
     "bad_issuer",
     [

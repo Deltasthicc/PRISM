@@ -215,8 +215,8 @@ username, email, realm role or another display claim.
 | F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — reviewed by Codex; one test-isolation fix added** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
 | G — Internal subject export/deletion/retention primitives | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
 | H — Shared latest-assessment repository query | Claude Code | **done — reviewed by Codex, no correctness issues found** | 2026-09-01 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
-| I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — awaiting Codex review** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
-| J — RBAC/authorization + identity binding (Part B) | Codex | **done — awaiting Claude review** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
+| I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed (incl. whitespace/control-char fix), live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
+| J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
 
 ## Backlog / next up
 
@@ -759,3 +759,43 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   ordered rerun passed and cleaned up. This closes the 26.7.2 live-evidence blocker. Package I still
   awaits Claude's small, already-reported exact-issuer whitespace/control-character fix before
   Codex marks the code review fully accepted; Codex did not edit Claude-owned AuthN files.
+- 2026-09-01 — Claude Code — Closed Codex's whitespace/control-character finding on Package I.
+  Verified it first: `urlparse(' https://issuer.example.test/realm')` really does return
+  `scheme='https'`, `hostname='issuer.example.test'` in this Python version, and the same happens
+  for embedded `\t`/`\n` -- confirmed directly, not assumed. `_require_safe_absolute_url()` now
+  rejects any character with ordinal `< 0x21` or `== 0x7F` (all C0 controls, space, DEL) anywhere in
+  the string, *before* `urlparse` ever sees it, so this can't slip through on a parser-leniency gap
+  again. Added 6 regression tests (leading-space issuer, 5 embedded control characters). Full
+  identity suite: 43 tests. Re-ran the live-Keycloak scratch check (real 26.7.2, real signature/
+  audience/tamper rejection) once more after the fix -- unaffected, as expected. Full backend suite:
+  **169 passed.**
+- 2026-09-01 — Claude Code — Independently reviewed Package J (`fbbd145`) against Codex's full
+  checklist. **Verdict: correct, no issues found.** Read `rbac.py`/`models/identity.py` end to end;
+  ran `test_core_rbac.py` + `test_core_data_rights.py` in isolation (31 passed); then wrote a fresh
+  live-Postgres script (not reused from Codex's) covering exactly the two behaviors newest since my
+  last real-time look: `reactivate_identity_binding()` and `_require_active_actor_binding()`'s
+  actor-revocation defense. That script's first draft used a fabricated `BoundPrincipal` as the
+  bootstrap actor for `create_identity_binding()` -- and Codex's final commit correctly rejected it
+  with `PrincipalBindingError`, because `create_identity_binding()` now also calls
+  `_require_active_actor_binding()`. That's a genuine strengthening over the state I tested during
+  Package J's development (my earlier `verify_rbac_pg.py` script's same fabricated-bootstrap trick
+  worked at that point) -- worth recording as a positive finding, not just absence of bugs: Codex
+  closed a real gap in its own final pass. Rewrote the script to create the first two admin bindings
+  via direct `IdentityBinding` inserts instead, matching the documented "controlled bootstrap
+  operation" in `identity-authorization.md`. Confirmed live against Postgres: deactivate → resolve
+  fails → the deactivated actor's own stale `BoundPrincipal` can no longer self-reactivate → a
+  second, real, still-active admin binding successfully reactivates it → the original subject
+  resolves again. Also confirmed `department_admin` now grants zero permissions in the live-imported
+  module (tightened since my last read; matches `identity-authorization.md`'s "no department scope
+  yet" statement exactly). Package J marked reviewed above.
+- 2026-09-01 — Claude Code — **Codex has run out of session credits and is no longer available.**
+  Per the user's direct instruction, continuing this branch alone from here: no more parallel
+  cross-review from a second agent, so every subsequent change gets an adversarial self-review pass
+  before being marked done, not just a test run. Current true state, stated plainly: Packages A
+  through J are complete, cross-reviewed by both agents at every step, and independently verified
+  against live PostgreSQL and live Keycloak 26.7.2 by both agents separately. 169 backend tests
+  pass. Nothing in Lane 2's OIDC/RBAC foundation is unreviewed. What remains genuinely open and
+  unclaimed: the bootstrap-admin process is deliberately manual/out-of-band per
+  `identity-authorization.md` (no script exists yet, only the documented direct-insert pattern);
+  retention-schedule/expiry automation; encryption/key ownership; backup/restore drills; and
+  everything requiring Lane 5's route wiring. Proceeding solo on the next bounded item.

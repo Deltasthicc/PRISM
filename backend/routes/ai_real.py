@@ -1,15 +1,25 @@
 """
-Real AI endpoints — powered by Gemini for question generation and answer judging.
+Real AI endpoints — powered by Gemini for question generation and answer judging,
+plus Lane 4 RAG retrieval, Learner Assistant, quiz review, and evaluation benchmarks.
 """
-import os
-import uuid
+import asyncio
 import json
+import os
 import random
 import re
-import asyncio
-from fastapi import APIRouter
-from dotenv import load_dotenv
+import uuid
+from typing import Any
+
 import google.generativeai as genai
+from dotenv import load_dotenv
+from fastapi import APIRouter, HTTPException
+
+from ai.assistant import default_assistant
+from ai.evaluation import run_gold_set_evaluation
+from ai.ingestion import ingest_document
+from ai.provenance import AccessContext, ItemReviewState, QuizQuestionItem, SourceLocator
+from ai.quiz_engine import QuizReviewWorkflow
+from ai.retrieval import create_citations_from_retrieved_chunks, default_chunk_store
 
 load_dotenv()
 
@@ -206,7 +216,6 @@ Respond in JSON only:
 @router.post("/difficulty/next")
 async def next_difficulty(body: dict):
     """Determine next difficulty using RL epsilon-greedy bandit."""
-    import random
     accuracy_history = body.get("accuracy_history", {})
     topic = body.get("topic", "")
 
@@ -246,8 +255,8 @@ async def dashboard(player_id: str):
     """Return ML dashboard data for a player."""
     from db.database import SessionLocal
     from models.accuracy_history import AccuracyHistory
-    from models.submission import AnswerSubmission
     from models.question import Question
+    from models.submission import AnswerSubmission
     from services.knowledge_graph import TOPIC_GRAPH
 
     db = SessionLocal()
@@ -302,3 +311,160 @@ async def dashboard(player_id: str):
         }
     finally:
         db.close()
+
+
+# ─── Lane 4 New RAG, Assistant, Review, and Evaluation Endpoints ─────────────
+
+@router.post("/assistant/query")
+async def assistant_query(body: dict):
+    """Answer a learner query using access-filtered, cited retrieval."""
+    query = body.get("query", "")
+    if not query:
+        raise HTTPException(status_code=422, detail="Query string is required.")
+
+    tenant_id = body.get("tenant_id", "default")
+    user_id = body.get("user_id", "anonymous")
+    roles = tuple(body.get("roles", ["learner"]))
+    source_id = body.get("source_id")
+    top_k = int(body.get("top_k", 3))
+
+    ctx = AccessContext(tenant_id=tenant_id, user_id=user_id, roles=roles)
+    resp = await default_assistant.answer_query(
+        query=query,
+        access_context=ctx,
+        source_id=source_id,
+        top_k=top_k,
+    )
+    return resp.to_dict()
+
+
+@router.post("/retrieval/search")
+async def retrieval_search(body: dict):
+    """Execute access-filtered chunk retrieval with relevance scoring."""
+    query = body.get("query", "")
+    if not query:
+        raise HTTPException(status_code=422, detail="Query string is required.")
+
+    tenant_id = body.get("tenant_id", "default")
+    user_id = body.get("user_id", "anonymous")
+    roles = tuple(body.get("roles", ["learner"]))
+    source_id = body.get("source_id")
+    top_k = int(body.get("top_k", 3))
+    threshold = float(body.get("threshold", 0.20))
+
+    ctx = AccessContext(tenant_id=tenant_id, user_id=user_id, roles=roles)
+    retrieved_chunks, is_insufficient = default_chunk_store.search(
+        query=query,
+        access_context=ctx,
+        source_id=source_id,
+        top_k=top_k,
+        threshold=threshold,
+    )
+    citations = create_citations_from_retrieved_chunks(retrieved_chunks)
+
+    return {
+        "query": query,
+        "retrieved_count": len(retrieved_chunks),
+        "is_insufficient_evidence": is_insufficient,
+        "results": [rc.to_dict() for rc in retrieved_chunks],
+        "citations": [c.to_dict() for c in citations],
+    }
+
+
+@router.post("/retrieval/index")
+async def retrieval_index(body: dict):
+    """Ingest and index a document payload into the in-memory retrieval store."""
+    filename = body.get("filename", "document.txt")
+    raw_text = body.get("text", "")
+    if not raw_text:
+        raise HTTPException(status_code=422, detail="Document text is required.")
+
+    source_id = body.get("source_id")
+    tenant_id = body.get("tenant_id", "default")
+    allowed_roles = body.get("allowed_roles", ["learner", "trainer", "admin"])
+
+    source_ver, chunks, _ = ingest_document(
+        filename=filename,
+        content=raw_text.encode("utf-8"),
+        source_id=source_id,
+        tenant_id=tenant_id,
+        allowed_roles=allowed_roles,
+    )
+    added_count = default_chunk_store.add_chunks(chunks)
+
+    return {
+        "source_id": source_ver.source_id,
+        "source_version": source_ver.version,
+        "sha256": source_ver.sha256,
+        "filename": source_ver.filename,
+        "chunks_indexed": added_count,
+        "character_count": source_ver.character_count,
+    }
+
+
+@router.post("/quiz/review")
+async def quiz_review_item(body: dict):
+    """Transition an assessment item through the review lifecycle state machine."""
+    item_dict = body.get("item")
+    if not item_dict:
+        raise HTTPException(status_code=422, detail="Item payload is required.")
+
+    target_state_str = body.get("target_state")
+    try:
+        target_state = ItemReviewState(target_state_str)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=422,
+            detail=f"Invalid target review state: '{target_state_str}'. Must be one of: {[s.value for s in ItemReviewState]}",
+        )
+
+    reviewer_id = body.get("reviewer_id")
+    notes = body.get("notes")
+
+    # Reconstruct item object
+    locators = [
+        SourceLocator(
+            locator_type=loc.get("locator_type", "section"),
+            index=loc.get("index", 1),
+            label=loc.get("label", "General"),
+            start_char=loc.get("start_char", 0),
+            end_char=loc.get("end_char", 0),
+        )
+        for loc in item_dict.get("source_locators", [])
+    ]
+
+    item = QuizQuestionItem(
+        question_id=item_dict.get("question_id", str(uuid.uuid4())),
+        source_id=item_dict.get("source_id", "unknown"),
+        source_version=item_dict.get("source_version", 1),
+        chunk_ids=item_dict.get("chunk_ids", []),
+        source_locators=locators,
+        question=item_dict.get("question", ""),
+        options=item_dict.get("options", []),
+        answer_index=item_dict.get("answer_index", 0),
+        explanation=item_dict.get("explanation", ""),
+        source_excerpt=item_dict.get("source_excerpt", ""),
+        competency=item_dict.get("competency", "Source comprehension"),
+        bloom_level=item_dict.get("bloom_level", "understand"),
+        review_state=ItemReviewState(item_dict.get("review_state", "draft")),
+        validation_notes=item_dict.get("validation_notes", []),
+    )
+
+    try:
+        updated_item = QuizReviewWorkflow.transition_state(
+            item=item,
+            target_state=target_state,
+            reviewer_id=reviewer_id,
+            notes=notes,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    return {"item": updated_item.to_dict()}
+
+
+@router.get("/evaluation/report")
+async def evaluation_report():
+    """Run deterministic gold-set benchmark evaluation and return report."""
+    report = await run_gold_set_evaluation()
+    return report.to_dict()

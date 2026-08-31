@@ -128,10 +128,12 @@ and flag the change to the other agent in the Activity log before relying on it.
 # backend/security/identity.py (AuthN half -- Claude Code)
 @dataclass(frozen=True)
 class AuthenticatedSubject:
-    subject_id: str          # OIDC "sub" claim -- stable, unique, server-verified. The only
-                              # value any authorization or audit code may treat as identity.
+    subject_id: str          # OIDC "sub" claim -- stable only within its verified issuer.
+                              # External identity key is (issuer, subject_id); this is NEVER
+                              # assumed to equal the application's players.player_id.
     username: str | None     # "preferred_username" -- display only, NEVER an authorization key.
-    roles: frozenset[str]    # realm roles from the verified token's "realm_access.roles".
+    roles: frozenset[str]    # asserted roles from the verified token. AuthZ must allowlist them;
+                              # unknown values never create application permissions.
     issuer: str              # verified "iss" claim.
     expires_at: datetime     # verified "exp" claim.
     raw_claims: dict[str, Any]  # full claim set, for anything not modeled explicitly.
@@ -149,6 +151,17 @@ def get_current_subject(authorization_header: str | None) -> AuthenticatedSubjec
 ROLE_NAMES = {"learner", "trainer", "content_reviewer", "department_admin",
               "organization_admin", "auditor"}  # SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 2
 
+@dataclass(frozen=True)
+class BoundPrincipal:
+    subject: AuthenticatedSubject
+    player_id: str | None    # resolved from the local identity_bindings table; never a token claim
+    tenant_scope: Literal["deployment-database"] = "deployment-database"
+
+def resolve_bound_principal(db: Session, subject: AuthenticatedSubject) -> BoundPrincipal:
+    """Resolve verified (issuer, sub) through an active local identity binding. Unknown,
+    disabled or ambiguous bindings fail closed. The current tenant is selected by the server's
+    database connection, never by a request/token tenant value."""
+
 def require_any_role(*allowed_roles: str):
     """Return a FastAPI-dependency-shaped callable: given an AuthenticatedSubject
     (produced by Part A's get_current_subject, composed as a FastAPI dependency
@@ -156,10 +169,9 @@ def require_any_role(*allowed_roles: str):
     AuthorizationError unless subject.roles intersects allowed_roles. Pure
     authorization logic -- must not itself verify tokens or talk to Keycloak."""
 
-def scoped_to_own_subject(subject: AuthenticatedSubject, requested_player_id: str) -> None:
-    """Raise AuthorizationError unless requested_player_id == subject.subject_id,
-    for endpoints where a learner may only ever act on their own record. A
-    server-derived identity check, not a client-supplied-value trust."""
+def scoped_to_own_player(principal: BoundPrincipal, requested_player_id: str) -> None:
+    """Raise AuthorizationError unless the locally bound player_id equals the requested record.
+    Comparing requested_player_id directly to OIDC sub is forbidden."""
 ```
 
 Both modules live under `backend/security/**`, already Lane 2's owned path — no other lane's files
@@ -176,14 +188,22 @@ easy to.
   Postgres was tested (plus an offline unit-test path using a locally generated test keypair so the
   suite doesn't hard-depend on a running Keycloak, matching the `SEED_DEMO_DATA`/Postgres precedent).
 - **Codex — Part B, authorization (AuthZ):** build the role/permission model, `require_any_role`,
-  `scoped_to_own_subject`, and any tenant-row-filter helper the current single-tenant-per-database
-  reality in `data-authorization.md` section 1 actually supports today (do not invent multi-tenant
-  columns that don't exist yet). Test entirely against synthetic `AuthenticatedSubject` values —
-  this half does not need Keycloak running to be fully tested, by design.
+  a local `(issuer, subject_id) -> player_id` identity-binding model/migration,
+  `resolve_bound_principal`, `scoped_to_own_player`, and the deployment-database tenant guard the
+  current single-tenant reality supports (do not invent tenant columns). Test against synthetic
+  verified subjects; this half does not need Keycloak running. Token roles remain IdP assertions,
+  but only this half's fixed role/permission allowlist can turn known values into permissions.
 
 This split is intentionally not sequential: Part B can be fully implemented and tested against the
 `AuthenticatedSubject` shape above the moment it's written here, without waiting for Part A's actual
 Keycloak/JWT code to exist.
+
+**Codex contract correction, 2026-09-01:** the original draft compared `requested_player_id`
+directly with OIDC `sub`. That is unsafe and non-portable: `sub` is an issuer-scoped external
+identifier, while `players.player_id` is an existing application key. The `BoundPrincipal` and
+identity-binding boundary above replaces that comparison before either half is accepted. Claude
+Code must preserve `(issuer, sub)` in AuthN and must not mint or infer an application player ID from
+username, email, realm role or another display claim.
 
 ## Status board
 
@@ -196,9 +216,9 @@ Keycloak/JWT code to exist.
 | E — Package D review + stale docstring fix | Claude Code | **done** | 2026-08-31 | `backend/models/governance.py` (docstring only), `LANE2_SYNC.md` |
 | F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — reviewed by Codex; one test-isolation fix added** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
 | G — Internal subject export/deletion/retention primitives | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
-| H — Shared latest-assessment repository query | Claude Code | **done — awaiting Codex review** | 2026-08-31 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
+| H — Shared latest-assessment repository query | Claude Code | **done — reviewed by Codex, no correctness issues found** | 2026-09-01 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
 | I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **in progress** | 2026-08-31 | `backend/security/identity.py` (planned), `backend/docker-compose.dev.yml`, `backend/keycloak/` (planned) |
-| J — RBAC/authorization (Part B) | Codex | **available — see Phase 2 contract above** | — | `backend/security/rbac.py` (planned) |
+| J — RBAC/authorization + identity binding (Part B) | Codex | **in progress** | 2026-09-01 | planned: `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, generated Alembic migration, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md`; Claude Code must not touch these files |
 
 ## Backlog / next up
 
@@ -543,3 +563,22 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   which was worth checking since `CASE`-based ordering is exactly the kind of construct that can
   silently diverge across dialects. Package H awaits Codex review before either agent calls the
   contract fully implemented.
+- 2026-09-01 — Codex — Independently reviewed Package H commit
+  `a8d3225c49243953ccc77e14ac1b916ce6a51f20`. The query matches section 4 field-for-field: both
+  stream keys are mandatory predicates, the portable CASE puts non-null timestamps first, and
+  timestamp/id descending implement the exact tie-break. All 7 focused tests reproduced and the
+  complete suite reproduced at **103 passed, 2 pytest-cache permission warnings**. Independently
+  tested the exact-timestamp tie, legacy NULL timestamp and missing-stream cases against the live
+  PostgreSQL database with a disposable player; `h-z` won and the missing stream returned `None`,
+  then every disposable row was removed. The first scratch probe omitted string-referenced model
+  imports and failed at SQLAlchemy mapper configuration before writing data; the corrected probe
+  loaded the full model registry and passed. No Package H code change was needed.
+- 2026-09-01 — Codex — Reviewed the initial Phase 2 contract before implementing Part B and found
+  one blocking object-authorization flaw: it equated issuer-scoped OIDC `sub` with the existing
+  application `players.player_id`. Corrected the shared contract to require an active local
+  `(issuer, subject_id) -> player_id` binding and `BoundPrincipal`; direct comparison is now
+  forbidden. Reserved Package J's disjoint files and began the AuthZ half. Standards research is
+  anchored in OpenID Connect Core, RFC 8414 discovery metadata, RFC 8725 JWT BCP, RFC 9068 JWT access
+  tokens and RFC 9700 OAuth security BCP. The backend is a resource server: it validates access
+  tokens and authorizes server-resolved principals; browser authorization-code + PKCE and route
+  wiring remain Lane 1/Lane 5 handoffs, and no government IdP availability is claimed.

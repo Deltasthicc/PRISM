@@ -3,10 +3,10 @@
 # that (still an empty scaffold as of this file).
 #
 # Usage:
-#   docker compose -f docker-compose.dev.yml up -d
-#   export DATABASE_URL=postgresql://sih_app:sih_dev_local_only@localhost:55432/sih_learning_tool
-#   ./.venv/Scripts/python.exe -m alembic upgrade head
-#   ./.venv/Scripts/python.exe -m uvicorn main:app --reload --port 8000
+#   docker compose -f docker-compose.dev.yml up -d --wait
+#   $env:DATABASE_URL='postgresql://sih_app:sih_dev_local_only@localhost:55432/sih_learning_tool'
+#   & ./.venv/Scripts/python.exe -m alembic upgrade head
+#   & ./.venv/Scripts/python.exe -m uvicorn main:app --reload --port 8000
 #
 # Credentials here are for local dev only -- never reused for anything real
 # (CODEX.md "Never commit a real API key or secret").
@@ -22,6 +22,12 @@ services:
       - "55432:5432"
     volumes:
       - sih_learning_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
 volumes:
   sih_learning_postgres_data:

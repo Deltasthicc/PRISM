@@ -9,7 +9,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from db.database import engine, Base, ensure_columns
+from db.database import (
+    Base,
+    engine,
+    ensure_columns,
+    is_sqlite_database,
+    require_database_at_migration_head,
+)
 
 # Import all models so tables are registered with Base.metadata
 from models.player import Player
@@ -25,12 +31,20 @@ from models.governance import RoleTarget, EvidenceRecord, SourceVersion, AuditEv
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Create all tables on startup, seed demo data."""
-    Base.metadata.create_all(bind=engine)
-    print("Database tables created.")
+    """Prepare the configured schema and seed synthetic demo data."""
+    if is_sqlite_database():
+        Base.metadata.create_all(bind=engine)
+        print("SQLite database tables created or verified.")
+    else:
+        # PostgreSQL is migration-managed: silently creating model tables here
+        # would hide a missed deploy step and leave alembic_version lying about
+        # the real schema. Fail with an actionable message instead.
+        require_database_at_migration_head()
+        print("Database migration revision verified.")
 
-    # Phase 2/3 columns added to an existing players table after the demo DB
-    # was first created -- create_all() above never alters existing tables.
+    # SQLite compatibility columns added after an existing demo DB was first
+    # created -- create_all() never alters existing tables. This helper is a
+    # deliberate no-op on migration-managed PostgreSQL.
     ensure_columns("players", [
         ("hero_id", "TEXT"),
         ("pending_xp_multiplier", "REAL DEFAULT 1.0"),

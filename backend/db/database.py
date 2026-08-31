@@ -2,9 +2,13 @@
 Database configuration and session management.
 """
 import os
+from pathlib import Path
 
+from alembic.config import Config
+from alembic.runtime.migration import MigrationContext
+from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, event, text
-from sqlalchemy.engine import make_url
+from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
@@ -52,6 +56,42 @@ if _is_sqlite:
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+_BACKEND_DIRECTORY = Path(__file__).resolve().parents[1]
+
+
+def is_sqlite_database() -> bool:
+    """Return whether the configured application database is SQLite."""
+    return _is_sqlite
+
+
+def migration_head_revision() -> str:
+    """Return the repository's single Alembic head revision."""
+    config = Config(str(_BACKEND_DIRECTORY / "alembic.ini"))
+    config.set_main_option("script_location", str(_BACKEND_DIRECTORY / "migrations"))
+    heads = ScriptDirectory.from_config(config).get_heads()
+    if len(heads) != 1:
+        raise RuntimeError(f"Expected one Alembic head, found {len(heads)}: {heads}")
+    return heads[0]
+
+
+def database_revision(bind: Engine = engine) -> str | None:
+    """Read the database's current Alembic revision, or None if unversioned."""
+    with bind.connect() as connection:
+        return MigrationContext.configure(connection).get_current_revision()
+
+
+def require_database_at_migration_head(bind: Engine = engine) -> None:
+    """Refuse startup when a migration-managed database is not current."""
+    expected = migration_head_revision()
+    current = database_revision(bind)
+    if current != expected:
+        current_label = current or "unversioned"
+        raise RuntimeError(
+            "Database schema is not at the required Alembic revision "
+            f"(current={current_label}, required={expected}). "
+            "Run `python -m alembic upgrade head` before starting the API."
+        )
 
 
 def get_db():

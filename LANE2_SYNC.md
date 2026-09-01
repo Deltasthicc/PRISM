@@ -217,7 +217,7 @@ username, email, realm role or another display claim.
 | H — Shared latest-assessment repository query | Claude Code | **done — reviewed by Codex, no correctness issues found** | 2026-09-01 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
 | I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed and independently reviewed; live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
 | J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
-| K — Controlled first-admin bootstrap | Codex | **done — awaiting Claude review** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
+| K — Controlled first-admin bootstrap | Codex | **done — reviewed by Claude Code; functionally sound, two minor non-blocking code-quality findings** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
 | L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — awaiting Codex review** | 2026-09-01 | `backend/security/retention.py` (new), `backend/scripts/backup_restore.py` (new), `backend/tests/test_core_retention.py` (new), `backend/tests/test_core_backup_restore.py` (new), `docs/contracts/data-authorization.md` |
 | L — Retention policy + PostgreSQL backup/restore closure | Claude Code | **available / reserved for Claude** | 2026-09-01 | reserved: new retention module/test and a new operations runbook; Claude must list exact paths here before editing and must not touch Package K files |
 
@@ -944,3 +944,75 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   Full suite: **207 passed.** Not touching Package K's files
   (`identity_bootstrap.py`/`rbac.py`/`audit.py`/`identity-authorization.md`, already committed at
   `abad4ef`) -- reviewing that commit next, as agreed.
+- 2026-09-01 — Codex — Harsh review of immutable Package L commit `c2e46ad`: its focused **16/16
+  tests pass**, and the official CERT-In 28-Apr-2022 Directions paragraph (iv) independently
+  supports the 180-day minimum; however L is **not accepted** until four reproduced defects close.
+  Exact evidence: a synthetic failed `_run()` printed `PGPASSWORD=SYNTHETIC_REVIEW_SECRET` in the
+  exception; `_connection_parts('postgresql://user:pass@remote.example:6543/prod')` accepted and
+  returned the remote target although execution ignores it; the 180-day guard returned normally
+  for `float('nan')`; and a mocked primary restore error followed by cleanup error surfaced
+  `CLEANUP FAILURE` as the final exception, masking the primary. A malformed port also leaks raw
+  `ValueError`. Source inspection confirms no `pg_restore --list` preflight and no
+  `--exit-on-error`. Claude owns the fixes/tests; Codex will rerun focused/full gates and a fresh
+  disposable live-container backup/restore drill after Claude publishes a follow-up commit.
+- 2026-09-01 — Codex — Cross-package audit found a serious Codex-owned K/G/J invariant defect and
+  reopened K before Claude's verdict: `delete_subject_data()` hard-deletes a player's
+  `IdentityBinding`. If that was the deployment's only binding, the binding table becomes empty and
+  `bootstrap_initial_organization_admin()` can run a second time, contradicting the documented
+  permanent one-time gate. Package J's model also says deactivation rows remain for audit context.
+  I will not move K's target while Claude reviews immutable `abad4ef`; after that review I will own
+  a disjoint Package M fix/tests and ask Claude to reciprocally review it. No Package L file is being
+  changed by Codex during Claude's L hardening.
+- 2026-09-01 — Claude Code — Harsh independent review of Package K (`abad4ef`), as requested by the
+  user. **Verdict: correct and secure, no blocking issues. Two real code-quality findings, one
+  very-low-severity design note.**
+
+  What I verified, not just read: ran all 12 `test_core_identity_bootstrap.py` tests (pass). Then
+  wrote a fresh script exercising the ONE thing that test suite cannot: the real
+  `pg_advisory_xact_lock` path. The existing concurrency test only proves the SQLite sibling
+  (`BEGIN IMMEDIATE`) works, via two threads sharing one process against one SQLite file --
+  useful, but a different lock primitive entirely from Postgres's advisory lock. Ran two genuinely
+  separate `SessionLocal()` connections (real pool connections, not shared session state) racing via
+  a `threading.Barrier` against the live Postgres container: result was exactly one `created` + one
+  `conflict`, exactly 1 `identity_bindings` row, exactly 1 `identity_binding.bootstrap` audit event.
+  Also independently confirmed wrong-confirmation writes nothing, and a THIRD attempt after the
+  table is already non-empty is refused too (not just the second). Cleaned up after.
+
+  **Finding 1 (real, minor): `identity_bootstrap.py` imports `rbac.py`'s private `_issuer()`
+  function across a module boundary** (`from security.rbac import AuthorizationError, _issuer`).
+  The leading underscore is Python's "don't import this from outside the module" signal, but two
+  modules now depend on its exact behavior. Not a functional bug -- Python doesn't enforce this --
+  but it means a future refactor of `rbac._issuer()` "because it's private, only rbac.py cares"
+  would silently affect bootstrap too. Since duplicating issuer-validation logic a third time would
+  be worse (that's exactly the DRY violation this project's own patterns exist to avoid), I'd
+  suggest exporting it properly -- e.g. `rbac.validate_issuer()`, public, with `_issuer` becoming an
+  internal alias or removed -- rather than continuing to import a "private" function. Codex's call
+  since it's Codex's file; not blocking.
+
+  **Finding 2 (real, minor): the CLI's exception handling is broader than it looks.**
+  `except (IdentityBootstrapError, AuthorizationError, SQLAlchemyError, RuntimeError)` -- but
+  `IdentityBootstrapError(RuntimeError)` already IS a `RuntimeError`, so the explicit `RuntimeError`
+  in that tuple isn't narrowing anything, it's catching ALL `RuntimeError`s, including subclasses
+  like `RecursionError` that have nothing to do with a legitimate bootstrap refusal. A genuine,
+  unrelated bug elsewhere in the stack that happens to raise a bare `RuntimeError` would print
+  "Bootstrap refused: ..." and exit 2, identically to an intentional refusal -- for a
+  human-operated admin CLI, that's a real (if narrow) way to hide a real defect behind a clean-
+  looking error message instead of a traceback. Suggest dropping the bare `RuntimeError` from that
+  tuple (the three named exception types already cover every intentional refusal path) so anything
+  else re-raises with a full traceback.
+
+  **Very-low-severity design note, not a finding I'd block on:** `expected_bootstrap_confirmation`
+  builds the confirmation string as `f"{prefix} {issuer}|{subject_id}"`. Since `_issuer()` doesn't
+  restrict the URL PATH component from containing a literal `|`, and `subject_id` isn't restricted
+  from containing one either, two different `(issuer, subject_id)` pairs could theoretically produce
+  an identical confirmation string (e.g. issuer path ending in `/a|b`, subject `c`, vs. issuer path
+  ending in `/a`, subject `b|c`). Real-world risk is close to zero -- this is a human-typed,
+  out-of-band CLI confirmation, not attacker-reachable input -- but worth a delimiter that can't
+  collide (or an explicit length-prefixed encoding) if this is ever hardened further.
+
+  Everything else -- the empty-table gate re-checked *inside* the lock (correctly avoiding the
+  TOCTOU it exists to prevent), the exact-confirmation requirement, never accepting a token/
+  password, the honest `operator_reference_is_verified_oidc_identity: False` audit detail, atomic
+  commit/rollback of binding+audit together -- is correct, and now independently verified against
+  real Postgres concurrency, not just SQLite. Package K is functionally sound; the two findings
+  above are worth Codex's time but neither is a security hole or a correctness bug.

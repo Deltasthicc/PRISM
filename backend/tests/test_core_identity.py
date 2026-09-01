@@ -103,6 +103,26 @@ def test_verify_rejects_expired_token(keypair, verifier):
         verifier.verify(token)
 
 
+@pytest.mark.parametrize(
+    "bad_exp",
+    [
+        "1788269436",  # a numeric-looking string -- PyJWT's own expiry check accepts it
+        10**100,  # an absurdly large integer -- overflows datetime.fromtimestamp's platform limits
+    ],
+)
+def test_verify_never_leaks_a_raw_python_error_for_an_unusable_exp_claim(keypair, verifier, bad_exp):
+    # jwt.decode()'s options={"require": ["exp", ...]} only proves "exp" is
+    # PRESENT, not that it is a usable number. Both cases above pass PyJWT's
+    # own signature/expiry checks (a numeric string, and a huge-but-technically
+    # numeric int) and previously reached datetime.fromtimestamp(claims["exp"])
+    # unguarded, raising a raw TypeError or OverflowError instead of this
+    # module's documented AuthenticationError.
+    private_key, _ = keypair
+    token = _make_token(private_key, extra_claims={"exp": bad_exp})
+    with pytest.raises(AuthenticationError, match="exp"):
+        verifier.verify(token)
+
+
 def test_verify_rejects_wrong_issuer(keypair, verifier):
     private_key, _ = keypair
     token = _make_token(private_key, issuer="https://attacker.invalid/realm")
@@ -293,6 +313,76 @@ def test_oidc_verifier_allows_loopback_http_issuer():
 def test_oidc_verifier_rejects_trailing_slash_issuer_instead_of_silently_stripping_it():
     with pytest.raises(ValueError, match="trailing slash"):
         OIDCVerifier(issuer="https://issuer.example.com/realm/", audience=AUDIENCE)
+
+
+# ---------------------------------------------------------------------------
+# jwks_cache_seconds / discovery_timeout_seconds validation -- Package P
+# follow-up. Neither was validated at all before: a NaN jwks_cache_seconds
+# reached `int(float('nan'))` inside _get_jwks_client() during verify(),
+# which raises a bare ValueError -- not a jwt.PyJWTError, so it leaked past
+# verify()'s "callers only ever see AuthenticationError" exception boundary.
+# These tests fail fast at construction instead.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_a_boolean_duration(field):
+    with pytest.raises(ValueError, match="must be a real number of seconds"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: True})
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_a_non_numeric_duration(field):
+    with pytest.raises(ValueError, match="must be a real number of seconds"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: "300"})
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_nan_duration(field):
+    with pytest.raises(ValueError, match="must be finite"):
+        OIDCVerifier(
+            issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: float("nan")}
+        )
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_infinite_duration(field):
+    with pytest.raises(ValueError, match="must be finite"):
+        OIDCVerifier(
+            issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: float("inf")}
+        )
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_negative_or_zero_duration(field):
+    with pytest.raises(ValueError, match="must be positive"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: -1})
+    with pytest.raises(ValueError, match="must be positive"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: 0})
+
+
+def test_oidc_verifier_accepts_valid_durations():
+    OIDCVerifier(
+        issuer="https://issuer.example.com/realm",
+        audience=AUDIENCE,
+        jwks_cache_seconds=60,
+        discovery_timeout_seconds=2.5,
+    )
+
+
+@pytest.mark.parametrize("issuer", [True, 123, [], {}, None])
+def test_oidc_verifier_rejects_a_non_string_issuer(issuer):
+    # `not issuer` alone catches falsy values (None, "", [], {}) but lets a
+    # truthy non-string like True/123 through to issuer.endswith("/") a few
+    # lines later, which raised a raw AttributeError instead of ValueError.
+    with pytest.raises(ValueError, match="issuer"):
+        OIDCVerifier(issuer=issuer, audience=AUDIENCE)
+
+
+@pytest.mark.parametrize("audience", [True, 123, [], {}, None, "", "   "])
+def test_oidc_verifier_rejects_a_non_string_or_blank_audience(audience):
+    with pytest.raises(ValueError, match="audience"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=audience)
 
 
 def test_oidc_verifier_rejects_leading_whitespace_issuer_even_though_urlparse_tolerates_it():

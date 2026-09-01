@@ -4,8 +4,12 @@ Owner: Lane 2 (Core Platform, Identity & Data)
 
 Consumers: Lanes 1, 4, 5 and 6
 
-Status: **local OIDC/RBAC foundation implemented; final hardening/operational packages remain in
-cross-review. No government IdP, browser login flow or protected product route is claimed.**
+Status: **local OIDC/RBAC foundation implemented and independently reviewed by both agents
+(Packages I/J/K/M); Package P (retention/rotation hardening) is implemented and passes its
+adversarial acceptance contract, pending Codex's final immutable re-review. Key rotation is proven
+via a local mock JWKS server and the real `PyJWKClient` class this project ships -- not a live
+Keycloak key-rotation drill specifically. No government IdP, browser login flow or protected
+product route is claimed.**
 
 This contract implements the server-side boundary required by `PS-16`. It does not make the
 application production-authorized: the accountable IdP, organization/department model, route

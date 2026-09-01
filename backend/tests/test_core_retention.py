@@ -66,6 +66,72 @@ def test_policy_rejects_a_minimum_that_exceeds_the_maximum():
         )
 
 
+def test_policy_rejects_a_boolean_duration():
+    # bool is an int subclass -- True/False must not silently become a
+    # 1-day/0-day retention duration.
+    with pytest.raises(ValueError, match="non-boolean whole number"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=None, minimum_retention_source=None,
+            maximum_retention_days=True, maximum_retention_source="cite", notes="",
+        )
+    with pytest.raises(ValueError, match="non-boolean whole number"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=False, minimum_retention_source="cite",
+            maximum_retention_days=None, maximum_retention_source=None, notes="",
+        )
+
+
+def test_policy_rejects_a_fractional_duration():
+    with pytest.raises(ValueError, match="non-boolean whole number"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=None, minimum_retention_source=None,
+            maximum_retention_days=30.5, maximum_retention_source="cite", notes="",
+        )
+
+
+def test_policy_rejects_an_empty_or_whitespace_category():
+    with pytest.raises(ValueError, match="must not be empty"):
+        RetentionPolicy(
+            category="   ", minimum_retention_days=None, minimum_retention_source=None,
+            maximum_retention_days=None, maximum_retention_source=None, notes="",
+        )
+
+
+def test_policy_rejects_an_empty_or_whitespace_source():
+    with pytest.raises(ValueError, match="must not be empty"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=30, minimum_retention_source="   ",
+            maximum_retention_days=None, maximum_retention_source=None, notes="",
+        )
+    with pytest.raises(ValueError, match="must not be empty"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=None, minimum_retention_source=None,
+            maximum_retention_days=30, maximum_retention_source="", notes="",
+        )
+
+
+def test_policy_allows_empty_notes_but_not_a_non_string():
+    # notes is free text and legitimately empty for some entries -- only its
+    # type is enforced, not non-emptiness.
+    RetentionPolicy(
+        category="x", minimum_retention_days=None, minimum_retention_source=None,
+        maximum_retention_days=None, maximum_retention_source=None, notes="",
+    )
+    with pytest.raises(ValueError, match="must be a string"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=None, minimum_retention_source=None,
+            maximum_retention_days=None, maximum_retention_source=None, notes=None,
+        )
+
+
+def test_real_registry_policies_still_satisfy_the_hardened_validation():
+    # Every real entry in RETENTION_POLICIES must still construct cleanly
+    # under the new validation -- this module-level import already exercises
+    # that at collection time, but assert it explicitly too.
+    for policy in RETENTION_POLICIES.values():
+        assert isinstance(policy.category, str) and policy.category.strip()
+
+
 def test_assert_minimum_retention_satisfied_allows_old_enough_rows():
     assert_minimum_retention_satisfied(
         "retain_append_only_security_log_duration_policy_pending", row_age_days=181

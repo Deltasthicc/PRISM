@@ -44,8 +44,14 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 ## Current verified baseline
 
 - FastAPI + SQLAlchemy backend; PostgreSQL/Alembic is the migration-managed target, SQLite remains
-  a documented local zero-setup demo profile only; 267 backend tests passed in the last Lane 2
-  verification (2026-09-01) — re-run before repeating this count, it changes often.
+  a documented local zero-setup demo profile only; 337 backend tests passed in the full gate after
+  Package P's fixes closing Codex's Package R adversarial findings (2026-09-01) — re-run before
+  repeating this count, it changes often; prior snapshots in this file's history (267, 299) were
+  taken mid-edit while both agents were concurrently adding tests to the shared working tree and
+  conflated the two agents' work, so treat any count here as a snapshot to re-verify, not a
+  citation. `.github/workflows/ci.yml` exists, but no run against this branch is evidenced (`gh run
+  list --branch <this-branch>` returns nothing as of this writing) — do not claim a green CI run
+  without checking.
 - Next.js frontend; lint passed in the last verification.
 - Four backend curricula/34 competencies exist, but do not cover the full supplied competency list and have no MoSPI/CBC/NSSTA approval.
 - DSA Quest works in the browser; non-DSA backend dungeons are blocked by frontend routing/filter assumptions.
@@ -53,16 +59,20 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 - Current 65% demonstrated/35% self-report blend is a transparent prototype policy, not psychometrics.
 - Bounded TXT/MD/PDF/DOCX ingestion and normalized source-span validation exist. Real retrieval RAG, PPTX/video ingestion, virtual assistant and review workflow do not.
 - Recommendations are internal practice/catalogue fallback. Authenticated iGOT interfaces exist in public engineering documentation, but this repository has no approved endpoint contract, credentials or sandbox; no NSSTA API is verified.
-- Lane 2 has implemented and independently verified (live Keycloak + PostgreSQL, both agents
-  cross-reviewing) OIDC bearer-token verification with real JWKS key-rotation handling, RBAC and
-  identity-binding primitives, a controlled one-time first-admin bootstrap, PostgreSQL backup/
-  restore, and a retention-enforcement job — see `docs/contracts/identity-authorization.md` and
-  `docs/contracts/data-authorization.md`. **None of this is wired into `backend/routes/**` yet** —
-  every existing route remains an unauthenticated demo interface, and the product must not be
-  described as protected until Lane 5 composes token verification, binding and permission checks
-  into route code. SSO (a real government IdP), multi-tenant isolation beyond one-database-per-
-  deployment, encryption/key ownership, CI, frontend tests, observability and production
-  authorization remain absent.
+- Lane 2 has implemented and reciprocally reviewed/accepted (live Keycloak + PostgreSQL, both
+  agents cross-reviewing) OIDC bearer-token verification with real JWKS key-rotation handling, RBAC
+  and identity-binding primitives, a controlled one-time first-admin bootstrap, PostgreSQL backup/
+  restore, and a deliberately unwired versioned authenticated-encryption envelope
+  (`security/encryption.py`). A bounded/validated retention-enforcement job is also implemented and
+  passes its own adversarial acceptance contract, but is still pending Codex's final immutable
+  re-review — treat it as under cross-review, not yet accepted. See
+  `docs/contracts/identity-authorization.md`, `docs/contracts/data-authorization.md` and
+  `docs/contracts/encryption-key-ownership.md`. **None of this is wired into `backend/routes/**`
+  yet** — every existing route remains an unauthenticated demo interface, and the product must not
+  be described as protected until Lane 5 composes token verification, binding and permission checks
+  into route code; no model currently uses the encryption envelope either. SSO (a real government
+  IdP), multi-tenant isolation beyond one-database-per-deployment, production KMS/HSM key custody,
+  frontend tests, observability and production authorization remain absent.
 
 Reinspect and re-run evidence before repeating these claims. Update README/checklist in the same change when reality changes.
 

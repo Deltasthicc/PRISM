@@ -32,6 +32,7 @@ not a claim of a production identity integration.
 from __future__ import annotations
 
 import functools
+import math
 import os
 import time
 from dataclasses import dataclass
@@ -47,6 +48,50 @@ SUPPORTED_ALGORITHMS = ["RS256"]
 DEFAULT_JWKS_CACHE_SECONDS = 300.0
 DEFAULT_DISCOVERY_TIMEOUT_SECONDS = 5.0
 _LOOPBACK_HOSTNAMES = {"localhost", "127.0.0.1", "::1"}
+
+
+def _require_nonblank_string(value: object, *, label: str) -> str:
+    """Reject a non-string, boolean, or blank/whitespace-only value.
+
+    `issuer`/`audience` used to be checked only with `if not issuer:`,
+    which correctly rejects `None`/`""`/`[]`/`{}` (all falsy) but silently
+    lets a TRUTHY non-string value like `True` or `123` through
+    construction -- and `bool` is an `int` subclass, so `isinstance(True,
+    str)` alone would not catch it either without also excluding `bool`
+    explicitly. That value then reached `issuer.endswith("/")` a few lines
+    later and raised a raw `AttributeError`, not the documented `ValueError`
+    boundary this class promises at construction. A whitespace-only string
+    (`"   "`) is also truthy and was accepted despite being meaningless.
+    """
+    if isinstance(value, bool) or not isinstance(value, str):
+        raise ValueError(f"{label} must be a string, got {type(value).__name__}")
+    if not value.strip():
+        raise ValueError(f"{label} is required")
+    return value
+
+
+def _require_positive_finite_seconds(value: object, *, label: str) -> float:
+    """Reject a non-numeric, boolean, NaN/infinite, or non-positive duration.
+
+    Both `jwks_cache_seconds` and `discovery_timeout_seconds` used to be
+    stored as given, with no validation at all. A NaN cache duration (e.g.
+    from a misconfigured environment variable) would silently reach
+    `int(self._jwks_cache_seconds)` inside `_get_jwks_client()` --
+    `int(float('nan'))` raises a bare `ValueError`, which is not a
+    `jwt.PyJWTError` and therefore was not caught by `verify()`'s exception
+    boundary, leaking a raw `ValueError` in violation of this module's own
+    "callers only ever see AuthenticationError" contract. Validating here,
+    at construction, catches a bad value immediately and with a clear
+    message instead of letting it surface later as a confusing crash deep
+    inside token verification.
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{label} must be a real number of seconds, got {value!r}")
+    if not math.isfinite(value):
+        raise ValueError(f"{label} must be finite, got {value!r}")
+    if value <= 0:
+        raise ValueError(f"{label} must be positive, got {value!r}")
+    return float(value)
 
 
 def _require_safe_absolute_url(url: str, *, label: str) -> None:
@@ -136,10 +181,14 @@ class OIDCVerifier:
         jwks_cache_seconds: float = DEFAULT_JWKS_CACHE_SECONDS,
         discovery_timeout_seconds: float = DEFAULT_DISCOVERY_TIMEOUT_SECONDS,
     ) -> None:
-        if not issuer:
-            raise ValueError("issuer is required")
-        if not audience:
-            raise ValueError("audience is required")
+        issuer = _require_nonblank_string(issuer, label="issuer")
+        audience = _require_nonblank_string(audience, label="audience")
+        jwks_cache_seconds = _require_positive_finite_seconds(
+            jwks_cache_seconds, label="jwks_cache_seconds"
+        )
+        discovery_timeout_seconds = _require_positive_finite_seconds(
+            discovery_timeout_seconds, label="discovery_timeout_seconds"
+        )
         # No normalization: a trailing slash is rejected outright rather than
         # silently stripped. OIDC issuer identifiers are canonically written
         # without one (RFC 8414 / OIDC Discovery); silently rewriting
@@ -285,12 +334,33 @@ class OIDCVerifier:
         )
         roles = frozenset(raw_roles) if is_clean_string_list else frozenset()
 
+        # jwt.decode() with options={"require": ["exp", ...]} only proves
+        # "exp" is PRESENT, not that it is a usable numeric value -- e.g. a
+        # numeric STRING exp ("1788269436") decodes and expiry-checks
+        # successfully (PyJWT compares it as a string that happens to look
+        # numeric), and an absurdly large integer exp can pass PyJWT's own
+        # expiry check too. Both then reached datetime.fromtimestamp()
+        # below, outside the try/except jwt.PyJWTError block above, and
+        # raised a raw TypeError (non-numeric) or OverflowError (out of
+        # platform time_t range) -- neither is a jwt.PyJWTError, so both
+        # leaked past this module's "callers only ever see
+        # AuthenticationError" boundary. Validate explicitly first.
+        exp_claim = claims["exp"]
+        if isinstance(exp_claim, bool) or not isinstance(exp_claim, (int, float)):
+            raise AuthenticationError(
+                f"token 'exp' claim must be a number, got {type(exp_claim).__name__}"
+            )
+        try:
+            expires_at = datetime.fromtimestamp(exp_claim, tz=timezone.utc)
+        except (OverflowError, OSError, ValueError) as exc:
+            raise AuthenticationError(f"token 'exp' claim is out of range: {exc}") from exc
+
         return AuthenticatedSubject(
             subject_id=subject_claim,
             username=claims.get("preferred_username"),
             roles=roles,
             issuer=claims["iss"],
-            expires_at=datetime.fromtimestamp(claims["exp"], tz=timezone.utc),
+            expires_at=expires_at,
             raw_claims=claims,
         )
 

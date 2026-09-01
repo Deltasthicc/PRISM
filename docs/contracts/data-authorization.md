@@ -7,10 +7,12 @@ Consumers: Lanes 3, 4, 5, 6
 Change approval: Lanes 5 and 6 (`SIH26101_TEAM_ORCHESTRATION.md` section 4)
 
 Status: **v1 demo contract — storage and query semantics, internal subject-data export/deletion
-primitives, a retention-enforcement job (a real no-op today, no cited maximum exists) and
-PostgreSQL backup/restore are defined and independently verified; authentication and RBAC
-*primitives* exist (`docs/contracts/identity-authorization.md`) but are not yet composed into
-existing routes; multi-tenant isolation and subject-rights HTTP APIs are not implemented.**
+primitives, and PostgreSQL backup/restore are defined and independently reviewed/accepted. A
+retention-enforcement job (a real no-op today, no cited maximum exists) is implemented and passes
+its own adversarial acceptance contract, pending Codex's final immutable re-review — treat it as
+under cross-review, not yet accepted, until that lands. Authentication and RBAC *primitives* exist
+(`docs/contracts/identity-authorization.md`) but are not yet composed into existing routes;
+multi-tenant isolation and subject-rights HTTP APIs are not implemented.**
 
 This contract is deliberately explicit about the present boundary. It is safe guidance for the
 local hackathon demo, not evidence of production authorization or compliance.
@@ -254,12 +256,14 @@ retention policy for backup files themselves, and no restore runbook for a real 
 remain Lane 6 deployment/DR work.
 
 Deleting the local SQLite demo database remains a whole-tenant reset, not a subject workflow.
-Replica handling remains an unverified backlog item. Encryption/key ownership is tracked as
-Package Q (`LANE2_SYNC.md` status board) — as of this update, no field in `models/**` stores a
-password, API key or client secret, so there is nothing to retroactively encrypt today; Package Q's
-scope is a real, tested envelope-encryption primitive ready for the day one is needed, plus a
-contract stating exactly what is/isn't encrypted in transit and at rest. Lanes must not claim
-compliance or production subject-rights/DR controls based on these internal primitives alone.
+Replica handling remains an unverified backlog item. `backend/security/encryption.py` (Package Q,
+`docs/contracts/encryption-key-ownership.md`) is a real, tested, versioned authenticated-encryption
+envelope — not KMS-style per-record data-key wrapping. As of this update no field in `models/**`
+stores a password, API key or client secret, so no current model uses it; it exists ready for the
+day one is needed. Local HTTP/PostgreSQL traffic and storage/backups are not encrypted by this
+module, Python key bytes cannot be reliably zeroized, and production KMS/HSM key custody remains
+external and unimplemented. Lanes must not claim compliance or production subject-rights/DR
+controls based on these internal primitives alone.
 
 ## 7. Change process
 

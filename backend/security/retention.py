@@ -32,6 +32,8 @@ class RetentionPolicy:
     notes: str
 
     def __post_init__(self) -> None:
+        _require_nonempty_stripped_string(self.category, "category")
+        _require_nonempty_stripped_string(self.notes, "notes", allow_empty=True)
         if (self.minimum_retention_days is None) != (self.minimum_retention_source is None):
             raise ValueError(
                 f"{self.category}: a minimum retention duration and its source "
@@ -42,10 +44,16 @@ class RetentionPolicy:
                 f"{self.category}: a maximum retention duration and its source "
                 "must both be set, or both be None -- never one without the other"
             )
-        if self.minimum_retention_days is not None and self.minimum_retention_days < 0:
-            raise ValueError(f"{self.category}: minimum_retention_days must not be negative")
-        if self.maximum_retention_days is not None and self.maximum_retention_days < 0:
-            raise ValueError(f"{self.category}: maximum_retention_days must not be negative")
+        _require_valid_duration(self.category, "minimum_retention_days", self.minimum_retention_days)
+        _require_valid_duration(self.category, "maximum_retention_days", self.maximum_retention_days)
+        if self.minimum_retention_source is not None:
+            _require_nonempty_stripped_string(
+                self.minimum_retention_source, f"{self.category}: minimum_retention_source"
+            )
+        if self.maximum_retention_source is not None:
+            _require_nonempty_stripped_string(
+                self.maximum_retention_source, f"{self.category}: maximum_retention_source"
+            )
         if (
             self.minimum_retention_days is not None
             and self.maximum_retention_days is not None
@@ -56,6 +64,38 @@ class RetentionPolicy:
                 f"exceeds maximum_retention_days ({self.maximum_retention_days}) -- "
                 "no valid retention window would exist"
             )
+
+
+def _require_valid_duration(category: str, field_name: str, value: object) -> None:
+    """A retention duration must be a real, non-negative whole number of
+    days -- never `None` is already handled by the caller before this runs.
+    `bool` is an `int` subclass in Python (`isinstance(True, int)` is
+    `True`), so it must be excluded explicitly or `maximum_retention_days=True`
+    would silently construct as a 1-day ceiling. A `float` like `30.5` days
+    is also rejected: this project's retention math (`row_age_days` in whole
+    days, cutoff arithmetic in `scripts/retention_job.py`) assumes a whole
+    number of days, and a fractional duration is exactly the kind of subtly
+    wrong input that looks plausible but was never actually cited by any
+    source.
+    """
+    if value is None:
+        return
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(
+            f"{category}: {field_name} must be a non-boolean whole number of days, "
+            f"got {value!r} ({type(value).__name__})"
+        )
+    if value < 0:
+        raise ValueError(f"{category}: {field_name} must not be negative")
+
+
+def _require_nonempty_stripped_string(value: object, label: str, *, allow_empty: bool = False) -> None:
+    if not isinstance(value, str):
+        raise ValueError(f"{label} must be a string, got {type(value).__name__}")
+    if allow_empty:
+        return
+    if not value.strip():
+        raise ValueError(f"{label} must not be empty or whitespace-only")
 
 
 # The CERT-In citation below is a MINIMUM (a floor): it requires certain ICT

@@ -14,6 +14,7 @@ this project has repeatedly found other AI-generated plans fabricating.
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 
@@ -136,6 +137,17 @@ def assert_minimum_retention_satisfied(category: str, row_age_days: float) -> No
     """
     if category not in RETENTION_POLICIES:
         raise ValueError(f"unknown retention category: {category!r}")
+    # `bool` is an `int` subclass and NaN/inf compare False against every
+    # bound, so a naive `< 0` check silently treats True/False/NaN/inf as a
+    # satisfied floor -- e.g. `float('nan') < 0` is False and
+    # `float('nan') < policy.minimum_retention_days` is also False, so this
+    # guard would return normally (deletion allowed) for an age of NaN days.
+    if isinstance(row_age_days, bool) or not isinstance(row_age_days, (int, float)):
+        raise TypeError(
+            f"row_age_days must be a real number of days, got {type(row_age_days).__name__}"
+        )
+    if not math.isfinite(row_age_days):
+        raise ValueError(f"row_age_days must be finite, got {row_age_days!r}")
     if row_age_days < 0:
         raise ValueError("row_age_days must not be negative")
 

@@ -17,36 +17,67 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+from sqlalchemy.exc import ArgumentError
 from sqlalchemy.engine import make_url
+
+# The only hosts for which "run pg_dump/pg_restore inside the named
+# container, against its own -h localhost" is actually the database
+# DATABASE_URL describes. Anything else (a remote hostname, a different
+# container's service name) would silently execute against the wrong
+# database while claiming to have backed up/restored the configured one --
+# fail closed instead of guessing.
+_SUPPORTED_LOCAL_HOSTS = {"localhost", "127.0.0.1"}
 
 
 class BackupRestoreError(RuntimeError):
     """Raised when a backup or restore step fails or returns a non-zero exit code."""
 
 
+def _redact(command: list[str]) -> list[str]:
+    """Return `command` with any `PGPASSWORD=...` argument's value hidden."""
+    return [
+        "PGPASSWORD=***REDACTED***" if part.startswith("PGPASSWORD=") else part
+        for part in command
+    ]
+
+
 def _connection_parts(database_url: str) -> tuple[str, str, str, int, str]:
     """Return (user, password, host, port, dbname) parsed from DATABASE_URL.
 
-    `host`/`port` are only used to confirm this isn't being pointed at
-    SQLite -- the actual connection happens *inside* the container via
-    `-h localhost`, since the dump/restore commands run inside the same
-    container the database lives in.
+    `port` is only used for display; the actual connection happens *inside*
+    the container via `-h localhost` on Postgres's own default port, since
+    the dump/restore commands run inside the same container the database
+    lives in. `host` IS enforced: this module only ever execs into a named
+    local container, so a DATABASE_URL naming any other host is a
+    configuration mismatch, not something to silently ignore and act on
+    `localhost` anyway.
     """
-    url = make_url(database_url)
+    try:
+        url = make_url(database_url)
+    except (ArgumentError, ValueError) as exc:
+        raise BackupRestoreError(f"DATABASE_URL is not a valid URL: {exc}") from exc
     if url.get_backend_name() != "postgresql":
         raise BackupRestoreError(
             f"backup_restore.py only supports PostgreSQL, got: {url.get_backend_name()!r}"
         )
     if not url.username or not url.database:
         raise BackupRestoreError("DATABASE_URL must include a username and a database name")
-    return url.username, url.password or "", url.host or "localhost", url.port or 5432, url.database
+    host = url.host or "localhost"
+    if host not in _SUPPORTED_LOCAL_HOSTS:
+        raise BackupRestoreError(
+            f"DATABASE_URL host {host!r} is not a supported local host "
+            f"({sorted(_SUPPORTED_LOCAL_HOSTS)}); this module only operates on the named "
+            "docker-compose container's own local Postgres and refuses to silently run "
+            "against a different host than the one DATABASE_URL names"
+        )
+    return url.username, url.password or "", host, url.port or 5432, url.database
 
 
 def _run(command: list[str], *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
     result = subprocess.run(command, capture_output=True, text=True, env=env)
     if result.returncode != 0:
         raise BackupRestoreError(
-            f"command failed ({result.returncode}): {' '.join(command)}\n"
+            f"command failed ({result.returncode}): {' '.join(_redact(command))}\n"
             f"stdout: {result.stdout}\nstderr: {result.stderr}"
         )
     return result
@@ -104,25 +135,50 @@ def restore_backup(
     container_dump_path = "/tmp/backup_restore_restore.pgdump"
     _run(["docker", "cp", str(input_path), f"{container_name}:{container_dump_path}"])
 
-    command = [
-        "docker", "exec",
-        "-e", f"PGPASSWORD={password}",
-        container_name,
-        "pg_restore",
-        "-h", "localhost",
-        "-U", username,
-        "-d", dbname,
-        "--no-owner",
-        "--no-privileges",
-    ]
-    if clean:
-        command += ["--clean", "--if-exists"]
-    command.append(container_dump_path)
+    def _cleanup_archive() -> None:
+        # A cleanup failure must never replace a primary restore failure --
+        # that would surface "rm: No such file" as the reported error and
+        # hide the actual problem. Swallow it here; the caller re-raises
+        # whatever primary exception (if any) is already in flight.
+        try:
+            _run(["docker", "exec", container_name, "rm", "-f", container_dump_path])
+        except BackupRestoreError:
+            pass
 
     try:
+        # Non-destructive preflight: `--list` only reads the archive's table
+        # of contents, so a corrupt/truncated/non-pg_dump file is rejected
+        # here, before `--clean` has dropped a single object in the target
+        # database.
+        try:
+            _run(["docker", "exec", container_name, "pg_restore", "--list", container_dump_path])
+        except BackupRestoreError as exc:
+            raise BackupRestoreError(
+                f"restore aborted: {input_path} is not a valid pg_dump custom-format "
+                f"archive readable by pg_restore --list ({exc})"
+            ) from exc
+
+        command = [
+            "docker", "exec",
+            "-e", f"PGPASSWORD={password}",
+            container_name,
+            "pg_restore",
+            "-h", "localhost",
+            "-U", username,
+            "-d", dbname,
+            "--no-owner",
+            "--no-privileges",
+            "--exit-on-error",
+        ]
+        if clean:
+            command += ["--clean", "--if-exists"]
+        command.append(container_dump_path)
+
         _run(command)
-    finally:
-        _run(["docker", "exec", container_name, "rm", "-f", container_dump_path])
+    except Exception:
+        _cleanup_archive()
+        raise
+    _cleanup_archive()
 
 
 def _main() -> None:

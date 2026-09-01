@@ -102,3 +102,44 @@ def test_assert_minimum_retention_satisfied_rejects_negative_age():
         assert_minimum_retention_satisfied(
             "retain_append_only_security_log_duration_policy_pending", row_age_days=-1
         )
+
+
+def test_assert_minimum_retention_satisfied_rejects_nan():
+    # float('nan') compares False against every bound (`nan < 0` and
+    # `nan < 180` are both False), so a naive comparison-only guard would
+    # silently treat NaN as "old enough to delete". It must be rejected
+    # outright instead.
+    with pytest.raises(ValueError, match="must be finite"):
+        assert_minimum_retention_satisfied(
+            "retain_append_only_security_log_duration_policy_pending", row_age_days=float("nan")
+        )
+
+
+def test_assert_minimum_retention_satisfied_rejects_infinity():
+    with pytest.raises(ValueError, match="must be finite"):
+        assert_minimum_retention_satisfied(
+            "retain_append_only_security_log_duration_policy_pending", row_age_days=float("inf")
+        )
+    with pytest.raises(ValueError, match="must be finite"):
+        assert_minimum_retention_satisfied(
+            "retain_append_only_security_log_duration_policy_pending", row_age_days=float("-inf")
+        )
+
+
+def test_assert_minimum_retention_satisfied_rejects_bool():
+    # bool is an int subclass; True/False must not be accepted as a day count.
+    with pytest.raises(TypeError, match="must be a real number"):
+        assert_minimum_retention_satisfied(
+            "retain_append_only_security_log_duration_policy_pending", row_age_days=True
+        )
+    with pytest.raises(TypeError, match="must be a real number"):
+        assert_minimum_retention_satisfied(
+            "retain_append_only_security_log_duration_policy_pending", row_age_days=False
+        )
+
+
+def test_assert_minimum_retention_satisfied_rejects_non_numeric():
+    with pytest.raises(TypeError, match="must be a real number"):
+        assert_minimum_retention_satisfied(
+            "retain_append_only_security_log_duration_policy_pending", row_age_days="181"
+        )

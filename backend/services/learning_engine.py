@@ -2,14 +2,13 @@
 
 from services.curricula import get_curriculum
 from services.learning_catalog import recommend_courses
+from services.role_targets import FRAMEWORK_VERSION, experience_cap, resolve_role_target
 
-
-EXPERIENCE_TARGET_CAP = {
-    "beginner": 3,
-    "intermediate": 4,
-    "advanced": 5,
-    "expert": 5,
-}
+# Versions the 65/35 blend itself (CLAUDE.md architectural invariant #4: "the
+# 65/35 blend ... remain versioned prototype policies until validated").
+# Distinct from role_targets.FRAMEWORK_VERSION, which versions target
+# selection -- these are two independently-changeable policies.
+ASSESSMENT_POLICY_VERSION = "prototype-v1"
 
 
 def _level_label(score: float) -> str:
@@ -31,6 +30,8 @@ def analyse_competencies(
     self_ratings: dict[str, float],
     measured_scores: dict[str, float],
     experience_level: str = "beginner",
+    job_role: str = "",
+    designation: str = "",
 ) -> dict:
     curriculum = get_curriculum(curriculum_slug)
     if not curriculum:
@@ -41,12 +42,21 @@ def analyse_competencies(
     if unknown:
         raise ValueError(f"Ratings contain competencies outside this curriculum: {', '.join(unknown)}")
 
-    target_cap = EXPERIENCE_TARGET_CAP.get(experience_level, 3)
+    target_cap = experience_cap(experience_level)
     competency_results = []
     for item in curriculum["competencies"]:
         competency_id = item["id"]
         self_score = self_ratings.get(competency_id)
         measured = measured_scores.get(competency_id)
+
+        # evidence_sources uses Lane 2's EVIDENCE_TYPES vocabulary
+        # (backend/models/governance.py: self_report, observed_practice, ...)
+        # so a future switch to real EvidenceRecord rows needs no relabeling.
+        evidence_sources = []
+        if measured is not None:
+            evidence_sources.append("observed_practice")
+        if self_score is not None:
+            evidence_sources.append("self_report")
 
         if measured is not None and self_score is not None:
             observed = measured * 0.65 + self_score * 0.35
@@ -61,10 +71,20 @@ def analyse_competencies(
             observed = 0.0
             evidence = "no evidence yet"
 
-        role_target = float(item.get("target_level", 3))
+        role_target_info = resolve_role_target(
+            competency_id, item.get("target_level", 3), job_role, designation
+        )
+        role_target = role_target_info["target_level"]
         pathway_target = min(role_target, float(target_cap))
         gap = max(0.0, pathway_target - observed)
-        if gap >= 2.5:
+        has_evidence = bool(evidence_sources)
+        if not has_evidence:
+            # Zero evidence must never be indistinguishable from a
+            # demonstrated low score (CLAUDE.md architectural invariant #3):
+            # "unassessed" overrides the gap-derived tier below even though
+            # the gap number itself is unchanged and still drives sort order.
+            priority = "unassessed"
+        elif gap >= 2.5:
             priority = "critical"
         elif gap >= 1.5:
             priority = "high"
@@ -83,8 +103,12 @@ def analyse_competencies(
                 "observed_label": _level_label(observed),
                 "pathway_target": pathway_target,
                 "role_target": role_target,
+                "role_target_source": role_target_info["source"],
+                "matched_role": role_target_info["matched_role"],
                 "gap": round(gap, 2),
                 "priority": priority,
+                "has_evidence": has_evidence,
+                "evidence_sources": evidence_sources,
                 "evidence": evidence,
             }
         )
@@ -112,7 +136,9 @@ def analyse_competencies(
                     "step": len(pathway) + 1,
                     **item,
                     "recommended_action": (
-                        "Complete a diagnostic and foundation module"
+                        "Complete a diagnostic to establish a baseline -- no evidence recorded yet"
+                        if item["priority"] == "unassessed"
+                        else "Complete a diagnostic and foundation module"
                         if item["observed_level"] < 1
                         else "Complete targeted learning, then re-assess with applied questions"
                     ),
@@ -126,11 +152,15 @@ def analyse_competencies(
         "curriculum_name": curriculum["name"],
         "domain": curriculum["domain"],
         "experience_level": experience_level,
+        "job_role": job_role,
+        "designation": designation,
         "method": {
             "scale": "0-5 proficiency",
             "demonstrated_weight": 0.65,
             "self_assessment_weight": 0.35,
             "note": "Self-ratings never override demonstrated performance; missing evidence is surfaced explicitly.",
+            "policy_version": ASSESSMENT_POLICY_VERSION,
+            "role_target_framework_version": FRAMEWORK_VERSION,
         },
         "competencies": competency_results,
         "skill_gaps": skill_gaps,

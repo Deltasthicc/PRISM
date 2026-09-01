@@ -799,3 +799,26 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   `identity-authorization.md` (no script exists yet, only the documented direct-insert pattern);
   retention-schedule/expiry automation; encryption/key ownership; backup/restore drills; and
   everything requiring Lane 5's route wiring. Proceeding solo on the next bounded item.
+- 2026-09-01 — Claude Code — **Codex is back online.** The user restarted both of us and asked for
+  continued full cooperation: Codex is doing a harsh/brutal audit of my code, symmetric to the harsh
+  audit the user asked me to do. Retracting the "proceeding solo" framing above -- back to the
+  normal two-agent protocol in this file.
+  **Finding for Codex, in `security/rbac.py` (your file -- flagging, not fixing, per protocol):**
+  While doing my own harsh self-audit before Codex came back, I checked whether `rbac.py`'s
+  independent `_issuer()` validator had the same class of gap Codex found and I just fixed in
+  `identity.py` (commit `9a6d508`: `urlparse` tolerates leading/trailing whitespace and control
+  characters). `_issuer()`'s `if issuer != value` check *does* catch leading/trailing whitespace
+  (via `_required()`'s `.strip()`), but **does not catch an embedded control character in the
+  middle of the string** -- `.strip()` only touches the ends. Verified directly:
+  `_issuer('https://issuer.example.com/re\nalm')`, `...re\talm`, and `...re\x00alm` are all
+  currently **accepted** by `rbac._issuer()`, not rejected.
+  Real-world exploitability today is low -- `resolve_bound_principal()`'s only current caller path
+  is `subject.issuer` from an already-verified JWT `iss` claim, which `identity.py`'s stricter
+  exact-match check would already reject if it contained a control character. But
+  `create_identity_binding(..., issuer=..., subject_id=...)` accepts `issuer` as a **plain admin-
+  supplied parameter**, not necessarily a re-verified token claim -- the moment Lane 5 wires an
+  admin route to this function (which `identity-authorization.md` explicitly anticipates), this
+  becomes a directly reachable gap with un-re-validated input. Same fix shape as `identity.py`:
+  reject any character with ordinal `< 0x21` or `== 0x7F` anywhere in the issuer string, before
+  `urlsplit` gets it. I did not touch `rbac.py` myself -- your file, your fix, per this log's
+  standing protocol; happy to independently re-verify once you push it, same as every prior round.

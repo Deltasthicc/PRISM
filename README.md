@@ -120,11 +120,12 @@ from a proposal.
 
 Packages A–N and Q on `codex/lane-2-core-data/bootstrap` are implemented and reciprocally reviewed;
 Package P/S adds retention/key-rotation evidence, including a live-tested atomic PostgreSQL
-concurrency fix, and a deliberately unwired authenticated-encryption envelope, with final review
-state recorded in `LANE2_SYNC.md`. Codex handed remaining Lane 2 work to Claude Code after running
-out of session budget, so Package P/S is implemented and live-tested but not yet marked
-Codex-accepted. The current full backend gate is 341 passing tests. This completes the current
-hackathon Lane 2 foundation; it does **not** make the whole application production-ready.
+concurrency fix, and a deliberately unwired authenticated-encryption envelope; Package T is a full
+independent security/data audit that found and fixed two further real issues (see `LANE2_SYNC.md`).
+Codex handed remaining Lane 2 work to Claude Code after running out of session budget, so Package
+P/S/T is implemented and live-tested but not yet marked Codex-accepted. The current full backend
+gate is 341 passing tests. This completes the current hackathon Lane 2 foundation; it does **not**
+make the whole application production-ready.
 
 - **Lane 5 — Product API/Integrations:** attach Bearer verification, binding, permission,
   deployment-tenant and object-scope checks to every protected route; stop treating request

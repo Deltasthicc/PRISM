@@ -211,12 +211,13 @@ Lanes 1 and 6 start immediately against frozen fixtures. They do not wait idle f
 
 Lane 2 Packages A–N and Q are implemented and reciprocally reviewed on
 `codex/lane-2-core-data/bootstrap`. Package P/S (retention enforcement, including a live-tested fix
-for a real PostgreSQL concurrency defect Codex found and reproduced) is implemented and live-tested
-by Claude Code but not yet Codex-reviewed — Codex handed remaining Lane 2 implementation work to
-Claude Code after running out of session budget mid-review; exact review state remains in
-`LANE2_SYNC.md`. The current full backend gate is **341 passed**. The following assignments are
-copy-ready messages for the remaining owners. They are dependencies of a controlled pilot or
-production claim, not reasons to reopen completed Lane 2 packages.
+for a real PostgreSQL concurrency defect Codex found and reproduced) and Package T (a full
+independent security/data audit that found and fixed two further real issues — see `LANE2_SYNC.md`)
+are implemented and live-tested by Claude Code but not yet Codex-reviewed — Codex handed remaining
+Lane 2 implementation work to Claude Code after running out of session budget mid-review; exact
+review state remains in `LANE2_SYNC.md`. The current full backend gate is **341 passed**. The
+following assignments are copy-ready messages for the remaining owners. They are dependencies of a
+controlled pilot or production claim, not reasons to reopen completed Lane 2 packages.
 
 **Send to the Lane 5 person — Product API, Integrations & Analytics**
 

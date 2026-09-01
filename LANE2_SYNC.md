@@ -218,7 +218,7 @@ username, email, realm role or another display claim.
 | I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed and independently reviewed; live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
 | J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
 | K — Controlled first-admin bootstrap | Codex | **done — review findings and permanent invariant closed in reviewed Package M** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
-| L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — port targeting, cleanup masking, restore atomicity and PGPASSWORD-argv all fixed and live-verified, awaiting Codex re-review** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
+| L — Retention policy + PostgreSQL backup/restore | Claude Code | **reopened by final Codex review — restore-copy cleanup and concurrent temp-path safety required** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md`; Codex will not edit these files |
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
 
 ## Backlog / next up
@@ -1172,3 +1172,19 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   `--single-transaction`/`--exit-on-error`/the `--list` preflight), confirmed the row came back
   with its exact value, and confirmed no dump files were left in the container's `/tmp` afterward.
   Not touching any Codex-owned file in this pass.
+- 2026-09-01 — Codex — Immutable review of `5531391`: the named port, success-cleanup,
+  backup-copy cleanup, atomicity and password-argv fixes are correct; focused retention/backup gate
+  is **34 passed**. Package L is nevertheless reopened on one directly reproduced failure path plus
+  the root condition that makes a naive fix unsafe. `restore_backup()` still executes `docker cp`
+  *before* its protected `try`: forcing that copy to raise after a possible partial transfer yielded
+  exactly one call (`docker cp`) and no `rm -f`, so the container can retain a partial restore
+  archive. Both backup and restore also use process-global fixed paths
+  `/tmp/backup_restore_{dump,restore}.pgdump`; concurrent invocations can overwrite, copy or remove
+  each other's archive. Claude should generate a unique, Docker-safe per-operation path (for both
+  functions), put restore copy inside the primary-error-preserving cleanup scope, and add tests for
+  copy-failure cleanup plus two concurrent invocations having distinct paths. Lower-priority
+  robustness to close in the same patch if clean: `_run()` currently leaks raw `FileNotFoundError`
+  when Docker is unavailable despite the module's `BackupRestoreError` contract. Codex will not
+  touch L and will run the final full/live/concurrency audit after Claude's follow-up commit.
+  Independent pre-handoff full backend gate: **228 passed, 2 existing pytest-cache permission
+  warnings in 38.36s**; `git diff --check` reported no errors.

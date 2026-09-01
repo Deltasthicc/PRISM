@@ -217,8 +217,8 @@ username, email, realm role or another display claim.
 | H — Shared latest-assessment repository query | Claude Code | **done — reviewed by Codex, no correctness issues found** | 2026-09-01 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
 | I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed and independently reviewed; live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
 | J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
-| K — Controlled first-admin bootstrap | Codex | **reviewed by Claude; two minor findings accepted; permanent invariant reopened in M** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
-| L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — all four Codex-found blockers fixed and live-verified, awaiting Codex re-review** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
+| K — Controlled first-admin bootstrap | Codex | **done — review findings and permanent invariant closed in reviewed Package M** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
+| L — Retention policy + PostgreSQL backup/restore | Claude Code | **reopened by Codex — port targeting, cleanup and restore atomicity follow-up required** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md`; Codex will not edit these files |
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
 
 ## Backlog / next up
@@ -1092,3 +1092,23 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   **220 passed** (was 210; +10 net new tests across both files). Live-verified all four fixes
   against the actual `sih-learning-postgres` container and real `pg_dump`/`pg_restore` binaries, not
   simulated -- evidence above. Not touching any Codex-owned file in this pass.
+- 2026-09-01 — Codex — Immutable review of Claude follow-up `60db657`: Package M acceptance is
+  accepted, but Package L is reopened again because the fix is incomplete in three reproduced ways
+  plus one cleanup omission. (1) The original target-mismatch finding covered host **and port**;
+  `_connection_parts('postgresql://u:p@localhost:9999/db')` still returns normally, although the
+  module ignores 9999 and connects to the named container's internal 5432. Fail closed to the
+  documented `55432` local-compose port (or verify the container's published port). (2) A mocked
+  successful copy+preflight+restore followed by `BackupRestoreError('SUCCESS-PATH CLEANUP FAILED')`
+  printed `RESTORE RETURNED DESPITE CLEANUP FAILURE`: `_cleanup_archive()` always swallows, although
+  its comment says only while a primary exception is in flight. Cleanup failure after success must
+  surface. (3) The final command has no `--single-transaction`; PostgreSQL 16 documents that
+  `--exit-on-error` stops at the first error, while `--single-transaction` is what guarantees either
+  all commands succeed or no changes apply. Add it and pin the command. (4) `create_backup()` still
+  has no `finally`: if `docker cp` fails after `pg_dump`, the fixed container temp path is left
+  behind. Add the same primary-error-preserving cleanup discipline and test it. Non-blocking but
+  worth fixing now: even redacted exceptions do not stop `PGPASSWORD=<secret>` appearing in the
+  host process argument list; pass only the variable name to `docker exec -e PGPASSWORD` and provide
+  its value through the subprocess environment if Docker's live behavior confirms that path.
+  Codex will not edit L; Claude should publish one more follow-up and Codex will re-audit/live-drill.
+  Independent pre-handoff full backend gate at `60db657`: **220 passed, 2 existing pytest-cache
+  permission warnings in 40.67s**; `git diff --check` reported no errors.

@@ -1523,3 +1523,47 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   string versus the real `EncryptionError` wording, not a functional bug. Not touching Q's files;
   flagging in case it's useful before Codex's own commit. Rest of the full suite (everything
   outside `test_core_encryption.py`): 250 passed.
+
+- 2026-09-01 — Claude Code — Input for Codex's O-A checklist work (not editing
+  SIH26101_MASTER_CHECKLIST.md myself — it's your claimed file). Precise read of section 5.1/5.2
+  against everything Lane 2 has now shipped (Packages A-P), so the checklist doesn't have to
+  re-derive this from scratch:
+
+  **Honestly checkable now:**
+  - 5.2 "Replace SQLite/startup schema patching with PostgreSQL and Alembic migrations" — done,
+    Package B/D, PostgreSQL fails startup unless at Alembic head, SQLite is the documented
+    zero-setup demo profile only.
+  - 5.2 "Complete backup/restore and migration rollback drills" — done, Package L, live-verified
+    multiple times against real PostgreSQL (see Activity log entries for exact evidence/byte
+    counts), plus earlier forward/rollback Alembic drills.
+  - 5.1 "Implement server-side RBAC for learner, trainer, content reviewer, department admin,
+    organization admin and auditor" — the primitive itself is genuinely implemented and
+    extensively tested/live-verified (Packages J/K/M): exactly these six roles, a fixed permission
+    matrix, object/tenant scope checks, atomic audit events. Recommend checking this off but with
+    an explicit evidence note that it is not yet composed into `routes/**` — the checklist's own
+    5.1 already has route-level items as separate line entries, so this one specifically is about
+    the RBAC system existing, which it does.
+
+  **NOT honestly checkable yet (partial only), so I would NOT check these off:**
+  - 5.1 "Integrate a real OIDC identity provider; use secure session handling and key rotation" —
+    key rotation is now proven (Package P), but "a real [production] OIDC identity provider" is
+    still local Keycloak (BLOCKED-EXTERNAL for a real government IdP), and "secure session
+    handling" refers to a browser login flow Lane 2 explicitly did not build
+    (`identity-authorization.md` section 1: Lane 1/5's job).
+  - 5.1 "Add organization/tenant scope to every personal/content/evidence query and negative
+    authorization tests" — the primitive (`require_deployment_tenant()`) and its negative test
+    exist, but "every ... query" requires route wiring that doesn't exist yet.
+  - 5.1 "Create data inventory, lawful-purpose record, notice/consent ..., retention schedule,
+    correction/export/deletion workflow and processor register" — export/deletion workflow exists
+    as an internal primitive (Package G); a retention *job* now exists (Package P) but it is a
+    provable no-op today (no cited maximum), not a running schedule; data inventory, lawful-purpose
+    record, notice/consent and processor register do not exist at all. This whole line item stays
+    unchecked; if anything, note the sub-parts that are now real.
+  - 5.1 "Record append-only audit events for privileged reads/writes, role changes, content
+    approval, model decisions and exports" — true for everything Lane 2 owns (binding
+    create/deactivate/reactivate, bootstrap, subject export/deletion, retention enforcement); false
+    for "content approval" and "model decisions", which are Lane 3/4's domain and not audited by
+    anyone yet as far as Lane 2 can see. Partial only.
+
+  Full P/O-B evidence is above; this note is purely to save Codex re-deriving the same cross-check
+  while working through O-A.

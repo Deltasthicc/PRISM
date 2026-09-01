@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import uuid
 from pathlib import Path
 
 from sqlalchemy.exc import ArgumentError
@@ -92,13 +93,33 @@ def _connection_parts(database_url: str) -> tuple[str, str, str, int, str]:
 
 
 def _run(command: list[str], *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
-    result = subprocess.run(command, capture_output=True, text=True, env=env)
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, env=env)
+    except FileNotFoundError as exc:
+        # e.g. the `docker` binary itself isn't on PATH -- every other
+        # failure mode in this module raises BackupRestoreError, so this
+        # one should too rather than leaking a raw FileNotFoundError past
+        # the module's documented exception contract.
+        raise BackupRestoreError(f"command not found: {command[0]!r} ({exc})") from exc
     if result.returncode != 0:
         raise BackupRestoreError(
             f"command failed ({result.returncode}): {' '.join(_redact(command))}\n"
             f"stdout: {result.stdout}\nstderr: {result.stderr}"
         )
     return result
+
+
+def _unique_container_path(prefix: str) -> str:
+    """Return a per-operation, collision-safe temp path inside the container.
+
+    Both create_backup() and restore_backup() used to write to a single
+    process-global fixed path (e.g. /tmp/backup_restore_dump.pgdump).
+    Concurrent invocations -- two backups, two restores, or a backup and a
+    restore running at once against the same container -- could then
+    overwrite, copy, or delete each other's archive mid-operation. A random
+    suffix per call makes that impossible without needing any locking.
+    """
+    return f"/tmp/backup_restore_{prefix}_{uuid.uuid4().hex}.pgdump"
 
 
 def _pgpassword_env(password: str) -> dict[str, str]:
@@ -125,7 +146,7 @@ def create_backup(container_name: str, database_url: str, output_path: str | Pat
     """
     username, password, _host, _port, dbname = _connection_parts(database_url)
     output_path = Path(output_path)
-    container_dump_path = "/tmp/backup_restore_dump.pgdump"
+    container_dump_path = _unique_container_path("dump")
 
     def _cleanup_dump(*, suppress: bool) -> None:
         # Same primary-error-preserving discipline as restore_backup: a
@@ -186,8 +207,7 @@ def restore_backup(
     if not input_path.exists():
         raise BackupRestoreError(f"backup file does not exist: {input_path}")
 
-    container_dump_path = "/tmp/backup_restore_restore.pgdump"
-    _run(["docker", "cp", str(input_path), f"{container_name}:{container_dump_path}"])
+    container_dump_path = _unique_container_path("restore")
 
     def _cleanup_archive(*, suppress: bool) -> None:
         # A cleanup failure must never replace a primary restore failure --
@@ -203,6 +223,12 @@ def restore_backup(
                 raise
 
     try:
+        # Copying the archive INTO the container must be inside this
+        # cleanup-protected scope too: if it fails partway through (a
+        # partial transfer), the container can be left holding a partial
+        # archive at container_dump_path with nothing to remove it.
+        _run(["docker", "cp", str(input_path), f"{container_name}:{container_dump_path}"])
+
         # Non-destructive preflight: `--list` only reads the archive's table
         # of contents, so a corrupt/truncated/non-pg_dump file is rejected
         # here, before `--clean` has dropped a single object in the target

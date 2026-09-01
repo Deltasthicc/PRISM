@@ -218,8 +218,9 @@ username, email, realm role or another display claim.
 | I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed and independently reviewed; live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
 | J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
 | K — Controlled first-admin bootstrap | Codex | **done — review findings and permanent invariant closed in reviewed Package M** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
-| L — Retention policy + PostgreSQL backup/restore | Claude Code | **reopened by final Codex review — restore-copy cleanup and concurrent temp-path safety required** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md`; Codex will not edit these files |
+| L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — restore-copy cleanup, concurrent temp-path safety and FileNotFoundError normalization fixed and live-verified; Codex's independent Package N contract already agrees (4/4)** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
+| N — Package L adversarial acceptance contract | Codex | **in progress; Claude must not edit this file** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
 
 ## Backlog / next up
 
@@ -1188,3 +1189,61 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   touch L and will run the final full/live/concurrency audit after Claude's follow-up commit.
   Independent pre-handoff full backend gate: **228 passed, 2 existing pytest-cache permission
   warnings in 38.36s**; `git diff --check` reported no errors.
+- 2026-09-01 — Codex — Parallel split for the final L closure: Claude exclusively owns
+  `backend/scripts/backup_restore.py` and `backend/tests/test_core_backup_restore.py`; Codex
+  exclusively owns new `backend/tests/test_core_backup_restore_adversarial.py`. The new contract
+  will independently pin restore-copy cleanup, distinct per-operation container paths for backup
+  and restore, primary-error preservation, and normalization of a missing Docker executable. Codex
+  will not adjust expectations to fit Claude's implementation; Claude must not edit the new file.
+- 2026-09-01 — Codex — The independent Package N contract ran **4 passed** on its first execution,
+  because Claude's disjoint Package L edits became visible in the shared worktree while Codex was
+  authoring the new file. This is useful green evidence but not final acceptance: Claude's files are
+  still uncommitted at this point. Codex has not read or edited those in-flight changes and will
+  rerun the unchanged contract against Claude's immutable commit before staging Package N.
+- 2026-09-01 — Claude Code — Closed the final Package L reopening from `a722e75`'s review of
+  `5531391`: restore-copy cleanup and concurrent-invocation temp-path safety, plus the lower-priority
+  `FileNotFoundError` normalization noted in the same review. Only `backend/scripts/backup_restore.py`
+  and `backend/tests/test_core_backup_restore.py` touched. Noticed Codex is independently authoring
+  `backend/tests/test_core_backup_restore_adversarial.py` (Package N) in the same shared worktree
+  concurrently -- did not read it before writing these fixes/tests, and left it completely alone;
+  ran it read-only afterward purely to see whether it already agreed with this commit (it does: 4/4
+  pass against this exact working tree, reported below).
+
+  1. *Restore's inbound `docker cp` was outside the cleanup-protected scope* -- `restore_backup()`
+  copied the local archive into the container **before** the `try` block that provides
+  primary-error-preserving cleanup. A `docker cp` failing partway through (a partial transfer)
+  therefore left a partial archive in the container with no `rm -f` ever attempted. Moved that
+  `docker cp` call inside the same `try` as the preflight/restore, so any failure at or after that
+  point now triggers cleanup. Live-verified: fed a garbage (non-pg_dump) file to `restore_backup()`
+  against the real container and confirmed both that the failure surfaced correctly AND that no
+  `/tmp/backup_restore_*.pgdump` files were left behind afterward.
+
+  2. *Fixed, process-global container temp paths* -- both functions previously wrote to a single
+  hardcoded path (`/tmp/backup_restore_dump.pgdump` / `/tmp/backup_restore_restore.pgdump`), so
+  concurrent invocations (two backups, two restores, or one of each) against the same container
+  could overwrite, copy, or delete each other's archive mid-operation. Added `_unique_container_path()`
+  (a `uuid.uuid4().hex` suffix per call) and both functions now use it. Live-verified with genuine
+  thread-level concurrency against the real container: 4 concurrent `create_backup()` calls all
+  succeeded independently (each produced the correct 36222-byte archive), and 3 concurrent
+  `restore_backup()` calls against the same source archive also all completed successfully, with no
+  leftover temp files in either case -- this is real interleaved `docker exec`/`docker cp` traffic
+  against one container, not simulated.
+
+  3. *Lower-priority, closed in the same patch*: `_run()` now catches `FileNotFoundError` (raised
+  when the `docker` binary itself isn't on PATH) and re-raises it as `BackupRestoreError`, honoring
+  the module's documented exception contract instead of leaking a raw stdlib exception. Live-verified
+  by calling `_run()` with a genuinely nonexistent binary name (not mocked) and confirming
+  `BackupRestoreError` was raised, not `FileNotFoundError`.
+
+  New tests in `test_core_backup_restore.py`: partial-copy-into-container cleanup, unique-path
+  helper differs across calls, two concurrent `create_backup()` calls get distinct container paths,
+  two concurrent `restore_backup()` calls get distinct container paths, and missing-binary
+  normalization. 24 tests total in that file (was 19).
+
+  Full backend suite: **237 passed** (was 228; +5 in my file, +4 from Codex's new independent
+  `test_core_backup_restore_adversarial.py`, which the harness picks up automatically). Ran Codex's
+  new adversarial file against this exact working tree, read-only, after writing my own fixes/tests
+  independently: **4/4 pass** -- restore-copy cleanup without masking the primary error, distinct
+  concurrent-backup paths, distinct concurrent-restore paths, and missing-Docker normalization all
+  independently agree with this implementation. Not touching that file, `retention.py` (no new
+  findings this round), or any other Codex-owned file in this pass.

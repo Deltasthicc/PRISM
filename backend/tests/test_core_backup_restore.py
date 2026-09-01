@@ -17,6 +17,7 @@ from scripts.backup_restore import (
     _connection_parts,
     _redact,
     _run,
+    _unique_container_path,
     create_backup,
     restore_backup,
 )
@@ -275,3 +276,94 @@ def test_create_backup_surfaces_a_cleanup_failure_after_a_successful_backup(monk
 
     with pytest.raises(BackupRestoreError, match="cleanup failed after a successful backup"):
         create_backup("sih-learning-postgres", REAL_URL, output)
+
+
+def test_restore_backup_cleans_up_on_a_partial_copy_into_the_container(monkeypatch):
+    # The docker cp that copies the local archive INTO the container must be
+    # inside the same cleanup-protected scope as the rest of the restore: a
+    # partial/failed transfer must not leave an orphaned archive behind with
+    # nothing attempting to remove it.
+    calls = []
+
+    def _fake_run(command, **kwargs):
+        calls.append(command)
+        if "cp" in command:
+            raise BackupRestoreError("docker cp into container failed (synthetic, partial transfer)")
+        return None
+
+    monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
+    dump = Path(__file__)
+    with pytest.raises(BackupRestoreError, match="docker cp into container failed"):
+        restore_backup("sih-learning-postgres", REAL_URL, dump)
+
+    joined = [" ".join(c) for c in calls]
+    assert any("cp" in c for c in joined), "the inbound copy must actually have been attempted"
+    assert any("rm -f" in c for c in joined), (
+        "a partial copy into the container must still be cleaned up, not left behind"
+    )
+    # And the destructive pg_restore step itself must never have run.
+    assert not any("--clean" in c or "--single-transaction" in c for c in joined)
+
+
+def test_unique_container_path_differs_across_calls():
+    # A per-operation random suffix is what actually prevents concurrent
+    # invocations from colliding on a shared fixed path.
+    first = _unique_container_path("dump")
+    second = _unique_container_path("dump")
+    assert first != second
+    assert first.startswith("/tmp/backup_restore_dump_")
+    assert first.endswith(".pgdump")
+
+
+def test_two_concurrent_create_backup_calls_use_distinct_container_paths(monkeypatch, tmp_path):
+    captured_paths = []
+
+    def _fake_run(command, **kwargs):
+        if "pg_dump" in command:
+            # --file <container_path> is the last two arguments.
+            captured_paths.append(command[command.index("--file") + 1])
+        return None
+
+    monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
+    output_a = tmp_path / "a.pgdump"
+    output_b = tmp_path / "b.pgdump"
+    output_a.write_bytes(b"fake dump bytes a")
+    output_b.write_bytes(b"fake dump bytes b")
+
+    create_backup("sih-learning-postgres", REAL_URL, output_a)
+    create_backup("sih-learning-postgres", REAL_URL, output_b)
+
+    assert len(captured_paths) == 2
+    assert captured_paths[0] != captured_paths[1], (
+        "two create_backup() calls must not reuse the same container-side temp path"
+    )
+
+
+def test_two_concurrent_restore_backup_calls_use_distinct_container_paths(monkeypatch):
+    captured_paths = []
+
+    def _fake_run(command, **kwargs):
+        if "cp" in command:
+            # docker cp <local> <container>:<container_path>
+            captured_paths.append(command[-1].rsplit(":", 1)[-1])
+        return None
+
+    monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
+    dump = Path(__file__)
+
+    restore_backup("sih-learning-postgres", REAL_URL, dump)
+    restore_backup("sih-learning-postgres", REAL_URL, dump)
+
+    assert len(captured_paths) == 2
+    assert captured_paths[0] != captured_paths[1], (
+        "two restore_backup() calls must not reuse the same container-side temp path"
+    )
+
+
+def test_run_wraps_a_missing_docker_binary_as_backuprestoreerror(monkeypatch):
+    def _raise_file_not_found(*args, **kwargs):
+        raise FileNotFoundError(2, "No such file or directory", "docker")
+
+    monkeypatch.setattr("scripts.backup_restore.subprocess.run", _raise_file_not_found)
+    with pytest.raises(BackupRestoreError, match="command not found"):
+        _run(["docker", "version"])

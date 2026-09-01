@@ -6,10 +6,11 @@ authorization matrix" acceptance evidence) -- route code should call
 record_audit_event() rather than constructing an AuditEvent row directly, so
 every audit write goes through one place if the shape ever needs to change.
 
-This does not yet enforce WHO may call it -- there is no RBAC/authentication
-in this repository yet (see CODEX.md "Current verified reality"). Once real
-identity lands, the caller-authorization check belongs here, not scattered
-across every route that writes an audit event.
+This helper does not itself decide WHO may call it. Lane 2 now supplies OIDC
+verification, local identity binding and RBAC primitives, and privileged
+security services enforce them before calling this helper. Existing HTTP
+routes still need Lane 5 to compose those checks; the presence of this write
+path alone does not make a route authenticated or audited.
 """
 from __future__ import annotations
 

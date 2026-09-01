@@ -143,7 +143,13 @@ def _issuer(value: str) -> str:
     issuer = _required(value, "issuer")
     if issuer != value:
         raise AuthorizationError("issuer must match the verified value exactly")
+    if any(ord(character) < 0x21 or ord(character) == 0x7F for character in issuer):
+        raise AuthorizationError("issuer must not contain whitespace or control characters")
     parsed = urlsplit(issuer)
+    try:
+        parsed.port
+    except ValueError as exc:
+        raise AuthorizationError("issuer port is invalid") from exc
     local_http = parsed.scheme == "http" and parsed.hostname in {
         "localhost",
         "127.0.0.1",

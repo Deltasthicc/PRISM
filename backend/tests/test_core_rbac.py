@@ -180,6 +180,11 @@ def test_resolution_fails_closed_for_nonmatching_or_inactive_binding(db, failure
         "https://id.test/r?q=1",
         "https://user@id.test/realm",
         " https://id.test/realm",
+        "https://id.test/re\nalm",
+        "https://id.test/re\talm",
+        "https://id.test/re\x00alm",
+        "https://id.test:invalid/realm",
+        "https://id.test:70000/realm",
     ],
 )
 def test_resolution_rejects_unsafe_issuer_shapes_before_lookup(db, issuer):

@@ -4,8 +4,8 @@ Owner: Lane 2 (Core Platform, Identity & Data)
 
 Consumers: Lanes 1, 4, 5 and 6
 
-Status: **local OIDC/RBAC foundation under cross-review. No government IdP, browser login flow or
-protected product route is claimed.**
+Status: **local OIDC/RBAC foundation implemented; final hardening/operational packages remain in
+cross-review. No government IdP, browser login flow or protected product route is claimed.**
 
 This contract implements the server-side boundary required by `PS-16`. It does not make the
 application production-authorized: the accountable IdP, organization/department model, route
@@ -49,9 +49,45 @@ strings are matched exactly rather than normalized after verification.
 principal receives `tenant_scope="deployment-database"` from server code; no token/request tenant
 claim can override the database selected by `DATABASE_URL`.
 
-The first organization administrator binding is a controlled bootstrap operation and is not
-available through a public route. A production process for bootstrap approval and recovery is not
-defined yet.
+### 2.1 First organization-administrator bootstrap
+
+The first binding is created only through the out-of-band module
+`python -m security.identity_bootstrap`; it is never available through a public route. The workflow:
+
+1. requires the database to be at the repository's single Alembic head;
+2. requires a fresh database session and takes a transaction-scoped PostgreSQL advisory lock (or
+   an immediate SQLite write lock) before checking state;
+3. refuses to run if *any* identity-binding row already exists;
+4. requires an exact acknowledgement of
+   `BOOTSTRAP ORGANIZATION ADMIN <issuer>|<subject_id>`;
+5. creates one active binding with no `player_id` and an atomic
+   `identity_binding.bootstrap` audit event; and
+6. records the supplied change/operator reference explicitly as out-of-band and not as a verified
+   OIDC identity.
+
+Example from `backend/`, after setting `DATABASE_URL` to the migrated target database:
+
+```powershell
+$issuer = 'https://identity.example.test/realms/sih'
+$subject = 'issuer-provided-stable-subject-id'
+$confirmation = "BOOTSTRAP ORGANIZATION ADMIN $issuer|$subject"
+& .\.venv\Scripts\python.exe -m security.identity_bootstrap `
+  --issuer $issuer `
+  --subject-id $subject `
+  --operator-reference 'approved-change-CR-26101' `
+  --reason 'initial organization administrator bootstrap' `
+  --confirmation $confirmation
+```
+
+Before applying, an accountable operator must independently confirm in the IdP that this exact
+issuer-scoped subject is assigned the `organization_admin` realm role. The binding does not store or
+grant that role; runtime authorization still requires it in a verified access token. The CLI never
+accepts a token, password or client secret. Direct database access can still bypass application
+controls, so production database credentials/change approval remain operational controls rather
+than something this module can prove.
+
+After the first binding exists, all later binding changes use the active-organization-admin,
+audited functions in `security.rbac`; the bootstrap refuses to become a recovery/rebinding bypass.
 
 ## 3. Roles and permissions
 

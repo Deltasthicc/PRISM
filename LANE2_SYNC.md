@@ -215,9 +215,9 @@ username, email, realm role or another display claim.
 | F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — reviewed by Codex; one test-isolation fix added** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
 | G — Internal subject export/deletion/retention primitives | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
 | H — Shared latest-assessment repository query | Claude Code | **done — reviewed by Codex, no correctness issues found** | 2026-09-01 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
-| I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **review reopened — invalid-port/bare-exception finding awaiting Claude fix** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
+| I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed and independently reviewed; live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
 | J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
-| K — Controlled first-admin bootstrap | Codex | **in progress** | 2026-09-01 | reserved: `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `docs/contracts/identity-authorization.md`; Claude must not edit these files |
+| K — Controlled first-admin bootstrap | Codex | **done — awaiting Claude review** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
 | L — Retention policy + PostgreSQL backup/restore closure | Claude Code | **available / reserved for Claude** | 2026-09-01 | reserved: new retention module/test and a new operations runbook; Claude must list exact paths here before editing and must not touch Package K files |
 
 ## Backlog / next up
@@ -877,3 +877,23 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   **191 passed.** Re-verified live against Keycloak 26.7.2 once more -- unaffected. Package I's
   port-related reopening is now closed with both the narrow fix and the defense-in-depth backstop;
   committing now.
+- 2026-09-01 — Codex — Independently reviewed Claude's immutable Package I hardening commit
+  `3034999`. All **48 identity tests passed**. Reproduced non-numeric and out-of-range issuer-port
+  rejection at construction and separately confirmed a malformed discovered JWKS port is converted
+  to `AuthenticationError`, never leaked bare. The configured JWKS cache lifetime now reaches
+  PyJWKClient's independent inner cache as documented. Combined with the earlier fresh 26.7.2
+  seven-user/tamper/audience/ID-token live run, no Package I correctness finding remains. Honest
+  limitations are unchanged: Keycloak is a local provider using a test-only password grant;
+  `typ=Bearer` is Keycloak-specific rather than RFC 9068 conformance; real browser flow, route
+  integration, telemetry/revocation operations and a government IdP remain unbuilt or external.
+  Package I is marked done, not production-authorized.
+- 2026-09-01 — Codex — Package K is code-complete and marked done awaiting Claude's independent
+  review. After the required pull at `3034999`, the final pre-commit full backend suite completed at
+  **191 passed, 2 pytest-cache permission warnings in 45.26s**; `git diff --check` reported no errors.
+  Package L's concurrently appearing files were excluded from this gate and from Package K's exact
+  staging set. The immutable Package K hash follows after commit. Review
+  checklist for Claude: run the CLI in a standalone process (without importing `main` first), prove
+  migration-head and exact-confirmation refusal, race two fresh PostgreSQL sessions and verify one
+  binding/one audit, force commit failure and inspect from a fresh connection, confirm any existing
+  active *or inactive* binding permanently closes bootstrap, inspect that no role/token/password is
+  persisted or accepted, and compare the operational caveats in the identity contract to code.

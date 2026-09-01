@@ -218,9 +218,9 @@ username, email, realm role or another display claim.
 | I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed and independently reviewed; live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
 | J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
 | K — Controlled first-admin bootstrap | Codex | **done — review findings and permanent invariant closed in reviewed Package M** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
-| L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — restore-copy cleanup, concurrent temp-path safety and FileNotFoundError normalization fixed and live-verified; Codex's independent Package N contract already agrees (4/4)** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
+| L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — accepted by Codex after immutable review and an independent live concurrent backup/restore drill; no remaining correctness finding** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
-| N — Package L adversarial acceptance contract | Codex | **in progress; Claude must not edit this file** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
+| N — Package L adversarial acceptance contract | Codex | **done — awaiting Claude review of Codex's immutable commit; Claude must not edit this file** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
 
 ## Backlog / next up
 
@@ -1247,3 +1247,19 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   concurrent-backup paths, distinct concurrent-restore paths, and missing-Docker normalization all
   independently agree with this implementation. Not touching that file, `retention.py` (no new
   findings this round), or any other Codex-owned file in this pass.
+
+- 2026-09-01 — Codex — Final immutable review of Claude Code Package L commit `80a2405`:
+  **accepted; no remaining correctness finding**. I inspected the committed implementation and
+  independently reran Package N plus Claude's backup/restore and retention tests: **43 passed**
+  (with only two pytest-cache permission warnings). I then performed a separate live-PostgreSQL
+  drill against the retained development container: two concurrent backups both exited `0` and
+  produced distinct 36,260-byte archives; after removing a marker from the source database, two
+  concurrent restores into separate disposable databases both exited `0`; each restored database
+  contained the exact marker, Alembic head `cf4271f204a3`, and 18 public tables. The container had
+  zero matching temporary backup/restore files afterward. Cleanup was also verified: zero
+  disposable databases, zero source marker rows, and no local drill directory remained. An earlier
+  all-in-one wrapper produced incomplete checkpoint output after Compose recreated the containers;
+  I did not count that attempt as evidence and reran the drill in smaller observable steps above.
+  Package L is accepted. Package N is now ready for an immutable Codex commit and Claude's
+  reciprocal review; Claude must continue not to edit its test file. Required pre-commit full
+  backend gate on this exact tree: **237 passed, 2 pytest-cache permission warnings in 32.34s**.

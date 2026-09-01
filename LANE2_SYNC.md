@@ -260,13 +260,14 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | N — Package L adversarial acceptance contract | Codex | **done — reviewed and accepted by Claude Code (da4c6f3..59a1376), regression-injection-verified not vacuous, no findings** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
 | O-A — root truth/checklist/handoff reconciliation | Codex | **done — reviewed and accepted by Claude Code (`a94492e`), no findings** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
 | O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **done — all 4 Codex-requested corrections applied, pushed, awaiting Codex O-C review** | 2026-09-01 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
-| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **Codex handed off remaining work to Claude Code (out of tokens); O-A/Q accepted by Claude, P/S implemented and live-tested by Claude (awaiting Codex final review whenever Codex returns), O-B corrected.** | 2026-09-01 | review-only outside each agent's owned files; findings/closure recorded here |
-| P/S — Retention enforcement job (atomic PostgreSQL row claiming) + JWKS key-rotation evidence | Claude Code | **implemented and live-tested (FOR UPDATE SKIP LOCKED; 4-worker live drill exactly reproduces and resolves the 3/11 race: union=11, sum=11, audit-sum=11, 0 overlap, clean 0/0 rerun); 339 passed; awaiting Codex final review** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/retention_job.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py`, `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
+| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **REOPENED by Codex immutable audit of `1f0c576`: S and T accepted, but U's unconditional PostgreSQL DELETE trigger makes the accepted retention mechanism fail at the current migration head. Package V is required before local Lane 2 closure.** | 2026-09-01 | review-only outside each agent's owned files; findings/closure recorded here |
+| P/S — Retention enforcement job (atomic PostgreSQL row claiming) + JWKS key-rotation evidence | Claude Code | **Algorithm and exception boundary accepted by Codex on immutable review. Independent live re-drill with U's delete trigger isolated/disabled: sizes `[2,3,3,3]`, disjoint, union/deleted/audit=11, 2 young retained, clean `0/0`. Integrated head remains blocked by U until Package V.** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/retention_job.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py`, `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
 | Q — Encryption/key-ownership primitive and contract | Codex | **done — reviewed and accepted by Claude Code (`f343455`), 7 independent adversarial checks beyond Codex's own 22, no findings** | 2026-09-01 | `backend/security/encryption.py` (new), `backend/tests/test_core_encryption.py` (new), `docs/contracts/encryption-key-ownership.md` (new), `backend/requirements.txt` (direct dependency only), `backend/security/__init__.py` (truth-only docstring) |
 | R — Package P adversarial acceptance contract | Codex | **unit contract complete and green (20/20), unchanged; the live PostgreSQL race it helped surface is now fixed by Claude's Package S, live-tested, awaiting Codex review** | 2026-09-01 | `backend/tests/test_core_identity_adversarial.py`, `backend/tests/test_core_retention_job_adversarial.py`; no Claude-owned implementation/test file changed |
-| S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **implemented and live-tested (`FOR UPDATE SKIP LOCKED`, non-vacuous SQL coverage, exact 4-worker live-drill reproduction resolved: union=11, sum=11, audit-sum=11, 0 overlap, clean 0/0 rerun); 341 passed; awaiting Codex final review — Codex out of session budget, handed off remaining Lane 2 work** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; also touched `CLAUDE.md`, `README.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `EVIDENCE.md`, `docs/contracts/*.md` for truth reconciliation per the handoff |
-| T — Full independent Lane 2 security/data audit | Claude Code | **done — Codex ran out of session credits mid-parallel-audit (flagged one real doc-precision issue before stopping, corrected); Claude completed the full sweep solo, found and fixed 2 real issues (stale `deleted_counts` snapshot, non-injective `audit_actor` encoding), both live-verified against PostgreSQL; 341 passed, 0 failures; awaiting Codex cross-check whenever Codex's session resumes** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`; also corrected the warning-count claim across `EVIDENCE.md`, `README.md`, `SIH26101_MASTER_CHECKLIST.md` |
-| U — Second external-audit review + PostgreSQL audit-events append-only trigger | Claude Code | **done — 3 of 4 claims (RLS, full audit triggers with actor context, evidence SHA-256 self-hashing, legacy ETL) rejected on technical merits with detailed reasoning; 1 correctly-scoped item (DB-enforced append-only on `audit_events`) implemented, live-verified against real PostgreSQL including the documented owner-bypass caveat; 341 passed, migration-chain regression suite updated for the new head; awaiting Codex cross-check** | 2026-09-01 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py` (new), `backend/tests/test_core_migrations.py`, `backend/tests/test_core_database.py` |
+| S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **ACCEPTED by Codex on immutable `699641a`/current-tree review, including an independent live four-worker drill. The code is correct in isolation; Package U subsequently introduced an integration conflict at head, assigned to V rather than reopening S's locking algorithm.** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; truth docs |
+| T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
+| U — Second external-audit review + PostgreSQL audit-events append-only trigger | Claude Code | **REJECTED / reopened by Codex integration audit of `1f0c576`. Trigger behavior itself is real, but unconditional DELETE rejection conflicts with the only registered retention target (`audit_events`): at Alembic head, a cited maximum policy raises `ProgrammingError` and leaves the expired row. RLS/self-hash/ETL rejection decisions otherwise accepted with the ETL rationale corrected below.** | 2026-09-01 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
+| V — Reconcile audit immutability with lawful retention | Claude Code | **NOT STARTED — required for local Lane 2 closure. Recommended hackathon-safe disposition: retire/defer U's DB DELETE trigger via a follow-up migration and restore truthful application-level append-only wording; a dedicated retention DB role/procedure is acceptable only with real privilege separation and live negatives.** | 2026-09-01 | new follow-up migration, migration/retention integration tests, current truth docs and evidence |
 
 ## Backlog / next up
 
@@ -2415,3 +2416,145 @@ FINAL GATES AND DELIVERY
   from before Package U -- this is a database-migration-only change with no new Python test
   surface beyond the existing migration-chain regression tests, which now exercise the new
   revision directly).
+
+- 2026-09-01 — Codex — **Cold immutable audit of Claude Packages S/T/U at `1f0c576`; S and T
+  accepted, U rejected on a demonstrated cross-package conflict; Lane 2 is not locally closed.**
+
+  **Audit integrity/context.** Local `HEAD` and the local origin ref both resolved to
+  `1f0c576d7c73273dbea295f03599bac72f753e9f`; the working tree was clean before this log update.
+  `git fetch origin` itself could not refresh `.git/FETCH_HEAD` in this sandbox (`Permission
+  denied`), so this review does not claim a successful network fetch. Three fresh read-only Codex
+  sub-review turns were launched for technical, contract and documentation cross-checking, but all
+  three hit the account usage limit before returning new results; their absence is not presented as
+  peer-review evidence. Claude's completed Package T/U audit and this Codex audit are the two
+  completed review passes.
+
+  **Independent automated evidence.** From `backend/`,
+  `.\.venv\Scripts\python.exe -m pytest -q` completed with **341 passed, 4 warnings, 0 failures in
+  50.36s**. The four warnings on this exact run were two Python-3.12 SQLite datetime-adapter
+  deprecations and two `.pytest_cache` permission warnings. `alembic current` against the declared
+  Compose PostgreSQL returned `036de46dd515 (head)`. `alembic check` returned `No new upgrade
+  operations detected`. Docker Compose reported PostgreSQL 16 and Keycloak 26.7.2 healthy.
+
+  **Package S verdict — ACCEPTED in isolation.** On a disposable PostgreSQL database at the current
+  Alembic head, with U's delete trigger deliberately disabled only to isolate S, the exact four-
+  worker/11-expired/2-young/batch-3 drill produced `DELETED_SIZES=[2, 3, 3, 3]`,
+  `PAIRWISE_DISJOINT=True`, `UNION_COUNT=11`, `DELETED_SUM=11`, `AUDIT_SUM=11`,
+  `OLD_REMAINING=0`, `YOUNG_REMAINING=2`, final `(candidate_count, deleted_count)=(0, 0)`, and four
+  durable deletion-audit rows (no extra audit on the final no-op). This independently confirms the
+  `FOR UPDATE SKIP LOCKED` fix and Claude's prior live result. The disposable database was dropped.
+
+  **Package T verdict — ACCEPTED.** The `delete_subject_data()` change derives reported counts from
+  the actual SQLAlchemy bulk-DELETE rowcounts and preserves the existing transactional rollback and
+  ownership filters. The canonical sorted/compact JSON `(issuer, subject_id)` audit actor is
+  injective for the represented pair and removes the delimiter collision. Both new regressions are
+  included in the 341-pass immutable full gate. No remaining T correctness finding.
+
+  **Package U migration behavior — verified, but integration verdict REJECTED.** A fresh disposable
+  database upgraded through all four migrations to `036de46dd515`. A normal synthetic audit INSERT
+  succeeded. Direct UPDATE and DELETE each exited non-zero with respectively
+  `audit_events is append-only: UPDATE is not permitted by database policy` and
+  `... DELETE is not permitted ...`; the original row survived unchanged. Downgrade to
+  `cf4271f204a3` made the row deletable; upgrade returned cleanly to head. This proves the migration
+  does what it says. It does **not** prove that the integrated Lane 2 design remains coherent.
+
+  **P1 integrated defect reproduced at the real head.** `CATEGORY_TABLES` registers exactly one
+  enforcement target: `audit_events`. On another fresh database at `036de46dd515`, Codex inserted
+  one 40-day-old audit event and invoked `_enforce_maximum_retention_core(... apply=True ...)` with
+  a synthetic cited 30-day maximum. The accepted S path reached its DELETE and failed with
+  `ProgrammingError` / `psycopg.errors.RaiseException: audit_events is append-only: DELETE is not
+  permitted by database policy`; after rollback `ROW_REMAINS=1`. Thus U makes the retention
+  mechanism unusable for its only registered category as soon as an approved maximum is added.
+  The current real registry has no maximum, so today's public CLI still no-ops; that postpones the
+  failure but does not make the claim “add the maximum and use the existing mechanism” true. The
+  disposable database was dropped.
+
+  **External-audit dispositions.** U's rejection of row RLS now is accepted: the documented tenant
+  is one deployment/database and no authoritative row-tenant key/model exists. Revisit after an
+  approved organization/department/cohort schema; do not fabricate `tenant_id`. Rejection of a
+  self-stored evidence SHA as tamper-proof is accepted: the same writer can recompute it; genuine
+  tamper evidence needs separate custody/WORM/signing/chaining. Rejection of a legacy ETL now is
+  also accepted because there is no identified production SQLite dataset, approved mapping or
+  reconciliation requirement. However, “no tenant model” is irrelevant to whether ETL can exist;
+  the no-real-source/no-continuity-requirement reason is the defensible one and current docs should
+  use that reason. The broad trigger proposal remains premature without DB-role separation and
+  actor/session-context design.
+
+  **Package V handoff to Claude Code (required before Codex can close O-C):** keep the fix narrowly
+  Lane 2-owned. Recommended hackathon-safe solution: add a follow-up Alembic revision that retires
+  U's unconditional DELETE rejection (and retire the whole DB-trigger claim unless its remaining
+  semantics are named precisely), restoring the previously agreed application-level append-only
+  boundary. Do not rewrite an already-pushed migration in place because databases already stamped
+  `036de46dd515` would not rerun it. A more complex alternative is acceptable only if it creates
+  genuine separate application/migrator/retention database roles and a narrowly authorized purge
+  path; a GUC or function callable by the same owner role is not a security boundary and is not
+  worth adding for this phase. Add a regression/opt-in PostgreSQL integration contract proving that
+  at the final head (a) ordinary UPDATE/DELETE semantics match the documented boundary, (b) a cited
+  synthetic maximum can execute the retention job, (c) the four-worker S drill remains exact, and
+  (d) migration downgrade/upgrade is clean. Correct all U “DB-enforced append-only” claims and the
+  Package-S warning evidence by appending this independent four-warning result, never rewriting
+  historical rows. Run the full suite and live drill, commit/push, and request another immutable
+  Codex review. Do not implement routes/RLS/ETL/self-hashing/production roles opportunistically.
+
+  **Copy-ready messages for dependent owners once V is green:**
+
+  **Lane 1 — Professional Experience & Accessibility**
+
+  > Lane 2's local identity foundation is ready for integration but the browser still uses a
+  > demo-only username flow. Work with Lane 5 to implement Authorization Code + PKCE (`S256`),
+  > exact redirect URIs, state/nonce, safe session/token handling, logout, and accessible loading,
+  > error, expiry and recovery states. Keep the existing demo flow visibly labelled until the
+  > protected API path is complete. Never derive `player_id`, role or tenant from username/email.
+
+  **Lane 3 — Competency & Learning Intelligence**
+
+  > Consume Lane 2's versioned `RoleTarget`, `EvidenceRecord` and latest-assessment semantics rather
+  > than inventing parallel persistence or treating experience level as a role. Propose an explicit
+  > contract before adding a canonical competency/version table; Lane 2 currently stores stable
+  > competency IDs while your versioned source/policy files remain authoritative. Add deterministic
+  > tests showing no-evidence is distinct from low proficiency and that pathway decisions use the
+  > contracted latest assessment. Do not edit Lane 2 models silently.
+
+  **Lane 4 — Content AI, RAG & Evaluation**
+
+  > Use Lane 2's `SourceVersion` IDs/SHA provenance and the deployment-database tenant boundary in
+  > your ingestion/retrieval contract. Require access filtering before retrieval. If chunks,
+  > embeddings or pgvector persistence are genuinely needed, first send Lane 2 a versioned schema,
+  > ownership, deletion and query/index contract; do not add speculative vector columns or call
+  > whole-context prompting RAG.
+
+  **Lane 5 — Product API, Integrations & Analytics**
+
+  > Read `docs/contracts/identity-authorization.md` and `data-authorization.md`. Attach Bearer
+  > verification, active identity binding, permission, deployment-tenant and object-scope checks to
+  > every protected `backend/routes/**` operation. Authority must come from `BoundPrincipal`, never
+  > request `player_id`, role, actor or tenant fields. Add consistent 401/403 responses and negative
+  > API tests. Implement `GET /learning/assessment/{player_id}/latest`; update pathway lookup to use
+  > `db.repositories.get_latest_assessment`. For admin aggregates use latest per
+  > `(player_id,curriculum_slug)` window semantics, not historical-run counts or a scalar-helper
+  > loop. Expose binding, subject export/deletion and audit reads only behind the documented matrix.
+  > Propose contract changes instead of editing Lane 2 policy/models silently.
+
+  **Lane 6 — Quality, Security, Release & Evidence**
+
+  > Merge Lane 2 only after Package V and immutable re-review. Run PostgreSQL/Keycloak-backed CI at
+  > the integration head plus route-level 401/403/object-scope E2E with Lane 5 and browser PKCE E2E
+  > with Lane 1. Own threat modelling, dependency/secret/SAST/DAST checks, rate-limit evidence,
+  > redacted telemetry, health/readiness, scheduled encrypted offsite backup, restore runbook and
+  > RTO/RPO drill. Preserve the distinction between local primitives and integrated/production
+  > claims; the local Docker backup helper is not production DR.
+
+  **Accountable product/government/privacy/security owners**
+
+  > Please provide written decisions/evidence for: the approved production IdP/client/claims and
+  > role-reconciliation owner; authoritative organization/department/trainer/cohort relationships;
+  > lawful purpose, subject-rights process and cited retention minima/maxima; KMS/HSM and backup-key
+  > custody; independent privacy/security/go-live review; current SIH 2026 rules, roster eligibility,
+  > deadline/problem-statement artifact and portal/SPOC link/hash. Until supplied, one database is
+  > one tenant, no maximum retention is configured, and no production/compliance claim is allowed.
+
+  **Team-level truth check requested by Claude.** Quest is already explicitly decided: keep it as
+  optional practice. FRAC/KCM naming is already decided: never call the prototype levels official.
+  The unresolved items are the current SIH 2026 eligibility/roster confirmation and official
+  portal/problem-statement/deadline evidence rows; those remain legitimately pending on the college
+  SPOC/team and are not Lane 2 code defects.

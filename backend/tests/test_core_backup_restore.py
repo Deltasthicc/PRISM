@@ -17,8 +17,11 @@ from scripts.backup_restore import (
     _connection_parts,
     _redact,
     _run,
+    create_backup,
     restore_backup,
 )
+
+REAL_URL = "postgresql://sih_app:sih_dev_local_only@localhost:55432/sih_learning_tool"
 
 
 def test_connection_parts_extracts_from_a_postgres_url():
@@ -82,6 +85,21 @@ def test_connection_parts_rejects_a_malformed_port_without_a_raw_valueerror():
     # BackupRestoreError like every other parsing failure, not leak past it.
     with pytest.raises(BackupRestoreError, match="not a valid URL"):
         _connection_parts("postgresql://user:pass@localhost:bad/db")
+
+
+def test_connection_parts_rejects_a_mismatched_port_on_localhost():
+    # This module always execs into the named container and connects to its
+    # internal Postgres on -h localhost, ignoring whatever port the caller's
+    # DATABASE_URL actually names -- so a URL naming a port other than the
+    # documented local-compose mapping (55432) must not be silently accepted
+    # and quietly run against the container's own database anyway.
+    with pytest.raises(BackupRestoreError, match="does not match the documented local-compose port"):
+        _connection_parts("postgresql://sih_app:pw@localhost:9999/sih_learning_tool")
+
+
+def test_connection_parts_rejects_a_missing_port():
+    with pytest.raises(BackupRestoreError, match="does not match the documented local-compose port"):
+        _connection_parts("postgresql://sih_app:pw@localhost/sih_learning_tool")
 
 
 def test_redact_hides_the_pgpassword_value():
@@ -154,3 +172,106 @@ def test_restore_backup_does_not_let_cleanup_failure_mask_the_primary_error(monk
             "postgresql://sih_app:x@localhost:55432/sih_learning_tool",
             dump,
         )
+
+
+def test_restore_backup_surfaces_a_cleanup_failure_after_a_successful_restore(monkeypatch):
+    # There is no primary failure to protect here -- a cleanup failure after
+    # an otherwise-successful restore is real information (a leftover
+    # container-side temp file) and must not be silently swallowed.
+    def _fake_run(command, **kwargs):
+        if "rm" in command:
+            raise BackupRestoreError("cleanup failed after a successful restore (synthetic)")
+        return None  # cp, --list preflight, and the actual restore all succeed
+
+    monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
+    dump = Path(__file__)
+    with pytest.raises(BackupRestoreError, match="cleanup failed after a successful restore"):
+        restore_backup("sih-learning-postgres", REAL_URL, dump)
+
+
+def test_restore_backup_command_includes_atomicity_flags(monkeypatch):
+    captured = {}
+
+    def _fake_run(command, **kwargs):
+        if "pg_restore" in command and "--list" not in command:
+            captured["command"] = command
+            captured["env"] = kwargs.get("env")
+        return None
+
+    monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
+    dump = Path(__file__)
+    restore_backup("sih-learning-postgres", REAL_URL, dump)
+
+    assert "--exit-on-error" in captured["command"]
+    assert "--single-transaction" in captured["command"]
+
+
+def test_restore_backup_passes_password_via_environment_not_argv(monkeypatch):
+    captured = {}
+
+    def _fake_run(command, **kwargs):
+        if "pg_restore" in command and "--list" not in command:
+            captured["command"] = command
+            captured["env"] = kwargs.get("env")
+        return None
+
+    monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
+    dump = Path(__file__)
+    restore_backup("sih-learning-postgres", REAL_URL, dump)
+
+    joined = " ".join(captured["command"])
+    assert "sih_dev_local_only" not in joined
+    assert "-e" in captured["command"] and "PGPASSWORD" in captured["command"]
+    assert captured["env"]["PGPASSWORD"] == "sih_dev_local_only"
+
+
+def test_create_backup_passes_password_via_environment_not_argv(monkeypatch, tmp_path):
+    captured = {}
+
+    def _fake_run(command, **kwargs):
+        if "pg_dump" in command:
+            captured["command"] = command
+            captured["env"] = kwargs.get("env")
+        return None
+
+    monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
+    output = tmp_path / "out.pgdump"
+    output.write_bytes(b"fake dump bytes")  # create_backup checks the file is non-empty afterward
+
+    create_backup("sih-learning-postgres", REAL_URL, output)
+
+    joined = " ".join(captured["command"])
+    assert "sih_dev_local_only" not in joined
+    assert "-e" in captured["command"] and "PGPASSWORD" in captured["command"]
+    assert captured["env"]["PGPASSWORD"] == "sih_dev_local_only"
+
+
+def test_create_backup_cleans_up_the_container_dump_on_a_docker_cp_failure(monkeypatch, tmp_path):
+    calls = []
+
+    def _fake_run(command, **kwargs):
+        calls.append(command)
+        if "cp" in command:
+            raise BackupRestoreError("docker cp failed (synthetic)")
+        return None
+
+    monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
+    with pytest.raises(BackupRestoreError, match="docker cp failed"):
+        create_backup("sih-learning-postgres", REAL_URL, tmp_path / "wont-be-created.pgdump")
+
+    joined = [" ".join(c) for c in calls]
+    assert any("rm -f" in c for c in joined), "the leftover container-side dump must be cleaned up"
+
+
+def test_create_backup_surfaces_a_cleanup_failure_after_a_successful_backup(monkeypatch, tmp_path):
+    def _fake_run(command, **kwargs):
+        if "rm" in command:
+            raise BackupRestoreError("cleanup failed after a successful backup (synthetic)")
+        return None  # pg_dump and docker cp both succeed
+
+    monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
+    output = tmp_path / "out.pgdump"
+    output.write_bytes(b"fake dump bytes")
+
+    with pytest.raises(BackupRestoreError, match="cleanup failed after a successful backup"):
+        create_backup("sih-learning-postgres", REAL_URL, output)

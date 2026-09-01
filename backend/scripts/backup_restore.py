@@ -14,6 +14,7 @@ backup story is "the app.db file", not this script.
 """
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -27,6 +28,15 @@ from sqlalchemy.engine import make_url
 # database while claiming to have backed up/restored the configured one --
 # fail closed instead of guessing.
 _SUPPORTED_LOCAL_HOSTS = {"localhost", "127.0.0.1"}
+
+# docker-compose.dev.yml maps the container's Postgres port 5432 to this
+# fixed host port ("55432:5432"), and .env.example's documented Postgres
+# DATABASE_URL uses it exactly. A DATABASE_URL naming any other port is
+# describing a different mapping than the one this module actually talks to
+# (it always execs into the container and connects to its internal 5432 via
+# `-h localhost`), so a mismatched port is the same class of configuration
+# error as a mismatched host and must fail closed the same way.
+_SUPPORTED_LOCAL_PORT = 55432
 
 
 class BackupRestoreError(RuntimeError):
@@ -44,13 +54,12 @@ def _redact(command: list[str]) -> list[str]:
 def _connection_parts(database_url: str) -> tuple[str, str, str, int, str]:
     """Return (user, password, host, port, dbname) parsed from DATABASE_URL.
 
-    `port` is only used for display; the actual connection happens *inside*
-    the container via `-h localhost` on Postgres's own default port, since
-    the dump/restore commands run inside the same container the database
-    lives in. `host` IS enforced: this module only ever execs into a named
-    local container, so a DATABASE_URL naming any other host is a
-    configuration mismatch, not something to silently ignore and act on
-    `localhost` anyway.
+    Both `host` and `port` are enforced, not just parsed for display: this
+    module only ever execs into a named local container and connects to its
+    internal Postgres via `-h localhost`, so a DATABASE_URL naming any other
+    host, or any port besides the documented local-compose mapping, is a
+    configuration mismatch -- not something to silently ignore and act on
+    the named container's own database anyway.
     """
     try:
         url = make_url(database_url)
@@ -70,7 +79,16 @@ def _connection_parts(database_url: str) -> tuple[str, str, str, int, str]:
             "docker-compose container's own local Postgres and refuses to silently run "
             "against a different host than the one DATABASE_URL names"
         )
-    return url.username, url.password or "", host, url.port or 5432, url.database
+    port = url.port
+    if port != _SUPPORTED_LOCAL_PORT:
+        raise BackupRestoreError(
+            f"DATABASE_URL port {port!r} does not match the documented local-compose port "
+            f"{_SUPPORTED_LOCAL_PORT} (docker-compose.dev.yml maps \"{_SUPPORTED_LOCAL_PORT}:5432\"); "
+            "this module always connects inside the named container regardless of the port "
+            "given, so a mismatched port means DATABASE_URL is not actually describing this "
+            "docker-compose stack -- refusing to silently run against it anyway"
+        )
+    return url.username, url.password or "", host, port, url.database
 
 
 def _run(command: list[str], *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
@@ -83,6 +101,22 @@ def _run(command: list[str], *, env: dict[str, str] | None = None) -> subprocess
     return result
 
 
+def _pgpassword_env(password: str) -> dict[str, str]:
+    """Build a subprocess environment carrying PGPASSWORD as an env var only.
+
+    `docker exec -e PGPASSWORD` (bare, no `=value`) makes the Docker CLI
+    forward *its own* process's PGPASSWORD into the container -- so pairing
+    that bare flag with this environment means the password is never a
+    literal value in this process's argv (which any other local user can
+    read via `ps`/`/proc/<pid>/cmdline` on Linux, or Task Manager's command
+    line column on Windows), only in its environment block. `_redact()` on
+    the command list is no longer the only thing standing between the
+    secret and an exception message with this in place; the secret string
+    simply never appears in `command` at all.
+    """
+    return {**os.environ, "PGPASSWORD": password}
+
+
 def create_backup(container_name: str, database_url: str, output_path: str | Path) -> Path:
     """Dump `database_url`'s database (running inside `container_name`) to a
     local file at `output_path`, using pg_dump's custom format (compressed,
@@ -93,22 +127,42 @@ def create_backup(container_name: str, database_url: str, output_path: str | Pat
     output_path = Path(output_path)
     container_dump_path = "/tmp/backup_restore_dump.pgdump"
 
-    _run(
-        [
-            "docker", "exec",
-            "-e", f"PGPASSWORD={password}",
-            container_name,
-            "pg_dump",
-            "-h", "localhost",
-            "-U", username,
-            "-d", dbname,
-            "--format=custom",
-            "--file", container_dump_path,
-        ]
-    )
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    _run(["docker", "cp", f"{container_name}:{container_dump_path}", str(output_path)])
-    _run(["docker", "exec", container_name, "rm", "-f", container_dump_path])
+    def _cleanup_dump(*, suppress: bool) -> None:
+        # Same primary-error-preserving discipline as restore_backup: a
+        # cleanup failure must never replace a primary pg_dump/docker cp
+        # failure, but on the success path an actual cleanup failure (a
+        # leftover container-side temp file) must still surface rather than
+        # being silently swallowed.
+        try:
+            _run(["docker", "exec", container_name, "rm", "-f", container_dump_path])
+        except BackupRestoreError:
+            if not suppress:
+                raise
+
+    try:
+        _run(
+            [
+                "docker", "exec",
+                "-e", "PGPASSWORD",
+                container_name,
+                "pg_dump",
+                "-h", "localhost",
+                "-U", username,
+                "-d", dbname,
+                "--format=custom",
+                "--file", container_dump_path,
+            ],
+            env=_pgpassword_env(password),
+        )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        _run(["docker", "cp", f"{container_name}:{container_dump_path}", str(output_path)])
+    except Exception:
+        # pg_dump may have written a partial file inside the container even
+        # if `docker cp` (or something after it) then fails -- clean it up
+        # without letting that cleanup mask the real failure.
+        _cleanup_dump(suppress=True)
+        raise
+    _cleanup_dump(suppress=False)
 
     if not output_path.exists() or output_path.stat().st_size == 0:
         raise BackupRestoreError(f"backup file was not produced or is empty: {output_path}")
@@ -135,15 +189,18 @@ def restore_backup(
     container_dump_path = "/tmp/backup_restore_restore.pgdump"
     _run(["docker", "cp", str(input_path), f"{container_name}:{container_dump_path}"])
 
-    def _cleanup_archive() -> None:
+    def _cleanup_archive(*, suppress: bool) -> None:
         # A cleanup failure must never replace a primary restore failure --
         # that would surface "rm: No such file" as the reported error and
-        # hide the actual problem. Swallow it here; the caller re-raises
-        # whatever primary exception (if any) is already in flight.
+        # hide the actual problem, so the exception-path caller passes
+        # suppress=True. On the success path there is no primary failure to
+        # protect, so a genuine cleanup failure (a leftover container-side
+        # temp file) must surface instead of being silently swallowed.
         try:
             _run(["docker", "exec", container_name, "rm", "-f", container_dump_path])
         except BackupRestoreError:
-            pass
+            if not suppress:
+                raise
 
     try:
         # Non-destructive preflight: `--list` only reads the archive's table
@@ -160,7 +217,7 @@ def restore_backup(
 
         command = [
             "docker", "exec",
-            "-e", f"PGPASSWORD={password}",
+            "-e", "PGPASSWORD",
             container_name,
             "pg_restore",
             "-h", "localhost",
@@ -169,21 +226,26 @@ def restore_backup(
             "--no-owner",
             "--no-privileges",
             "--exit-on-error",
+            # --exit-on-error alone only stops at the first error; it does
+            # not undo statements that already ran. --single-transaction
+            # wraps the whole restore in one transaction so it is actually
+            # atomic: either every statement applies, or (on any error) none
+            # of them do.
+            "--single-transaction",
         ]
         if clean:
             command += ["--clean", "--if-exists"]
         command.append(container_dump_path)
 
-        _run(command)
+        _run(command, env=_pgpassword_env(password))
     except Exception:
-        _cleanup_archive()
+        _cleanup_archive(suppress=True)
         raise
-    _cleanup_archive()
+    _cleanup_archive(suppress=False)
 
 
 def _main() -> None:
     import argparse
-    import os
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=["backup", "restore"])

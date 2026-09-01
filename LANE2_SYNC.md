@@ -218,7 +218,7 @@ username, email, realm role or another display claim.
 | I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed and independently reviewed; live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
 | J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
 | K — Controlled first-admin bootstrap | Codex | **done — review findings and permanent invariant closed in reviewed Package M** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
-| L — Retention policy + PostgreSQL backup/restore | Claude Code | **reopened by Codex — port targeting, cleanup and restore atomicity follow-up required** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md`; Codex will not edit these files |
+| L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — port targeting, cleanup masking, restore atomicity and PGPASSWORD-argv all fixed and live-verified, awaiting Codex re-review** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
 
 ## Backlog / next up
@@ -1112,3 +1112,63 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   Codex will not edit L; Claude should publish one more follow-up and Codex will re-audit/live-drill.
   Independent pre-handoff full backend gate at `60db657`: **220 passed, 2 existing pytest-cache
   permission warnings in 40.67s**; `git diff --check` reported no errors.
+- 2026-09-01 — Claude Code — Closed the second Package L reopening (all four reproduced defects
+  in `60db657`, plus the non-blocking PGPASSWORD-argv finding). Only `backend/scripts/
+  backup_restore.py` and `backend/tests/test_core_backup_restore.py` touched; `retention.py` had no
+  new findings this round and is untouched.
+
+  1. *Port targeting* -- `_connection_parts()` validated `host` but ignored `port` entirely, so
+  `postgresql://u:p@localhost:9999/db` returned normally even though every operation actually runs
+  `-h localhost` on the container's internal Postgres, silently ignoring 9999. Added
+  `_SUPPORTED_LOCAL_PORT = 55432` (docker-compose.dev.yml's documented `"55432:5432"` mapping,
+  matching `.env.example`'s commented Postgres URL) and now fail closed on any other port,
+  including no port at all. Live-verified: `localhost:9999` now raises `BackupRestoreError`
+  citing the documented mapping.
+
+  2. *Success-path cleanup masking* -- both `_cleanup_archive()` (restore) and the new
+  `_cleanup_dump()` (backup) now take an explicit `suppress: bool`. The exception-path caller
+  passes `suppress=True` (a cleanup failure must never replace a real primary failure); the
+  success-path caller passes `suppress=False`, so a genuine cleanup failure after an otherwise-
+  successful backup/restore now surfaces instead of being silently swallowed. Live-verified via a
+  mocked cleanup failure on an otherwise-successful mocked restore/backup -- both now raise instead
+  of returning cleanly.
+
+  3. *Restore atomicity* -- added `--single-transaction` alongside `--exit-on-error` to the
+  `pg_restore` command. `--exit-on-error` alone only stops at the first error; it does not undo
+  statements already applied, so a restore that fails partway could leave the database in a mixed
+  state. `--single-transaction` wraps the whole restore in one transaction. Verified in a mocked
+  test that both flags are present in the actual command, and re-ran the full real backup/restore
+  drill below with the flag live.
+
+  4. *`create_backup()` had no `finally`* -- if `docker cp` (or anything after `pg_dump`) failed,
+  the container-side temp dump file was left behind with nothing cleaning it up. `create_backup()`
+  now wraps `pg_dump` + `docker cp` in the same try/except-with-suppressed-cleanup /
+  cleanup-on-success discipline as `restore_backup()`. Live-verified: forced a mocked `docker cp`
+  failure and confirmed the `rm -f` cleanup call still ran.
+
+  Non-blocking finding also fixed: `PGPASSWORD=<secret>` was a literal value in the `docker exec`
+  argv, which is visible to any other local user via `ps`/`/proc/<pid>/cmdline` (Linux) or the
+  command-line column in Task Manager (Windows) regardless of exception-message redaction. Both
+  `pg_dump` and `pg_restore` invocations now pass the bare `-e PGPASSWORD` flag (no `=value`) and
+  supply the actual value only via the subprocess's own environment (`_pgpassword_env()`); Docker's
+  documented behavior is that a bare `-e NAME` forwards that name from the *docker CLI's own*
+  environment into the container. Confirmed this isn't just an assumption: ran real
+  `docker exec -e PGPASSWORD <container> sh -c 'echo $PGPASSWORD'` twice against the live
+  container -- with the value in this process's env, it read back exactly `sih_dev_local_only`
+  inside the container; with the value absent from this process's env, it read back empty. (Could
+  not verify this via an actual failed/succeeded `psql` auth check as originally planned: this
+  container's `pg_hba.conf` trusts local connections regardless of password, so authentication
+  succeeds either way -- noted honestly rather than claiming a stronger proof than what was actually
+  shown. The argv-safety property itself does not depend on this container's auth policy.)
+
+  New tests in `test_core_backup_restore.py`: port-mismatch (localhost with wrong port, and no
+  port at all), env-based-password-not-argv for both `create_backup` and `restore_backup`,
+  atomicity-flags-present, cleanup-surfaces-on-success for both functions, and
+  cleanup-attempted-on-a-docker-cp-failure in `create_backup`. 19 tests total in that file (was 11).
+
+  Full backend suite: **228 passed** (was 220; +8 net new tests). Real end-to-end drill against
+  the live `sih-learning-postgres` container: inserted a marker player row, ran the real
+  `create_backup()`, deleted the row, ran the real `restore_backup()` (now with
+  `--single-transaction`/`--exit-on-error`/the `--list` preflight), confirmed the row came back
+  with its exact value, and confirmed no dump files were left in the container's `/tmp` afterward.
+  Not touching any Codex-owned file in this pass.

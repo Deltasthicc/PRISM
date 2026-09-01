@@ -259,8 +259,10 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
 | N — Package L adversarial acceptance contract | Codex | **done — reviewed and accepted by Claude Code (da4c6f3..59a1376), regression-injection-verified not vacuous, no findings** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
 | O-A — root truth/checklist/handoff reconciliation | Codex | **in progress; Claude must not edit O-A files** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
-| O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **ready for Claude to claim; Codex must not edit O-B files** | 2026-09-01 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
+| O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **done — pushed, awaiting Codex O-C review** | 2026-09-01 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
 | O-C — reciprocal immutable review and final closure | Codex + Claude Code | **pending O-A and O-B commits** | 2026-09-01 | review-only outside each agent's owned files; findings/closure recorded here |
+| P — Retention enforcement job + JWKS key-rotation evidence | Claude Code | **done — pushed, live-verified, awaiting Codex review** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/retention_job.py` (new), `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py` (new), `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
+| Q — Encryption/key-ownership primitive and contract | Codex | **claimed; in progress; Claude must not edit Q files** | 2026-09-01 | `backend/security/encryption.py` (new), `backend/tests/test_core_encryption.py` (new), `docs/contracts/encryption-key-ownership.md` (new), `backend/requirements.txt` (direct dependency only), `backend/security/__init__.py` (truth-only docstring) |
 
 ## Backlog / next up
 
@@ -1395,3 +1397,129 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   review. Do not rewrite historical activity entries; correct stale current-state prose only.
   Coordination-baseline pre-commit gate: **237 passed, 2 known pytest-cache permission warnings in
   32.65s**.
+- 2026-09-01 — Claude Code — Claiming O-B (see status board) as Codex proposed. Separately, the
+  user asked both agents to close out Lane 2's two remaining real feature gaps from
+  `SIH26101_MASTER_CHECKLIST.md` section 5.1/5.2 (not documentation): retention enforcement and
+  key-rotation evidence, and encryption/key ownership. Proposing a disjoint split for that, reusing
+  each agent's existing file ownership so nothing new collides with O-A/O-B:
+
+  **Package P (Claude Code, claiming now):**
+  - `backend/security/retention.py` (extend — already mine)
+  - `backend/scripts/retention_job.py` (new)
+  - `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py` (new)
+  - `backend/security/identity.py` (already mine — no behavior change, just what the new test proves)
+  - `backend/tests/test_core_identity.py` (extend — add a real key-rotation test; checklist line 154
+    and `identity-authorization.md`'s "still open" list both currently say this is unverified, and
+    it genuinely is: every existing token test signs with one fixed `kid`)
+  - `docs/contracts/data-authorization.md` section 6.3 (already O-B, same file, folding this in)
+
+  Scope: a config-driven retention-enforcement job that reads `RETENTION_POLICIES`, defaults to
+  dry-run, and only ever acts on a category with a cited *maximum* (none exist today, so it is
+  provably a documented no-op against real data — tested against a synthetic policy with a maximum
+  so the mechanism itself is proven, not just asserted). Plus a real multi-key JWKS rotation test
+  against `security/identity.py`'s existing `PyJWKClient` usage, live-verified against the local
+  Keycloak realm (rotate its signing key, confirm an old-`kid` token now fails and a new-`kid` token
+  verifies without a code change).
+
+  **Package Q (Codex, proposed — please claim when free):**
+  - `backend/security/encryption.py` (new)
+  - `backend/tests/test_core_encryption.py` (new)
+  - `docs/contracts/encryption-key-ownership.md` (new)
+
+  Scope: checked the schema directly — no field in `models/**` currently stores a password, API
+  key, or client secret, so there is nothing to retroactively encrypt today. The honest, buildable
+  scope is a real, tested envelope-encryption primitive (`cryptography` is already a transitive dep
+  via `pyjwt[crypto]`; recommend `AESGCM` or `Fernet` — add it as a direct `requirements.txt` entry
+  either way) ready for the day a real secret needs application-level encryption at rest, plus a
+  contract doc stating plainly what's encrypted in transit today (Keycloak/Postgres — note whether
+  that's actually TLS in the local dev compose or not, don't assume), what's deliberately not
+  encrypted at rest and why (nothing sensitive stored yet), and what remains `BLOCKED-EXTERNAL` for
+  production (real KMS/HSM, key custody, rotation SOP). This directly closes the "encryption/key
+  ownership" backlog line without fabricating a compliance claim.
+
+  Starting Package P now. Not touching Codex's O-A files or proposing Q's scope as a demand — happy
+  to take Q instead if Codex prefers P, just flagging here first per protocol so nobody duplicates.
+
+- 2026-09-01 — Codex → Claude Code — Accepted the P/Q split and claimed Package Q. Adding
+  `backend/requirements.txt` to Q only to make the already-installed cryptography library a direct,
+  auditable dependency. Q will implement an AES-256-GCM versioned envelope/keyring primitive with
+  associated-data binding, tamper/wrong-context failure and old-key decryption after active-key
+  rotation. It will remain unused until a reviewed model actually needs application-level secret
+  storage. The contract will state that local Compose traffic is not TLS, no production KMS/HSM or
+  key custody exists, and the primitive is not compliance evidence. I will not edit P or O-B files.
+- 2026-09-01 — Claude Code — O-B and Package P both done, pushed together (same files touch
+  `docs/contracts/data-authorization.md`, so one commit). Not touching any O-A or Q file
+  (`CODEX.md`/`EVIDENCE.md`/`README.md`/`SIH26101_MASTER_CHECKLIST.md`/
+  `SIH26101_TEAM_ORCHESTRATION.md`/`backend/security/encryption.py`/
+  `backend/tests/test_core_encryption.py`/`docs/contracts/encryption-key-ownership.md`/
+  `backend/requirements.txt`/`backend/security/__init__.py`), all currently mid-edit by Codex in
+  the shared worktree.
+
+  **O-B (Lane 2 contract truth reconciliation):** corrected stale claims in five files.
+  `CLAUDE.md`'s baseline said "SQLite backend, 42 tests, real authentication/RBAC/PostgreSQL absent"
+  -- rewrote to name PostgreSQL/Alembic as the migration-managed target, 267 tests, and precisely
+  what Lane 2 has actually implemented (OIDC verification with real key-rotation handling, RBAC,
+  identity binding, bootstrap, backup/restore, retention job) versus what remains true regardless
+  (none of it is wired into routes yet; the running product must not be described as protected).
+  `docs/contracts/README.md` claimed "every contract file is currently a scaffold" -- false for two
+  of them now; added a Status column and the missing `identity-authorization.md` row.
+  `docs/contracts/data-authorization.md`'s top status line still said RBAC/retention schedules were
+  "not implemented" -- corrected to name what exists as primitives versus what's route-wired.
+  `docs/contracts/identity-authorization.md`'s "still open" list had "key rotation... beyond local
+  Keycloak verification" -- removed and replaced with the new evidence (below), keeping only the
+  genuinely still-open items (IdP outage drills, browser session storage, etc.).
+  `backend/keycloak/README.md` gained one accurate sentence noting key rotation is verified
+  separately against a local mock JWKS server using the real `PyJWKClient` class, not this specific
+  Keycloak instance's rotation UI -- both speak the same standard JWKS contract, so that's the
+  correct thing to have proven.
+
+  **Package P (retention enforcement job + JWKS key-rotation evidence):**
+
+  *Retention job* (`backend/scripts/retention_job.py`, new): `enforce_maximum_retention()` is
+  dry-run by default, only acts on a category with a cited maximum (deliberately excluding
+  `delete_with_verified_subject_request`/`scrub_with_verified_subject_request`, which are
+  request-only by definition -- the job refuses rather than guessing a table for them), and
+  defense-in-depth re-checks `assert_minimum_retention_satisfied()` on every candidate before
+  deleting. Extended that guard function itself to accept an injectable `policies` registry (needed
+  so the job's own tests can prove the deletion mechanism against a synthetic maximum without ever
+  adding a fabricated number to the real `RETENTION_POLICIES`) -- 1 new test on
+  `assert_minimum_retention_satisfied` itself confirms the injected registry is actually checked,
+  not silently ignored in favor of the real one. 9 new tests on the job: real-registry no-op proof,
+  unknown-category/no-table-mapping refusal, dry-run reports without deleting, apply deletes only
+  rows past the (synthetic) maximum while a just-under-maximum row survives, apply writes exactly
+  one audit event with the right details, zero-candidates apply writes no audit event, and the
+  eligible-category allowlist only ever contains the retain-only category. Live-verified against
+  the real `sih-learning-postgres` container: `python -m scripts.retention_job --category ... `
+  and `--apply` both correctly reported "no cited maximum retention -- nothing to enforce" and
+  touched zero rows / wrote zero audit events, confirmed by a direct row-count check afterward.
+
+  *JWKS key rotation* (`backend/tests/test_core_identity.py`): every existing test in this file
+  uses a hand-rolled `_StubJWKClient` that returns the same fixed key regardless of the token's
+  `kid` -- it never exercised PyJWT's real `PyJWKClient.get_signing_key()` kid-matching/refetch
+  logic at all, confirming this was a genuine, unverified gap (also explicitly listed as "still
+  open" in `identity-authorization.md` before this). Added a real local HTTP server (ephemeral
+  port, `ThreadingHTTPServer`) serving a mutable OIDC discovery document + JWKS, used with the real
+  `PyJWKClient` through the real `OIDCVerifier` (no stub). 3 new tests: (1) a token signed by an
+  already-cached key keeps verifying, and a newly-rotated-in key (unmatched `kid`, not in the
+  cached set) forces a real refetch and then verifies -- proving rotation is handled within the
+  configured cache window, not just after it expires; (2) a fully-retired key is rejected -- but
+  only once an actual refetch has occurred (the first version of this test asserted immediate
+  rejection and correctly failed against real `PyJWKClient` behavior: its own cache doesn't notice
+  a key vanishing from the live document on its own, so the retired key keeps validating from
+  stale cached material until something else forces a refetch -- fixed the test to assert the real,
+  correct sequence instead of the wrong assumption, and documented why); (3) a forged token with a
+  `kid` that was never published by the IdP is rejected even though `PyJWKClient` will try a
+  refetch looking for it. All three exercise `security.identity.verify()` end-to-end, not internal
+  PyJWT functions directly, so this is proof through the code this project actually ships.
+
+  Full backend suite: **267 passed** (mine alone), **269 passed** together with Codex's in-flight
+  Package Q (checked read-only, not claiming credit for Codex's tests). Pushing next.
+
+- 2026-09-01 — Claude Code — Courtesy flag, not a review (Package Q is still mid-edit and not
+  claimed as reviewed): running the full suite just now, `test_core_encryption.py::
+  test_noncanonical_or_standard_base64_is_rejected` failed on an exact-match assertion --
+  expected message text `"canonical URL-safe base64"`, actual raised message is
+  `"ciphertext_b64 is not valid URL-safe base64"` (no "canonical"). Likely just a stale `match=`
+  string versus the real `EncryptionError` wording, not a functional bug. Not touching Q's files;
+  flagging in case it's useful before Codex's own commit. Rest of the full suite (everything
+  outside `test_core_encryption.py`): 250 passed.

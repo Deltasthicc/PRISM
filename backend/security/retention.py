@@ -124,7 +124,12 @@ class RetentionPolicyViolation(ValueError):
     retention has elapsed."""
 
 
-def assert_minimum_retention_satisfied(category: str, row_age_days: float) -> None:
+def assert_minimum_retention_satisfied(
+    category: str,
+    row_age_days: float,
+    *,
+    policies: dict[str, RetentionPolicy] | None = None,
+) -> None:
     """Refuse a deletion that would violate a cited minimum retention floor.
 
     This is a guard for future code that deletes rows programmatically (an
@@ -134,8 +139,16 @@ def assert_minimum_retention_satisfied(category: str, row_age_days: float) -> No
     trivially satisfies any floor; this guard exists for whatever deletes
     rows next, so that "clean up old data" can never quietly violate a
     minimum retention requirement this project has already cited.
+
+    `policies` defaults to the real registry. A caller that itself accepts
+    an injectable policy registry (e.g. `scripts.retention_job`, so its own
+    tests can prove the deletion mechanism against a synthetic policy
+    without adding a fabricated number to the real one) must pass its own
+    `policies` through here too -- otherwise this guard would silently check
+    the wrong registry and either wrongly block or wrongly allow a deletion.
     """
-    if category not in RETENTION_POLICIES:
+    policies = RETENTION_POLICIES if policies is None else policies
+    if category not in policies:
         raise ValueError(f"unknown retention category: {category!r}")
     # `bool` is an `int` subclass and NaN/inf compare False against every
     # bound, so a naive `< 0` check silently treats True/False/NaN/inf as a
@@ -151,7 +164,7 @@ def assert_minimum_retention_satisfied(category: str, row_age_days: float) -> No
     if row_age_days < 0:
         raise ValueError("row_age_days must not be negative")
 
-    policy = RETENTION_POLICIES[category]
+    policy = policies[category]
     if policy.minimum_retention_days is None:
         return
     if row_age_days < policy.minimum_retention_days:

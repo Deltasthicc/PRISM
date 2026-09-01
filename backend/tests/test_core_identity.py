@@ -11,13 +11,16 @@ from __future__ import annotations
 
 import base64
 import json
+import threading
 import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from types import SimpleNamespace
 
 import httpx
 import jwt
 import pytest
 from cryptography.hazmat.primitives.asymmetric import rsa
+from jwt.algorithms import RSAAlgorithm
 
 from security.identity import (
     AuthenticationError,
@@ -477,3 +480,160 @@ def test_default_verifier_is_a_cached_singleton_per_process(monkeypatch):
         assert first is second
     finally:
         _default_verifier.cache_clear()
+
+
+# ---------------------------------------------------------------------------
+# Key rotation -- Package P.
+#
+# Every test above uses `_StubJWKClient`, which always returns the same
+# fixed public key regardless of the token's `kid` -- it never exercises
+# PyJWT's real `PyJWKClient.get_signing_key()` kid-matching/refetch logic at
+# all. Key rotation is specifically about THAT mechanism, so it needs a real
+# `PyJWKClient` talking to a real (local, ephemeral) HTTP server whose JWKS
+# document can change between requests -- simulating what a real IdP does
+# when it rotates its signing key. No live Keycloak dependency is needed:
+# this proves PyJWT's own documented behavior (jwt/jwks_client.py's
+# get_signing_key(): an unmatched kid triggers `refresh=True` and retries)
+# actually works end-to-end through security/identity.py's real
+# OIDCVerifier, not just that the library claims to support it.
+# ---------------------------------------------------------------------------
+
+
+class _RotatingDiscoveryHandler(BaseHTTPRequestHandler):
+    """Serves an OIDC discovery document + a mutable JWKS document. Tests
+    mutate `jwks_document` on the class between requests to simulate the
+    IdP rotating its signing key without restarting anything."""
+
+    issuer = ""
+    jwks_document: dict = {"keys": []}
+
+    def log_message(self, format, *args):  # noqa: A002 - stdlib signature
+        pass  # keep test output quiet
+
+    def do_GET(self):
+        if self.path == "/.well-known/openid-configuration":
+            body = json.dumps(
+                {"issuer": self.issuer, "jwks_uri": f"{self.issuer}/jwks"}
+            ).encode()
+        elif self.path == "/jwks":
+            body = json.dumps(self.jwks_document).encode()
+        else:
+            self.send_response(404)
+            self.end_headers()
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+
+def _jwk_from_public_key(public_key, kid: str) -> dict:
+    jwk = json.loads(RSAAlgorithm.to_jwk(public_key))
+    jwk["kid"] = kid
+    jwk["use"] = "sig"
+    jwk["alg"] = "RS256"
+    return jwk
+
+
+@pytest.fixture
+def rotation_server():
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _RotatingDiscoveryHandler)
+    issuer = f"http://127.0.0.1:{server.server_port}"
+    _RotatingDiscoveryHandler.issuer = issuer
+    _RotatingDiscoveryHandler.jwks_document = {"keys": []}
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield issuer, _RotatingDiscoveryHandler
+    finally:
+        server.shutdown()
+        thread.join(timeout=5)
+
+
+def test_key_rotation_is_handled_without_restart_or_code_change(rotation_server):
+    issuer, handler_cls = rotation_server
+    old_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    new_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    OLD_KID, NEW_KID = "old-key", "new-key"
+
+    handler_cls.jwks_document = {"keys": [_jwk_from_public_key(old_key.public_key(), OLD_KID)]}
+
+    # A large cache window: any successful verification of the new-kid token
+    # below must come from PyJWKClient's own kid-miss-triggers-refetch
+    # behavior, not from this class rebuilding its client due to staleness.
+    verifier = OIDCVerifier(issuer=issuer, audience=AUDIENCE, jwks_cache_seconds=3600)
+
+    old_token = _make_token(old_key, kid=OLD_KID, issuer=issuer)
+    subject = verifier.verify(old_token)
+    assert subject.subject_id == "user-1"
+
+    # Rotate: the IdP now serves both keys, the realistic shape during a
+    # grace period (old key still valid for already-issued tokens; new
+    # tokens are signed with the new key).
+    handler_cls.jwks_document = {
+        "keys": [
+            _jwk_from_public_key(old_key.public_key(), OLD_KID),
+            _jwk_from_public_key(new_key.public_key(), NEW_KID),
+        ]
+    }
+
+    new_token = _make_token(new_key, kid=NEW_KID, issuer=issuer)
+    subject_after_rotation = verifier.verify(new_token)
+    assert subject_after_rotation.subject_id == "user-1"
+
+    # The old key, still served during the grace period, must keep working too.
+    old_token_2 = _make_token(old_key, kid=OLD_KID, issuer=issuer)
+    assert verifier.verify(old_token_2).subject_id == "user-1"
+
+
+def test_a_fully_retired_key_is_rejected_once_a_refetch_has_occurred(rotation_server):
+    issuer, handler_cls = rotation_server
+    old_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    new_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    OLD_KID, NEW_KID = "old-key", "new-key"
+
+    handler_cls.jwks_document = {"keys": [_jwk_from_public_key(old_key.public_key(), OLD_KID)]}
+    verifier = OIDCVerifier(issuer=issuer, audience=AUDIENCE, jwks_cache_seconds=3600)
+    verifier.verify(_make_token(old_key, kid=OLD_KID, issuer=issuer))
+
+    # Full rotation: the old key is retired entirely from the live document
+    # (removed, not just superseded).
+    handler_cls.jwks_document = {"keys": [_jwk_from_public_key(new_key.public_key(), NEW_KID)]}
+
+    # PyJWT's PyJWKClient caches the fetched JWKS document for `lifespan`
+    # seconds and only refetches when a requested kid is missing from that
+    # cache (jwt/jwks_client.py's get_signing_key()) -- it does not notice a
+    # key vanishing from the live document on its own. So immediately after
+    # rotation, a token for the (still cached) old key still verifies, using
+    # stale cached key material. This is real PyJWKClient behavior, not a
+    # bug in this project's code -- and exactly why key rotation matters:
+    # a still-cached old key keeps working for a while, by design.
+    still_works = verifier.verify(_make_token(old_key, kid=OLD_KID, issuer=issuer))
+    assert still_works.subject_id == "user-1"
+
+    # The new key's kid is NOT in that stale cache, so verifying it forces
+    # PyJWKClient to refetch -- pulling the rotated document, which no
+    # longer contains the old key.
+    assert verifier.verify(_make_token(new_key, kid=NEW_KID, issuer=issuer)).subject_id == "user-1"
+
+    # Now that an actual refetch has happened, the retired old key is
+    # correctly rejected.
+    with pytest.raises(AuthenticationError):
+        verifier.verify(_make_token(old_key, kid=OLD_KID, issuer=issuer))
+
+
+def test_an_unknown_kid_that_never_appears_in_the_jwks_is_rejected(rotation_server):
+    issuer, handler_cls = rotation_server
+    real_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    attacker_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+
+    handler_cls.jwks_document = {"keys": [_jwk_from_public_key(real_key.public_key(), "real-key")]}
+    verifier = OIDCVerifier(issuer=issuer, audience=AUDIENCE, jwks_cache_seconds=3600)
+
+    # A token claiming a kid that has never been published by the IdP (e.g.
+    # an attacker's own key with a made-up kid) must never verify, even
+    # though PyJWKClient will try a refetch looking for it.
+    forged_token = _make_token(attacker_key, kid="never-published-kid", issuer=issuer)
+    with pytest.raises(AuthenticationError):
+        verifier.verify(forged_token)

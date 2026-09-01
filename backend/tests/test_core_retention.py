@@ -143,3 +143,26 @@ def test_assert_minimum_retention_satisfied_rejects_non_numeric():
         assert_minimum_retention_satisfied(
             "retain_append_only_security_log_duration_policy_pending", row_age_days="181"
         )
+
+
+def test_assert_minimum_retention_satisfied_accepts_an_injected_policies_registry():
+    # scripts.retention_job passes its own synthetic policies through here so
+    # its tests can prove the deletion mechanism without adding a fabricated
+    # duration to the real registry -- this must actually check the injected
+    # dict, not silently fall back to the real one.
+    synthetic = {
+        "synthetic_category": RetentionPolicy(
+            category="synthetic_category",
+            minimum_retention_days=10,
+            minimum_retention_source="test only",
+            maximum_retention_days=None,
+            maximum_retention_source=None,
+            notes="",
+        ),
+    }
+    with pytest.raises(RetentionPolicyViolation, match="minimum retention is 10 days"):
+        assert_minimum_retention_satisfied("synthetic_category", 5, policies=synthetic)
+    assert_minimum_retention_satisfied("synthetic_category", 15, policies=synthetic)
+    # And the real registry has no "synthetic_category" at all.
+    with pytest.raises(ValueError, match="unknown retention category"):
+        assert_minimum_retention_satisfied("synthetic_category", 15)

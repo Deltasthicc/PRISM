@@ -6,9 +6,11 @@ Consumers: Lanes 3, 4, 5, 6
 
 Change approval: Lanes 5 and 6 (`SIH26101_TEAM_ORCHESTRATION.md` section 4)
 
-Status: **v1 demo contract — storage and query semantics plus internal subject-data
-export/deletion primitives are defined; authentication, multi-tenant isolation, RBAC,
-retention schedules and subject-rights APIs are not implemented.**
+Status: **v1 demo contract — storage and query semantics, internal subject-data export/deletion
+primitives, a retention-enforcement job (a real no-op today, no cited maximum exists) and
+PostgreSQL backup/restore are defined and independently verified; authentication and RBAC
+*primitives* exist (`docs/contracts/identity-authorization.md`) but are not yet composed into
+existing routes; multi-tenant isolation and subject-rights HTTP APIs are not implemented.**
 
 This contract is deliberately explicit about the present boundary. It is safe guidance for the
 local hackathon demo, not evidence of production authorization or compliance.
@@ -225,6 +227,20 @@ deletion is built *next* (an expiry job, a cleanup script) — it refuses to let
 row younger than its cited floor. It is not itself a job, a schedule, or a claim that automated
 retention enforcement exists.
 
+`backend/scripts/retention_job.py` (Package P) is that job. It is dry-run by default (`--apply`
+required to actually delete), only ever acts on a category with a cited **maximum**, and calls
+`assert_minimum_retention_satisfied()` on every candidate row as a defense-in-depth check before
+deleting. Run against the real registry today it is a **provable no-op** — no category has a cited
+maximum, so `enforce_maximum_retention()` returns zero candidates and deletes nothing; this was
+confirmed both by a dedicated unit test and by running the CLI live against the real PostgreSQL
+container with `--apply` and confirming zero rows were touched and zero
+`retention_job.enforce_maximum` audit events were written. The deletion mechanism itself is proven
+separately against a synthetic, clearly-labelled test-only policy — never against the real
+registry — so this document is not claiming a real ceiling exists anywhere it doesn't.
+`delete_with_verified_subject_request` and `scrub_with_verified_subject_request` are intentionally
+excluded from this job's table mapping: those categories are defined as request-only deletion, and
+this job must refuse rather than start silently applying an age-based schedule to them.
+
 ### 6.4 PostgreSQL backup/restore (Package L)
 
 `backend/scripts/backup_restore.py` provides `create_backup()`/`restore_backup()`, both shelling
@@ -238,7 +254,11 @@ retention policy for backup files themselves, and no restore runbook for a real 
 remain Lane 6 deployment/DR work.
 
 Deleting the local SQLite demo database remains a whole-tenant reset, not a subject workflow.
-Encryption/key ownership and replica handling remain unverified backlog items. Lanes must not claim
+Replica handling remains an unverified backlog item. Encryption/key ownership is tracked as
+Package Q (`LANE2_SYNC.md` status board) — as of this update, no field in `models/**` stores a
+password, API key or client secret, so there is nothing to retroactively encrypt today; Package Q's
+scope is a real, tested envelope-encryption primitive ready for the day one is needed, plus a
+contract stating exactly what is/isn't encrypted in transit and at rest. Lanes must not claim
 compliance or production subject-rights/DR controls based on these internal primitives alone.
 
 ## 7. Change process

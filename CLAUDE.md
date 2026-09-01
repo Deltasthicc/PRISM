@@ -43,7 +43,9 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 
 ## Current verified baseline
 
-- FastAPI + SQLAlchemy + SQLite backend; 42 backend tests passed in the last verification.
+- FastAPI + SQLAlchemy backend; PostgreSQL/Alembic is the migration-managed target, SQLite remains
+  a documented local zero-setup demo profile only; 267 backend tests passed in the last Lane 2
+  verification (2026-09-01) — re-run before repeating this count, it changes often.
 - Next.js frontend; lint passed in the last verification.
 - Four backend curricula/34 competencies exist, but do not cover the full supplied competency list and have no MoSPI/CBC/NSSTA approval.
 - DSA Quest works in the browser; non-DSA backend dungeons are blocked by frontend routing/filter assumptions.
@@ -51,7 +53,16 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 - Current 65% demonstrated/35% self-report blend is a transparent prototype policy, not psychometrics.
 - Bounded TXT/MD/PDF/DOCX ingestion and normalized source-span validation exist. Real retrieval RAG, PPTX/video ingestion, virtual assistant and review workflow do not.
 - Recommendations are internal practice/catalogue fallback. Authenticated iGOT interfaces exist in public engineering documentation, but this repository has no approved endpoint contract, credentials or sandbox; no NSSTA API is verified.
-- Real authentication, RBAC, SSO, tenancy, PostgreSQL/Alembic, CI, frontend tests, observability and production authorization are absent.
+- Lane 2 has implemented and independently verified (live Keycloak + PostgreSQL, both agents
+  cross-reviewing) OIDC bearer-token verification with real JWKS key-rotation handling, RBAC and
+  identity-binding primitives, a controlled one-time first-admin bootstrap, PostgreSQL backup/
+  restore, and a retention-enforcement job — see `docs/contracts/identity-authorization.md` and
+  `docs/contracts/data-authorization.md`. **None of this is wired into `backend/routes/**` yet** —
+  every existing route remains an unauthenticated demo interface, and the product must not be
+  described as protected until Lane 5 composes token verification, binding and permission checks
+  into route code. SSO (a real government IdP), multi-tenant isolation beyond one-database-per-
+  deployment, encryption/key ownership, CI, frontend tests, observability and production
+  authorization remain absent.
 
 Reinspect and re-run evidence before repeating these claims. Update README/checklist in the same change when reality changes.
 

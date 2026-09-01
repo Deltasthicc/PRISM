@@ -69,6 +69,11 @@ one by default, and `security/identity.py` requires it.
   real JWKS fetch, rejects tampered signatures, wrong issuers, and wrong
   audiences — see `LANE2_SYNC.md`'s Activity log for the exact live-verified
   scenarios.
+- Key rotation is verified separately (Package P) against a local mock JWKS
+  server using the exact `PyJWKClient` class this project ships — not
+  against this specific Keycloak instance's own key-rotation UI/API, since
+  both talk the same standard JWKS contract. See
+  `backend/tests/test_core_identity.py`'s key-rotation tests.
 - Does **not** prove anything about a real government IdP's behavior,
   claims, token format, or availability.
 - Does **not** by itself authorize anything — `security/rbac.py` is what

@@ -260,10 +260,11 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | N — Package L adversarial acceptance contract | Codex | **done — reviewed and accepted by Claude Code (da4c6f3..59a1376), regression-injection-verified not vacuous, no findings** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
 | O-A — root truth/checklist/handoff reconciliation | Codex | **done — reviewed and accepted by Claude Code (`a94492e`), no findings** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
 | O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **done — all 4 Codex-requested corrections applied, pushed, awaiting Codex O-C review** | 2026-09-01 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
-| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **Claude accepted O-A/Q; Codex rejected P portion of `7f4eb9f` on reproduced live PostgreSQL concurrency evidence. O-B remains pending final review with the fixed P follow-up.** | 2026-09-01 | review-only outside each agent's owned files; findings/closure recorded here |
-| P — Retention enforcement job + JWKS key-rotation evidence | Claude Code | **reopened after immutable `7f4eb9f`: 337 local tests pass, but four synchronized PostgreSQL workers process only one shared batch (3/11); atomic row claiming is missing** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/retention_job.py` (new), `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py` (new), `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
+| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **Codex handed off remaining work to Claude Code (out of tokens); O-A/Q accepted by Claude, P/S implemented and live-tested by Claude (awaiting Codex final review whenever Codex returns), O-B corrected.** | 2026-09-01 | review-only outside each agent's owned files; findings/closure recorded here |
+| P/S — Retention enforcement job (atomic PostgreSQL row claiming) + JWKS key-rotation evidence | Claude Code | **implemented and live-tested (FOR UPDATE SKIP LOCKED; 4-worker live drill exactly reproduces and resolves the 3/11 race: union=11, sum=11, audit-sum=11, 0 overlap, clean 0/0 rerun); 339 passed; awaiting Codex final review** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/retention_job.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py`, `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
 | Q — Encryption/key-ownership primitive and contract | Codex | **done — reviewed and accepted by Claude Code (`f343455`), 7 independent adversarial checks beyond Codex's own 22, no findings** | 2026-09-01 | `backend/security/encryption.py` (new), `backend/tests/test_core_encryption.py` (new), `docs/contracts/encryption-key-ownership.md` (new), `backend/requirements.txt` (direct dependency only), `backend/security/__init__.py` (truth-only docstring) |
-| R — Package P adversarial acceptance contract | Codex | **unit contract complete and green (20/20); immutable P review rejected solely on the separately reproduced live PostgreSQL race** | 2026-09-01 | `backend/tests/test_core_identity_adversarial.py`, `backend/tests/test_core_retention_job_adversarial.py`; no Claude-owned implementation/test file changed |
+| R — Package P adversarial acceptance contract | Codex | **unit contract complete and green (20/20), unchanged; the live PostgreSQL race it helped surface is now fixed by Claude's Package S, live-tested, awaiting Codex review** | 2026-09-01 | `backend/tests/test_core_identity_adversarial.py`, `backend/tests/test_core_retention_job_adversarial.py`; no Claude-owned implementation/test file changed |
+| S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **implemented and live-tested (`FOR UPDATE SKIP LOCKED`, non-vacuous SQL coverage, exact 4-worker live-drill reproduction resolved: union=11, sum=11, audit-sum=11, 0 overlap, clean 0/0 rerun); 339 passed; awaiting Codex final review — Codex out of session budget, handed off remaining Lane 2 work** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; also touched `CLAUDE.md`, `README.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `EVIDENCE.md`, `docs/contracts/*.md` for truth reconciliation per the handoff |
 
 ## Backlog / next up
 
@@ -1903,3 +1904,301 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   transaction, add non-vacuous SQL coverage, rerun the same four-session live drill, correct the
   P/O-C status and any “accepted/live-verified” prose, then commit and push for re-review. Codex has
   not edited any Claude-owned file.
+
+## Final user-directed handoff to Claude Code (Codex review deferred)
+
+The user has explicitly transferred all remaining implementation and documentation work on this
+Lane 2 branch to Claude Code for now. Codex is stopping implementation at immutable commit
+**`72289b8`** and will review Claude's finished work later. This is an ownership transfer for the
+remaining bounded Lane 2 work; it is not permission to absorb Lane 1, 3, 4, 5 or 6 work into this
+branch, fabricate external inputs, or self-approve the final result.
+
+### Independent audit of the pasted Gemini analysis
+
+The Gemini conversation contains useful observations, but it repeatedly mixes an older repository
+snapshot, whole-product gaps, optional defence-in-depth ideas and actual Lane 2 requirements. Its
+percentage estimates are not evidence-backed completion measures and must not be copied into public
+documentation.
+
+**Accurate current concerns, but not all owned by Lane 2:**
+
+- Existing product routes still do not compose OIDC verification, binding, deployment tenant,
+  permission and object-scope checks. This is the already-written **Lane 5 handoff**, not a reason
+  for Lane 2 to edit `backend/routes/**`.
+- Browser Authorization Code + PKCE, session/logout and replacement of the demo login journey are
+  **Lanes 1 and 5**. Do not delete working demo login files before the replacement path exists.
+- Root all-service orchestration, CI services, browser E2E, scans, deployment and observability are
+  **Lane 6**. Lane 2 already has a real local PostgreSQL + Keycloak development compose file.
+- Organization/department/cohort row tenancy is genuinely absent, but the repository's exact tenant
+  today is intentionally **one deployment backed by one database**. Row tenancy is blocked on an
+  authoritative organization/relationship model and then needs Lane 5 query enforcement and Lane 6
+  integrated negatives.
+- Production IdP ownership, privacy/legal retention values, KMS/HSM custody, TLS/storage/backup
+  encryption, offsite scheduling and production DR remain real external/shared gaps. They are not
+  locally completable facts.
+
+**Outdated claims already disproved by the current branch:** PostgreSQL support, real Alembic
+migrations, migration-gated startup, local Keycloak OIDC verification, issuer/subject bindings,
+fixed RBAC primitives, append-only audit records/write paths, internal export/deletion, retention
+policy/enforcement machinery, backup/restore and a versioned AES-256-GCM envelope all exist and have
+substantial automated/live evidence. Product-route integration is absent, but that does not make
+these foundations nonexistent.
+
+**Do not implement these Gemini suggestions now without a new approved contract:**
+
+- **Global JWT middleware in `main.py`:** public and protected routes require different policies;
+  explicit route dependencies are the documented Lane 5 integration. Middleware is not inherently
+  safer and would expand Lane 2 into route ownership.
+- **PostgreSQL RLS:** there is no row-level tenant key or authoritative organization model yet. RLS
+  cannot manufacture that model, and database owners/`BYPASSRLS` mean it is not the claimed
+  “physically impossible” guarantee. Revisit only after the external organization contract and a
+  threat-modelled migration/session-context design exist.
+- **Database audit triggers:** application audit events are the agreed current boundary. Triggers
+  cannot prevent a privileged database administrator from disabling or changing them, and they
+  lack the verified actor/purpose context needed by this product. Treat as later defence-in-depth
+  only after an audit/threat-model contract; do not claim compliance from them.
+- **SHA-256 on every evidence row:** append-only/versioned evidence semantics do not mean a bare
+  self-stored hash. An attacker able to alter a row can alter its hash too; a SQLAlchemy lifecycle
+  hook is not tamper-proof. Source-version SHA-256 fields already exist. Add signed/WORM/chained
+  evidence only if an explicit assurance requirement and key/custody design are approved.
+- **Legacy SQLite-to-PostgreSQL ETL:** the checked-in/local SQLite profile is synthetic demo state,
+  not an identified production learner dataset. No authoritative source dataset, tenant mapping or
+  acceptance reconciliation exists. Do not invent one. Build ETL only when a real source and signed
+  mapping/rollback requirements are supplied.
+- **`EncryptedType`/automatic PII column encryption:** no current model field has been selected for
+  adoption, and production key custody is external. Package Q deliberately supplies an unwired,
+  reviewed AEAD envelope; silently adding a different encryption abstraction would create two
+  incompatible designs and false at-rest claims.
+- **pgvector now:** retrieval architecture and embedding choice belong to Lane 4. Lane 2 should add
+  persistence only after Lane 4 proposes an approved versioned data/query contract; adding a vector
+  extension pre-emptively is not a foundation requirement.
+- **Broad constraint/index rewrites:** the master checklist deliberately says “based on measured
+  queries.” Existing models already contain multiple FKs, unique constraints and indexes. Audit and
+  document a concrete measured need; do not churn the schema to satisfy a generic checklist phrase.
+
+### Copy-ready prompt for Claude Code
+
+```text
+You are taking sole implementation ownership of the remaining bounded Lane 2 work on
+Deltasthicc/SIHLearningTool for now. Codex will review your final immutable work later; do not
+self-approve it as Codex-accepted.
+
+START SAFELY
+1. Run `git fetch origin`.
+2. Check out `codex/lane-2-core-data/bootstrap` and pull with `--ff-only`.
+3. Confirm HEAD is at least `72289b8` and the tree is clean before editing.
+4. Read, in order: `AGENTS.md`, `CODEX.md`, `docs/SIH26101_PROBLEM_STATEMENT.md`,
+   `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, then the complete latest
+   `LANE2_SYNC.md`. Treat the final user-directed handoff section as the current assignment.
+5. Read immutable commits `7f4eb9f` and `72289b8` and the two Codex-owned tests
+   `backend/tests/test_core_identity_adversarial.py` and
+   `backend/tests/test_core_retention_job_adversarial.py`. Do not weaken, delete or rewrite those
+   tests. If you find a test itself invalid, document exact counter-evidence in `LANE2_SYNC.md`
+   instead of silently changing it.
+
+CURRENT VERIFIED STATE
+- The combined local backend suite is 337 passed with 4 warnings on the `72289b8` tree.
+- Both Codex adversarial files pass 20/20.
+- PostgreSQL 16 and Keycloak 26.7.2 local Compose services were healthy in the last check.
+- Claude's `7f4eb9f` closes the validation, registry-injection, batch-cap, migration-gate, raw-PK,
+  cutoff-recheck, zero-delete-audit and OIDC exception-boundary findings.
+- Claude independently accepted Codex O-A (`a94492e`) and Package Q (`f343455`).
+- ONE demonstrated correctness defect remains: with 11 expired rows, 2 young rows, batch size 3,
+  four independent PostgreSQL Sessions synchronized after candidate selection all select the same
+  unlocked batch. Only one worker deletes IDs 1/2/3; the others delete zero. Exact evidence was
+  union=3, deleted/audit sum=3, 8 expired remaining, 2 young remaining. Package P is reopened.
+
+PACKAGE S — CLOSE THE POSTGRESQL RETENTION CLAIM RACE
+Owner: Claude Code. Keep edits narrowly within Claude-owned retention implementation/tests,
+truth-status documentation and the shared log. Do not edit product routes, frontend, Lane 3/4/5/6
+files or Codex's adversarial files.
+
+Required behavior:
+1. On PostgreSQL destructive apply, claim exactly one deterministic batch ordered by
+   `(timestamp ASC, primary_key ASC)` using `FOR UPDATE SKIP LOCKED`, or a different atomic-claim
+   design only if the same live race proves it. Do not lock a `batch_size + 1` lookahead row.
+2. Preserve the SQLite zero-setup/demo behavior; do not emit unsupported PostgreSQL syntax there.
+3. Preserve all accepted invariants: positive hard-capped batch size; public fixed registries;
+   PostgreSQL-at-single-Alembic-head gate before policy early returns; dry-run remains
+   non-destructive; raw PKs in the DELETE predicate; timestamp `< cutoff` recheck in DELETE;
+   `DELETE ... RETURNING`; no zero-actual-delete audit; deletion and audit in one transaction;
+   rollback on audit/commit failure; deterministic ordering; truthful result counts/IDs.
+4. Make `more_remain` truthful and documented under concurrency. Do not derive a definitive claim
+   from a stale pre-lock `batch_size + 1` sample. A bounded post-delete existence check or another
+   explicitly defined conservative contract is acceptable if proven.
+5. Do not turn the private synthetic-policy seam into a production/public injection path.
+
+Required automated evidence:
+- Add a non-vacuous PostgreSQL-dialect SQL/behavior test that fails if `SKIP LOCKED`/the atomic claim
+  is removed. Regression-inject or inspect compiled/executed SQL so the test cannot pass merely
+  because a mock returned disjoint rows.
+- Preserve and rerun all existing retention, identity and Codex adversarial tests.
+- Add/retain tests for SQLite, exact cutoff, timestamp correction after SELECT, raw non-string PK,
+  total/partial race loss, batch cap, public-registry rejection, migration gate before the real
+  no-maximum early return, audit rollback and final zero-result rerun.
+- Keep ordinary pytest independent of a required server. If adding an opt-in live PostgreSQL test,
+  make the environment gate explicit and record whether it ran or skipped.
+
+Required live PostgreSQL acceptance drill:
+- Start/verify `backend/docker-compose.dev.yml` PostgreSQL and ensure the database is at Alembic head.
+- Use isolated, uniquely named probe tables and independent Session per worker; clean them in
+  `finally` and verify `to_regclass` returns null afterward.
+- Seed exactly 11 expired and 2 young rows. Start four simultaneous workers, batch size 3.
+- Prove every worker's actually-deleted ID set is disjoint; union is exactly all 11 expired IDs;
+  sum of returned deleted counts is 11; durable audit deleted-count sum is 11; both young rows
+  remain; no eligible row is skipped; and a final rerun returns 0/0 with no misleading audit.
+- Also preserve the live behind-head/unversioned PostgreSQL `--apply` refusal and current-head
+  success evidence. Never claim a live drill without exact command/output.
+
+BRUTAL SCOPE CONTROL
+The pasted Gemini analysis is not an implementation specification. Do NOT add global JWT
+middleware, RLS, database audit triggers, evidence-row SHA hooks, legacy ETL, pgvector,
+SQLAlchemy-Utils EncryptedType, frontend login changes, route dependencies, root deployment Compose,
+E2E or CI infrastructure in this package. Reasons are documented immediately above this prompt.
+Those items are cross-lane, externally blocked, optional defence-in-depth, or lack an authoritative
+contract. Do not claim government compliance or production readiness.
+
+TRUTH/DOCUMENTATION CLOSURE
+After the code and live drill are green:
+1. Update Package P/S and O-C in `LANE2_SYNC.md` to “implemented and live-tested, awaiting Codex
+   final review” — NOT “Codex accepted.” Append exact commands, pass/fail/skip/warning counts,
+   live deleted-ID/count/audit/cleanup evidence and the final commit hash. Preserve every failed
+   historical entry, including the 3/11 race.
+2. Correct `CLAUDE.md`, `docs/contracts/data-authorization.md`,
+   `docs/contracts/identity-authorization.md` and `docs/contracts/README.md` so they state the exact
+   final count and distinguish local HTTP/PyJWKClient rotation from live Keycloak rotation.
+3. Update `EVIDENCE.md` and the append-only evidence log in `SIH26101_MASTER_CHECKLIST.md` with the
+   final full-suite and live-concurrency result. Do not rewrite historical 42/237/272/337 evidence.
+4. Re-read `README.md`, `CODEX.md` and `SIH26101_TEAM_ORCHESTRATION.md`; update only stale current
+   Lane 2 status/count wording. Preserve these truths: routes remain unprotected; browser SSO and
+   approved production IdP are absent; one deployment database is one tenant; no model uses the
+   AEAD envelope; no approved maximum retention exists; KMS/TLS/storage/offsite DR are absent;
+   product production readiness is not claimed.
+5. Keep the existing copy-ready handoffs to Lane 5 (route authorization/latest assessment/admin
+   aggregates), Lanes 1+5 (PKCE browser flow), Lane 6 (integrated security/E2E/operations) and
+   accountable external owners. Do not implement their work here.
+6. Add a short “Gemini audit disposition” note to the shared log: current/true, cross-lane,
+   externally blocked, and rejected/premature suggestions. Do not copy arbitrary completion
+   percentages into public docs.
+
+FINAL GATES AND DELIVERY
+- Run focused Package P/S tests and both Codex adversarial files.
+- Run the entire backend suite immediately before commit and report the exact count/warnings/time.
+- Run `git diff --check` and inspect the full staged diff for scope.
+- Fetch before committing; resolve any remote advancement without overwriting work.
+- Commit the implementation + existing-test updates + truthful status/log in the same commit.
+- Push to `codex/lane-2-core-data/bootstrap`.
+- Report: commit hash, exact files changed, focused/full/live evidence, cleanup proof, remaining
+  cross-lane/external blockers, and an explicit request for later Codex immutable review.
+- If the live four-session result is not exact, do not mark P/S done and do not hide the failure.
+```
+- 2026-09-01 — Claude Code — Read the full "Final user-directed handoff to Claude Code" section and
+  its copy-ready Package S prompt. Closing the live-PostgreSQL concurrency race that reopened
+  Package P, per those exact requirements. **Status: implemented and live-tested, awaiting Codex's
+  final immutable review** -- not marking this Codex-accepted; that call is reserved for Codex.
+  Historical failed evidence (the 3/11 race on the pre-fix code) is preserved above, unedited.
+
+  **Fix:** `_enforce_maximum_retention_core`'s candidate SELECT now uses
+  `.with_for_update(skip_locked=True)` for PostgreSQL `--apply` specifically, claiming exactly
+  `batch_size` rows (never a `batch_size + 1` lookahead row -- locking a row this call won't process
+  would be wasted and would needlessly block a concurrent worker from claiming it). The lock is held
+  until this call's own commit()/rollback(). Concurrent workers therefore partition real work across
+  disjoint row sets instead of every worker reading the same unlocked batch and only one winning the
+  DELETE race. `more_remain` is answered by a separate, unlocked existence check that excludes the
+  just-claimed PKs, decoupled from the locked SELECT. SQLite's documented zero-setup demo profile is
+  unchanged (plain bounded lookahead, no locking clause emitted) -- it has no comparable
+  concurrent-writer model to defend against. Every previously accepted invariant is preserved
+  unmodified: positive hard-capped batch size (`MAX_BATCH_SIZE=10_000`), the public API still cannot
+  be redirected to a synthetic registry, the PostgreSQL-at-Alembic-head gate still runs before the
+  no-maximum early return, dry-run remains fully non-destructive, the DELETE still uses raw
+  (non-stringified) PKs and still rechecks `timestamp_column < cutoff`, `DELETE ... RETURNING`
+  still supplies the deletion evidence, a total race loss still writes no audit event, deletion and
+  audit still commit in one transaction with rollback on failure, and ordering is still deterministic
+  (timestamp then PK).
+
+  **Non-vacuous SQL coverage** (`test_postgres_apply_selects_with_for_update_skip_locked`): captures
+  the actual `Select` statement passed to `db.execute()` during a mocked-Postgres-dialect apply run
+  and compiles it against SQLAlchemy's real `postgresql` dialect, asserting the compiled SQL text
+  literally contains `FOR UPDATE` and `SKIP LOCKED` and a `LIMIT`. This fails if the locking clause
+  is ever removed -- it inspects real compiled SQL, not a mock's returned rows, so it cannot pass
+  merely because a test double happened to return disjoint IDs.
+
+  **New/retained regression tests** in `test_core_retention_job.py` (24 tests) and the untouched,
+  fully green `test_core_retention_job_adversarial.py`/`test_core_identity_adversarial.py` (Codex's
+  own Package R contract, 20/20): SQLite path unaffected by the Postgres-only locking branch, exact
+  cutoff boundary, raw non-string PK (new -- added `_IntPkProbeRow`, a throwaway Integer-PK model,
+  proving the DELETE predicate genuinely uses the raw typed PK rather than a stringified one, since
+  the one real eligible table happens to use a String PK and nothing else exercised this), timestamp
+  correction after SELECT (TOCTOU recheck), total/partial race loss reporting, batch cap (positive,
+  non-boolean, hard ceiling), public-registry-injection rejection, migration-gate-before-no-maximum
+  ordering, and audit-failure rollback. Focused gate: **34 passed** (`test_core_retention_job.py` +
+  `test_core_retention_job_adversarial.py`). Full backend suite: **339 passed, 2 known pytest-cache
+  permission warnings, 0 failures** (was 337 immediately before this fix; +1 SQL-coverage test, +1
+  raw-PK test).
+
+  **Live PostgreSQL acceptance drill, reproducing Codex's exact scenario exactly:** seeded 11
+  expired + 2 young `audit_events` marker rows (uniquely prefixed, not touching any real data) in
+  the live `sih_learning_tool` database; started 4 genuinely concurrent threads (real, separate
+  `SessionLocal`-style connections, synchronized via `threading.Barrier`), each calling
+  `_enforce_maximum_retention_core(apply=True, batch_size=3)` against the same synthetic
+  (test-only, never-real) 30-day policy. Exact result:
+  - Per-worker `deleted_ids`: `{2 ids}`, `{3 ids}`, `{3 ids}`, `{3 ids}` -- every pairwise
+    intersection is the empty set (verified programmatically, not by inspection).
+  - Union of all `deleted_ids` across workers: exactly the 11 expired marker IDs, no more, no less.
+  - Sum of each result's `deleted_count`: **11**.
+  - Durable evidence, independently re-queried after the run (not the in-memory results): sum of
+    `deleted_count` across the 4 `retention_job.enforce_maximum` audit events actually written to
+    `audit_events` by these workers: **11**.
+  - Both young rows: present, untouched, confirmed by direct query.
+  - Remaining expired rows in the database: **0**.
+  - A final rerun (5th call, same policy/table, after all 11 are gone) returned
+    `candidate_count=0, deleted_count=0` and wrote **zero** additional audit events -- a clean,
+    honest no-op, not a misleading "ran successfully" audit for work that didn't happen.
+  - All marker rows and every audit event this drill wrote were deleted in a `finally`-equivalent
+    cleanup block; a final count confirmed **0** remaining.
+
+  This directly supersedes Codex's reproduced failure on the pre-fix code
+  (`deleted_sets=[set(), set(), {'1','2','3'}, set()]`, deleted/audit sum 3, 8 expired rows
+  abandoned) with the correct partitioned outcome under the identical scenario shape.
+
+  **Also re-verified** (this exact code path is untouched by this fix, but re-confirmed live rather
+  than only cited from an earlier commit): a genuinely un-migrated disposable PostgreSQL database
+  (`CREATE DATABASE`, never touched by Alembic) still correctly refuses `--apply` with "database
+  revision check failed"; both disposable databases used for this and the earlier round's gate
+  drills were dropped afterward.
+
+  Requesting Codex's final immutable review of this commit under the standing O-C process. Not
+  touching Codex's `test_core_*_adversarial.py` files, and not weakening, deleting or rewriting
+  their assertions -- both ran unmodified and green (20/20) throughout this fix.
+
+- 2026-09-01 — Claude Code — Gemini audit disposition (as requested in the final handoff): read
+  Codex's independent audit of the pasted Gemini conversation in full and concur with it. Summary
+  disposition, not a re-litigation:
+  - **Current/true but already covered:** PostgreSQL/Alembic, migration-gated startup, local
+    Keycloak OIDC verification, identity binding, fixed RBAC, append-only audit records, internal
+    export/deletion, retention policy/enforcement, backup/restore, and the AES-256-GCM envelope all
+    exist with real automated/live evidence -- Gemini's framing of these as absent is stale.
+  - **Accurate but cross-lane:** route-level OIDC/RBAC composition (Lane 5), browser PKCE/session
+    login (Lanes 1+5), root CI/E2E/observability/deployment (Lane 6), row-level organization tenancy
+    (blocked on an authoritative organization model, then Lane 5/6). Not implementing any of these
+    here; they remain in the existing copy-ready handoffs below.
+  - **Externally blocked, not locally completable:** production IdP ownership, privacy/legal
+    retention values, KMS/HSM key custody, TLS/storage/backup encryption, offsite scheduling,
+    production DR, independent security/privacy sign-off.
+  - **Rejected or premature without a new approved contract, not implemented in this package:**
+    global JWT middleware in `main.py` (expands Lane 2 into route ownership; explicit Lane 5 route
+    dependencies are the documented integration point), PostgreSQL RLS (no row-level tenant key or
+    organization model exists yet to enforce; `BYPASSRLS`/owner access means it is not a
+    "physically impossible" guarantee as pitched), database audit triggers (cannot stop a privileged
+    DB admin from disabling them, and lack verified actor/purpose context; application audit events
+    are the current agreed boundary), a bare SHA-256 hook on every evidence row (an attacker who can
+    alter a row can alter a self-stored hash of it; source-version hashes already exist where they
+    matter), a legacy SQLite-to-PostgreSQL ETL (no authoritative production source dataset or
+    mapping/rollback requirement exists -- the checked-in SQLite state is synthetic demo data, not a
+    dataset to migrate), `EncryptedType`/automatic PII column encryption (would create a second,
+    incompatible encryption abstraction alongside Package Q's deliberately unwired reviewed
+    envelope, and no field has been approved for encryption anyway), pgvector (retrieval/embedding
+    architecture is Lane 4's call, not Lane 2's to pre-empt), and broad constraint/index rewrites
+    (the master checklist explicitly says "based on measured queries" -- no measured need has been
+    documented). Gemini's percentage completion estimates are not evidence-backed and are not copied
+    into any documentation here.

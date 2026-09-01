@@ -144,17 +144,47 @@ def _enforce_maximum_retention_core(
     now = now or datetime.now(timezone.utc)
     cutoff = now - timedelta(days=policy.maximum_retention_days)
 
-    # Bounded, deterministically ordered (oldest first, primary key as an
-    # exact tiebreaker) so repeated runs are reproducible and a single call
-    # can never materialize an unbounded result set into memory.
-    candidates = db.execute(
+    base_query = (
         select(pk_column, timestamp_column)
         .where(timestamp_column < cutoff)
         .order_by(timestamp_column.asc(), pk_column.asc())
-        .limit(batch_size + 1)
-    ).all()
-    more_remain = len(candidates) > batch_size
-    candidates = candidates[:batch_size]
+    )
+
+    if apply and db.get_bind().dialect.name == "postgresql":
+        # A plain SELECT (no locking) lets N concurrent PostgreSQL workers
+        # all read the SAME unlocked candidate set, then race each other's
+        # DELETEs -- RETURNING stops any one worker from double-claiming a
+        # row another already deleted, but it does NOT stop every worker
+        # from wastefully attempting the same batch while the rest of the
+        # table's expired rows never get picked up by anyone. `FOR UPDATE
+        # SKIP LOCKED` fixes this at the source: it atomically claims
+        # exactly `batch_size` rows and skips any row a concurrent worker's
+        # own FOR UPDATE has already locked, so concurrent workers
+        # partition the real work instead of colliding on one batch. This
+        # lock is held until this call's own commit()/rollback() below.
+        #
+        # The lock claims EXACTLY batch_size rows, not batch_size + 1 --
+        # locking a lookahead row we have no intention of processing in
+        # this call would be pure waste (and would needlessly block a
+        # concurrent worker from claiming it). `more_remain` is therefore
+        # answered by a completely separate, unlocked existence check
+        # below, not by an over-fetched lookahead row.
+        candidates = db.execute(
+            base_query.limit(batch_size).with_for_update(skip_locked=True)
+        ).all()
+        claimed_pks = [pk_value for pk_value, _ in candidates]
+        remaining_query = base_query.limit(1)
+        if claimed_pks:
+            remaining_query = remaining_query.where(pk_column.not_in(claimed_pks))
+        more_remain = db.execute(remaining_query).first() is not None
+    else:
+        # SQLite (the documented local-demo profile) has no real concurrent-
+        # writer model to defend against here -- its own single-writer lock
+        # already serializes every write -- so the simpler bounded lookahead
+        # is sufficient and keeps this path portable/dependency-free.
+        candidates = db.execute(base_query.limit(batch_size + 1)).all()
+        more_remain = len(candidates) > batch_size
+        candidates = candidates[:batch_size]
 
     # Defense-in-depth: every candidate must also already satisfy the
     # category's cited MINIMUM floor. RetentionPolicy.__post_init__ already

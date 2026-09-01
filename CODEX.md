@@ -34,7 +34,7 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
 ## Current verified reality
 
 - Backend: FastAPI + SQLAlchemy with a zero-setup SQLite demo profile and an additive PostgreSQL
-  16/Alembic profile; 272 backend tests passed in the latest recorded full gate.
+  16/Alembic profile; 339 backend tests passed in the latest recorded full gate.
 - Frontend: Next.js; lint passed in the last verification.
 - Four curricula/34 competencies exist in the backend, but the supplied problem statement names a broader competency set.
 - Only the DSA Quest browser path is currently verified; three other backend dungeons are blocked by frontend route/filter assumptions.
@@ -43,10 +43,14 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
 - Recommendations are internal practice/catalogue fallback. There is no authorized live iGOT/NSSTA enrolment, completion, SSO or score-writeback integration.
 - Lane 2 provides a cross-reviewed local OIDC verifier, issuer/subject binding, fixed RBAC policy,
   deployment-database tenant boundary, audited data-rights/retention primitives and PostgreSQL
-  migrations/backup-restore drills. Existing product routes do not invoke that foundation; there is
-  no browser SSO, row-level organization tenancy, approved production IdP, frontend test suite,
-  observability stack or production authorization. A CI workflow exists, but its presence alone is
-  not evidence of a green remote run.
+  migrations/backup-restore drills. The retention-enforcement job now atomically claims its
+  PostgreSQL batch (`FOR UPDATE SKIP LOCKED`, live-drilled with 4 concurrent workers after a real
+  race was found and reproduced) but is implemented/live-tested only, not yet Codex-reviewed —
+  Codex handed remaining Lane 2 work to Claude Code after running out of session budget. Existing
+  product routes do not invoke any of this foundation; there is no browser SSO, row-level
+  organization tenancy, approved production IdP, frontend test suite, observability stack or
+  production authorization. A CI workflow exists, but its presence alone is not evidence of a green
+  remote run.
 
 Reinspect code and run tests before repeating any status claim; these bullets are a baseline, not permanent truth.
 

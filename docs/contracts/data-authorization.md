@@ -243,6 +243,18 @@ registry — so this document is not claiming a real ceiling exists anywhere it 
 excluded from this job's table mapping: those categories are defined as request-only deletion, and
 this job must refuse rather than start silently applying an age-based schedule to them.
 
+Concurrent PostgreSQL `--apply` runs atomically claim their own batch via `FOR UPDATE SKIP LOCKED`
+(never locking a lookahead row beyond the batch actually being processed), so N workers partition
+real work into disjoint row sets instead of colliding on the same unlocked candidates. This closes a
+real defect an independent live drill reproduced: without locking, 4 concurrent workers against 11
+expired rows all read the same batch and only 3 rows were ever actually deleted, leaving 8
+unprocessed. A follow-up live drill under the identical scenario (11 expired + 2 young rows, 4
+concurrent workers, batch size 3) confirmed the fix: disjoint per-worker deletions, a union of
+exactly the 11 expired IDs, a durable audit-event deleted-count sum of 11, both young rows
+untouched, and a clean `0/0` final rerun with no misleading audit event. See `LANE2_SYNC.md`'s
+Activity log for exact evidence. This fix is implemented and live-tested; it is not yet claimed as
+independently accepted pending Codex's review.
+
 ### 6.4 PostgreSQL backup/restore (Package L)
 
 `backend/scripts/backup_restore.py` provides `create_backup()`/`restore_backup()`, both shelling

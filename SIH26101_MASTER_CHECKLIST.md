@@ -4,9 +4,13 @@ Last evidence review: 1 September 2026
 
 Historical repository baseline: commit `429df46` on `main`
 
-Current Lane 2 evidence base: `codex/lane-2-core-data/bootstrap`; Packages A–N are accepted,
-Package P is implemented at `9ce96cb` with destructive-path review findings still open, Package Q
-is independently accepted at `f343455`, and Package O reconciles current documentation/handoffs.
+Current Lane 2 evidence base: `codex/lane-2-core-data/bootstrap`; Packages A–N are accepted, Package
+Q is independently accepted at `f343455`, and Package O reconciles current documentation/handoffs.
+Package P/S (retention enforcement, including atomic PostgreSQL row-claiming for concurrent
+`--apply`) is implemented and live-tested by Claude Code after Codex reproduced and handed off a
+real concurrency defect; Codex ran out of available session budget and explicitly transferred
+remaining Lane 2 work to Claude Code, so Package P/S awaits Codex's final immutable review
+whenever that resumes rather than being marked Codex-accepted here.
 
 Requirement source: `docs/SIH26101_PROBLEM_STATEMENT.md` (`PS-01`…`PS-18`)
 
@@ -27,7 +31,7 @@ This is the single execution ledger for the project. It separates what the repos
 | Area | Current state | Evidence |
 |---|---|---|
 | Backend | FastAPI/SQLAlchemy; SQLite zero-setup demo plus PostgreSQL 16/Alembic profile with migration-gated PostgreSQL startup | **VERIFIED** |
-| Automated tests | 272/272 backend tests passed on 1 Sep 2026; passing tests do not close Package P's recorded review findings; 29 Aug frontend lint evidence remains historical | **VERIFIED** |
+| Automated tests | 339/339 backend tests passed on 1 Sep 2026 after Package P/S's PostgreSQL concurrency fix (live-drilled, not yet Codex-reviewed); earlier counts (42/237/272/337) remain historical, not overwritten; 29 Aug frontend lint evidence remains historical | **VERIFIED** |
 | Curricula | Four curricula and 34 competencies are seeded and usable through backend APIs | **VERIFIED** |
 | Quest UI | DSA is playable; the other three domains are not currently reachable end-to-end through the browser | **VERIFIED** |
 | Competency targeting | Target cap is selected only from `experience_level`; designation, department, job role, assignment, qualifications and career goal are stored but do not affect targets | **VERIFIED** |
@@ -252,5 +256,8 @@ Passing P0 makes a credible hackathon prototype. Passing P1 makes a strong demon
 | 2026-09-01 | Local Keycloak 26.7.2 OIDC verification and RBAC/bootstrap negatives | verifier/binding/policy foundation accepted; product routes explicitly still unprotected | Lane 2 + reciprocal review |
 | 2026-09-01 | Concurrent PostgreSQL backup/restore and adversarial regression contract | accepted; no container temp residue in recorded live drill | Lane 2 + reciprocal review |
 | 2026-09-01 | Full backend gate after immutable Package P and reviewed Package Q | 272 passed; 2 pytest-cache permission warnings; Package P review findings remain open | Lane 2 closure pass |
+| 2026-09-01 | Live PostgreSQL 4-worker concurrency drill (pre-fix, Codex-run) | `deleted_sets=[set(), set(), {'1','2','3'}, set()]`; 3 of 11 expired rows deleted, 8 abandoned; 2 young rows correctly untouched | Confirmed real defect: unlocked candidate SELECT, reproduced by Codex; not overwritten by the fix below |
+| 2026-09-01 | Full backend gate after Package P/S (atomic PostgreSQL row-claiming fix) | 339 passed; 2 pytest-cache permission warnings; 0 failures | Claude Code, live-tested, awaiting Codex final review |
+| 2026-09-01 | Live PostgreSQL 4-worker concurrency drill (post-fix, same scenario) | 11 expired + 2 young rows; per-worker deletions pairwise-disjoint; union = all 11 expired IDs; deleted-count sum = 11; durable audit deleted-count sum = 11; young rows untouched; clean `0/0` final rerun, zero misleading audit events | Claude Code; exact opposite result to the pre-fix row above under the identical scenario |
 
 Append future entries; never overwrite failed evidence with a later success.

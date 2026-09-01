@@ -190,7 +190,9 @@ Lanes 1 and 6 start immediately against frozen fixtures. They do not wait idle f
   fixed RBAC, deployment-database tenant guard and immutable audit events. Protected route wiring
   and real organization-row tenant filters remain open.
 - **PARTIAL:** internal retention/deletion/export primitives, a dry-run-first retention enforcement
-  mechanism, and local PostgreSQL backup/restore are done and tested. The real registry has no
+  mechanism (now with atomic `FOR UPDATE SKIP LOCKED` row-claiming for concurrent PostgreSQL
+  `--apply`, live-drilled after a real race was found and fixed -- implemented/live-tested, not yet
+  Codex-reviewed), and local PostgreSQL backup/restore are done and tested. The real registry has no
   approved maximum, so it currently deletes nothing; accountable durations and production
   scheduling remain open. A tested, deliberately unused application encryption envelope is Package
   Q; production KMS/HSM custody, storage/TLS/backup encryption, scheduled/offsite backup and DR
@@ -207,11 +209,14 @@ Lanes 1 and 6 start immediately against frozen fixtures. They do not wait idle f
 
 ### Lane 2 completion and cross-lane handoff
 
-Lane 2 Packages A–N are implemented and reciprocally reviewed on
-`codex/lane-2-core-data/bootstrap`; Packages P/Q are the final hardening packages and their exact
-review state remains in `LANE2_SYNC.md`. The current full backend gate is **272 passed**. The
-following assignments are copy-ready messages for the remaining owners. They are dependencies of a
-controlled pilot or production claim, not reasons to reopen completed Lane 2 packages.
+Lane 2 Packages A–N and Q are implemented and reciprocally reviewed on
+`codex/lane-2-core-data/bootstrap`. Package P/S (retention enforcement, including a live-tested fix
+for a real PostgreSQL concurrency defect Codex found and reproduced) is implemented and live-tested
+by Claude Code but not yet Codex-reviewed — Codex handed remaining Lane 2 implementation work to
+Claude Code after running out of session budget mid-review; exact review state remains in
+`LANE2_SYNC.md`. The current full backend gate is **339 passed**. The following assignments are
+copy-ready messages for the remaining owners. They are dependencies of a controlled pilot or
+production claim, not reasons to reopen completed Lane 2 packages.
 
 **Send to the Lane 5 person — Product API, Integrations & Analytics**
 

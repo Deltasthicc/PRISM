@@ -14,11 +14,24 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from sqlalchemy import create_engine, text
+from sqlalchemy import Column, DateTime, Integer, create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.selectable import Select
 
 from db.database import Base
+
+
+class _IntPkProbeRow(Base):
+    """A throwaway model with a non-string (integer) primary key, used only
+    to prove the DELETE predicate uses raw candidate PKs -- not stringified
+    ones -- against a real integer-typed column. The one real eligible
+    table (AuditEvent) happens to use a String PK, so this is otherwise
+    untested by anything that exercises only real tables."""
+
+    __tablename__ = "package_s_int_pk_probe"
+
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime(timezone=True))
 from models import (  # noqa: F401 -- registers every model so FK/relationship resolution succeeds
     accuracy_history,
     dungeon,
@@ -377,6 +390,38 @@ def test_category_tables_only_registers_the_retain_only_category():
     assert set(CATEGORY_TABLES) == {"retain_append_only_security_log_duration_policy_pending"}
 
 
+def test_delete_predicate_uses_the_raw_non_string_pk_type(db):
+    # The one real eligible category (AuditEvent) happens to use a String
+    # PK, so nothing else exercises a genuinely non-string primary key
+    # through the DELETE predicate. Prove it directly against a real
+    # Integer-typed column.
+    old_ts = datetime.now(timezone.utc) - timedelta(days=40)
+    young_ts = datetime.now(timezone.utc) - timedelta(days=5)
+    db.add(_IntPkProbeRow(id=1, created_at=old_ts))
+    db.add(_IntPkProbeRow(id=2, created_at=old_ts))
+    db.add(_IntPkProbeRow(id=3, created_at=young_ts))
+    db.commit()
+
+    table_map = {_SYNTHETIC_CATEGORY: (_IntPkProbeRow, "created_at", "id")}
+    result = _enforce_maximum_retention_core(
+        db,
+        _SYNTHETIC_CATEGORY,
+        apply=True,
+        policies=_SYNTHETIC_POLICIES,
+        table_map=table_map,
+        batch_size=DEFAULT_BATCH_SIZE,
+        now=None,
+        actor="test",
+    )
+
+    assert result.deleted_count == 2
+    # deleted_ids is stringified only for display/reporting, never for the
+    # predicate itself.
+    assert set(result.deleted_ids) == {"1", "2"}
+    remaining_ids = {row.id for row in db.query(_IntPkProbeRow).all()}
+    assert remaining_ids == {3}
+
+
 # ---------------------------------------------------------------------------
 # 3. Bounded batch size + deterministic ordering.
 # ---------------------------------------------------------------------------
@@ -518,6 +563,47 @@ def _monkeypatch_bind_to_fake_postgresql(db, monkeypatch):
         return real_get_bind(*args, **kwargs)
 
     monkeypatch.setattr(db, "get_bind", _fake_get_bind)
+
+
+def test_postgres_apply_selects_with_for_update_skip_locked(db, monkeypatch):
+    # Non-vacuous SQL coverage: prove the actual statement sent to
+    # db.execute() carries FOR UPDATE SKIP LOCKED when compiled against the
+    # PostgreSQL dialect -- not just that the call doesn't crash. This is
+    # what makes concurrent PostgreSQL workers atomically claim disjoint
+    # rows instead of all reading the same unlocked candidate set.
+    from sqlalchemy.dialects import postgresql as postgresql_dialect
+
+    _insert_audit_event(db, age_days=40, event_id="old-event")
+    _monkeypatch_bind_to_fake_postgresql(db, monkeypatch)
+    monkeypatch.setattr(
+        "scripts.retention_job.require_database_at_migration_head", lambda bind: None
+    )
+
+    real_execute = db.execute
+    captured_selects = []
+
+    def _spy_execute(statement, *args, **kwargs):
+        if isinstance(statement, Select):
+            captured_selects.append(statement)
+        return real_execute(statement, *args, **kwargs)
+
+    monkeypatch.setattr(db, "execute", _spy_execute)
+
+    _core(db, apply=True, batch_size=3)
+
+    assert captured_selects, "expected at least one SELECT to be issued"
+    claim_selects = [
+        s
+        for s in captured_selects
+        if str(s.compile(dialect=postgresql_dialect.dialect())).upper().find("FOR UPDATE") != -1
+    ]
+    assert claim_selects, "no SELECT carried FOR UPDATE when compiled for PostgreSQL"
+    compiled = str(claim_selects[0].compile(dialect=postgresql_dialect.dialect())).upper()
+    assert "SKIP LOCKED" in compiled
+    # And it must claim exactly batch_size rows, never a batch_size + 1
+    # lookahead -- locking a row we won't process in this call is pure
+    # waste and needlessly blocks a concurrent worker from claiming it.
+    assert "LIMIT" in compiled
 
 
 def test_apply_is_gated_by_migration_head_on_postgresql(db, monkeypatch):

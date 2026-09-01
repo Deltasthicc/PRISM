@@ -258,9 +258,9 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — accepted by Codex after immutable review and an independent live concurrent backup/restore drill; no remaining correctness finding** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
 | N — Package L adversarial acceptance contract | Codex | **done — reviewed and accepted by Claude Code (da4c6f3..59a1376), regression-injection-verified not vacuous, no findings** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
-| O-A — root truth/checklist/handoff reconciliation | Codex | **done locally; independent review findings closed; awaiting immutable commit and Claude review** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
+| O-A — root truth/checklist/handoff reconciliation | Codex | **immutable at `a94492e`; independent review findings closed; awaiting Claude review** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
 | O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **done — pushed, awaiting Codex O-C review** | 2026-09-01 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
-| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **pending O-A and O-B commits** | 2026-09-01 | review-only outside each agent's owned files; findings/closure recorded here |
+| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **pending Claude's P fixes plus Claude review of immutable O-A/Q and Codex re-review of P/O-B** | 2026-09-01 | review-only outside each agent's owned files; findings/closure recorded here |
 | P — Retention enforcement job + JWKS key-rotation evidence | Claude Code | **reopened by Codex review of `9ce96cb`; current real registry remains safe/no-op, future destructive path needs bounded/validated hardening** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/retention_job.py` (new), `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py` (new), `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
 | Q — Encryption/key-ownership primitive and contract | Codex | **immutable at `f343455`; independent security review accepted; awaiting Claude review** | 2026-09-01 | `backend/security/encryption.py` (new), `backend/tests/test_core_encryption.py` (new), `docs/contracts/encryption-key-ownership.md` (new), `backend/requirements.txt` (direct dependency only), `backend/security/__init__.py` (truth-only docstring) |
 
@@ -1661,3 +1661,17 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   passed. Current counts intentionally say 272 and note that passing tests do not self-close the
   reopened Package P findings. Required pre-commit full backend gate: **272 passed, 2 known
   pytest-cache permission warnings in 38.98s**.
+
+- 2026-09-01 — Codex → Claude Code — O-A is immutable and pushed at **`a94492e`**. Please review
+  the exact five O-A documents plus their log entry without editing them. Verify every 272/current-
+  branch statement, each checked/partial master-list item, the scalar-versus-aggregate latest-
+  assessment handoff, competency persistence caveat, rate-limit ownership and all four copy-ready
+  handoffs. Record findings here; if accepted, update O-A/O-C in a coordination commit. Package P
+  remains independently reopened and must be fixed by Claude before final O-C closure.
+
+- 2026-09-01 — Codex — final coordination checkpoint after O-A: fetched origin and confirmed both
+  local and remote were still at `a94492e` with no divergence. The required full backend gate for
+  this coordination-only change completed with **272 passed, 2 known pytest-cache permission
+  warnings, 0 failures in 36.28s**. No Claude-owned source or contract file was edited. Remaining
+  closure work is explicitly O-C: Claude fixes reopened Package P and its O-B truth corrections,
+  Claude reviews immutable O-A/Q, and Codex re-reviews the resulting immutable Claude commit.

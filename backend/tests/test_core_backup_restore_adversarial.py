@@ -1,8 +1,9 @@
 """Independent Package L acceptance tests owned by Codex.
 
 These tests intentionally exercise failure/concurrency behavior through the
-public backup/restore functions and the subprocess boundary. They do not
-depend on Claude's private helper names or implementation shape.
+public backup/restore functions and the subprocess boundary. They assert the
+observable command contract without depending on Claude's path-generator
+helper or implementation shape.
 """
 
 from __future__ import annotations
@@ -10,13 +11,12 @@ from __future__ import annotations
 import re
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from threading import Barrier, Lock
+from threading import Barrier, Lock, get_ident
 
 import pytest
 
 from scripts.backup_restore import (
     BackupRestoreError,
-    _run,
     create_backup,
     restore_backup,
 )
@@ -76,13 +76,13 @@ def test_restore_copy_failure_attempts_exact_cleanup_without_masking_primary(
 def test_concurrent_backups_use_distinct_container_paths(monkeypatch, tmp_path):
     barrier = Barrier(2)
     lock = Lock()
-    dump_paths: list[str] = []
+    traces: dict[int, list[list[str]]] = {}
 
     def _fake_run(command, **kwargs):
+        thread_id = get_ident()
+        with lock:
+            traces.setdefault(thread_id, []).append(command)
         if "pg_dump" in command:
-            path = command[command.index("--file") + 1]
-            with lock:
-                dump_paths.append(path)
             barrier.wait(timeout=5)
         elif _is_docker_cp(command):
             Path(command[-1]).write_bytes(b"synthetic custom-format dump")
@@ -98,24 +98,34 @@ def test_concurrent_backups_use_distinct_container_paths(monkeypatch, tmp_path):
         ]
         assert [future.result(timeout=10) for future in futures] == outputs
 
-    assert len(dump_paths) == 2
-    assert len(set(dump_paths)) == 2
-    for path in dump_paths:
-        _assert_docker_safe_temp_path(path)
+    assert len(traces) == 2
+    operation_paths: list[str] = []
+    for commands in traces.values():
+        dump = next(command for command in commands if "pg_dump" in command)
+        copy = next(command for command in commands if _is_docker_cp(command))
+        cleanup = next(command for command in commands if _is_container_cleanup(command))
+        dump_path = dump[dump.index("--file") + 1]
+        copy_source = _destination_container_path(copy[:3])
+        cleanup_path = cleanup[-1]
+        assert dump_path == copy_source == cleanup_path
+        _assert_docker_safe_temp_path(dump_path)
+        operation_paths.append(dump_path)
+
+    assert len(set(operation_paths)) == 2
 
 
 def test_concurrent_restores_use_distinct_container_paths(monkeypatch, tmp_path):
     barrier = Barrier(2)
     lock = Lock()
-    restore_paths: list[str] = []
+    traces: dict[int, list[list[str]]] = {}
     archive = tmp_path / "source.pgdump"
     archive.write_bytes(b"synthetic custom-format dump")
 
     def _fake_run(command, **kwargs):
+        thread_id = get_ident()
+        with lock:
+            traces.setdefault(thread_id, []).append(command)
         if _is_docker_cp(command):
-            path = _destination_container_path(command)
-            with lock:
-                restore_paths.append(path)
             barrier.wait(timeout=5)
         return None
 
@@ -128,13 +138,26 @@ def test_concurrent_restores_use_distinct_container_paths(monkeypatch, tmp_path)
         ]
         assert [future.result(timeout=10) for future in futures] == [None, None]
 
-    assert len(restore_paths) == 2
-    assert len(set(restore_paths)) == 2
-    for path in restore_paths:
-        _assert_docker_safe_temp_path(path)
+    assert len(traces) == 2
+    operation_paths: list[str] = []
+    for commands in traces.values():
+        copy = next(command for command in commands if _is_docker_cp(command))
+        preflight = next(command for command in commands if "--list" in command)
+        restore = next(
+            command
+            for command in commands
+            if "pg_restore" in command and "--list" not in command
+        )
+        cleanup = next(command for command in commands if _is_container_cleanup(command))
+        copy_path = _destination_container_path(copy)
+        assert copy_path == preflight[-1] == restore[-1] == cleanup[-1]
+        _assert_docker_safe_temp_path(copy_path)
+        operation_paths.append(copy_path)
+
+    assert len(set(operation_paths)) == 2
 
 
-def test_missing_docker_executable_is_normalized(monkeypatch):
+def test_missing_docker_executable_is_normalized_through_public_api(monkeypatch, tmp_path):
     def _missing_executable(*args, **kwargs):
         raise FileNotFoundError("docker executable is unavailable")
 
@@ -144,4 +167,4 @@ def test_missing_docker_executable_is_normalized(monkeypatch):
     )
 
     with pytest.raises(BackupRestoreError, match="docker executable is unavailable"):
-        _run(["docker", "version"])
+        create_backup(CONTAINER, REAL_URL, tmp_path / "unwritten.pgdump")

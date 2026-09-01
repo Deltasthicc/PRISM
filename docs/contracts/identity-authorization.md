@@ -58,8 +58,8 @@ The first binding is created only through the out-of-band module
 2. requires a fresh database session and takes a transaction-scoped PostgreSQL advisory lock (or
    an immediate SQLite write lock) before checking state;
 3. refuses to run if *any* identity-binding row already exists;
-4. requires an exact acknowledgement of
-   `BOOTSTRAP ORGANIZATION ADMIN <issuer>|<subject_id>`;
+4. requires an exact acknowledgement containing a canonical JSON identity key:
+   `BOOTSTRAP ORGANIZATION ADMIN {"issuer":"<issuer>","subject_id":"<subject>"}`;
 5. creates one active binding with no `player_id` and an atomic
    `identity_binding.bootstrap` audit event; and
 6. records the supplied change/operator reference explicitly as out-of-band and not as a verified
@@ -70,7 +70,7 @@ Example from `backend/`, after setting `DATABASE_URL` to the migrated target dat
 ```powershell
 $issuer = 'https://identity.example.test/realms/sih'
 $subject = 'issuer-provided-stable-subject-id'
-$confirmation = "BOOTSTRAP ORGANIZATION ADMIN $issuer|$subject"
+$confirmation = 'BOOTSTRAP ORGANIZATION ADMIN {"issuer":"https://identity.example.test/realms/sih","subject_id":"issuer-provided-stable-subject-id"}'
 & .\.venv\Scripts\python.exe -m security.identity_bootstrap `
   --issuer $issuer `
   --subject-id $subject `
@@ -87,7 +87,10 @@ controls, so production database credentials/change approval remain operational 
 than something this module can prove.
 
 After the first binding exists, all later binding changes use the active-organization-admin,
-audited functions in `security.rbac`; the bootstrap refuses to become a recovery/rebinding bypass.
+audited functions in `security.rbac`. Bootstrap checks both the binding table and its retained audit
+sentinel while holding the lock, so verified subject deletion of the only linked binding does not
+turn bootstrap into a recovery/rebinding bypass. Direct database deletion of both records remains
+outside the application's threat boundary and requires database operational controls.
 
 ## 3. Roles and permissions
 

@@ -217,9 +217,9 @@ username, email, realm role or another display claim.
 | H — Shared latest-assessment repository query | Claude Code | **done — reviewed by Codex, no correctness issues found** | 2026-09-01 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
 | I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed and independently reviewed; live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
 | J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
-| K — Controlled first-admin bootstrap | Codex | **done — reviewed by Claude Code; functionally sound, two minor non-blocking code-quality findings** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
-| L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — awaiting Codex review** | 2026-09-01 | `backend/security/retention.py` (new), `backend/scripts/backup_restore.py` (new), `backend/tests/test_core_retention.py` (new), `backend/tests/test_core_backup_restore.py` (new), `docs/contracts/data-authorization.md` |
-| L — Retention policy + PostgreSQL backup/restore closure | Claude Code | **available / reserved for Claude** | 2026-09-01 | reserved: new retention module/test and a new operations runbook; Claude must list exact paths here before editing and must not touch Package K files |
+| K — Controlled first-admin bootstrap | Codex | **reviewed by Claude; two minor findings accepted; permanent invariant reopened in M** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
+| L — Retention policy + PostgreSQL backup/restore | Claude Code | **hardening in progress after Codex found four blockers** | 2026-09-01 | `backend/security/retention.py` (new), `backend/scripts/backup_restore.py` (new), `backend/tests/test_core_retention.py` (new), `backend/tests/test_core_backup_restore.py` (new), `docs/contracts/data-authorization.md`; Codex must not edit these files |
+| M — Permanent-bootstrap invariant + K review fixes | Codex | **done — awaiting Claude review** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
 
 ## Backlog / next up
 
@@ -1016,3 +1016,17 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   commit/rollback of binding+audit together -- is correct, and now independently verified against
   real Postgres concurrency, not just SQLite. Package K is functionally sound; the two findings
   above are worth Codex's time but neither is a security hole or a correctness bug.
+- 2026-09-01 — Codex — Package M implementation consumed all of Claude's K findings and the
+  cross-package bootstrap defect. `validate_issuer()` is now a public shared validator; the CLI
+  wraps only the intentional database-revision `RuntimeError` and lets unrelated runtime defects
+  surface; confirmation uses canonical JSON, so pipe characters in otherwise valid opaque inputs
+  cannot create the delimiter collision Claude identified. Most importantly, the in-lock gate now
+  checks both existing bindings and the retained `identity_binding.bootstrap` audit sentinel.
+  Focused bootstrap/RBAC/data-rights gate: **51 passed**. Live PostgreSQL proof: first bootstrap
+  succeeded; my first inline inspection/cleanup commands then failed with PowerShell quoting errors
+  (no application failure claimed), so I used exact, uniquely scoped SQL to remove the binding while
+  retaining the audit. With `remaining_bindings=0` and `sentinel_audits=1`, a replacement CLI
+  attempt was refused with exit 2. Cleanup then reported `cleanup_bindings=0` and
+  `cleanup_bootstrap_audits=0`. Package M still needs the full-suite gate, immutable commit and
+  Claude review before acceptance. Final pre-commit full backend gate: **210 passed, 2 existing
+  pytest-cache permission warnings in 27.92s**; `git diff --check` reported no errors.

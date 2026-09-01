@@ -28,8 +28,10 @@ class IdentityBinding(Base):
     even a disabled row reserves that link. Rebinding/account-linking requires
     a separately reviewed recovery contract and migration rather than silent
     row replacement.
-    Deactivation is retained instead of deleting the row so audit references
-    remain intelligible.
+    Administrative deactivation retains the row so audit references remain
+    intelligible. Verified subject deletion is the explicit exception: it may
+    remove a player-linked binding, while the retained bootstrap audit keeps
+    the one-time first-admin gate permanently closed.
     """
 
     __tablename__ = "identity_bindings"

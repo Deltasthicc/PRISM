@@ -107,6 +107,35 @@ def test_bootstrap_refuses_when_any_binding_already_exists(migrated_session_fact
     second.close()
 
 
+def test_removing_the_only_binding_does_not_reopen_bootstrap(
+    migrated_session_factory,
+):
+    first = migrated_session_factory()
+    bootstrap_initial_organization_admin(first, **_arguments())
+    first.query(IdentityBinding).delete(synchronize_session=False)
+    first.commit()
+    assert first.query(IdentityBinding).count() == 0
+    assert (
+        first.query(AuditEvent)
+        .filter_by(
+            action="identity_binding.bootstrap",
+            entity_type="identity_binding",
+        )
+        .count()
+        == 1
+    )
+    first.close()
+
+    second = migrated_session_factory()
+    with pytest.raises(IdentityBootstrapConflict, match="permanently closed"):
+        bootstrap_initial_organization_admin(
+            second, **_arguments(subject_id="replacement-admin-subject")
+        )
+    assert second.query(IdentityBinding).count() == 0
+    assert second.query(AuditEvent).count() == 1
+    second.close()
+
+
 def test_bootstrap_requires_database_at_migration_head(tmp_path):
     engine = create_engine(f"sqlite:///{tmp_path / 'unversioned.db'}")
     Base.metadata.create_all(
@@ -209,6 +238,52 @@ def test_cli_never_accepts_token_or_password_and_reports_success(
     assert "Runtime access still requires" in captured.out
     assert "token" not in captured.out.lower()
     assert captured.err == ""
+
+
+def test_cli_does_not_hide_an_unexpected_runtime_bug(
+    migrated_session_factory, monkeypatch
+):
+    monkeypatch.setattr(
+        "security.identity_bootstrap.SessionLocal", migrated_session_factory
+    )
+
+    def _unexpected_failure(*args, **kwargs):
+        raise RuntimeError("unexpected implementation defect")
+
+    monkeypatch.setattr(
+        "security.identity_bootstrap.bootstrap_initial_organization_admin",
+        _unexpected_failure,
+    )
+    arguments = _arguments()
+    argv = [
+        "--issuer",
+        arguments["issuer"],
+        "--subject-id",
+        arguments["subject_id"],
+        "--operator-reference",
+        arguments["operator_reference"],
+        "--reason",
+        arguments["reason"],
+        "--confirmation",
+        arguments["confirmation"],
+    ]
+
+    with pytest.raises(RuntimeError, match="unexpected implementation defect"):
+        bootstrap_main(argv)
+
+
+def test_confirmation_encoding_cannot_collide_on_pipe_delimiters():
+    first = expected_bootstrap_confirmation(
+        "https://identity.example.test/a|b", "c"
+    )
+    second = expected_bootstrap_confirmation(
+        "https://identity.example.test/a", "b|c"
+    )
+
+    assert first != second
+    assert first.startswith(
+        'BOOTSTRAP ORGANIZATION ADMIN {"issuer":'
+    )
 
 
 @pytest.mark.parametrize(

@@ -9,6 +9,7 @@ No token, password, client secret, or unverified username is accepted here.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from collections.abc import Sequence
 
@@ -29,13 +30,16 @@ from models import (
     session,
     submission,
 )
+from models.governance import AuditEvent
 from models.identity import IdentityBinding
 from security.audit import record_audit_event
-from security.rbac import AuthorizationError, _issuer
+from security.rbac import AuthorizationError, validate_issuer
 
 
 BOOTSTRAP_LOCK_KEY = 0x5349484C414E4532
 BOOTSTRAP_CONFIRMATION_PREFIX = "BOOTSTRAP ORGANIZATION ADMIN"
+BOOTSTRAP_AUDIT_ACTION = "identity_binding.bootstrap"
+BOOTSTRAP_AUDIT_ENTITY_TYPE = "identity_binding"
 
 # Importing every model module is intentional: SQLAlchemy configures string-
 # referenced relationships lazily, and this module runs directly without
@@ -88,11 +92,17 @@ def _required_text(value: str, name: str, *, maximum: int) -> str:
 def expected_bootstrap_confirmation(issuer: str, subject_id: str) -> str:
     """Return the exact destructive-style acknowledgement required to apply."""
     try:
-        validated_issuer = _issuer(issuer)
+        validated_issuer = validate_issuer(issuer)
     except AuthorizationError as exc:
         raise IdentityBootstrapValidationError(str(exc)) from exc
     validated_subject = _required_text(subject_id, "subject_id", maximum=500)
-    return f"{BOOTSTRAP_CONFIRMATION_PREFIX} {validated_issuer}|{validated_subject}"
+    identity_key = json.dumps(
+        {"issuer": validated_issuer, "subject_id": validated_subject},
+        ensure_ascii=True,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return f"{BOOTSTRAP_CONFIRMATION_PREFIX} {identity_key}"
 
 
 def _acquire_bootstrap_lock(db: Session) -> None:
@@ -132,7 +142,10 @@ def bootstrap_initial_organization_admin(
         raise IdentityBootstrapError("identity bootstrap requires a fresh database session")
 
     bind = db.get_bind()
-    require_database_at_migration_head(bind)
+    try:
+        require_database_at_migration_head(bind)
+    except RuntimeError as exc:
+        raise IdentityBootstrapError(f"database revision check failed: {exc}") from exc
     expected_confirmation = expected_bootstrap_confirmation(issuer, subject_id)
     operator_reference = _required_text(
         operator_reference, "operator_reference", maximum=200
@@ -145,10 +158,21 @@ def bootstrap_initial_organization_admin(
 
     try:
         _acquire_bootstrap_lock(db)
-        existing_count = db.scalar(select(func.count()).select_from(IdentityBinding))
-        if existing_count:
+        existing_binding_count = db.scalar(
+            select(func.count()).select_from(IdentityBinding)
+        )
+        completed_bootstrap_count = db.scalar(
+            select(func.count())
+            .select_from(AuditEvent)
+            .where(
+                AuditEvent.action == BOOTSTRAP_AUDIT_ACTION,
+                AuditEvent.entity_type == BOOTSTRAP_AUDIT_ENTITY_TYPE,
+            )
+        )
+        if existing_binding_count or completed_bootstrap_count:
             raise IdentityBootstrapConflict(
-                "identity bootstrap is closed because an identity binding already exists"
+                "identity bootstrap is permanently closed because an identity binding "
+                "already exists or a retained bootstrap audit proves it ran before"
             )
 
         binding = IdentityBinding(
@@ -162,8 +186,8 @@ def bootstrap_initial_organization_admin(
         record_audit_event(
             db,
             actor=f"out-of-band-bootstrap:{operator_reference}",
-            action="identity_binding.bootstrap",
-            entity_type="identity_binding",
+            action=BOOTSTRAP_AUDIT_ACTION,
+            entity_type=BOOTSTRAP_AUDIT_ENTITY_TYPE,
             entity_id=binding.binding_id,
             details={
                 "reason": reason,
@@ -207,7 +231,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             reason=args.reason,
             confirmation=args.confirmation,
         )
-    except (IdentityBootstrapError, AuthorizationError, SQLAlchemyError, RuntimeError) as exc:
+    except (IdentityBootstrapError, AuthorizationError, SQLAlchemyError) as exc:
         print(f"Bootstrap refused: {exc}", file=sys.stderr)
         return 2
     finally:

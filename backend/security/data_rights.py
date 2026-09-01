@@ -1,10 +1,10 @@
 """Internal subject-data inventory, export and verified deletion primitives.
 
-These functions are deliberately not HTTP endpoints. The repository has no
-authenticated subject or RBAC enforcement yet, so a route must not expose
-them until Lane 5 consumes the authorization contract and Lane 2 supplies a
-server-derived actor. Callers are responsible for verifying authority before
-invocation; every completed export/deletion writes an append-only audit event.
+These functions are deliberately not HTTP endpoints and do not authenticate
+their string ``actor`` argument. Lane 2 supplies OIDC verification, binding
+and RBAC primitives, but a route must not expose these operations until Lane 5
+composes those checks and passes a server-derived actor. Every completed
+export/deletion writes an append-only audit event.
 """
 
 from __future__ import annotations

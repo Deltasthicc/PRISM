@@ -139,7 +139,8 @@ def _required(value: str, name: str, maximum: int = 500) -> str:
     return normalized
 
 
-def _issuer(value: str) -> str:
+def validate_issuer(value: str) -> str:
+    """Validate and return an exact issuer URL for persisted identity keys."""
     issuer = _required(value, "issuer")
     if issuer != value:
         raise AuthorizationError("issuer must match the verified value exactly")
@@ -179,7 +180,7 @@ def resolve_bound_principal(
     db: Session, subject: AuthenticatedSubjectLike
 ) -> BoundPrincipal:
     """Resolve exact ``(issuer, sub)`` through an active local binding."""
-    issuer = _issuer(subject.issuer)
+    issuer = validate_issuer(subject.issuer)
     subject_id = _required(subject.subject_id, "subject_id")
     binding = (
         db.query(IdentityBinding)
@@ -274,7 +275,7 @@ def create_identity_binding(
     require_permission(actor, Permission.IDENTITY_BINDING_MANAGE)
     require_deployment_tenant(actor)
     _require_active_actor_binding(db, actor)
-    issuer = _issuer(issuer)
+    issuer = validate_issuer(issuer)
     subject_id = _required(subject_id, "subject_id")
     reason = _required(reason, "reason")
     if player_id is not None:

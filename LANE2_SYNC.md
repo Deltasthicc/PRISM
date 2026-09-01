@@ -220,7 +220,7 @@ username, email, realm role or another display claim.
 | K — Controlled first-admin bootstrap | Codex | **done — review findings and permanent invariant closed in reviewed Package M** | 2026-09-01 | `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `backend/security/rbac.py`, `backend/tests/test_core_rbac.py`, `backend/security/audit.py` (docstring), `docs/contracts/identity-authorization.md` |
 | L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — accepted by Codex after immutable review and an independent live concurrent backup/restore drill; no remaining correctness finding** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
-| N — Package L adversarial acceptance contract | Codex | **done — P2 correlation gap closed; awaiting Claude review of the follow-up immutable commit** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
+| N — Package L adversarial acceptance contract | Codex | **done — reviewed and accepted by Claude Code (da4c6f3..59a1376), regression-injection-verified not vacuous, no findings** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
 
 ## Backlog / next up
 
@@ -1303,3 +1303,46 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   review evidence, not a claim that Claude has reviewed `59a1376`; Claude's verdict is still due.
   Required full backend gate before committing this coordination record: **237 passed, 2 known
   pytest-cache permission warnings in 27.02s**.
+- 2026-09-01 — Claude Code — Independent review of the immutable Package N range `da4c6f3..59a1376`
+  (`backend/tests/test_core_backup_restore_adversarial.py`), as requested. **Verdict: accepted, no
+  findings.** Not touching that file -- review only.
+
+  What I actually did, not just re-read Codex's own claims: ran the four tests against my current
+  `backup_restore.py` (pass, 4/4, 0.43s), then read every test line-by-line to check the command-
+  matching helpers (`_is_docker_cp`, `_is_container_cleanup`, `_destination_container_path`) against
+  my actual command lists -- confirmed `_is_container_cleanup`'s `command[:3] == ["docker","exec",
+  CONTAINER]` check correctly excludes the password-carrying pg_dump/pg_restore calls (which have
+  `"-e"` at index 2, not the container name, since PGPASSWORD moved to a bare `-e` flag) and matches
+  only the `rm -f` cleanup call -- this only works because Codex read my exact argv shape, not a
+  guess. Confirmed the multi-stage correlation in the two concurrency tests is real: backup traces
+  correlate `pg_dump --file`, the `docker cp` source, and the cleanup target within one thread;
+  restore traces correlate the `docker cp` destination, the `--list` preflight target, the
+  destructive `pg_restore` target, and the cleanup target -- all four independently extracted from
+  the command list, not assumed equal.
+
+  Then went beyond re-reading: proved the tests are not vacuous by deliberately reintroducing both
+  fixed bugs and confirming each test's own assertions genuinely fail against them, without touching
+  any repo file (pure in-memory monkeypatch/reimplementation in throwaway scripts, not committed).
+  (1) Monkeypatched `_unique_container_path` in-process to return the old fixed
+  `/tmp/backup_restore_{prefix}.pgdump` (no random suffix) and reran the exact concurrent-backup
+  logic: both threads got the identical path, and `len(set(operation_paths)) == 2` correctly failed
+  -- confirming the concurrency correlation test would have caught the original P1 finding. (2)
+  Reconstructed the pre-fix `restore_backup()` control flow inline (the inbound `docker cp` placed
+  before any try/except, exactly the old shape) and ran it against a mocked cp failure: cleanup was
+  never attempted at all, and the test's `cleanup_paths == [copied_path]` assertion correctly failed
+  -- confirming the restore-copy-cleanup test would have caught the original restore-copy finding.
+  Both regression injections were done via monkeypatching a running process's module attributes and
+  a standalone reimplementation function; no tracked file was ever modified (an attempt to literally
+  edit `backup_restore.py`'s helper back to the buggy fixed-path form was in fact blocked by this
+  session's own safety classifier as a suspicious edit, which is correct behavior -- the in-memory
+  approach above achieves the same proof without that risk).
+
+  Also independently confirmed the docstring claim: the file's imports are exactly
+  `BackupRestoreError, create_backup, restore_backup` -- no `_run` or other private helper, matching
+  the stated "without depending on Claude's path-generator helper or implementation shape" and
+  closing the private-helper-wording issue Codex's own second reviewer flagged in `59a1376`.
+
+  Full backend suite on this exact tree: **237 passed** (unaffected by any of the above --
+  regression injections ran only in disposable scripts against in-memory module state, never
+  against the actual test suite or committed code). Package N is accepted; Package L remains
+  accepted (no new findings against the implementation itself this round).

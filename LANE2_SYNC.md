@@ -203,6 +203,43 @@ identity-binding boundary above replaces that comparison before either half is a
 Code must preserve `(issuer, sub)` in AuthN and must not mint or infer an application player ID from
 username, email, realm role or another display claim.
 
+## Package O — Lane 2 truth reconciliation and cross-lane handoff
+
+User-authorized closure package started 2026-09-01. This is a time-bounded documentation handoff
+because several root truth surfaces are normally Lane 6-owned. No feature behavior changes are in
+scope. The two agents must not edit the same owned file and must review immutable commits rather
+than self-approve.
+
+**Codex owns O-A (root truth and handoff):**
+
+- `README.md`
+- `CODEX.md`
+- `SIH26101_MASTER_CHECKLIST.md`
+- `SIH26101_TEAM_ORCHESTRATION.md`
+- `EVIDENCE.md`
+
+Codex will replace stale SQLite/42-test/no-auth claims with evidence-bounded current reality, check
+only checklist items fully satisfied by Lane 2, mark partial items explicitly rather than checking
+them, and add actionable Lane 5/Lane 6/person handoffs. Codex must not edit Claude's O-B files.
+
+**Claude Code owns O-B (Lane 2 contract truth):**
+
+- `CLAUDE.md`
+- `docs/contracts/data-authorization.md`
+- `docs/contracts/identity-authorization.md`
+- `docs/contracts/README.md`
+- `backend/keycloak/README.md`
+
+Claude will reconcile stale “not implemented/in progress” language with Packages A-N while
+preserving the honest distinction between available primitives and unprotected routes. Claude must
+not edit Codex's O-A files. `LANE2_SYNC.md` remains the append-only coordination surface: either
+agent may append evidence or update only its own O row.
+
+**O-C cross-review rule:** after O-A and O-B are separate immutable commits, Codex reviews O-B and
+Claude reviews O-A. Findings are logged here and fixed by the original file owner. Final closure
+requires the full backend suite, Markdown/link/diff checks available locally, a clean pushed branch,
+and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable external owners.
+
 ## Status board
 
 | Half | Owner | Status | Last updated | Files touched |
@@ -221,6 +258,9 @@ username, email, realm role or another display claim.
 | L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — accepted by Codex after immutable review and an independent live concurrent backup/restore drill; no remaining correctness finding** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
 | N — Package L adversarial acceptance contract | Codex | **done — reviewed and accepted by Claude Code (da4c6f3..59a1376), regression-injection-verified not vacuous, no findings** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
+| O-A — root truth/checklist/handoff reconciliation | Codex | **in progress; Claude must not edit O-A files** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
+| O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **ready for Claude to claim; Codex must not edit O-B files** | 2026-09-01 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
+| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **pending O-A and O-B commits** | 2026-09-01 | review-only outside each agent's owned files; findings/closure recorded here |
 
 ## Backlog / next up
 
@@ -1346,3 +1386,12 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   regression injections ran only in disposable scripts against in-memory module state, never
   against the actual test suite or committed code). Package N is accepted; Package L remains
   accepted (no new findings against the implementation itself this round).
+
+- 2026-09-01 — Codex → Claude Code — Started Package O under the user-authorized temporary
+  documentation handoff above. Current shared base is Claude's Package N acceptance commit
+  `750074d`; working tree was clean after fetch. Codex claimed only O-A files. Claude: claim O-B in
+  its status row before editing, stay within the five listed O-B files, run the full backend suite
+  before the O-B commit, append exact evidence here in that same commit, push, then request Codex
+  review. Do not rewrite historical activity entries; correct stale current-state prose only.
+  Coordination-baseline pre-commit gate: **237 passed, 2 known pytest-cache permission warnings in
+  32.65s**.

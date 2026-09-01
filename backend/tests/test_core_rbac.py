@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
@@ -275,6 +276,25 @@ def test_forged_tenant_scope_is_rejected(db):
     )
     with pytest.raises(AuthorizationError):
         require_deployment_tenant(forged)
+
+
+def test_audit_actor_encoding_cannot_collide_on_pipe_delimiters(db):
+    # A plain f"{issuer}|{subject_id}" join (the original shape) is not
+    # injective: neither validate_issuer() nor security.identity.verify()
+    # rejects a literal "|" in the subject_id. Two different (issuer,
+    # subject_id) pairs must not be able to produce the same audit_actor
+    # string, matching the same fix already applied to
+    # identity_bootstrap.expected_bootstrap_confirmation().
+    principal_a = _principal(db, "a|b", {"learner"})
+    _binding(db, "b", player_id=None, issuer=f"{ISSUER}|a")
+    principal_b = resolve_bound_principal(
+        db, SyntheticSubject(subject_id="b", issuer=f"{ISSUER}|a", roles=frozenset({"learner"}))
+    )
+
+    assert principal_a.audit_actor != principal_b.audit_actor
+    assert principal_a.audit_actor == json.dumps(
+        {"issuer": ISSUER, "subject_id": "a|b"}, sort_keys=True, separators=(",", ":")
+    )
 
 
 def test_organization_admin_creates_binding_and_audit_atomically(db):

@@ -34,7 +34,7 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
 ## Current verified reality
 
 - Backend: FastAPI + SQLAlchemy with a zero-setup SQLite demo profile and an additive PostgreSQL
-  16/Alembic profile; 339 backend tests passed in the latest recorded full gate.
+  16/Alembic profile; 341 backend tests passed in the latest recorded full gate.
 - Frontend: Next.js; lint passed in the last verification.
 - Four curricula/34 competencies exist in the backend, but the supplied problem statement names a broader competency set.
 - Only the DSA Quest browser path is currently verified; three other backend dungeons are blocked by frontend route/filter assumptions.

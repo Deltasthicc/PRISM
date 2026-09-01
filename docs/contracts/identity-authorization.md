@@ -147,8 +147,12 @@ responses and logs must not contain token bodies, signing keys, sensitive claims
 Binding create/deactivate/reactivate writes `identity_binding.create`,
 `identity_binding.deactivate` or `identity_binding.reactivate` through
 `record_audit_event(commit=False)` in the same transaction as the state change. A failed commit
-leaves neither change nor audit row. The audit actor is the verified external `(issuer|sub)` key,
-never a caller-supplied username.
+leaves neither change nor audit row. The audit actor is the verified external `(issuer, sub)` key,
+never a caller-supplied username, encoded as `BoundPrincipal.audit_actor` — a canonical JSON object
+(`{"issuer":"...","subject_id":"..."}`), not a delimiter-joined string. A plain `f"{issuer}|{sub}"`
+join is not injective (neither `validate_issuer()` nor token verification rejects a literal `|` in
+`sub`), so this uses the same collision-free encoding already established by
+`identity_bootstrap.expected_bootstrap_confirmation()`.
 
 Authentication failures are not currently persisted to the application database; rate limiting,
 security telemetry and IdP event retention are Lane 6 operational work. Tokens and raw claims must

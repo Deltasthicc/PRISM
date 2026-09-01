@@ -44,7 +44,7 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 ## Current verified baseline
 
 - FastAPI + SQLAlchemy backend; PostgreSQL/Alembic is the migration-managed target, SQLite remains
-  a documented local zero-setup demo profile only; 339 backend tests passed in the full gate after
+  a documented local zero-setup demo profile only; 341 backend tests passed in the full gate after
   Package P/S closed both Codex's Package R adversarial findings and a live-PostgreSQL concurrency
   defect Codex reproduced (2026-09-01) — re-run before repeating this count, it changes often; prior
   snapshots in this file's history (267, 299, 337) were each taken mid-edit or before a subsequent

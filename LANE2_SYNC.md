@@ -264,7 +264,8 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | P/S — Retention enforcement job (atomic PostgreSQL row claiming) + JWKS key-rotation evidence | Claude Code | **implemented and live-tested (FOR UPDATE SKIP LOCKED; 4-worker live drill exactly reproduces and resolves the 3/11 race: union=11, sum=11, audit-sum=11, 0 overlap, clean 0/0 rerun); 339 passed; awaiting Codex final review** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/retention_job.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py`, `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
 | Q — Encryption/key-ownership primitive and contract | Codex | **done — reviewed and accepted by Claude Code (`f343455`), 7 independent adversarial checks beyond Codex's own 22, no findings** | 2026-09-01 | `backend/security/encryption.py` (new), `backend/tests/test_core_encryption.py` (new), `docs/contracts/encryption-key-ownership.md` (new), `backend/requirements.txt` (direct dependency only), `backend/security/__init__.py` (truth-only docstring) |
 | R — Package P adversarial acceptance contract | Codex | **unit contract complete and green (20/20), unchanged; the live PostgreSQL race it helped surface is now fixed by Claude's Package S, live-tested, awaiting Codex review** | 2026-09-01 | `backend/tests/test_core_identity_adversarial.py`, `backend/tests/test_core_retention_job_adversarial.py`; no Claude-owned implementation/test file changed |
-| S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **implemented and live-tested (`FOR UPDATE SKIP LOCKED`, non-vacuous SQL coverage, exact 4-worker live-drill reproduction resolved: union=11, sum=11, audit-sum=11, 0 overlap, clean 0/0 rerun); 339 passed; awaiting Codex final review — Codex out of session budget, handed off remaining Lane 2 work** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; also touched `CLAUDE.md`, `README.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `EVIDENCE.md`, `docs/contracts/*.md` for truth reconciliation per the handoff |
+| S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **implemented and live-tested (`FOR UPDATE SKIP LOCKED`, non-vacuous SQL coverage, exact 4-worker live-drill reproduction resolved: union=11, sum=11, audit-sum=11, 0 overlap, clean 0/0 rerun); 341 passed; awaiting Codex final review — Codex out of session budget, handed off remaining Lane 2 work** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; also touched `CLAUDE.md`, `README.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `EVIDENCE.md`, `docs/contracts/*.md` for truth reconciliation per the handoff |
+| T — Full independent Lane 2 security/data audit | Claude Code | **done — Codex ran out of session credits mid-parallel-audit (flagged one real doc-precision issue before stopping, corrected); Claude completed the full sweep solo, found and fixed 2 real issues (stale `deleted_counts` snapshot, non-injective `audit_actor` encoding), both live-verified against PostgreSQL; 341 passed, 0 failures; awaiting Codex cross-check whenever Codex's session resumes** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`; also corrected the warning-count claim across `EVIDENCE.md`, `README.md`, `SIH26101_MASTER_CHECKLIST.md` |
 
 ## Backlog / next up
 
@@ -2215,3 +2216,78 @@ FINAL GATES AND DELIVERY
   finding here regardless of severity, verified with real tests (not just re-reading), before fixing
   anything. Codex: please post your own independent findings here too so we can cross-check before
   either of us starts fixing, per the user's request.
+- 2026-09-01 — Claude Code — Full independent Lane 2 audit complete. Codex ran out of session
+  credits partway through their own parallel audit (their transcript, pasted by the user, shows they
+  independently reproduced the 341-test full-gate pass and flagged one documentation-precision issue
+  before stopping: I had recorded "2 known pytest-cache permission warnings" on the Package P/S
+  commit, but Codex's own concurrent run showed 4 warnings -- 2 SQLite datetime-adapter deprecations
+  (from my own new TOCTOU regression tests) plus 2 pytest-cache warnings. Re-ran the full suite
+  myself multiple times, including with `.pytest_cache` deleted for a genuinely fresh run: I
+  consistently observe exactly 2 warnings, both the datetime-adapter deprecation, never a
+  pytest-cache permission warning. This is not a contradiction -- both agents were very likely
+  running the full suite concurrently against the same shared `.pytest_cache` directory at points
+  during this session, which is a plausible source of transient write-contention warnings that
+  wouldn't reproduce on a solo run. Corrected every doc that named "2 pytest-cache permission
+  warnings" as a fixed fact (only the *current*, not-yet-superseded status lines; historical
+  evidence-log rows for 237/272/339 were left untouched, per the append-only rule) to instead state
+  the warning count/type is per-run and can vary when both agents test concurrently, rather than
+  either dismissing Codex's finding or blindly copying a number I cannot reproduce.
+
+  **Audit scope:** read fresh, line-by-line, everything under `backend/security/**`,
+  `backend/scripts/**`, `backend/models/identity.py`, `backend/models/governance.py`,
+  `backend/schemas/identity.py`, `backend/schemas/data_rights.py`, `backend/schemas/governance.py`,
+  `backend/security/__init__.py` and the three Alembic migrations. Files I had already reviewed very
+  recently and repeatedly this session (`identity.py`'s OIDC verifier, `retention.py`/
+  `retention_job.py`, `encryption.py`, `backup_restore.py`) got a lighter confirmatory pass rather
+  than a full re-read, since they've already been through multiple adversarial rounds. Two real,
+  previously-unfound issues surfaced, both now fixed, tested and live-verified; everything else
+  checked out clean (audit.py, models/identity.py, models/governance.py, schemas/*, migrations,
+  identity_bootstrap.py's post-Package-M state).
+
+  **Finding 1 (real, moderate severity): `delete_subject_data()`'s reported `deleted_counts` came
+  from a pre-delete snapshot, not the actual `DELETE` rowcounts.** `records = _subject_records(db,
+  player)` was read BEFORE any `.delete()` call ran, and `deleted_counts` was `len(rows)` per table
+  from that snapshot. Every `DELETE` statement still filtered by `player_id` (not by the snapshot's
+  specific row IDs), so the actual deletion was always correct and complete -- but if a row for this
+  player was written concurrently between the snapshot and the deletes (a real, plausible scenario:
+  the subject's own in-flight game activity landing while their deletion request is being
+  processed), the DELETE would still remove it, while the REPORTED count would silently under-report
+  by however many rows arrived in that window. This is the same class of bug already found and fixed
+  in `retention_job.py` earlier this session (candidate-count vs. actual-RETURNING-count), just in a
+  different module nobody had re-checked against it. Reproduced first with a monkeypatch injecting a
+  concurrent INSERT between the snapshot and the deletes (confirmed: reported count 1, actual deleted
+  2); fixed by deriving `deleted_counts` directly from each `.delete(synchronize_session=False)`
+  call's own return value (SQLAlchemy's bulk delete returns the matched rowcount), eliminating the
+  stale snapshot read entirely -- a strict simplification, not just a fix (one fewer redundant query
+  per deletion too). Re-verified the fix with the same injection technique: reported count now
+  correctly shows 2. Added a permanent regression test
+  (`test_delete_reports_actual_delete_rowcounts_not_a_stale_snapshot`) using the same technique
+  against the real ORM/ FK-enforced SQLite fixture. Live-verified against real PostgreSQL: inserted a
+  player with 3 `accuracy_history` rows, deleted, confirmed `deleted_counts["accuracy_history"] == 3`
+  exactly matching the real row count removed. All 10 pre-existing `test_core_data_rights.py` tests
+  (including the one asserting the exact `deleted_counts` dict for the normal, non-race case) still
+  pass unmodified -- confirming this was a pure correctness fix, not a behavior change for the
+  common path.
+
+  **Finding 2 (real, low severity): `BoundPrincipal.audit_actor` used a non-injective `f"{issuer}|
+  {subject_id}"` join.** Neither `rbac.validate_issuer()` nor `security.identity.verify()` rejects a
+  literal `|` character (only control characters are rejected; `sub` has no character restriction at
+  all beyond non-empty), so two different `(issuer, subject_id)` pairs could in principle produce an
+  identical `audit_actor` string in the audit log -- the exact same class of bug already found and
+  fixed in `identity_bootstrap.py`'s `expected_bootstrap_confirmation()` earlier this session, just
+  never applied here. Real-world exploitability is low today (one issuer per deployment, so only
+  `subject_id` actually varies across principals, and a genuine collision needs a specific crafted
+  `sub` value from the IdP), but this project already established the fix pattern and there's no
+  reason to leave the same class of bug live in a second file. Fixed by switching `audit_actor` to
+  the identical canonical JSON encoding (`{"issuer":...,"subject_id":...}`, sorted keys, compact
+  separators) already used by `identity_bootstrap.py`. All 26 pre-existing `test_core_rbac.py` tests
+  pass unmodified (none hardcoded the old string format, only compared `event_row.actor ==
+  admin.audit_actor` structurally). Added
+  `test_audit_actor_encoding_cannot_collide_on_pipe_delimiters`, constructing two principals whose
+  issuer/subject_id would collide under the old `|`-join but produce genuinely distinct
+  `audit_actor` values under the new encoding. Updated `docs/contracts/identity-authorization.md`
+  section 5, which had documented the stale `(issuer|sub)` format verbatim.
+
+  New tests: +1 in `test_core_data_rights.py` (11 total), +1 in `test_core_rbac.py` (27 total). Full
+  backend suite: **341 passed, 0 failures** (was 339 before this audit's two fixes). Not touching any
+  Codex-owned file.

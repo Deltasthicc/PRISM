@@ -200,9 +200,14 @@ append-only security-log exception and appends `subject_data.delete` atomically 
 
 The operation first rejects an unknown subject and rejects a corrupt/cross-owner graph where
 another player's generated quiz references material owned by the deletion subject. Any error
-rolls back the audit event, JSON scrubs and row deletions together. The result reports exact
-deleted counts, guild assignments scrubbed, retained related-audit count and the deletion audit
-ID. Database backups or external replicas are outside this primitive and are not erased by it.
+rolls back the audit event, JSON scrubs and row deletions together. `deleted_counts` is built from
+each `DELETE` statement's own returned rowcount, not a pre-delete snapshot — a snapshot taken
+before the deletes run could under-report if a row for this player (e.g. their own in-flight game
+activity) is written concurrently; every `DELETE` still filters by `player_id`, so the row is
+correctly removed either way, but a snapshot-based count would have misreported it. The result
+reports exact deleted counts, guild assignments scrubbed, retained related-audit count and the
+deletion audit ID. Database backups or external replicas are outside this primitive and are not
+erased by it.
 
 ### 6.3 Retention classification and policy (Package L)
 

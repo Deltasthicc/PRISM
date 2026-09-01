@@ -9,6 +9,7 @@ treated as authority.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Callable, Protocol
@@ -113,7 +114,26 @@ class BoundPrincipal:
 
     @property
     def audit_actor(self) -> str:
-        return f"{self.subject.issuer}|{self.subject.subject_id}"
+        """A stable, unambiguous audit-log identity for this principal.
+
+        A plain `f"{issuer}|{subject_id}"` join (the original shape here) is
+        not injective: `validate_issuer()` only rejects control characters,
+        not a literal `|`, and `security.identity.verify()` accepts any
+        non-empty string as `sub`. Two different (issuer, subject_id) pairs
+        could in principle collide into the same joined string. This is a
+        narrow risk today (one issuer per deployment, so only subject_id
+        varies), but the codebase already fixed the identical pattern in
+        `identity_bootstrap.expected_bootstrap_confirmation()` -- use the
+        same canonical JSON encoding here for consistency and genuine
+        collision-freedom rather than relying on today's single-issuer
+        deployment shape to make it safe.
+        """
+        return json.dumps(
+            {"issuer": self.subject.issuer, "subject_id": self.subject.subject_id},
+            ensure_ascii=True,
+            separators=(",", ":"),
+            sort_keys=True,
+        )
 
 
 class AuthorizationError(PermissionError):

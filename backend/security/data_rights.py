@@ -276,12 +276,6 @@ def delete_subject_data(
                     "Refusing deletion: another player's quiz references subject material"
                 )
 
-        records = _subject_records(db, player)
-        deleted_counts = {
-            name: len(rows)
-            for name, rows in records.items()
-            if name != "guild_topic_assignments"
-        }
         guild_assignments_scrubbed = 0
         for guild in db.query(Guild).all():
             assignments = dict(guild.raid_topic_assignments or {})
@@ -289,6 +283,53 @@ def delete_subject_data(
                 assignments.pop(player_id)
                 guild.raid_topic_assignments = assignments
                 guild_assignments_scrubbed += 1
+
+        # `deleted_counts` is built from each DELETE statement's own
+        # returned rowcount, not a pre-delete snapshot -- a snapshot taken
+        # before these statements run can go stale if a concurrent write
+        # (e.g. the subject's own in-flight game activity) inserts a new
+        # row for this player in between. Every DELETE below still filters
+        # by player_id, so the row would be removed correctly either way;
+        # only the *reported* count would have been wrong under a snapshot.
+        deleted_counts: dict[str, int] = {
+            "generated_quizzes": db.query(GeneratedQuiz)
+            .filter(GeneratedQuiz.player_id == player_id)
+            .delete(synchronize_session=False),
+            "source_versions": (
+                db.query(SourceVersion)
+                .filter(SourceVersion.material_id.in_(material_ids))
+                .delete(synchronize_session=False)
+                if material_ids
+                else 0
+            ),
+            "learning_materials": db.query(LearningMaterial)
+            .filter(LearningMaterial.player_id == player_id)
+            .delete(synchronize_session=False),
+            "submissions": db.query(AnswerSubmission)
+            .filter(AnswerSubmission.player_id == player_id)
+            .delete(synchronize_session=False),
+            "accuracy_history": db.query(AccuracyHistory)
+            .filter(AccuracyHistory.player_id == player_id)
+            .delete(synchronize_session=False),
+            "competency_assessments": db.query(CompetencyAssessment)
+            .filter(CompetencyAssessment.player_id == player_id)
+            .delete(synchronize_session=False),
+            "evidence_records": db.query(EvidenceRecord)
+            .filter(EvidenceRecord.player_id == player_id)
+            .delete(synchronize_session=False),
+            "game_sessions": db.query(GameSession)
+            .filter(GameSession.player_id == player_id)
+            .delete(synchronize_session=False),
+            "learner_profiles": db.query(LearnerProfile)
+            .filter(LearnerProfile.player_id == player_id)
+            .delete(synchronize_session=False),
+            "identity_bindings": db.query(IdentityBinding)
+            .filter(IdentityBinding.player_id == player_id)
+            .delete(synchronize_session=False),
+            "players": db.query(Player)
+            .filter(Player.player_id == player_id)
+            .delete(synchronize_session=False),
+        }
 
         event = record_audit_event(
             db,
@@ -303,41 +344,6 @@ def delete_subject_data(
                 "audit_events_retained": True,
             },
             commit=False,
-        )
-
-        db.query(GeneratedQuiz).filter(
-            GeneratedQuiz.player_id == player_id
-        ).delete(synchronize_session=False)
-        if material_ids:
-            db.query(SourceVersion).filter(
-                SourceVersion.material_id.in_(material_ids)
-            ).delete(synchronize_session=False)
-        db.query(LearningMaterial).filter(
-            LearningMaterial.player_id == player_id
-        ).delete(synchronize_session=False)
-        db.query(AnswerSubmission).filter(
-            AnswerSubmission.player_id == player_id
-        ).delete(synchronize_session=False)
-        db.query(AccuracyHistory).filter(
-            AccuracyHistory.player_id == player_id
-        ).delete(synchronize_session=False)
-        db.query(CompetencyAssessment).filter(
-            CompetencyAssessment.player_id == player_id
-        ).delete(synchronize_session=False)
-        db.query(EvidenceRecord).filter(
-            EvidenceRecord.player_id == player_id
-        ).delete(synchronize_session=False)
-        db.query(GameSession).filter(GameSession.player_id == player_id).delete(
-            synchronize_session=False
-        )
-        db.query(LearnerProfile).filter(
-            LearnerProfile.player_id == player_id
-        ).delete(synchronize_session=False)
-        db.query(IdentityBinding).filter(
-            IdentityBinding.player_id == player_id
-        ).delete(synchronize_session=False)
-        db.query(Player).filter(Player.player_id == player_id).delete(
-            synchronize_session=False
         )
         retained_audit_event_count = (
             db.query(AuditEvent)

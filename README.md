@@ -69,11 +69,15 @@ from a proposal.
   upload/preview flow, built on the existing Pixel design-system primitives.
 - **An honest admin view.** `frontend/app/admin` shows aggregate-only organizational gap data (no
   individual learner record, ever) with an explicit banner stating there is no RBAC boundary yet.
-- **339/339 backend tests pass on the current Lane 2 branch.** The latest full gate covers the earlier cross-domain engine and
+- **341/341 backend tests pass on the current Lane 2 branch.** The latest full gate covers the earlier cross-domain engine and
   ingestion behavior plus database migrations, governance records, OIDC verification, identity
-  binding/RBAC, bootstrap invariants, data rights, retention (including atomic PostgreSQL row-
-  claiming for concurrent enforcement runs) and adversarial backup/restore cases.
-  The two reported warnings were pytest-cache permission warnings, not failed tests.
+  binding/RBAC, bootstrap invariants, data rights (including accurate deletion-count reporting under
+  concurrent writes), retention (including atomic PostgreSQL row-claiming for concurrent enforcement
+  runs) and adversarial backup/restore cases. Reported warnings are not failed tests; the exact
+  warning count/type varies by run (SQLite datetime-adapter deprecations from two regression tests,
+  and possibly `.pytest_cache` write-contention warnings when both agents run the suite
+  concurrently in the same shared working tree) — re-run and read the actual warning text before
+  citing a specific count.
 - **Lane 2's core platform foundation is implemented; most of it is reciprocally reviewed.**
   PostgreSQL 16 migrations, migration-gated startup, local Keycloak OIDC verification, identity
   binding, fixed RBAC policy, audit/data-rights primitives and local backup/restore drills are real
@@ -119,7 +123,7 @@ Package P/S adds retention/key-rotation evidence, including a live-tested atomic
 concurrency fix, and a deliberately unwired authenticated-encryption envelope, with final review
 state recorded in `LANE2_SYNC.md`. Codex handed remaining Lane 2 work to Claude Code after running
 out of session budget, so Package P/S is implemented and live-tested but not yet marked
-Codex-accepted. The current full backend gate is 339 passing tests. This completes the current
+Codex-accepted. The current full backend gate is 341 passing tests. This completes the current
 hackathon Lane 2 foundation; it does **not** make the whole application production-ready.
 
 - **Lane 5 — Product API/Integrations:** attach Bearer verification, binding, permission,
@@ -364,7 +368,7 @@ SIH Learning Tool/
   & .\.venv\Scripts\Activate.ps1
   python -m pytest
   ```
-  339 tests in the latest recorded full gate, with no server or API key required — every
+  341 tests in the latest recorded full gate, with no server or API key required — every
   AI-dependent path under test either mocks the
   network call or exercises the deterministic fallback directly.
 - **CORS**: the backend only allows credentialed requests from `FRONTEND_ORIGINS` — update it

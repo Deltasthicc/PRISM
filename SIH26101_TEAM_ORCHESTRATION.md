@@ -214,7 +214,7 @@ Lane 2 Packages A–N and Q are implemented and reciprocally reviewed on
 for a real PostgreSQL concurrency defect Codex found and reproduced) is implemented and live-tested
 by Claude Code but not yet Codex-reviewed — Codex handed remaining Lane 2 implementation work to
 Claude Code after running out of session budget mid-review; exact review state remains in
-`LANE2_SYNC.md`. The current full backend gate is **339 passed**. The following assignments are
+`LANE2_SYNC.md`. The current full backend gate is **341 passed**. The following assignments are
 copy-ready messages for the remaining owners. They are dependencies of a controlled pilot or
 production claim, not reasons to reopen completed Lane 2 packages.
 

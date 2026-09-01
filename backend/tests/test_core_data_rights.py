@@ -306,6 +306,47 @@ def test_delete_removes_owned_rows_scrubs_guild_and_retains_audit(db, subject_gr
     assert deletion_event.details["audit_events_retained"] is True
 
 
+def test_delete_reports_actual_delete_rowcounts_not_a_stale_snapshot(db, subject_graph):
+    # A row for this player appearing after the operation starts (e.g. the
+    # subject's own in-flight game activity landing concurrently) must
+    # still be correctly counted in deleted_counts -- it must reflect what
+    # each DELETE statement actually removed, not a snapshot taken before
+    # any DELETE ran.
+    from sqlalchemy.sql.dml import Delete
+
+    real_execute = db.execute
+    injected = {"done": False}
+
+    def _execute_with_injected_concurrent_row(statement, *args, **kwargs):
+        if not injected["done"] and isinstance(statement, Delete):
+            injected["done"] = True
+            real_execute(
+                AccuracyHistory.__table__.insert().values(
+                    player_id=TARGET_PLAYER_ID, topic="concurrently-inserted"
+                )
+            )
+        return real_execute(statement, *args, **kwargs)
+
+    db.execute = _execute_with_injected_concurrent_row
+    try:
+        result = delete_subject_data(
+            db,
+            TARGET_PLAYER_ID,
+            actor="privacy-officer",
+            reason="verify race-safe counting",
+            confirmation=TARGET_PLAYER_ID,
+        )
+    finally:
+        db.execute = real_execute
+
+    assert injected["done"], "the injection hook never fired -- test setup is broken"
+    # The subject_graph fixture already gives this player one accuracy_history
+    # row; the injected one makes two, and the broad WHERE player_id
+    # predicate deletes both regardless of when either was created.
+    assert result.deleted_counts["accuracy_history"] == 2
+    assert db.query(AccuracyHistory).filter_by(player_id=TARGET_PLAYER_ID).count() == 0
+
+
 def test_delete_rejects_cross_owner_material_reference_atomically(db, subject_graph):
     db.add(
         GeneratedQuiz(

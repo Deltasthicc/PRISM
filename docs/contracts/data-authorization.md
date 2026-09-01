@@ -200,19 +200,46 @@ rolls back the audit event, JSON scrubs and row deletions together. The result r
 deleted counts, guild assignments scrubbed, retained related-audit count and the deletion audit
 ID. Database backups or external replicas are outside this primitive and are not erased by it.
 
-### 6.3 Retention classification and missing policy
+### 6.3 Retention classification and policy (Package L)
 
-The current code classifies the eleven subject-owned table groups as
+The code classifies the eleven subject-owned table groups as
 `delete_with_verified_subject_request`, guild assignment entries as
 `scrub_with_verified_subject_request`, and audit events as
-`retain_append_only_security_log_duration_policy_pending`. This is an inventory/classification,
-not a retention schedule. No legal basis, minimum/maximum duration, litigation hold, expiry job,
-backup-expiry procedure or organization approval is defined.
+`retain_append_only_security_log_duration_policy_pending`. `security.retention.RETENTION_POLICIES`
+adds, for each classification, whatever is actually known about a **minimum** retention floor (a
+cited reason not to delete too early) and a **maximum** retention ceiling (a cited reason not to
+keep forever). Today that is exactly one fact, not a full schedule:
+
+- **Audit events** have a cited 180-day *minimum* — CERT-In Directions under section 70B — which
+  `delete_subject_data()` already satisfies trivially by never deleting an audit row at all. No
+  maximum retention for audit events is cited from any source; do not add an expiry job that
+  deletes them after any duration until a real maximum is sourced and approved. The CERT-In
+  citation's applicability to *this specific deployment* is not itself confirmed — see
+  `SIH26101_MASTER_CHECKLIST.md` line 181, `BLOCKED-EXTERNAL/LEGAL`.
+- **Subject-owned and guild-scrub categories** have no cited minimum or maximum. "Retention" for
+  them today is the verified-subject-request boundary itself (`export_subject_data`/
+  `delete_subject_data`), not a schedule.
+
+`security.retention.assert_minimum_retention_satisfied()` is a guard for whatever automated
+deletion is built *next* (an expiry job, a cleanup script) — it refuses to let such code delete a
+row younger than its cited floor. It is not itself a job, a schedule, or a claim that automated
+retention enforcement exists.
+
+### 6.4 PostgreSQL backup/restore (Package L)
+
+`backend/scripts/backup_restore.py` provides `create_backup()`/`restore_backup()`, both shelling
+out to `docker exec`/`docker cp` against the named running Postgres container (this host has no
+local `pg_dump`/`pg_restore`; the container does). A full drill — insert marker rows, back up,
+delete the rows to simulate loss, restore, confirm the rows and the rest of the schema (18 tables,
+Alembic head unchanged) came back exactly — was run and passed; see `LANE2_SYNC.md`'s Activity log
+for the exact evidence. This proves the mechanism works against the current local dev container. It
+is **not** a disaster-recovery plan: there is no backup schedule, no offsite/encrypted storage, no
+retention policy for backup files themselves, and no restore runbook for a real incident. Those
+remain Lane 6 deployment/DR work.
 
 Deleting the local SQLite demo database remains a whole-tenant reset, not a subject workflow.
-PostgreSQL backup/restore, encryption/key ownership, replica handling and retention policy remain
-unverified backlog items. Lanes must not claim compliance or production subject-rights controls
-based on these internal primitives alone.
+Encryption/key ownership and replica handling remain unverified backlog items. Lanes must not claim
+compliance or production subject-rights/DR controls based on these internal primitives alone.
 
 ## 7. Change process
 

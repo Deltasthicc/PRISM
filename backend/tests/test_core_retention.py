@@ -1,0 +1,104 @@
+"""Tests for security/retention.py -- Package L."""
+from __future__ import annotations
+
+import pytest
+
+from security.data_rights import RETENTION_CLASSIFICATION
+from security.retention import (
+    RETENTION_POLICIES,
+    RetentionPolicy,
+    RetentionPolicyViolation,
+    assert_minimum_retention_satisfied,
+)
+
+
+def test_every_classification_used_by_data_rights_has_a_policy():
+    # Prevents drift: if data_rights.py ever introduces a new classification
+    # string, this fails loudly instead of silently leaving it unregistered.
+    used_classifications = set(RETENTION_CLASSIFICATION.values())
+    assert used_classifications <= set(RETENTION_POLICIES)
+
+
+def test_audit_events_have_the_cited_cert_in_minimum():
+    policy = RETENTION_POLICIES["retain_append_only_security_log_duration_policy_pending"]
+    assert policy.minimum_retention_days == 180
+    assert "CERT-In" in policy.minimum_retention_source
+    assert policy.maximum_retention_days is None
+
+
+def test_subject_owned_categories_have_no_fabricated_duration():
+    for category in (
+        "delete_with_verified_subject_request",
+        "scrub_with_verified_subject_request",
+    ):
+        policy = RETENTION_POLICIES[category]
+        assert policy.minimum_retention_days is None
+        assert policy.maximum_retention_days is None
+
+
+def test_policy_rejects_a_duration_without_its_source():
+    with pytest.raises(ValueError, match="must both be set"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=30, minimum_retention_source=None,
+            maximum_retention_days=None, maximum_retention_source=None, notes="",
+        )
+    with pytest.raises(ValueError, match="must both be set"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=None, minimum_retention_source="cite",
+            maximum_retention_days=None, maximum_retention_source=None, notes="",
+        )
+
+
+def test_policy_rejects_negative_durations():
+    with pytest.raises(ValueError, match="not be negative"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=-1, minimum_retention_source="cite",
+            maximum_retention_days=None, maximum_retention_source=None, notes="",
+        )
+
+
+def test_policy_rejects_a_minimum_that_exceeds_the_maximum():
+    with pytest.raises(ValueError, match="exceeds maximum_retention_days"):
+        RetentionPolicy(
+            category="x", minimum_retention_days=200, minimum_retention_source="cite",
+            maximum_retention_days=100, maximum_retention_source="cite",
+            notes="",
+        )
+
+
+def test_assert_minimum_retention_satisfied_allows_old_enough_rows():
+    assert_minimum_retention_satisfied(
+        "retain_append_only_security_log_duration_policy_pending", row_age_days=181
+    )
+    assert_minimum_retention_satisfied(
+        "retain_append_only_security_log_duration_policy_pending", row_age_days=180
+    )
+
+
+def test_assert_minimum_retention_satisfied_blocks_too_young_rows():
+    with pytest.raises(RetentionPolicyViolation, match="minimum retention is 180 days"):
+        assert_minimum_retention_satisfied(
+            "retain_append_only_security_log_duration_policy_pending", row_age_days=179
+        )
+    with pytest.raises(RetentionPolicyViolation):
+        assert_minimum_retention_satisfied(
+            "retain_append_only_security_log_duration_policy_pending", row_age_days=0
+        )
+
+
+def test_assert_minimum_retention_satisfied_is_a_noop_when_no_minimum_exists():
+    # Categories with no cited floor never block a deletion on age grounds.
+    assert_minimum_retention_satisfied("delete_with_verified_subject_request", row_age_days=0)
+    assert_minimum_retention_satisfied("scrub_with_verified_subject_request", row_age_days=0)
+
+
+def test_assert_minimum_retention_satisfied_rejects_unknown_category():
+    with pytest.raises(ValueError, match="unknown retention category"):
+        assert_minimum_retention_satisfied("not_a_real_category", row_age_days=1000)
+
+
+def test_assert_minimum_retention_satisfied_rejects_negative_age():
+    with pytest.raises(ValueError, match="must not be negative"):
+        assert_minimum_retention_satisfied(
+            "retain_append_only_security_log_duration_policy_pending", row_age_days=-1
+        )

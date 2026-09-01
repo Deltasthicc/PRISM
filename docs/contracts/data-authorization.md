@@ -229,6 +229,18 @@ keep forever). Today that is exactly one fact, not a full schedule:
   them today is the verified-subject-request boundary itself (`export_subject_data`/
   `delete_subject_data`), not a schedule.
 
+On PostgreSQL, `audit_events`' append-only-ness is no longer only an application-code convention:
+migration `036de46dd515` (Package U) adds a trigger that makes PostgreSQL itself reject any
+`UPDATE`/`DELETE` against the table, live-verified including that the database owner role can
+still `ALTER TABLE ... DISABLE TRIGGER` to bypass it (used deliberately, and re-enabled, only to
+clean up a test drill's own synthetic rows). This is a bug-catching safety net for the
+application's own connection role — not a security boundary against someone holding those same
+credentials, and not a compliance claim. A second external audit proposed a broader version
+(full audit triggers across tables with captured actor/purpose context); that version was rejected
+because it would need session-context plumbing that does not exist and would misrepresent what a
+trigger the app's own role can disable actually proves — see `LANE2_SYNC.md` for the full
+technical reasoning.
+
 `security.retention.assert_minimum_retention_satisfied()` is a guard for whatever automated
 deletion is built *next* (an expiry job, a cleanup script) — it refuses to let such code delete a
 row younger than its cited floor. It is not itself a job, a schedule, or a claim that automated

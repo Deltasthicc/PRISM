@@ -51,6 +51,14 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
   fix, so treat any count here as a snapshot to re-verify, not a citation. `.github/workflows/ci.yml`
   exists, but no run against this branch is evidenced (`gh run list --branch <this-branch>` returns
   nothing as of this writing) — do not claim a green CI run without checking.
+- Package T (independent audit) and Package U (a second independent external audit's four
+  DB-hardening claims, individually re-derived) are also closed as of 2026-09-01: Package T fixed
+  two real correctness bugs (a stale pre-delete snapshot in `delete_subject_data()`'s reported
+  counts, and a non-injective `audit_actor` encoding); Package U rejected three of the second
+  audit's four claims (RLS and legacy-ETL target no existing tenant model; evidence self-hashing by
+  the same writer role provides no tamper-evidence) and implemented the fourth in scoped form — a
+  live-verified PostgreSQL trigger that makes `audit_events` append-only at the database level, not
+  a security boundary against the owning role. Full evidence and reasoning in `LANE2_SYNC.md`.
 - Next.js frontend; lint passed in the last verification.
 - Four backend curricula/34 competencies exist, but do not cover the full supplied competency list and have no MoSPI/CBC/NSSTA approval.
 - DSA Quest works in the browser; non-DSA backend dungeons are blocked by frontend routing/filter assumptions.

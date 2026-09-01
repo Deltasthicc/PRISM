@@ -82,9 +82,10 @@ from a proposal.
   PostgreSQL 16 migrations, migration-gated startup, local Keycloak OIDC verification, identity
   binding, fixed RBAC policy, audit/data-rights primitives and local backup/restore drills are real
   and accepted by both agents. The retention-enforcement job (including a live-tested fix for a real
-  PostgreSQL concurrency defect Codex found) is implemented and live-tested but still awaiting
-  Codex's final review — see `LANE2_SYNC.md` for exact status. Existing HTTP routes do not compose
-  any of these primitives yet; see the handoff below.
+  PostgreSQL concurrency defect Codex found) and a PostgreSQL trigger that makes `audit_events`
+  append-only at the database level (not just application convention) are implemented and
+  live-tested but still awaiting Codex's final review — see `LANE2_SYNC.md` for exact status.
+  Existing HTTP routes do not compose any of these primitives yet; see the handoff below.
 - **`npm audit --omit=dev` reports 0 vulnerabilities** after bumping the `next`/postcss dependency
   override that was pinning an old vulnerable version.
 
@@ -121,11 +122,16 @@ from a proposal.
 Packages A–N and Q on `codex/lane-2-core-data/bootstrap` are implemented and reciprocally reviewed;
 Package P/S adds retention/key-rotation evidence, including a live-tested atomic PostgreSQL
 concurrency fix, and a deliberately unwired authenticated-encryption envelope; Package T is a full
-independent security/data audit that found and fixed two further real issues (see `LANE2_SYNC.md`).
-Codex handed remaining Lane 2 work to Claude Code after running out of session budget, so Package
-P/S/T is implemented and live-tested but not yet marked Codex-accepted. The current full backend
-gate is 341 passing tests. This completes the current hackathon Lane 2 foundation; it does **not**
-make the whole application production-ready.
+independent security/data audit that found and fixed two further real issues; Package U reviewed a
+second external audit's four proposed database-hardening items, rejected three with technical
+reasoning (PostgreSQL row-level security and a legacy data migration have no tenant model to
+target yet; a self-stored evidence hash and a "logs lost on crash" justification for full audit
+triggers don't hold up), and implemented the one correctly-scoped item that did — PostgreSQL now
+rejects any `UPDATE`/`DELETE` against `audit_events` at the database level (see `LANE2_SYNC.md` for
+the full audits and reasoning). Codex handed remaining Lane 2 work to Claude Code after running out
+of session budget, so Package P/S/T/U is implemented and live-tested but not yet marked
+Codex-accepted. The current full backend gate is 341 passing tests. This completes the current
+hackathon Lane 2 foundation; it does **not** make the whole application production-ready.
 
 - **Lane 5 — Product API/Integrations:** attach Bearer verification, binding, permission,
   deployment-tenant and object-scope checks to every protected route; stop treating request

@@ -46,11 +46,17 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
   migrations/backup-restore drills. The retention-enforcement job now atomically claims its
   PostgreSQL batch (`FOR UPDATE SKIP LOCKED`, live-drilled with 4 concurrent workers after a real
   race was found and reproduced) but is implemented/live-tested only, not yet Codex-reviewed —
-  Codex handed remaining Lane 2 work to Claude Code after running out of session budget. Existing
-  product routes do not invoke any of this foundation; there is no browser SSO, row-level
-  organization tenancy, approved production IdP, frontend test suite, observability stack or
-  production authorization. A CI workflow exists, but its presence alone is not evidence of a green
-  remote run.
+  Codex handed remaining Lane 2 work to Claude Code after running out of session budget. Since then,
+  Claude Code ran a further independent audit (Package T: fixed a stale-snapshot deleted-count bug
+  and a non-injective `audit_actor` encoding) and evaluated a second external audit's four
+  DB-hardening claims (Package U: rejected RLS and legacy-ETL as targeting no existing tenant model,
+  rejected evidence self-hashing as providing no tamper-evidence from the same writer role, and
+  implemented a scoped, live-verified PostgreSQL trigger making `audit_events` append-only at the
+  database level, explicitly not a security boundary against the owning role) — full evidence and
+  reasoning in `LANE2_SYNC.md`, also not yet Codex-reviewed. Existing product routes do not invoke
+  any of this foundation; there is no browser SSO, row-level organization tenancy, approved
+  production IdP, frontend test suite, observability stack or production authorization. A CI
+  workflow exists, but its presence alone is not evidence of a green remote run.
 
 Reinspect code and run tests before repeating any status claim; these bullets are a baseline, not permanent truth.
 

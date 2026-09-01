@@ -13,7 +13,8 @@ from sqlalchemy import create_engine, inspect, text
 BACKEND_DIRECTORY = Path(__file__).resolve().parents[1]
 BASELINE_REVISION = "65bc8695fadc"
 GOVERNANCE_REVISION = "2baf7d4bd8a2"
-HEAD_REVISION = "cf4271f204a3"
+IDENTITY_REVISION = "cf4271f204a3"
+HEAD_REVISION = "036de46dd515"
 GOVERNANCE_TABLES = {
     "audit_events",
     "evidence_records",

@@ -183,7 +183,11 @@ Do these before adding new “AI” features.
 - [ ] Configure production TLS/storage/backup encryption and approved KMS/HSM custody, access,
   rotation, recovery and compromise procedures. **BLOCKED-EXTERNAL/OPERATIONAL**
 - [x] Provide an append-only audit model/write path and atomic events for identity bootstrap,
-  binding lifecycle and internal export/deletion operations. **VERIFIED**
+  binding lifecycle and internal export/deletion operations. On PostgreSQL, `audit_events` is now
+  additionally enforced as append-only by the database itself (a rejecting trigger, not just
+  application-code convention) -- a bug-catching safety net for the app's own connection role, not
+  a security boundary against someone holding those same credentials, who can disable it.
+  **VERIFIED**
 - [ ] Integrate audited privileged route reads/writes, IdP role reconciliation, content approval
   and model decisions across their owning lanes.
 - [ ] Track the staged DPDP commencement accurately: the Gazette notifications phase most Data Fiduciary duties in on 14 May 2027 (with Rule 4 on 14 November 2026). Build to the final Rules now, but do not call every duty legally operative on 29 August 2026.
@@ -260,5 +264,6 @@ Passing P0 makes a credible hackathon prototype. Passing P1 makes a strong demon
 | 2026-09-01 | Full backend gate after Package P/S (atomic PostgreSQL row-claiming fix) | 339 passed; 2 pytest-cache permission warnings; 0 failures | Claude Code, live-tested, awaiting Codex final review |
 | 2026-09-01 | Live PostgreSQL 4-worker concurrency drill (post-fix, same scenario) | 11 expired + 2 young rows; per-worker deletions pairwise-disjoint; union = all 11 expired IDs; deleted-count sum = 11; durable audit deleted-count sum = 11; young rows untouched; clean `0/0` final rerun, zero misleading audit events | Claude Code; exact opposite result to the pre-fix row above under the identical scenario |
 | 2026-09-01 | Full independent Lane 2 audit (security/rbac.py, security/data_rights.py, security/identity_bootstrap.py, models/identity.py, security/audit.py, migrations re-read fresh) plus full backend gate | 341 passed, 0 failures; exact warning count/type varies by run (2 SQLite datetime-adapter deprecations on this run; Codex separately observed 4, including 2 `.pytest_cache` warnings, on a concurrent run — both accurate for their own run, not a code discrepancy) | Claude Code (Codex ran out of session credits mid-review); fixed `delete_subject_data()`'s stale pre-delete-snapshot `deleted_counts` (now real DELETE rowcounts, live-verified against PostgreSQL) and `BoundPrincipal.audit_actor`'s non-injective `\|`-joined encoding (now canonical JSON, matching the identical fix already applied to `identity_bootstrap.py`) |
+| 2026-09-01 | Second external-audit review + live PostgreSQL `audit_events` append-only trigger drill | 3 of 4 claimed gaps (RLS, full audit triggers w/ actor context, evidence SHA-256 self-hashing, legacy ETL) rejected with technical reasoning in `LANE2_SYNC.md`; 1 correctly-scoped item implemented and live-verified: normal insert succeeds, direct UPDATE/DELETE against `audit_events` rejected by the database with the exact expected message, row survives unmodified, owner-role `DISABLE TRIGGER`/`ENABLE TRIGGER` bypass-and-restore confirmed genuine, downgrade/upgrade both clean; 341 passed | Claude Code; migration `036de46dd515`, SQLite-side no-op confirmed via the existing migration-chain regression suite |
 
 Append future entries; never overwrite failed evidence with a later success.

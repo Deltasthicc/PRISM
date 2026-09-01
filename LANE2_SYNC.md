@@ -266,6 +266,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | R — Package P adversarial acceptance contract | Codex | **unit contract complete and green (20/20), unchanged; the live PostgreSQL race it helped surface is now fixed by Claude's Package S, live-tested, awaiting Codex review** | 2026-09-01 | `backend/tests/test_core_identity_adversarial.py`, `backend/tests/test_core_retention_job_adversarial.py`; no Claude-owned implementation/test file changed |
 | S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **implemented and live-tested (`FOR UPDATE SKIP LOCKED`, non-vacuous SQL coverage, exact 4-worker live-drill reproduction resolved: union=11, sum=11, audit-sum=11, 0 overlap, clean 0/0 rerun); 341 passed; awaiting Codex final review — Codex out of session budget, handed off remaining Lane 2 work** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; also touched `CLAUDE.md`, `README.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `EVIDENCE.md`, `docs/contracts/*.md` for truth reconciliation per the handoff |
 | T — Full independent Lane 2 security/data audit | Claude Code | **done — Codex ran out of session credits mid-parallel-audit (flagged one real doc-precision issue before stopping, corrected); Claude completed the full sweep solo, found and fixed 2 real issues (stale `deleted_counts` snapshot, non-injective `audit_actor` encoding), both live-verified against PostgreSQL; 341 passed, 0 failures; awaiting Codex cross-check whenever Codex's session resumes** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`; also corrected the warning-count claim across `EVIDENCE.md`, `README.md`, `SIH26101_MASTER_CHECKLIST.md` |
+| U — Second external-audit review + PostgreSQL audit-events append-only trigger | Claude Code | **done — 3 of 4 claims (RLS, full audit triggers with actor context, evidence SHA-256 self-hashing, legacy ETL) rejected on technical merits with detailed reasoning; 1 correctly-scoped item (DB-enforced append-only on `audit_events`) implemented, live-verified against real PostgreSQL including the documented owner-bypass caveat; 341 passed, migration-chain regression suite updated for the new head; awaiting Codex cross-check** | 2026-09-01 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py` (new), `backend/tests/test_core_migrations.py`, `backend/tests/test_core_database.py` |
 
 ## Backlog / next up
 
@@ -2291,3 +2292,126 @@ FINAL GATES AND DELIVERY
   New tests: +1 in `test_core_data_rights.py` (11 total), +1 in `test_core_rbac.py` (27 total). Full
   backend suite: **341 passed, 0 failures** (was 339 before this audit's two fixes). Not touching any
   Codex-owned file.
+- 2026-09-01 — Claude Code — The user ran a second independent (external) audit claiming Lane 2 is
+  "~80% complete" and listing four "still missing" database-engine-level gaps: PostgreSQL Row-Level
+  Security, database-level audit triggers, SHA-256 tamper-proofing on evidence rows via a SQLAlchemy
+  lifecycle hook, and a legacy SQLite-to-PostgreSQL data ETL. Asked to review brutally and honestly,
+  push back where wrong, and implement where right. Verdict: three of the four claims are wrong on
+  their technical merits (not just "not prioritized yet" -- actually incoherent given the current
+  schema, or based on a factually incorrect premise), and the fourth is real but was massively
+  overscoped; implemented a correctly-scoped version of it instead of the version proposed.
+
+  This is the same class of claims Codex's own "Gemini audit disposition" (recorded earlier today)
+  already rejected from a first pasted external audit -- worth noting because the user ran a SECOND,
+  independent external audit that arrived at nearly identical prescriptions. That convergence is
+  worth taking seriously as a signal (which is why this got a fresh, from-scratch technical
+  re-derivation rather than just re-citing the earlier disposition), but convergence between two
+  external tools is not the same as either being technically correct about THIS specific codebase --
+  see below.
+
+  **1. "No Postgres Row-Level Security... tenant isolation relies on developers remembering to
+  filter by tenant_id" -- REJECTED, the premise is factually wrong.** Checked directly:
+  `grep -rn "tenant_id" backend/models/*.py` returns zero matches. There is no `tenant_id` column on
+  any table, anywhere in the schema. This is not an oversight -- it is `data-authorization.md`
+  section 1's explicit, repeatedly-stated design: today's tenant boundary is "one deployment backed
+  by one database," enforced by which database `DATABASE_URL` points at, not by a row-level key.
+  `ENABLE ROW LEVEL SECURITY` requires a policy predicate to filter by (typically
+  `tenant_id = current_setting('app.tenant_id')`) -- there is no column to write that predicate
+  against. Implementing RLS now would mean either (a) enabling it with no real policy, which blocks
+  all access and breaks the running application, or (b) inventing a fake `tenant_id` column and
+  session-context wiring with no authoritative multi-tenant/organization model behind it, which is
+  exactly the kind of fabricated-compliance-theater this project has repeatedly and deliberately
+  refused to do (see the master checklist's own "PROPOSED... needs implementation and validation"
+  discipline). The real prerequisite -- an authoritative organization/department model -- is already
+  the explicit, standing escalation to accountable external owners in
+  `SIH26101_TEAM_ORCHESTRATION.md`'s Lane 2 handoff section. RLS is real, correct, valuable future
+  work; it is not currently buildable without first fabricating the column it would need to filter
+  on.
+
+  **2. "Database-level audit triggers... if a transaction crashes, the log is lost" -- REJECTED,
+  the stated justification is technically incorrect.** `record_audit_event(commit=False)` already
+  writes the audit row in the SAME transaction as the state change it describes, so a crash/rollback
+  correctly discards BOTH together -- that is the desired behavior (an audit event for a change that
+  never actually happened would itself be a lie). A PL/pgSQL trigger fired by an `UPDATE`/`DELETE`
+  is not an autonomous transaction in PostgreSQL either (without `dblink`/`pg_background`-style
+  workarounds this project has no reason to add) -- it would roll back with its own triggering
+  transaction exactly the same way. Triggers do not solve "logs lost on crash"; nothing about this
+  architecture loses a log on crash today. The one thing a trigger WOULD add -- catching a write
+  that bypasses the application entirely (someone connecting directly and running raw SQL) -- is a
+  real, different, narrower benefit, but the proposed full-context version ("record an append-only
+  log on every UPDATE/DELETE" across tables, with actor/purpose context) is not buildable honestly
+  today: the app's own database role (`sih_app`, the database OWNER per `docker-compose.dev.yml`)
+  can trivially `DROP`/`DISABLE` any such trigger, and Postgres session state has no wired-in OIDC
+  actor context to record (that would need per-request `SET LOCAL` session variables, real new
+  plumbing that doesn't exist). Building "full audit triggers" now would misrepresent a
+  bug-catching safety net as a security/compliance boundary it cannot actually be.
+
+  **Scoped-down and implemented instead (Package U):** a genuine, narrow, honestly-caveated version
+  of this idea that closes a real gap without overclaiming. `models/governance.py` and
+  `security/audit.py` already document `AuditEvent` as append-only in prose ("there is no update
+  path anywhere in this module, and no route should ever UPDATE or DELETE a row here") -- but
+  nothing enforced that. New migration `036de46dd515_audit_events_append_only_trigger.py` makes
+  PostgreSQL itself reject any `UPDATE`/`DELETE` against `audit_events` with a `RAISE EXCEPTION`,
+  dialect-gated (a genuine no-op on SQLite -- discovered while writing this that
+  `test_core_migrations.py::test_full_migration_chain_upgrades_and_downgrades_fresh_database`
+  actually RUNS every migration's `upgrade()`/`downgrade()` against a real SQLite file, not just
+  stamping a version table, so raw PL/pgSQL would have broken that test outright without the
+  dialect check). The migration's own docstring states the honest scope up front: this is a
+  bug-catching safety net for the application's own role, not a security boundary against a
+  malicious holder of that role's own credentials (which can `DISABLE TRIGGER`), it adds no
+  actor/purpose context, and it is not a compliance claim.
+
+  Live-verified against real PostgreSQL, not just SQLite migration-chain tests: applied the
+  migration, confirmed a normal `record_audit_event()` insert still succeeds, confirmed a direct
+  `UPDATE` against `audit_events` is rejected with the exact expected message
+  (`psycopg.errors.RaiseException: audit_events is append-only: UPDATE is not permitted by database
+  policy`), confirmed a direct `DELETE` is likewise rejected, confirmed the row survives completely
+  unmodified after both rejected attempts, then confirmed the documented caveat itself is real: the
+  owning role CAN `ALTER TABLE ... DISABLE TRIGGER` to bypass it (used exactly this, deliberately, to
+  clean up this drill's own synthetic marker rows afterward, then re-`ENABLE TRIGGER`d and confirmed
+  a fresh row's `DELETE` was rejected again -- proving re-enable genuinely restores enforcement, not
+  just that the first disable silently persisted). Also live-verified the migration's `downgrade()`
+  removes the trigger cleanly (insert+delete succeeded with no error) and a subsequent `upgrade()`
+  restores it. `test_core_migrations.py`/`test_core_database.py`'s hardcoded head-revision references
+  updated from `cf4271f204a3` to `036de46dd515`; full SQLite migration-chain regression suite still
+  passes (18-table count unaffected -- no new table, only a trigger). Full backend suite: unaffected,
+  still 341 passed (this migration has no Python-importable surface of its own to unit-test beyond
+  the existing migration-chain tests, which now exercise it directly).
+
+  **3. "No SHA-256 tamper-proofing on evidence records" -- REJECTED, the proposed mechanism does not
+  provide the security property implied.** A hash computed and stored by a SQLAlchemy `@listens_for`
+  hook lives in the SAME row, writable by the SAME application role, as the data it's hashing. An
+  actor able to alter `submissions`/`accuracy_history` (the exact threat this is framed against) can
+  trivially recompute and overwrite the hash in the same statement -- this provides zero defense
+  against the stated threat, only against accidental bit-rot corruption, which PostgreSQL's own WAL
+  and page checksums already cover more directly. Genuine tamper-evidence needs the hash (or a
+  hash-chain/Merkle structure) to live somewhere the same actor cannot also rewrite -- external
+  signing with a key outside the app's custody, WORM storage, or a chained ledger -- none of which
+  exists, none of which has an approved key-custody design, and the project already has exactly this
+  pattern correctly built for a genuinely different purpose:
+  `source_versions.sha256` hashes uploaded CONTENT (to detect the source material changing across
+  versions), not learner evidence rows, and was never claimed to be tamper-evident against a
+  privileged attacker. This finding is not implemented; doing so would create a hash that "proves"
+  nothing beyond accidental corruption while sounding like it proves more.
+
+  **4. "No legacy SQLite-to-PostgreSQL ETL" -- REJECTED, both premises are wrong.** There is no
+  "tenant-scoped schema" to migrate data into (see finding 1 -- no tenant model exists at all yet),
+  and the checked-in SQLite database is synthetic demo/test data (fake players, fake accuracy
+  history from this session's own testing), not an identified real production dataset with any
+  actual continuity requirement. Building an ETL script to migrate fake data into a schema shape that
+  doesn't exist would be pure theater, directly contradicting this project's own repeatedly-stated
+  refusal to fabricate migration/production readiness. Not implemented; revisit only if a real
+  production SQLite dataset and an approved target schema both actually exist.
+
+  **Net effect on the "~80% complete" framing:** the audit's own arithmetic isn't something this log
+  disputes or endorses -- percentage completion against an unstated rubric isn't a number this
+  project computes (see the master checklist's own repeated refusal to adopt unsourced completion
+  percentages, including from the earlier pasted Gemini conversation). What's added by this pass is
+  one real, correctly-scoped database-level hardening item; three items are not blockers being
+  deferred, they are proposals whose premises don't hold against this specific schema and threat
+  model as written.
+
+  Not touching any Codex-owned file. Full backend suite after this package: 341 passed (unchanged
+  from before Package U -- this is a database-migration-only change with no new Python test
+  surface beyond the existing migration-chain regression tests, which now exercise the new
+  revision directly).

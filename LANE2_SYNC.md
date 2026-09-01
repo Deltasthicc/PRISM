@@ -215,8 +215,10 @@ username, email, realm role or another display claim.
 | F — Gate synthetic seeding behind SEED_DEMO_DATA | Claude Code | **done — reviewed by Codex; one test-isolation fix added** | 2026-08-31 | `backend/db/database.py`, `backend/main.py`, `backend/.env.example`, `backend/tests/test_core_seeding.py` (new) |
 | G — Internal subject export/deletion/retention primitives | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-08-31 | `backend/security/data_rights.py` (new), `backend/schemas/data_rights.py` (new), `backend/security/audit.py`, `backend/tests/test_core_data_rights.py` (new), `docs/contracts/data-authorization.md` |
 | H — Shared latest-assessment repository query | Claude Code | **done — reviewed by Codex, no correctness issues found** | 2026-09-01 | `backend/db/repositories.py` (new), `backend/tests/test_core_repositories.py` (new) |
-| I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **done — all Codex findings closed (incl. whitespace/control-char fix), live-verified on 26.7.2 by both agents** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
+| I — OIDC identity (Part A: Keycloak + JWT verification) | Claude Code | **review reopened — invalid-port/bare-exception finding awaiting Claude fix** | 2026-09-01 | `backend/security/identity.py` (new), `backend/tests/test_core_identity.py` (new), `backend/docker-compose.dev.yml`, `backend/keycloak/sih-realm-export.json` + `README.md` (new), `backend/requirements.txt`, `backend/.env.example` |
 | J — RBAC/authorization + identity binding (Part B) | Codex | **done — reviewed by Claude Code, no correctness issues found** | 2026-09-01 | `backend/security/rbac.py`, `backend/models/identity.py`, `backend/schemas/identity.py`, `backend/migrations/versions/cf4271f204a3_add_identity_bindings.py`, `backend/tests/test_core_rbac.py`, `docs/contracts/identity-authorization.md` |
+| K — Controlled first-admin bootstrap | Codex | **in progress** | 2026-09-01 | reserved: `backend/security/identity_bootstrap.py` (new), `backend/tests/test_core_identity_bootstrap.py` (new), `docs/contracts/identity-authorization.md`; Claude must not edit these files |
+| L — Retention policy + PostgreSQL backup/restore closure | Claude Code | **available / reserved for Claude** | 2026-09-01 | reserved: new retention module/test and a new operations runbook; Claude must list exact paths here before editing and must not touch Package K files |
 
 ## Backlog / next up
 
@@ -224,9 +226,10 @@ Once Half B is done, whoever is free next should pick from
 `SIH26101_TEAM_ORCHESTRATION.md` section 5's Lane 2 "Next package" (not started by either agent
 yet):
 
-- OIDC authentication, server-derived subject, RBAC, tenant filters and immutable audit events
-  (the `AuditEvent` table from Half A exists; the *enforcement* — who's allowed to write what —
-  does not yet).
+- ~~OIDC authentication, server-derived subject, RBAC, deployment-database tenant guard and
+  immutable audit events.~~ **Lane 2 foundation is implemented in Packages I/J and live-tested;
+  Package I's newly reopened invalid-port exception finding must close before final acceptance.
+  Actual route enforcement remains Lane 5-owned and is not claimed.**
 - Retention schedule/expiry jobs, encryption/key ownership and backup/restore (internal subject
   export/deletion primitives are Package G).
 - Wire `schemas.governance` into actual `routes/` endpoints once an authorization story exists to
@@ -263,8 +266,9 @@ yet):
   `docs/contracts/data-authorization.md` section 6.~~ **Done in Package G, independently reviewed
   by Claude Code — see Activity log. No HTTP API, retention schedule, backup deletion or compliance
   claim exists.**
-- Real OIDC/RBAC/tenant enforcement — still fully open, not started. `AuditEvent` and
-  `SEED_DEMO_DATA` exist as building blocks; nothing enforces who may call what yet.
+- Real route-level OIDC/RBAC enforcement remains open in Lane 5. Lane 2 now supplies the verified
+  subject, local binding, permission/object-scope and audit primitives; existing HTTP routes do not
+  call them yet, so the running product must not be described as protected.
 
 Package G review checklist for Claude Code:
 
@@ -799,6 +803,24 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   `identity-authorization.md` (no script exists yet, only the documented direct-insert pattern);
   retention-schedule/expiry automation; encryption/key ownership; backup/restore drills; and
   everything requiring Lane 5's route wiring. Proceeding solo on the next bounded item.
+- 2026-09-01 — Codex — Resumed and harshly audited Claude-owned Package I at immutable commit
+  `9a6d508`, including the final URL hardening rather than trusting its 169-test result. Reproduced a
+  new contract violation: `OIDCVerifier("https://issuer.example:bad/realm", "aud")` constructs
+  successfully, then `_discover_jwks_uri()` raises bare `httpx.InvalidURL: Invalid port: 'bad'`.
+  `httpx.InvalidURL` is not an `httpx.HTTPError`, so the existing exception adapter misses it even
+  though Package I promises authentication failures never leak bare exceptions. Claude owns the
+  fix: force port parsing/range validation in `_require_safe_absolute_url()` and/or explicitly map
+  `InvalidURL`, with invalid-text and out-of-range port regressions for configured issuer and
+  discovered JWKS URI. Package I is reopened until Codex reviews that fix; Codex will not edit
+  Claude's AuthN files.
+- 2026-09-01 — Codex — New two-agent split for Lane 2 closure. Package K (Codex) is a controlled,
+  one-time first-organization-admin binding bootstrap with an exact confirmation, migration-head
+  gate, empty-binding precondition, atomic audit and a CLI that never accepts tokens/passwords;
+  reserved files are listed in the status board. Package L (Claude) owns the disjoint retention-
+  policy and PostgreSQL backup/restore closure: list exact new files before editing, implement only
+  policy that can be justified from current data classifications, run a real fresh restore drill,
+  and document encryption/key ownership without claiming infrastructure controls that are not
+  present. After both commits, Claude reviews K and Codex reviews L before either is accepted.
 - 2026-09-01 — Claude Code — **Codex is back online.** The user restarted both of us and asked for
   continued full cooperation: Codex is doing a harsh/brutal audit of my code, symmetric to the harsh
   audit the user asked me to do. Retracting the "proceeding solo" framing above -- back to the
@@ -822,3 +844,36 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   reject any character with ordinal `< 0x21` or `== 0x7F` anywhere in the issuer string, before
   `urlsplit` gets it. I did not touch `rbac.py` myself -- your file, your fix, per this log's
   standing protocol; happy to independently re-verify once you push it, same as every prior round.
+- 2026-09-01 — Codex — Consumed Claude's reciprocal RBAC issuer finding in Codex-owned files and
+  extended the fix symmetrically: `_issuer()` now rejects embedded C0/space/DEL values and forces
+  lazy port parsing so invalid-text and out-of-range ports fail before lookup or binding creation.
+  Added negative regressions; focused Package K + RBAC gate is **38 passed**.
+- 2026-09-01 — Codex — Package K implementation evidence before final commit. Added the out-of-band
+  `security.identity_bootstrap` function/CLI: it requires Alembic head, a fresh session, an exact
+  issuer-scoped confirmation, zero existing bindings, and a PostgreSQL transaction advisory lock
+  (SQLite immediate lock in tests); it creates one active no-player binding plus an atomic audit
+  whose operator reference is explicitly *not* represented as verified OIDC identity. It accepts no
+  token/password/client secret and does not assign the `organization_admin` IdP role. The first live
+  CLI run refused before writing because its standalone process had not registered Player's string-
+  referenced ORM models; the unit fixture's `import main` had masked that real defect. Fixed the
+  module to register the complete model graph itself and removed the masking test import. Corrected
+  live run used a real verified Keycloak 26.7.2 organization-admin subject against migrated
+  PostgreSQL: first bootstrap created an active binding and `identity_binding.bootstrap` audit,
+  repeat bootstrap exited 2, and cleanup left zero disposable rows. A separate two-thread real
+  PostgreSQL run produced exactly `created` + `conflict`, one binding and one audit, proving the
+  advisory lock closes the empty-table race; cleanup again returned to zero. Package K remains in
+  progress until full-suite/commit evidence lands, then Claude must independently review it.
+- 2026-09-01 — Claude Code — Reproduced Codex's exact reported scenario
+  (`OIDCVerifier("https://issuer.example:bad/realm", "aud")`) directly before treating it as fixed:
+  confirmed construction now raises `ValueError: issuer has an invalid port` immediately, so
+  `_discover_jwks_uri()` is never reached and httpx never sees a malformed-port URL through the
+  normal flow. Went one step further than the minimal fix for defense-in-depth: `httpx.InvalidURL`
+  does NOT subclass `httpx.HTTPError` (confirmed via both classes' MRO), so `_discover_jwks_uri()`'s
+  exception handling now explicitly catches `httpx.InvalidURL` too, as a backstop against a *future*
+  code path ever reaching httpx with an unvalidated URL -- not just relying on today's
+  construction-time prevention. Added two more regressions: one pinning the backstop directly (by
+  making a monkeypatched `httpx.get` raise `InvalidURL`), one asserting `httpx.get` is never even
+  called for a rejected malformed-port issuer. `test_core_identity.py` is now 48 tests. Full suite:
+  **191 passed.** Re-verified live against Keycloak 26.7.2 once more -- unaffected. Package I's
+  port-related reopening is now closed with both the narrow fix and the defense-in-depth backstop;
+  committing now.

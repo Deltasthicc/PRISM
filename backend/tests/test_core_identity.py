@@ -14,6 +14,7 @@ import json
 import time
 from types import SimpleNamespace
 
+import httpx
 import jwt
 import pytest
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -318,9 +319,16 @@ def test_oidc_verifier_rejects_embedded_control_characters_in_issuer(control_cha
         "https://user:pass@issuer.example.com/realm",  # userinfo
         "https://issuer.example.com/realm?next=/admin",  # query string
         "https://issuer.example.com/realm#fragment",  # fragment
+        "https://issuer.example.com:invalid/realm",  # non-numeric port
+        "https://issuer.example.com:70000/realm",  # out-of-range port
     ],
 )
 def test_oidc_verifier_rejects_unsafe_issuer_url_shapes(bad_issuer):
+    # The port cases were found by symmetry with Codex's equivalent fix in
+    # security/rbac.py's independent _issuer() validator: urlsplit/urlparse
+    # only validate a URL's port lazily, on first access of `.port` -- until
+    # that attribute is actually read, a malformed port sails through
+    # unnoticed. Confirmed this module had the same gap before fixing it.
     with pytest.raises(ValueError):
         OIDCVerifier(issuer=bad_issuer, audience=AUDIENCE)
 
@@ -380,6 +388,34 @@ def test_discover_jwks_uri_rejects_malformed_json(monkeypatch):
         v._discover_jwks_uri()
 
 
+def test_discover_jwks_uri_never_leaks_a_bare_httpx_invalid_url(monkeypatch):
+    # httpx.InvalidURL does not subclass httpx.HTTPError -- confirmed via
+    # their MRO -- so it needed its own except clause to honor "callers only
+    # ever see AuthenticationError". Construction-time port validation should
+    # make this unreachable through the normal flow, but this test pins the
+    # backstop directly by making httpx.get raise it, rather than relying on
+    # the (also tested) construction-time rejection alone.
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
+    monkeypatch.setattr(
+        "security.identity.httpx.get",
+        lambda *a, **k: (_ for _ in ()).throw(httpx.InvalidURL("boom")),
+    )
+    with pytest.raises(AuthenticationError, match="could not reach"):
+        v._discover_jwks_uri()
+
+
+def test_malformed_port_issuer_is_rejected_before_any_network_call(monkeypatch):
+    # Pins the actual scenario found during cross-review: OIDCVerifier(...)
+    # must reject a malformed-port issuer at construction, so
+    # _discover_jwks_uri() is never even reachable with a bad URL.
+    def _network_call_should_never_happen(*args, **kwargs):
+        raise AssertionError("httpx.get must not be called for a rejected issuer")
+
+    monkeypatch.setattr("security.identity.httpx.get", _network_call_should_never_happen)
+    with pytest.raises(ValueError, match="invalid port"):
+        OIDCVerifier(issuer="https://issuer.example.com:bad/realm", audience=AUDIENCE)
+
+
 def test_discover_jwks_uri_rejects_insecure_jwks_uri(monkeypatch):
     v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
     monkeypatch.setattr(
@@ -397,6 +433,22 @@ def test_discover_jwks_uri_accepts_a_matching_secure_document(monkeypatch):
         lambda *a, **k: _FakeHttpxResponse({"issuer": ISSUER, "jwks_uri": "https://test-issuer.invalid/jwks"}),
     )
     assert v._discover_jwks_uri() == "https://test-issuer.invalid/jwks"
+
+
+def test_jwks_client_lifespan_matches_configured_jwks_cache_seconds(monkeypatch):
+    # Found during a self-audit: PyJWKClient has its OWN independent
+    # cache_jwk_set/lifespan (default 300s), separate from OIDCVerifier's
+    # own jwks_cache_seconds-gated rebuild logic. Left unwired, a non-default
+    # jwks_cache_seconds would look configured but the underlying signing
+    # keys would silently still refresh on PyJWKClient's own 300s default.
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE, jwks_cache_seconds=3600)
+    monkeypatch.setattr(
+        "security.identity.httpx.get",
+        lambda *a, **k: _FakeHttpxResponse({"issuer": ISSUER, "jwks_uri": "https://test-issuer.invalid/jwks"}),
+    )
+    client = v._get_jwks_client()
+    assert client.jwk_set_cache is not None
+    assert client.jwk_set_cache.lifespan == 3600
 
 
 def test_verify_accepts_explicit_bearer_typ_claim(keypair, verifier):

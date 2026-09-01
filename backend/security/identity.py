@@ -81,6 +81,10 @@ def _require_safe_absolute_url(url: str, *, label: str) -> None:
         raise ValueError(f"{label} must not contain a query string (got {url!r})")
     if parsed.fragment:
         raise ValueError(f"{label} must not contain a fragment (got {url!r})")
+    try:
+        parsed.port  # urlsplit/urlparse validate the port lazily, only on access
+    except ValueError as exc:
+        raise ValueError(f"{label} has an invalid port (got {url!r})") from exc
 
     if parsed.scheme == "https":
         return
@@ -160,7 +164,15 @@ class OIDCVerifier:
             response = httpx.get(discovery_url, timeout=self._discovery_timeout_seconds)
             response.raise_for_status()
             document = response.json()
-        except httpx.HTTPError as exc:
+        except (httpx.HTTPError, httpx.InvalidURL) as exc:
+            # httpx.InvalidURL does NOT subclass httpx.HTTPError (confirmed via
+            # their MRO) -- it's a sibling under plain Exception. Construction
+            # already rejects a malformed port before self._issuer can ever
+            # reach this f-string, so this branch shouldn't be reachable
+            # through the normal flow; it's here as a belt-and-suspenders
+            # backstop so a future code path can never leak a bare httpx
+            # exception in violation of "callers only ever see
+            # AuthenticationError".
             raise AuthenticationError(
                 f"could not reach OIDC discovery document at {discovery_url}: {exc}"
             ) from exc
@@ -201,7 +213,19 @@ class OIDCVerifier:
         stale = (now - self._jwks_client_fetched_at) > self._jwks_cache_seconds
         if self._jwks_client is None or stale:
             jwks_uri = self._discover_jwks_uri()
-            self._jwks_client = PyJWKClient(jwks_uri, timeout=self._discovery_timeout_seconds)
+            # PyJWKClient has its OWN independent JWKS-fetch cache
+            # (`cache_jwk_set`/`lifespan`, default 300s) on top of the
+            # rebuild-the-client cache this method already implements. Left
+            # unset, that inner cache silently uses its own 300s default
+            # regardless of `jwks_cache_seconds` -- so a non-default value
+            # here (e.g. an hour) would look configured but the underlying
+            # signing keys would still get refetched every 300s anyway.
+            # Passing `lifespan` explicitly keeps both layers in agreement.
+            self._jwks_client = PyJWKClient(
+                jwks_uri,
+                timeout=self._discovery_timeout_seconds,
+                lifespan=max(1, int(self._jwks_cache_seconds)),
+            )
             self._jwks_client_fetched_at = now
         return self._jwks_client
 

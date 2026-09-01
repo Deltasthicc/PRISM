@@ -1,6 +1,6 @@
 # SIH26101 six-lane team orchestration
 
-Last revised: 29 August 2026
+Last revised: 1 September 2026
 
 Purpose: six parallel, disjoint human workstreams with explicit agent boundaries, contracts, merge gates and a single release rhythm.
 
@@ -56,7 +56,7 @@ The three flat legacy test files remain read-only regression baselines unless La
 | Lane | One foundation outcome | One vertical-slice outcome | Deferred until trust/pilot phase |
 |---|---|---|---|
 | 1 | cross-domain navigation fixture | professional English/Hindi learner path | full design-system polish and broader languages |
-| 2 | versioned profile/evidence schema | synthetic persona persistence and authorization contract | production IdP, retention operation and DR |
+| 2 | versioned profile/evidence schema | synthetic persistence plus reviewed OIDC/RBAC/data-rights foundation | approved production IdP; row-level organization tenancy; automated retention; encryption/key ownership and operational DR |
 | 3 | sourced role/competency policy | explainable gap/path plus one bounded lab | psychometric calibration and outcome ranking |
 | 4 | source/chunk/citation contract | cited quiz plus bounded learner assistant | full media pipeline and large evaluation corpus |
 | 5 | split monolithic learning routes by domain | simulated iGOT/NSSTA path plus honest admin analytics | live provider access and predictive models |
@@ -173,20 +173,92 @@ Lanes 1 and 6 start immediately against frozen fixtures. They do not wait idle f
 
 **Immediate package**
 
-- Define minimal versioned role-target, competency, evidence, assessment, source-version and audit records.
-- Replace startup column surgery with Alembic and add PostgreSQL configuration while retaining deterministic local reset.
-- Define latest-assessment and tenant semantics consumed by Lanes 3–5.
+- **PARTIAL against the original wording:** versioned role-target, evidence, assessment,
+  source-version and audit records are done and cross-reviewed. Canonical competency definitions
+  remain static Lane 3 service data; Lane 2 records their stable IDs in role/evidence/assessment
+  records but did not add a canonical versioned competency table. Lane 3 must propose that contract
+  if persistence beyond its versioned source/policy files is required.
+- **DONE / live-drilled:** Alembic and PostgreSQL configuration with migration-gated PostgreSQL
+  startup, while retaining deterministic SQLite local reset.
+- **DONE / contracted:** latest-assessment repository semantics and the current one-deployment-
+  database tenant rule consumed by Lanes 3–5. The HTTP endpoint/pathway integration belongs to
+  Lane 5.
 
 **Next package**
 
-- OIDC authentication, server-derived subject, RBAC, tenant filters and immutable audit events.
-- Retention/deletion/export primitives, encryption/key ownership and backup/restore.
+- **FOUNDATION DONE / cross-reviewed:** local OIDC verification, server-derived issuer/sub binding,
+  fixed RBAC, deployment-database tenant guard and immutable audit events. Protected route wiring
+  and real organization-row tenant filters remain open.
+- **PARTIAL:** internal retention/deletion/export primitives, a dry-run-first retention enforcement
+  mechanism, and local PostgreSQL backup/restore are done and tested. The real registry has no
+  approved maximum, so it currently deletes nothing; accountable durations and production
+  scheduling remain open. A tested, deliberately unused application encryption envelope is Package
+  Q; production KMS/HSM custody, storage/TLS/backup encryption, scheduled/offsite backup and DR
+  remain open.
 
 **Acceptance evidence**
 
-- Forward/backward migration test, empty-DB bootstrap and restore drill.
-- Object/function authorization matrix with cross-tenant negatives.
-- No endpoint trusts role, player or tenant values supplied only by the browser.
+- **DONE for local Lane 2 scope:** forward/backward migration, empty-DB bootstrap and restore drill.
+- **PARTIAL:** object/function authorization matrix and function-level negatives exist. Real
+  cross-organization row-tenant negatives require an authoritative organization model and schema.
+- **NOT YET AN INTEGRATED PRODUCT PROPERTY:** current routes still trust caller-selected player
+  identifiers. Lane 5 must compose Lane 2's verified principal, binding, tenant and object-scope
+  checks before the controlled-pilot gate can pass.
+
+### Lane 2 completion and cross-lane handoff
+
+Lane 2 Packages A–N are implemented and reciprocally reviewed on
+`codex/lane-2-core-data/bootstrap`; Packages P/Q are the final hardening packages and their exact
+review state remains in `LANE2_SYNC.md`. The current full backend gate is **272 passed**. The
+following assignments are copy-ready messages for the remaining owners. They are dependencies of a
+controlled pilot or production claim, not reasons to reopen completed Lane 2 packages.
+
+**Send to the Lane 5 person — Product API, Integrations & Analytics**
+
+> Consume `docs/contracts/identity-authorization.md` and `data-authorization.md`. Attach Bearer JWT
+> verification, active identity binding, permission, deployment-tenant and object-scope checks to
+> every protected `backend/routes/**` operation. Never accept role, tenant or actor authority from
+> request data; derive learner ownership from `BoundPrincipal`. Add consistent 401/403 responses and
+> negative API tests. Implement `GET /learning/assessment/{player_id}/latest` and update pathway
+> lookup to use `db.repositories.get_latest_assessment`. For admin aggregates, implement the
+> contract's latest-per-`(player_id, curriculum_slug)` window semantics or propose a shared aggregate
+> repository query—do not loop over the scalar helper or count historical runs. Expose identity-binding,
+> export/deletion or audit-read routes only behind the documented matrix. Do not change Lane 2
+> models/policy silently—propose a contract change.
+
+**Send jointly to the Lane 1 and Lane 5 people — Browser identity**
+
+> Build the browser Authorization Code + PKCE (`S256`) flow against the selected IdP, with exact
+> redirect URIs, state/nonce binding, safe token/session handling, logout and accessible loading/
+> error/recovery states. The existing username flow must stay visibly demo-only until protected API
+> routes are complete. Do not infer application `player_id` from username, email or OIDC `sub`.
+
+**Send to the Lane 6 person — Quality, Security, Release & Evidence**
+
+> Integrate the Lane 2 branch through the merge queue and run CI at the integration head. Preserve
+> the distinction between local verified primitives and protected-product claims. Add route-level
+> security/E2E evidence, threat model, dependency/secret/SAST/DAST checks, rate-limit requirements,
+> redacted telemetry, secrets/key-rotation operations, scheduled encrypted offsite backup, restore runbook,
+> RTO/RPO drill and release evidence. Update public operational docs after merge. Do not call the
+> local Docker backup helper a production DR system. Coordinate route/API enforcement changes with
+> Lane 5 rather than editing its files unilaterally.
+
+**Escalate to accountable product/government/privacy/security owners**
+
+> Supply and approve the production IdP/client/claims contract; authoritative organization,
+> department, trainer/cohort relationships; retention durations/lawful basis/data-rights process;
+> encryption key ownership; and independent security/privacy/go-live authorization. Until an
+> organization model is approved and migrated, one deployment database is one tenant and the system
+> must not be described as multi-tenant.
+
+**Lane 2 follow-up only after the authoritative inputs above exist**
+
+- Add organization/department/cohort persistence, migrations and row-tenant policy; coordinate
+  query/route enforcement with Lane 5 and integrated negative evidence with Lane 6.
+- After privacy/legal approval, add the cited maximum to the retention registry and its explicit
+  table mapping, then live-test the existing enforcement mechanism; Lane 6 owns scheduling and
+  operations.
+- Define IdP role-change reconciliation/audit semantics with the IdP owner and Lane 5 integration.
 
 ### Lane 3 — Competency & Learning Intelligence
 
@@ -291,6 +363,10 @@ Do not attach calendar dates until the SPOC confirms the official deadline. Each
 | **4. Release** | recovery/polish | backup/restore | frozen policy version | frozen model/prompt/retrieval | provider failure drills | deploy/observe/rehearse | release candidate signed |
 
 If a phase exit fails, repair it before adding scope. Parallel feature count cannot compensate for a broken vertical loop.
+
+Current Lane 2 status does not make the Phase 3 or Phase 4 row green by itself: its local identity,
+policy and backup/restore foundations are complete, while protected routes, organization tenancy,
+approved identity/privacy inputs and Lane 6 production operations remain explicit exit blockers.
 
 ## 7. Daily rhythm and merge queue
 

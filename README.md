@@ -12,10 +12,14 @@ optional "Quest mode," but only its DSA browser path is currently verified end-t
 > **This is a prototype, honestly labeled as one.** iGOT Karmayogi and NSSTA/TPAC are
 > `catalog-fallback` integrations today, not live enrolment/progress syncs. Authenticated iGOT
 > interfaces exist, but this project has no approved contract, credentials, or sandbox and never
-> fabricates access. Identity is username-only with no
-> password or server-side authorization check on any route. Neither is safe for real officials or
-> real personnel data. See [`docs/archive/SIH26101_FEASIBILITY_AND_ROADMAP.md`](docs/archive/SIH26101_FEASIBILITY_AND_ROADMAP.md)
-> and [`SIH26101_MASTER_CHECKLIST.md`](SIH26101_MASTER_CHECKLIST.md) for exactly what that means;
+> fabricates access. Current browser/product routes still use the username/player-ID demo flow and
+> do not invoke the implemented OIDC/RBAC foundation, so they are not protected routes. Lane 2 now
+> provides cross-reviewed JWT verification, issuer/subject identity binding, RBAC, audit and
+> deployment-database tenant primitives; that is not a browser login, approved government IdP or
+> permission to process real personnel data. See
+> [`docs/contracts/identity-authorization.md`](docs/contracts/identity-authorization.md),
+> [`docs/contracts/data-authorization.md`](docs/contracts/data-authorization.md), and
+> [`SIH26101_MASTER_CHECKLIST.md`](SIH26101_MASTER_CHECKLIST.md) for the exact boundary;
 > [`SIH26101_TEAM_ORCHESTRATION.md`](SIH26101_TEAM_ORCHESTRATION.md) owns the execution model.
 
 The complete user-supplied build scope is preserved as `PS-01`…`PS-18` in
@@ -24,9 +28,9 @@ features; the current demo implements only a subset.
 
 ## What's real right now (verified in this repo, not just claimed)
 
-Everything below was actually run — a live `pytest` pass, a live `uvicorn` boot, and live HTTP
-calls through the full profile → assessment → quiz → admin loop — not re-quoted from another
-session.
+Everything below is evidence recorded through 1 September 2026: live test runs, application boots,
+HTTP calls and focused PostgreSQL/Keycloak drills. It is not inferred from configuration or copied
+from a proposal.
 
 - **4 domains, 1 engine.** `backend/services/curricula.py` holds DSA Fundamentals, Official
   Statistics & Data Governance, Public Policy & Programme Evaluation, and Digital & AI Literacy —
@@ -65,9 +69,14 @@ session.
   upload/preview flow, built on the existing Pixel design-system primitives.
 - **An honest admin view.** `frontend/app/admin` shows aggregate-only organizational gap data (no
   individual learner record, ever) with an explicit banner stating there is no RBAC boundary yet.
-- **42/42 backend tests pass**, including 18 new tests for the cross-domain engine, the quiz
-  fallback, bounded ingestion, and the room-unlock fix — run with
-  `backend/.venv/Scripts/python.exe -m pytest`, not assumed.
+- **272/272 backend tests pass on the current Lane 2 branch.** The latest full gate covers the earlier cross-domain engine and
+  ingestion behavior plus database migrations, governance records, OIDC verification, identity
+  binding/RBAC, bootstrap invariants, data rights, retention and adversarial backup/restore cases.
+  The two reported warnings were pytest-cache permission warnings, not failed tests.
+- **Lane 2's core platform foundation is implemented and reciprocally reviewed.** PostgreSQL 16
+  migrations, migration-gated startup, local Keycloak OIDC verification, identity binding, fixed
+  RBAC policy, audit/data-rights primitives, retention guards and local backup/restore drills are
+  real. Existing HTTP routes do not compose those primitives yet; see the handoff below.
 - **`npm audit --omit=dev` reports 0 vulnerabilities** after bumping the `next`/postcss dependency
   override that was pinning an old vulnerable version.
 
@@ -78,22 +87,53 @@ session.
   sandbox is configured here; no NSSTA API was verified. Production activation needs approved
   access and a real adapter behind the interface already sketched in
   `learning_catalog.py`.
-- **No real identity.** Username-only, no password, no server-derived session, no RBAC on any
-  route. A pilot cannot run on this — it needs government-approved OIDC/SAML, server-side subject
-  derivation, and role checks on every protected endpoint.
+- **No protected product route or browser SSO yet.** The Lane 2 resource-server foundation verifies
+  OIDC JWTs and resolves server-side principals through active bindings and RBAC, but Lane 5 has not
+  attached it to `backend/routes/**`, and Lane 1/5 have not built Authorization Code + PKCE login,
+  session/logout or an approved government IdP integration.
 - **No official competency ownership.** The four curricula are a reviewed, internally-consistent
   *demonstration* taxonomy, not an MoSPI/NSSTA/CBC-approved role-to-competency map. A real pilot
   needs a named domain owner to sign off on targets and descriptors.
-- **SQLite, not PostgreSQL; no migrations.** `ensure_columns()` (see `db/database.py`) is the only
-  schema-evolution mechanism and is a no-op on anything but SQLite. Fine for a prototype, not for
-  scale.
+- **Two database profiles, not production operations.** SQLite remains the documented zero-setup
+  local-demo profile, including its compatibility `ensure_columns()` path. PostgreSQL 16 support is
+  additive and migration-managed through Alembic; PostgreSQL startup refuses a stale revision.
+  Live forward/backward migration and restore drills passed, but scheduled encrypted/offsite
+  backups, key ownership and an operational DR runbook remain open.
 - **No content-review workflow.** Generated quiz questions are demo-ready, not publish-ready — there
   is no draft/review/approve/retire state yet, so nothing stops an unreviewed item from being
   served.
 - **Several explicit problem-statement capabilities are still absent.** There is no learner
   assistant, PPTX/video transcript pipeline, virtual lab, real multilingual journey, learning-hours
-  evidence, predictive workforce model, SSO, malware scanning, background queue, or observability.
+  evidence, predictive workforce model, browser SSO, malware scanning, background queue, or
+  observability.
   These are mapped to owners and honest demo/pilot boundaries in the requirement contract.
+
+## Lane 2 completion and handoff
+
+Packages A–N on `codex/lane-2-core-data/bootstrap` are implemented and reciprocally reviewed;
+Packages P/Q add retention/key-rotation evidence and a deliberately unwired authenticated-
+encryption envelope, with final review state recorded in `LANE2_SYNC.md`. The current full backend
+gate is 272 passing tests. This completes the current hackathon Lane 2 foundation; it does **not**
+make the whole application production-ready.
+
+- **Lane 5 — Product API/Integrations:** attach Bearer verification, binding, permission,
+  deployment-tenant and object-scope checks to every protected route; stop treating request
+  `player_id` as authority; add 401/403 and negative API tests; expose the latest-assessment query;
+  protect any identity-binding, export/deletion and audit-read APIs; implement API rate limiting
+  against Lane 6's agreed policy/evidence criteria.
+- **Lanes 1 + 5 — Browser identity:** implement Authorization Code + PKCE, exact redirect/state/
+  nonce handling, session/logout and error/recovery UX against the selected IdP.
+- **Lane 6 — Quality/Release:** run integration CI at merge head; define and verify threat-model,
+  scanning, rate-limit, telemetry and secrets requirements while coordinating code changes with
+  the owning lane; own scheduled encrypted/offsite backups, restore runbooks and
+  DR exercises; keep public operational documentation current.
+- **Accountable external owners:** approve the production/government IdP and claims, authoritative
+  organization/department/cohort model, retention/legal basis, key ownership, privacy/security
+  assessment and go-live. One database is one tenant today; row-level multi-organization isolation
+  is not implemented.
+
+The copy-ready assignments are maintained in
+[`SIH26101_TEAM_ORCHESTRATION.md`](SIH26101_TEAM_ORCHESTRATION.md#lane-2-completion-and-cross-lane-handoff).
 
 The current itemized backlog is [`SIH26101_MASTER_CHECKLIST.md`](SIH26101_MASTER_CHECKLIST.md),
 the strategy is [`SIH26101_WINNING_PLAYBOOK.md`](SIH26101_WINNING_PLAYBOOK.md), and the six-lane
@@ -101,7 +141,8 @@ delivery model is [`SIH26101_TEAM_ORCHESTRATION.md`](SIH26101_TEAM_ORCHESTRATION
 
 ## How it plays
 
-1. **Create a character** — username only in this prototype (see [Player identity](#player-identity)).
+1. **Create a character** — the current browser route remains username-only (see
+   [Player identity](#player-identity)); the Lane 2 identity foundation is not wired into this flow.
 2. **Open the Academy** (`/academy`) — build a profile from designation, department, assignment,
    qualifications, experience, prior training, preferred language, and career goal.
 3. **Diagnose gaps** — rate yourself 0–5 per competency; the engine blends that with real quest
@@ -121,7 +162,7 @@ delivery model is [`SIH26101_TEAM_ORCHESTRATION.md`](SIH26101_TEAM_ORCHESTRATION
 ```text
 SIH Learning Tool/
 |-- frontend/   Next.js website — no direct AI or DB access
-|-- backend/    FastAPI server — API, SQLite, game + skill-intelligence rules, default AI implementation
+|-- backend/    FastAPI server — API, SQLite demo/PostgreSQL profile, migrations, security + learning rules
 `-- services/   Optional standalone AI engine (real sentence-embedding grading, not used by default)
 ```
 
@@ -162,9 +203,10 @@ Runs at `http://localhost:3000`. Without the backend running, every action fails
 
 ### Player identity
 
-Username only, no password — a deliberate simplification for this build, not a real auth system.
-Don't reuse a real password as your username. This must be replaced with real identity before any
-non-synthetic learner or organizational data touches this app.
+The current create/login browser flow is username-only with no password. Do not reuse a real
+password as your username. The backend now contains a tested OIDC verifier, identity-binding and
+RBAC foundation, but the product routes do not call it. Lane 1/5 must complete the protected login
+and route handoff before any non-synthetic learner or organizational data touches this app.
 
 ## Competency graph & data model
 
@@ -195,11 +237,13 @@ A competency unlocks once every prerequisite is demonstrated or its room is clea
 live, cross-domain, in `routes/game.py::_is_room_unlocked_for_player`); each domain's mastery
 challenge unlocks once every one of its competencies is proven.
 
-State lives in SQLite: `players`, `learner_profiles`, `competency_assessments`,
+State lives in the configured SQLite demo database or PostgreSQL database: `players`,
+`learner_profiles`, `competency_assessments`,
 `learning_materials`, `generated_quizzes`, `accuracy_history` (rolling last-5 accuracy per player
 per topic), `dungeons` (now `curriculum_slug`-tagged) / `rooms`, `questions`, `answer_submissions`,
-`guilds`, `game_sessions`. SQLite is suitable for this local prototype only — see the roadmap for
-the PostgreSQL/Alembic migration this needs before any pilot.
+`guilds`, `game_sessions`, `role_targets`, `evidence_records`, `source_versions`, `audit_events` and
+`identity_bindings`. SQLite is the zero-setup local demo. PostgreSQL uses Alembic migrations and
+migration-gated startup; neither profile alone is evidence of production operations.
 
 ## AI logic
 
@@ -251,7 +295,7 @@ Full request/response schemas are served live at `http://localhost:8000/docs`.
 | Layer | Technology |
 |---|---|
 | Frontend | Next.js 15, React 19, Tailwind, Zustand, TanStack Query, React Flow, Recharts |
-| Backend | FastAPI, SQLAlchemy, SQLite |
+| Backend | FastAPI, SQLAlchemy, SQLite local demo + PostgreSQL 16/Alembic profile |
 | AI | Google Gemini; optional `services/` upgrade adds `sentence-transformers` |
 | Document ingestion | `pypdf`, `python-docx` (bounded — see `services/content_ingestion.py`) |
 
@@ -267,16 +311,18 @@ SIH Learning Tool/
 │   └── archive/                    Pre-rename planning documents (see docs/archive/README.md)
 ├── backend/
 │   ├── .env.example
-│   ├── main.py                    App entry point, CORS, router registration, DB init + seeding
+│   ├── main.py                    App entry point, CORS, router registration, DB init + gated demo seeding
+│   ├── alembic.ini / migrations/ PostgreSQL migration history and startup revision contract
 │   ├── requirements.txt / requirements-dev.txt
 │   ├── db/
 │   │   ├── database.py            Engine/session setup
 │   │   └── seed.py                Demo DSA dungeon + seed_curricula_dungeons() for the other 3
-│   ├── models/                    SQLAlchemy tables
+│   ├── models/                    SQLAlchemy tables, including governance and identity bindings
 │   │   ├── player.py, accuracy_history.py, dungeon.py, question.py, submission.py, guild.py, session.py
 │   │   └── learning.py            LearnerProfile, CompetencyAssessment, LearningMaterial, GeneratedQuiz
-│   ├── schemas/
-│   │   └── learning.py            Pydantic request/response shapes for /learning/*
+│   ├── schemas/                   Learning, governance, identity and data-rights shapes
+│   ├── security/                  OIDC, RBAC, audit, bootstrap, retention and data-rights primitives
+│   ├── scripts/backup_restore.py  Local Docker/PostgreSQL backup/restore drill helper
 │   ├── routes/
 │   │   ├── game.py                All /game/* endpoints (now with cross-domain unlock fallback)
 │   │   ├── ai_real.py             All /ai/* endpoints (calls Gemini directly)
@@ -288,9 +334,7 @@ SIH Learning Tool/
 │   │   ├── learning_catalog.py    Honest iGOT/NSSTA recommendation + status boundary
 │   │   ├── content_ingestion.py   Bounded TXT/MD/PDF/DOCX extraction
 │   │   └── quiz_generator.py      Grounded generation + deterministic fallback
-│   └── tests/
-│       ├── test_progression.py, test_combat_model.py     Original 24 tests
-│       └── test_learning_platform.py                     18 new cross-domain/learning tests
+│   └── tests/                     Legacy regression tests + lane-owned test_core_*.py suites
 ├── frontend/
 │   ├── app/
 │   │   ├── academy/                Wraps AcademyHub — profile, diagnostic, pathway, quiz upload
@@ -314,7 +358,8 @@ SIH Learning Tool/
   & .\.venv\Scripts\Activate.ps1
   python -m pytest
   ```
-  42 tests, no server or API key needed — every AI-dependent path under test either mocks the
+  272 tests in the latest recorded full gate, with no server or API key required — every
+  AI-dependent path under test either mocks the
   network call or exercises the deterministic fallback directly.
 - **CORS**: the backend only allows credentialed requests from `FRONTEND_ORIGINS` — update it
   (comma-separated) if you deploy the frontend somewhere other than `localhost:3000`.

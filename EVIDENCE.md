@@ -23,6 +23,11 @@ has actually been retrieved.
 |---|---|---|---|
 | 2026-08-29 | `python -m pytest` (backend) | 42 passed | See `SIH26101_MASTER_CHECKLIST.md` section 8 for the full log |
 | 2026-08-29 | `npm run lint` (frontend) | passed | |
+| 2026-09-01 | `backend/.venv/Scripts/python.exe -m pytest -q` | 237 passed; 2 pytest-cache permission warnings | Lane 2 Packages A–N accepted; detailed command/drill trail in `LANE2_SYNC.md` |
+| 2026-09-01 | PostgreSQL 16 migration/startup drills | Alembic forward/backward, legacy adoption, partial-schema rejection and stale-revision startup refusal passed | Disposable/local Compose databases; head `cf4271f204a3` |
+| 2026-09-01 | Local Keycloak 26.7.2 OIDC/RBAC verification | identity verifier, binding, bootstrap and authorization negatives passed | Development issuer only; no browser route or government IdP claim |
+| 2026-09-01 | PostgreSQL backup/restore concurrency and adversarial tests | concurrent backup/restore completed; exact marker/revision/table checks passed; zero matching container temp residue | Local Docker drill only; no scheduled/offsite/encrypted DR claim |
+| 2026-09-01 | Full backend gate after immutable Package P and independently accepted Package Q | 272 passed; 2 pytest-cache permission warnings | Package P destructive-path review findings remain explicitly open in `LANE2_SYNC.md`; pass count is not self-approval |
 
 ## Demo rehearsal evidence
 

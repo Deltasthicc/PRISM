@@ -33,14 +33,20 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
 
 ## Current verified reality
 
-- Backend: FastAPI + SQLAlchemy + SQLite prototype; 42 backend tests passed in the last verification.
+- Backend: FastAPI + SQLAlchemy with a zero-setup SQLite demo profile and an additive PostgreSQL
+  16/Alembic profile; 272 backend tests passed in the latest recorded full gate.
 - Frontend: Next.js; lint passed in the last verification.
 - Four curricula/34 competencies exist in the backend, but the supplied problem statement names a broader competency set.
 - Only the DSA Quest browser path is currently verified; three other backend dungeons are blocked by frontend route/filter assumptions.
 - The current “role-aware” result is actually experience-level-capped; other stored profile fields do not select a role target.
 - Quiz generation supports bounded TXT/MD/PDF/DOCX and normalized source-span checking. It is context stuffing, not retrieval RAG; PPTX/video ingestion and item review are absent.
 - Recommendations are internal practice/catalogue fallback. There is no authorized live iGOT/NSSTA enrolment, completion, SSO or score-writeback integration.
-- There is no real authentication/RBAC/tenancy, PostgreSQL migration path, CI, frontend test suite, observability stack or production authorization.
+- Lane 2 provides a cross-reviewed local OIDC verifier, issuer/subject binding, fixed RBAC policy,
+  deployment-database tenant boundary, audited data-rights/retention primitives and PostgreSQL
+  migrations/backup-restore drills. Existing product routes do not invoke that foundation; there is
+  no browser SSO, row-level organization tenancy, approved production IdP, frontend test suite,
+  observability stack or production authorization. A CI workflow exists, but its presence alone is
+  not evidence of a green remote run.
 
 Reinspect code and run tests before repeating any status claim; these bullets are a baseline, not permanent truth.
 
@@ -82,7 +88,9 @@ The exact path map, test subtrees, contracts and reviewers live in `SIH26101_TEA
 4. Add versioned role targets/evidence and one bounded statistics lab.
 5. Add cited retrieval, assistant, quiz review and one PPTX/transcript path.
 6. Add labelled provider simulator, analytics and reconciliation.
-7. Add real identity/RBAC/tenancy, migrations, accessibility/security and operational gates for a controlled pilot.
+7. Wire the existing identity/RBAC foundation into product routes, add authoritative organization
+   tenancy and browser login, and complete accessibility/security/operational gates for a
+   controlled pilot.
 
 Do not build microservices, unrestricted code execution, speculative psychometric models or predictive workforce claims before the verified vertical loop works.
 

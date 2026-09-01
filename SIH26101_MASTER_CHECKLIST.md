@@ -1,8 +1,12 @@
 # SIH26101 master checklist
 
-Last evidence review: 29 August 2026
+Last evidence review: 1 September 2026
 
-Repository baseline: commit `429df46` on `main`
+Historical repository baseline: commit `429df46` on `main`
+
+Current Lane 2 evidence base: `codex/lane-2-core-data/bootstrap`; Packages A–N are accepted,
+Package P is implemented at `9ce96cb` with destructive-path review findings still open, Package Q
+is independently accepted at `f343455`, and Package O reconciles current documentation/handoffs.
 
 Requirement source: `docs/SIH26101_PROBLEM_STATEMENT.md` (`PS-01`…`PS-18`)
 
@@ -22,8 +26,8 @@ This is the single execution ledger for the project. It separates what the repos
 
 | Area | Current state | Evidence |
 |---|---|---|
-| Backend | FastAPI/SQLAlchemy modular prototype; SQLite; startup table creation plus manual column patching | **VERIFIED** |
-| Automated tests | 42/42 backend tests passed on 29 Aug 2026; frontend lint passed | **VERIFIED** |
+| Backend | FastAPI/SQLAlchemy; SQLite zero-setup demo plus PostgreSQL 16/Alembic profile with migration-gated PostgreSQL startup | **VERIFIED** |
+| Automated tests | 272/272 backend tests passed on 1 Sep 2026; passing tests do not close Package P's recorded review findings; 29 Aug frontend lint evidence remains historical | **VERIFIED** |
 | Curricula | Four curricula and 34 competencies are seeded and usable through backend APIs | **VERIFIED** |
 | Quest UI | DSA is playable; the other three domains are not currently reachable end-to-end through the browser | **VERIFIED** |
 | Competency targeting | Target cap is selected only from `experience_level`; designation, department, job role, assignment, qualifications and career goal are stored but do not affect targets | **VERIFIED** |
@@ -33,11 +37,11 @@ This is the single execution ledger for the project. It separates what the repos
 | Retrieval | Whole extracted text is supplied to generation; chunking, embeddings, retrieval and a vector store are not present | **VERIFIED** |
 | Recommendations | Internal practice plus links to provider catalogues; no real enrolment, completion, or catalogue sync | **VERIFIED** |
 | iGOT boundary | Authenticated iGOT/KB-iGOT interfaces exist publicly in integration documentation, but this project has no approved endpoint contract, credentials, or sandbox | **OFFICIAL + VERIFIED** |
-| Identity/security | Username-based demo identity; no real authentication, RBAC, tenant isolation, audit trail, rate limiting, or secrets platform | **VERIFIED** |
+| Identity/security | Product routes remain username/player-ID demo interfaces and are not protected. Lane 2 implements local OIDC JWT verification, issuer/sub binding, fixed RBAC/bootstrap, deployment-database tenant guards and audited security/data-rights primitives; browser SSO, row-level organization tenancy, route enforcement, approved production IdP, rate limits and secrets operations remain open | **VERIFIED** |
 | Admin metrics | Aggregate-only response, but repeated historical assessments inflate `learner_count` for a gap | **VERIFIED** |
 | Dashboard coverage | No provider-derived learning hours, training-effectiveness measurement, emerging-skill analysis or validated predictive analytics | **VERIFIED** |
 | Guild/leaderboard | Guild backend exists; frontend lacks raid question/submit flow. UI says weekly while backend rank is lifetime XP | **VERIFIED** |
-| Delivery | No CI workflow, frontend tests, migration framework, production deployment definition, observability stack, or repository licence | **VERIFIED** |
+| Delivery | CI workflow and Alembic migration framework exist; no fresh remote-CI result is claimed here. Frontend tests, production deployment definition, observability stack and repository licence remain absent/unverified | **VERIFIED** |
 
 The frontend production build was not independently completed in the current restricted environment. Existing `.next` output is not release evidence. A clean CI build remains mandatory.
 
@@ -47,7 +51,8 @@ The frontend production build was not independently completed in the current res
 - [x] **Do not call the proposed labels “official FRAC levels.”** FRAC officially connects roles, activities and competencies. CBC now publishes the Karmayogi Competency Model (KCM) and says it is integrated with iGOT. The labels “Basic Awareness” through “National Expert” were not verified in the cited official material. **OFFICIAL**
 - [x] **Treat Role Readiness Index as an internal product metric only.** Any formula and weighting must display its version, inputs and provisional status until an authorized domain owner validates it. **DECISION**
 - [x] **Do not invent iGOT course IDs, URLs, completion records, NSSTA schedules, API success, or government approval.** A simulator must be visibly labelled `SIMULATED`; a live adapter must prove authenticated partner connectivity. **DECISION**
-- [x] **Reject “JWT already exists.”** It does not exist in this repository. **VERIFIED**
+- [x] **Reject the baseline claim “JWT already exists.”** It did not exist at `429df46`; Package I
+  subsequently added and live-tested local OIDC JWT verification. **VERIFIED**
 - [x] **Reject “all four domains work end-to-end.”** Only backend coverage is cross-domain today; browser Quest routing is DSA-only. **VERIFIED**
 - [x] **Reject the pasted 28/100 score and fixed judging weights as official.** They may be private prioritization aids only. **DECISION**
 - [x] **Keep the useful additions:** item-review lifecycle, grounded RAG evaluation, bilingual path, one statistics lab, adapter/simulator boundary, privacy/security gates, and contract-first team ownership. **DECISION**
@@ -151,23 +156,46 @@ Do these before adding new “AI” features.
 
 ### 5.1 Identity, privacy and authorization
 
-- [ ] Integrate a real OIDC identity provider; use secure session handling and key rotation.
-- [ ] Implement server-side RBAC for learner, trainer, content reviewer, department admin, organization admin and auditor.
+- [x] Implement and live-test a local standards-based OIDC resource-server verifier against
+  Keycloak, including issuer/audience/signature/time validation and fail-closed JWKS behavior.
+  This is development evidence, not an approved production/government IdP. **VERIFIED**
+- [ ] Integrate the approved production identity provider, browser Authorization Code + PKCE
+  session/logout flow, and accountable key-rotation/outage operations. **BLOCKED-EXTERNAL/SHARED**
+- [x] Implement the Lane 2 server-side matrix recognizing learner, trainer, content reviewer,
+  department admin, organization admin and auditor; add issuer/sub identity binding, first-admin
+  bootstrap, learner-own-record scope and deployment-tenant guards. Trainer/cohort and department
+  object scope remain absent/fail-closed until authoritative relationships exist. **VERIFIED**
+- [ ] Attach the Lane 2 identity/RBAC boundary to every protected product route with 401/403 and
+  negative API tests; this is Lane 5-owned integration work.
 - [ ] Add organization/tenant scope to every personal/content/evidence query and negative authorization tests.
-- [ ] Create data inventory, lawful-purpose record, notice/consent where applicable, minimization rules, retention schedule, correction/export/deletion workflow and processor register.
+- [x] Create the current subject-data inventory plus transactional internal export/deletion
+  primitives, retention classification/policy guard and audited execution boundary. **VERIFIED**
+- [ ] Approve lawful purpose, notice/consent where applicable, minimization, retention durations,
+  correction/subject-rights HTTP workflow and processor register; automate expiry only after the
+  accountable privacy/legal owner approves the policy. **BLOCKED-EXTERNAL/SHARED**
 - [ ] Never expose model prompts, API keys, tokens or learner PII in client code, logs, analytics or screenshots.
-- [ ] Record append-only audit events for privileged reads/writes, role changes, content approval, model decisions and exports.
+- [x] Implement a bounded, versioned AES-256-GCM envelope/key-rotation primitive and explicit
+  adoption contract for a future reviewed sensitive field. No current model uses it. **VERIFIED**
+- [ ] Configure production TLS/storage/backup encryption and approved KMS/HSM custody, access,
+  rotation, recovery and compromise procedures. **BLOCKED-EXTERNAL/OPERATIONAL**
+- [x] Provide an append-only audit model/write path and atomic events for identity bootstrap,
+  binding lifecycle and internal export/deletion operations. **VERIFIED**
+- [ ] Integrate audited privileged route reads/writes, IdP role reconciliation, content approval
+  and model decisions across their owning lanes.
 - [ ] Track the staged DPDP commencement accurately: the Gazette notifications phase most Data Fiduciary duties in on 14 May 2027 (with Rule 4 on 14 November 2026). Build to the final Rules now, but do not call every duty legally operative on 29 August 2026.
 - [ ] Obtain legal review of the operating entity and transitional IT Act section 43A/SPDI applicability before processing real personnel data. **BLOCKED-EXTERNAL**
 
 ### 5.2 Persistence and API contracts
 
-- [ ] Replace SQLite/startup schema patching with PostgreSQL and Alembic migrations; keep SQLite only as a documented local-demo profile.
+- [x] Add PostgreSQL and Alembic migrations with migration-gated PostgreSQL startup while retaining
+  SQLite as the documented zero-setup local-demo profile. **VERIFIED**
 - [ ] Add uniqueness, foreign keys, tenant keys, version fields and indexes based on measured queries.
 - [ ] Publish versioned OpenAPI and typed frontend client; add schema compatibility checks in CI.
 - [ ] Add pagination, idempotency and consistent error envelopes.
 - [ ] Queue document processing and AI work outside request threads; expose job state and cancellation.
-- [ ] Complete backup/restore and migration rollback drills.
+- [x] Complete local PostgreSQL backup/restore plus forward/backward migration drills, including
+  adversarial restore-copy cleanup and concurrent temporary-path evidence. This does not imply a
+  scheduled, encrypted, offsite production DR capability. **VERIFIED**
 
 ### 5.3 Security, accessibility and reliability
 
@@ -219,5 +247,10 @@ Passing P0 makes a credible hackathon prototype. Passing P1 makes a strong demon
 | 2026-08-29 | frontend lint | passed | Repository audit |
 | 2026-08-29 | route/config/client inspection | three non-DSA Quest paths blocked in browser | Repository audit |
 | 2026-08-29 | 174 KB pasted planning source reconciled with repository and primary sources | useful proposals retained; unsupported claims removed | Research pass |
+| 2026-09-01 | `backend/.venv/Scripts/python.exe -m pytest -q` | 237 passed; 2 pytest-cache permission warnings | Lane 2 Packages A–N closure |
+| 2026-09-01 | PostgreSQL 16 Alembic forward/backward/startup drills | baseline and follow-up migrations, stale-revision refusal and empty/head startup verified | Lane 2 + reciprocal review |
+| 2026-09-01 | Local Keycloak 26.7.2 OIDC verification and RBAC/bootstrap negatives | verifier/binding/policy foundation accepted; product routes explicitly still unprotected | Lane 2 + reciprocal review |
+| 2026-09-01 | Concurrent PostgreSQL backup/restore and adversarial regression contract | accepted; no container temp residue in recorded live drill | Lane 2 + reciprocal review |
+| 2026-09-01 | Full backend gate after immutable Package P and reviewed Package Q | 272 passed; 2 pytest-cache permission warnings; Package P review findings remain open | Lane 2 closure pass |
 
 Append future entries; never overwrite failed evidence with a later success.

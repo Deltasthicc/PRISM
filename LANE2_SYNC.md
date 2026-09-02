@@ -3192,3 +3192,67 @@ FINAL GATES AND DELIVERY
   checkout directory `C:\\Users\\shash\\Downloads\\SIHLearningTool`; replace those commands with
   repository-relative instructions so a fresh PRISM clone is portable. The bitmap-logo and false
   `/academy` routing claims remain the P1 blockers already assigned above.
+
+- 2026-09-02 — Claude Code — **All items from Codex's `2a0b916`/`cb46f29` handoff closed
+  (bitmap logo, post-auth routing, raid-test strengthening, hardcoded paths); propagated to `main`
+  and all six lane branches. Claiming this closes the complementary scope claimed at `2d7354d`.**
+
+  **Bitmap logo (P1) -- fixed.** Independently confirmed via the actual PNG (not just the alt-text
+  diff) that `frontend/public/sprites/bats/logo.png`'s pixels visibly read "SkillQuest: The AI
+  Dungeon". Replaced the `<img>` in `frontend/app/page.jsx` -- the root landing page's most
+  prominent element -- with a text wordmark ("PRISM" / "Personalized Readiness Intelligence &
+  Skill Mapping") using the app's existing pixel font (`font-display`) and `PixelPanel` component,
+  no new pixel-art asset generation needed. Deleted the now-unreferenced stale PNG. Verified against
+  the actual rendered production HTML (`npm run build` then `next start`, curled): `<title>PRISM
+  </title>`, the new wordmark text present, zero remaining "SkillQuest" anywhere in the response
+  body.
+
+  **False `/academy` default-route claim -- fixed, not just downgraded.** Independently confirmed
+  Codex's finding: `login/page.jsx` and `register/page.jsx` both routed to `/dungeon` (or
+  `/character` first) on success; only the unauthenticated root CTA pointed at `/academy`. Changed
+  both to route to `/academy`, actually enacting the team's already-recorded decision rather than
+  softening the docs to match the old behavior. Since this is the first way to reach `/dungeon`
+  without ever picking a hero (previously impossible -- registration forced `/character` first),
+  added a guard in `dungeon/page.jsx` that redirects a heroless player to `/character` on their
+  first visit there, since combat/powerups assume a hero exists. `lint`/`build` clean on every
+  branch. Not touched: `origin/codex/lane-3-competency/role-target-v1`, the stale feature ref Codex
+  flagged (predates the rebrand+game fixes) -- that's Lane 3's own feature branch, left for Lane 3
+  to rebase or retire rather than acted on unilaterally.
+
+  **Raid-test strengthening -- both points addressed, verified before propagating.** Confirmed
+  Codex's threshold claim directly (`services/config.py`: `JUDGE_CORRECT_THRESHOLD=0.65`,
+  `JUDGE_PARTIAL_THRESHOLD=0.30`) -- `verdict="correct", score=0.5` was indeed impossible from the
+  real judge. Changed to `verdict="partial"` (0.30 <= 0.5 < 0.65, a real combination), added an
+  assertion that the resulting 100 damage does not complete a 270 HP solo raid. Added a dedicated
+  `test_raid_boss_hp_scales_with_member_count_at_the_new_per_member_constant` covering the HP-
+  rescaling half of the original fix directly: a solo raid is exactly 270 HP, a 2-member raid is
+  exactly 540 HP -- the earlier version asserted only damage arithmetic. Applied to codecrypt/
+  SkillQuest first (`18b151e`, 22/22 passed there too), then ported to PRISM. Acknowledged, not
+  silently worked around: `tests/conftest.py` documents `test_combat_model.py` as a read-only
+  legacy baseline "unless Lane 6 explicitly reassigns" it -- recorded here that this session's
+  explicit cross-repo user request is the basis for the exception, and left the question of
+  relocating to an owner-scoped file open for Lane 6.
+
+  **Hardcoded local paths -- fixed.** `CLAUDE.md`/`CODEX.md` verification sections no longer
+  hardcode `C:\Users\shash\Downloads\SIHLearningTool`; both now say `cd backend`/`cd frontend`
+  relative to wherever the repo is actually checked out, correct for both this user's own
+  (unrenamed) local folder and a fresh clone that would naturally be named `PRISM`.
+
+  **Propagation, in three commits per surface (`1946351`/`d47c2e7`/`ce366a4` on `main`, cherry-
+  picked identically onto all five non-Lane-2 branches, then `8632ff0`/`ac26ff7`/`fae9342` merged
+  onto this branch via a separate detached worktree -- `fae9342` needed a 3-way auto-merge on
+  `CLAUDE.md`/`CODEX.md` against this branch's own divergent Lane-2-specific content, which
+  resolved cleanly with no manual conflict edits). Every branch's `test_combat_model.py`,
+  `page.jsx`, `dungeon/page.jsx`, `login/page.jsx`, `register/page.jsx` are now byte-identical to
+  `main`'s (diffed directly, not assumed from a clean cherry-pick). `git fetch`/log check
+  immediately before every push on every branch found no concurrent commits to reconcile.
+
+  **Full verification on `main`:** backend 45/45 passed, frontend `lint` clean, `build` clean (14
+  routes). This branch's own copies verified by content-identity against the already-tested `main`
+  versions rather than re-running a fresh env setup in the temporary worktree, since the cherry-
+  picks left them byte-for-byte identical.
+
+  This closes every item from Codex's `2a0b916` findings commit and the `cb46f29`/`71b8a1d` review.
+  Nothing further claimed pending from either side of this specific PRISM-integration audit; regular
+  Lane 2 O-C closure (Packages A-V) from before this rebrand remains separately closed as recorded
+  earlier in this file.

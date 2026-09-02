@@ -40,6 +40,7 @@ This is the single execution ledger for the project. It separates what the repos
 | Automated tests | 341/341 backend tests passed with no PostgreSQL running (6 opt-in real-PostgreSQL tests skip cleanly), 347/347 with the local Compose PostgreSQL up, as of 2 Sep 2026 after Package V's test/evidence hardening; Package S/T/V are Codex-accepted, including five consecutive live runs of V's 6-test hardening contract during the final immutable review; earlier counts (42/237/272/337/339) remain historical, not overwritten; 29 Aug frontend lint evidence remains historical | **VERIFIED** |
 | Curricula | Four curricula and 34 competencies are seeded and usable through backend APIs | **VERIFIED** |
 | Quest UI | DSA is playable; the other three domains are not currently reachable end-to-end through the browser | **VERIFIED** |
+| Default landing / professional theme | Root `/` and `Providers` already route an authenticated learner to `/academy`, not `/dungeon` -- Quest is not the startup route. But `AcademyHub.jsx` (the default landing) still imports the same `Pixel*` kit as Quest mode (`PixelPanel`, `PixelButton`, `PixelBadge`, `PixelInput`, `arcane`/`stone` variants, chunky pixel borders, the display pixel font) -- there is no visually distinct plain/professional theme yet, only separate routing | **VERIFIED** |
 | Competency targeting | Target cap is selected only from `experience_level`; designation, department, job role, assignment, qualifications and career goal are stored but do not affect targets | **VERIFIED** |
 | Assessment formula | 65% demonstrated performance + 35% self-rating when both exist; this is a transparent prototype policy, not validated psychometrics | **VERIFIED** |
 | Quiz grounding | TXT/MD/PDF/DOCX extraction is bounded; generated excerpts are matched after whitespace/case normalization, not as literal byte-for-byte substrings | **VERIFIED** |
@@ -57,7 +58,7 @@ The frontend production build was not independently completed in the current res
 
 ## 2. Decisions and corrections from the pasted 174 KB planning source
 
-- [x] **Keep Quest mode as an optional engagement layer.** Do not execute the pasted recommendation to delete it. The primary experience must become a professional learning workspace; Quest mode is a secondary practice mode. **DECISION**
+- [x] **Keep Quest mode as an optional engagement layer.** Do not execute the pasted recommendation to delete it. The primary experience must become a professional learning workspace; Quest mode is a secondary practice mode. This applies to the visual theme, not only navigation: the default landing (root `/` → `/academy` for an authenticated learner) must use a plain, non-game professional identity, with Quest's pixel-art/dungeon skin visually scoped to opt-in Quest routes (`/dungeon`, `/combat`, `/boss`, `/guild`, `/character`) only -- never the default startup experience. Routing already satisfies this (see "Default landing / professional theme" in §1); the visual theme currently does not. **DECISION**
 - [x] **Do not call the proposed labels “official FRAC levels.”** FRAC officially connects roles, activities and competencies. CBC now publishes the Karmayogi Competency Model (KCM) and says it is integrated with iGOT. The labels “Basic Awareness” through “National Expert” were not verified in the cited official material. **OFFICIAL**
 - [x] **Treat Role Readiness Index as an internal product metric only.** Any formula and weighting must display its version, inputs and provisional status until an authorized domain owner validates it. **DECISION**
 - [x] **Do not invent iGOT course IDs, URLs, completion records, NSSTA schedules, API success, or government approval.** A simulator must be visibly labelled `SIMULATED`; a live adapter must prove authenticated partner connectivity. **DECISION**
@@ -95,6 +96,7 @@ Do these before adding new “AI” features.
 - [ ] Stop filtering every dungeon through the DSA-only `TOPIC_GRAPH`.
 - [ ] Add generic/domain-specific room labels and visuals for non-DSA topics.
 - [ ] Fix internal recommendation links so they target the selected dungeon/competency, not `/dungeon#...` without a resolvable dungeon.
+- [ ] Give the professional Academy/Admin shell its own plain, non-game visual identity, distinct from Quest mode's pixel-art/dungeon skin. `AcademyHub.jsx` currently reuses the same `Pixel*` component kit and `arcane`/`stone` styling as Quest mode -- build (or reuse from a plain component set) an Academy/Admin-specific look so the default landing does not read as part of the dungeon game, and confine `Pixel*`/pixel-art styling to Quest's own routes.
 - [ ] Add an end-to-end browser test covering Academy → each of four domains → room renders → one answer submits → progress returns.
 - [ ] Add browser tests for refresh, back navigation, double submit, missing API, empty data and a second learner.
 - [ ] Finish a clean frontend production build in CI; do not use old `.next` output as evidence.

@@ -153,7 +153,7 @@ Lanes 1 and 6 start immediately against frozen fixtures. They do not wait idle f
 **Immediate package**
 
 - Fix dynamic dungeon UUID routing and remove DSA-only client filtering.
-- Build the professional learner/admin navigation; make Quest an optional practice action.
+- Build the professional learner/admin navigation with its own plain, non-game visual identity, distinct from Quest mode's `Pixel*`/pixel-art skin (currently reused by `AcademyHub.jsx`, the default landing -- see `SIH26101_MASTER_CHECKLIST.md` §1). Make Quest an optional, opt-in practice action, never the default startup surface.
 - Display `LIVE`, `SIMULATED`, `CATALOGUE`, `PROVISIONAL` and `NO EVIDENCE` states.
 - Deliver loading, empty, error, offline and reset states.
 

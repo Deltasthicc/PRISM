@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="SIH Learning Tool AI Services", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="PRISM AI Services", version="1.0.0", lifespan=lifespan)
 
 # This service is only ever called server-to-server (by backend/services/ai_client.py
 # over httpx), never from a browser, so there is no session/cookie to carry --
@@ -47,7 +47,7 @@ app.include_router(ai_router)
 
 @app.get("/")
 async def root() -> dict:
-    return {"message": "SIH Learning Tool AI layer is running"}
+    return {"message": "PRISM AI layer is running"}
 
 
 @app.get("/health")

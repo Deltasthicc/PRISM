@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Persistent project guidance for Claude Code working in `SIHLearningTool`.
+Persistent project guidance for Claude Code working on `PRISM`.
 
 ## Required read order
 
@@ -18,7 +18,7 @@ The problem-statement capture is persisted at `docs/SIH26101_PROBLEM_STATEMENT.m
 
 ## Product definition
 
-The final name is not chosen; use **SIH Learning Tool** as a working name and ask before creating a new user-facing brand.
+The project's name is finalized: **PRISM** (Personalized Readiness Intelligence & Skill Mapping). Use the short form "PRISM" in nearly all user-facing and code contexts; spell out the full name only where establishing what the acronym stands for (e.g. a README/landing first mention).
 
 The user-supplied SIH26101 statement describes a MoSPI/DIID Skill Intelligence and Learning Platform for India’s Official Statistical System. It requires:
 

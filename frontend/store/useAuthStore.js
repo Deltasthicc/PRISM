@@ -65,8 +65,10 @@ export const useAuthStore = create(
         set({ error: null });
       },
 
-      // Client-side optimistic decrement — see TODO in useGameStore.revealHintLocally
-      // about adding a server-authoritative hint-spend endpoint.
+      // Client-side optimistic decrement, so the UI updates instantly instead
+      // of waiting on POST /game/hint/use's response. useGameStore.revealHint
+      // is what actually calls that server-authoritative endpoint; this just
+      // mirrors its effect on the locally-held player object.
       spendHintToken() {
         const p = get().player;
         if (!p || p.hint_tokens <= 0) return;
@@ -87,7 +89,7 @@ export const useAuthStore = create(
       },
     }),
     {
-      name: 'codecrypt-auth',
+      name: 'prism-auth',
       // Persist display data only; the API adapter revalidates the player on load.
       partialize: (s) => ({ player: s.player, isAuthenticated: s.isAuthenticated }),
     }

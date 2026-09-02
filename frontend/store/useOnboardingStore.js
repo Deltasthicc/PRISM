@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 
-const SEEN_KEY = 'codecrypt_onboarding_seen';
+const SEEN_KEY = 'prism_onboarding_seen';
 
 export const useOnboardingStore = create((set) => ({
   open: false,

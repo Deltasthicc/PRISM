@@ -1,6 +1,6 @@
-# SIH Learning Tool
+# PRISM
 
-*(working name — not yet finalized)*
+**P**ersonalized **R**eadiness **I**ntelligence & **S**kill **M**apping
 
 An explainable, cross-domain skill-intelligence platform built for **SIH26101** (MoSPI): it
 builds an experience-level-aware prototype competency profile, runs an explainable gap analysis against a target level,
@@ -202,7 +202,7 @@ delivery model is [`SIH26101_TEAM_ORCHESTRATION.md`](SIH26101_TEAM_ORCHESTRATION
 ## Architecture
 
 ```text
-SIH Learning Tool/
+PRISM/
 |-- frontend/   Next.js website — no direct AI or DB access
 |-- backend/    FastAPI server — API, SQLite demo/PostgreSQL profile, migrations, security + learning rules
 `-- services/   Optional standalone AI engine (real sentence-embedding grading, not used by default)
@@ -347,7 +347,7 @@ Full request/response schemas are served live at `http://localhost:8000/docs`.
 <summary><strong>Full directory structure</strong> (click to expand)</summary>
 
 ```text
-SIH Learning Tool/
+PRISM/
 ├── README.md
 ├── docs/
 │   └── archive/                    Pre-rename planning documents (see docs/archive/README.md)

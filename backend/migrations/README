@@ -1,5 +1,5 @@
-SIHLearningTool database migrations
-===================================
+PRISM database migrations
+==========================
 
 PostgreSQL is migration-managed. From backend/, set DATABASE_URL and run:
 

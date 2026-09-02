@@ -10,13 +10,13 @@
 #
 # Usage:
 #   docker compose -f docker-compose.dev.yml up -d --wait
-#   $env:DATABASE_URL='postgresql://sih_app:sih_dev_local_only@localhost:55432/sih_learning_tool'
+#   $env:DATABASE_URL='postgresql://prism_app:prism_dev_local_only@localhost:55432/prism'
 #   & ./.venv/Scripts/python.exe -m alembic upgrade head
 #   & ./.venv/Scripts/python.exe -m uvicorn main:app --reload --port 8000
 #
-# Keycloak admin console: http://localhost:8180 (admin/sih_dev_local_only).
-# Realm "sih-learning-tool" and its test users are auto-imported from
-# backend/keycloak/sih-realm-export.json on first boot -- see that folder's
+# Keycloak admin console: http://localhost:8180 (admin/prism_dev_local_only).
+# Realm "prism" and its test users are auto-imported from
+# backend/keycloak/prism-realm-export.json on first boot -- see that folder's
 # README for the exact test users/passwords and how to mint a real token.
 #
 # Credentials here are for local dev only -- never reused for anything real
@@ -24,15 +24,15 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: sih-learning-postgres
+    container_name: prism-postgres
     environment:
-      POSTGRES_USER: sih_app
-      POSTGRES_PASSWORD: sih_dev_local_only
-      POSTGRES_DB: sih_learning_tool
+      POSTGRES_USER: prism_app
+      POSTGRES_PASSWORD: prism_dev_local_only
+      POSTGRES_DB: prism
     ports:
       - "55432:5432"
     volumes:
-      - sih_learning_postgres_data:/var/lib/postgresql/data
+      - prism_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 2s
@@ -42,16 +42,16 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.7.2
-    container_name: sih-learning-keycloak
+    container_name: prism-keycloak
     command: start-dev --import-realm
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: sih_dev_local_only
+      KC_BOOTSTRAP_ADMIN_PASSWORD: prism_dev_local_only
       KC_HEALTH_ENABLED: "true"
     ports:
       - "8180:8080"
     volumes:
-      - ./keycloak/sih-realm-export.json:/opt/keycloak/data/import/sih-realm-export.json:ro
+      - ./keycloak/prism-realm-export.json:/opt/keycloak/data/import/prism-realm-export.json:ro
     healthcheck:
       # Keycloak's health endpoint lives on the management port (9000), not
       # the main port (8080) -- verified directly against this image; the
@@ -64,4 +64,4 @@ services:
       start_period: 20s
 
 volumes:
-  sih_learning_postgres_data:
+  prism_postgres_data:

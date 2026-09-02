@@ -20,7 +20,7 @@ db/database.py's own migration-gated-startup policy, which is SQLite-exempt
 for the same reason).
 
 Every test creates its own disposable PostgreSQL database (never the shared
-`sih_learning_tool` dev database), migrates it to the real Alembic head via
+`prism` dev database), migrates it to the real Alembic head via
 a real `alembic` subprocess (the same mechanism test_core_migrations.py
 uses for SQLite), and drops it afterward -- so a run of this file never
 leaves state behind for the next run or for a human using the dev database
@@ -99,7 +99,7 @@ from security.retention import RetentionPolicy
 BACKEND_DIRECTORY = Path(__file__).resolve().parents[1]
 # Same documented local docker-compose.dev.yml credentials already relied on
 # (as a URL literal, never a live connection) by test_core_backup_restore.py.
-_ADMIN_DATABASE_URL = "postgresql+psycopg://sih_app:sih_dev_local_only@localhost:55432/postgres"
+_ADMIN_DATABASE_URL = "postgresql+psycopg://prism_app:prism_dev_local_only@localhost:55432/postgres"
 CATEGORY = "retain_append_only_security_log_duration_policy_pending"
 PACKAGE_V_DOWN_REVISION = "036de46dd515"  # the Package U revision Package V retires DELETE-rejection from
 
@@ -223,7 +223,7 @@ def _disposable_postgres_database(*, migrate: bool = True, _name_holder: dict | 
             _name_holder["name"] = database_name
 
         database_url = normalize_database_url(
-            f"postgresql://sih_app:sih_dev_local_only@localhost:55432/{database_name}"
+            f"postgresql://prism_app:prism_dev_local_only@localhost:55432/{database_name}"
         )
         if migrate:
             _run_alembic(database_url, "upgrade", "head")

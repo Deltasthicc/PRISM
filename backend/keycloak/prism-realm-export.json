@@ -1,5 +1,5 @@
 {
-  "realm": "sih-learning-tool",
+  "realm": "prism",
   "enabled": true,
   "sslRequired": "none",
   "registrationAllowed": false,
@@ -34,12 +34,12 @@
   },
   "clients": [
     {
-      "clientId": "sih-backend-dev",
-      "name": "SIH Learning Tool backend (local dev only)",
+      "clientId": "prism-backend-dev",
+      "name": "PRISM backend (local dev only)",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": false,
-      "secret": "sih_dev_local_only_client_secret",
+      "secret": "prism_dev_local_only_client_secret",
       "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": true,
@@ -49,12 +49,12 @@
       ],
       "protocolMappers": [
         {
-          "name": "sih-backend-audience",
+          "name": "prism-backend-audience",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-audience-mapper",
           "consentRequired": false,
           "config": {
-            "included.client.audience": "sih-backend-dev",
+            "included.client.audience": "prism-backend-dev",
             "id.token.claim": "false",
             "access.token.claim": "true"
           }
@@ -71,7 +71,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "sih_dev_local_only",
+          "value": "prism_dev_local_only",
           "temporary": false
         }
       ],
@@ -90,7 +90,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "sih_dev_local_only",
+          "value": "prism_dev_local_only",
           "temporary": false
         }
       ],
@@ -109,7 +109,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "sih_dev_local_only",
+          "value": "prism_dev_local_only",
           "temporary": false
         }
       ],
@@ -128,7 +128,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "sih_dev_local_only",
+          "value": "prism_dev_local_only",
           "temporary": false
         }
       ],
@@ -147,7 +147,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "sih_dev_local_only",
+          "value": "prism_dev_local_only",
           "temporary": false
         }
       ],
@@ -166,7 +166,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "sih_dev_local_only",
+          "value": "prism_dev_local_only",
           "temporary": false
         }
       ],
@@ -185,7 +185,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "sih_dev_local_only",
+          "value": "prism_dev_local_only",
           "temporary": false
         }
       ],

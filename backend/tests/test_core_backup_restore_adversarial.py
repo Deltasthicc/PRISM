@@ -23,10 +23,10 @@ from scripts.backup_restore import (
 
 
 REAL_URL = (
-    "postgresql://sih_app:sih_dev_local_only@localhost:55432/"
-    "sih_learning_tool"
+    "postgresql://prism_app:prism_dev_local_only@localhost:55432/"
+    "prism"
 )
-CONTAINER = "sih-learning-postgres"
+CONTAINER = "prism-postgres"
 
 
 def _is_docker_cp(command: list[str]) -> bool:

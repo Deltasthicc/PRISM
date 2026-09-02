@@ -33,8 +33,8 @@ MAX_CONTEXT_COMPONENT_BYTES = 255
 
 _KEY_ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
 _BASE64URL_PATTERN = re.compile(r"[A-Za-z0-9_-]+={0,2}")
-_AAD_PREFIX = b"sih-learning-tool:encrypted-envelope:v1\x00"
-_CONTEXT_PREFIX = b"sih-learning-tool:encryption-context:v1\x00"
+_AAD_PREFIX = b"prism:encrypted-envelope:v1\x00"
+_CONTEXT_PREFIX = b"prism:encryption-context:v1\x00"
 _ENVELOPE_FIELDS = frozenset(
     {"version", "algorithm", "key_id", "nonce_b64", "ciphertext_b64"}
 )

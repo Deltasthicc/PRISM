@@ -22,18 +22,18 @@ from scripts.backup_restore import (
     restore_backup,
 )
 
-REAL_URL = "postgresql://sih_app:sih_dev_local_only@localhost:55432/sih_learning_tool"
+REAL_URL = "postgresql://prism_app:prism_dev_local_only@localhost:55432/prism"
 
 
 def test_connection_parts_extracts_from_a_postgres_url():
     username, password, host, port, dbname = _connection_parts(
-        "postgresql://sih_app:sih_dev_local_only@localhost:55432/sih_learning_tool"
+        "postgresql://prism_app:prism_dev_local_only@localhost:55432/prism"
     )
-    assert username == "sih_app"
-    assert password == "sih_dev_local_only"
+    assert username == "prism_app"
+    assert password == "prism_dev_local_only"
     assert host == "localhost"
     assert port == 55432
-    assert dbname == "sih_learning_tool"
+    assert dbname == "prism"
 
 
 def test_connection_parts_rejects_sqlite():
@@ -50,8 +50,8 @@ def test_restore_backup_rejects_a_missing_file(tmp_path):
     missing = tmp_path / "does-not-exist.pgdump"
     with pytest.raises(BackupRestoreError, match="does not exist"):
         restore_backup(
-            "sih-learning-postgres",
-            "postgresql://sih_app:x@localhost:55432/sih_learning_tool",
+            "prism-postgres",
+            "postgresql://prism_app:x@localhost:55432/prism",
             missing,
         )
 
@@ -66,8 +66,8 @@ def test_restore_backup_checks_file_existence_before_touching_docker(tmp_path, m
     missing = tmp_path / "nope.pgdump"
     with pytest.raises(BackupRestoreError):
         restore_backup(
-            "sih-learning-postgres",
-            "postgresql://sih_app:x@localhost:55432/sih_learning_tool",
+            "prism-postgres",
+            "postgresql://prism_app:x@localhost:55432/prism",
             missing,
         )
 
@@ -95,12 +95,12 @@ def test_connection_parts_rejects_a_mismatched_port_on_localhost():
     # documented local-compose mapping (55432) must not be silently accepted
     # and quietly run against the container's own database anyway.
     with pytest.raises(BackupRestoreError, match="does not match the documented local-compose port"):
-        _connection_parts("postgresql://sih_app:pw@localhost:9999/sih_learning_tool")
+        _connection_parts("postgresql://prism_app:pw@localhost:9999/prism")
 
 
 def test_connection_parts_rejects_a_missing_port():
     with pytest.raises(BackupRestoreError, match="does not match the documented local-compose port"):
-        _connection_parts("postgresql://sih_app:pw@localhost/sih_learning_tool")
+        _connection_parts("postgresql://prism_app:pw@localhost/prism")
 
 
 def test_redact_hides_the_pgpassword_value():
@@ -145,8 +145,8 @@ def test_restore_backup_rejects_an_invalid_archive_without_running_clean(monkeyp
     dump = Path(__file__)  # any existing file; content is irrelevant, _run is faked
     with pytest.raises(BackupRestoreError, match="not a valid pg_dump custom-format archive"):
         restore_backup(
-            "sih-learning-postgres",
-            "postgresql://sih_app:x@localhost:55432/sih_learning_tool",
+            "prism-postgres",
+            "postgresql://prism_app:x@localhost:55432/prism",
             dump,
         )
     # docker cp + the --list preflight ran; the destructive restore did not,
@@ -169,8 +169,8 @@ def test_restore_backup_does_not_let_cleanup_failure_mask_the_primary_error(monk
     dump = Path(__file__)
     with pytest.raises(BackupRestoreError, match="PRIMARY pg_restore failure"):
         restore_backup(
-            "sih-learning-postgres",
-            "postgresql://sih_app:x@localhost:55432/sih_learning_tool",
+            "prism-postgres",
+            "postgresql://prism_app:x@localhost:55432/prism",
             dump,
         )
 
@@ -187,7 +187,7 @@ def test_restore_backup_surfaces_a_cleanup_failure_after_a_successful_restore(mo
     monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
     dump = Path(__file__)
     with pytest.raises(BackupRestoreError, match="cleanup failed after a successful restore"):
-        restore_backup("sih-learning-postgres", REAL_URL, dump)
+        restore_backup("prism-postgres", REAL_URL, dump)
 
 
 def test_restore_backup_command_includes_atomicity_flags(monkeypatch):
@@ -201,7 +201,7 @@ def test_restore_backup_command_includes_atomicity_flags(monkeypatch):
 
     monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
     dump = Path(__file__)
-    restore_backup("sih-learning-postgres", REAL_URL, dump)
+    restore_backup("prism-postgres", REAL_URL, dump)
 
     assert "--exit-on-error" in captured["command"]
     assert "--single-transaction" in captured["command"]
@@ -218,12 +218,12 @@ def test_restore_backup_passes_password_via_environment_not_argv(monkeypatch):
 
     monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
     dump = Path(__file__)
-    restore_backup("sih-learning-postgres", REAL_URL, dump)
+    restore_backup("prism-postgres", REAL_URL, dump)
 
     joined = " ".join(captured["command"])
-    assert "sih_dev_local_only" not in joined
+    assert "prism_dev_local_only" not in joined
     assert "-e" in captured["command"] and "PGPASSWORD" in captured["command"]
-    assert captured["env"]["PGPASSWORD"] == "sih_dev_local_only"
+    assert captured["env"]["PGPASSWORD"] == "prism_dev_local_only"
 
 
 def test_create_backup_passes_password_via_environment_not_argv(monkeypatch, tmp_path):
@@ -239,12 +239,12 @@ def test_create_backup_passes_password_via_environment_not_argv(monkeypatch, tmp
     output = tmp_path / "out.pgdump"
     output.write_bytes(b"fake dump bytes")  # create_backup checks the file is non-empty afterward
 
-    create_backup("sih-learning-postgres", REAL_URL, output)
+    create_backup("prism-postgres", REAL_URL, output)
 
     joined = " ".join(captured["command"])
-    assert "sih_dev_local_only" not in joined
+    assert "prism_dev_local_only" not in joined
     assert "-e" in captured["command"] and "PGPASSWORD" in captured["command"]
-    assert captured["env"]["PGPASSWORD"] == "sih_dev_local_only"
+    assert captured["env"]["PGPASSWORD"] == "prism_dev_local_only"
 
 
 def test_create_backup_cleans_up_the_container_dump_on_a_docker_cp_failure(monkeypatch, tmp_path):
@@ -258,7 +258,7 @@ def test_create_backup_cleans_up_the_container_dump_on_a_docker_cp_failure(monke
 
     monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
     with pytest.raises(BackupRestoreError, match="docker cp failed"):
-        create_backup("sih-learning-postgres", REAL_URL, tmp_path / "wont-be-created.pgdump")
+        create_backup("prism-postgres", REAL_URL, tmp_path / "wont-be-created.pgdump")
 
     joined = [" ".join(c) for c in calls]
     assert any("rm -f" in c for c in joined), "the leftover container-side dump must be cleaned up"
@@ -275,7 +275,7 @@ def test_create_backup_surfaces_a_cleanup_failure_after_a_successful_backup(monk
     output.write_bytes(b"fake dump bytes")
 
     with pytest.raises(BackupRestoreError, match="cleanup failed after a successful backup"):
-        create_backup("sih-learning-postgres", REAL_URL, output)
+        create_backup("prism-postgres", REAL_URL, output)
 
 
 def test_restore_backup_cleans_up_on_a_partial_copy_into_the_container(monkeypatch):
@@ -294,7 +294,7 @@ def test_restore_backup_cleans_up_on_a_partial_copy_into_the_container(monkeypat
     monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
     dump = Path(__file__)
     with pytest.raises(BackupRestoreError, match="docker cp into container failed"):
-        restore_backup("sih-learning-postgres", REAL_URL, dump)
+        restore_backup("prism-postgres", REAL_URL, dump)
 
     joined = [" ".join(c) for c in calls]
     assert any("cp" in c for c in joined), "the inbound copy must actually have been attempted"
@@ -330,8 +330,8 @@ def test_two_concurrent_create_backup_calls_use_distinct_container_paths(monkeyp
     output_a.write_bytes(b"fake dump bytes a")
     output_b.write_bytes(b"fake dump bytes b")
 
-    create_backup("sih-learning-postgres", REAL_URL, output_a)
-    create_backup("sih-learning-postgres", REAL_URL, output_b)
+    create_backup("prism-postgres", REAL_URL, output_a)
+    create_backup("prism-postgres", REAL_URL, output_b)
 
     assert len(captured_paths) == 2
     assert captured_paths[0] != captured_paths[1], (
@@ -351,8 +351,8 @@ def test_two_concurrent_restore_backup_calls_use_distinct_container_paths(monkey
     monkeypatch.setattr("scripts.backup_restore._run", _fake_run)
     dump = Path(__file__)
 
-    restore_backup("sih-learning-postgres", REAL_URL, dump)
-    restore_backup("sih-learning-postgres", REAL_URL, dump)
+    restore_backup("prism-postgres", REAL_URL, dump)
+    restore_backup("prism-postgres", REAL_URL, dump)
 
     assert len(captured_paths) == 2
     assert captured_paths[0] != captured_paths[1], (

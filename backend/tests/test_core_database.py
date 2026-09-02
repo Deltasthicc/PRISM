@@ -17,20 +17,20 @@ def test_sqlite_database_url_is_unchanged():
 
 def test_standard_postgresql_url_selects_psycopg_3():
     assert (
-        normalize_database_url("postgresql://user:pass@db.example/skillquest")
-        == "postgresql+psycopg://user:pass@db.example/skillquest"
+        normalize_database_url("postgresql://user:pass@db.example/prism")
+        == "postgresql+psycopg://user:pass@db.example/prism"
     )
 
 
 def test_legacy_postgres_url_selects_psycopg_3():
     assert (
-        normalize_database_url("postgres://user:pass@db.example/skillquest")
-        == "postgresql+psycopg://user:pass@db.example/skillquest"
+        normalize_database_url("postgres://user:pass@db.example/prism")
+        == "postgresql+psycopg://user:pass@db.example/prism"
     )
 
 
 def test_explicit_postgresql_driver_is_preserved():
-    url = "postgresql+psycopg://user:pass@db.example/skillquest"
+    url = "postgresql+psycopg://user:pass@db.example/prism"
     assert normalize_database_url(url) == url
 
 

@@ -3151,3 +3151,44 @@ FINAL GATES AND DELIVERY
   continuity. A stale remote feature ref,
   `origin/codex/lane-3-competency/role-target-v1`, predates the rebrand/game fixes and must be
   rebased onto its updated bootstrap or explicitly retired before it can safely merge.
+
+- 2026-09-02 — Codex — **`cb46f29` independently live-verified on a clean PRISM stack; narrow
+  review of Claude's raid regression requests one strengthening pass.**
+
+  The verified legacy Compose resources were deliberately reset because they occupied ports 55432
+  and 8180 and contained no players, dungeons or identity bindings. The old containers
+  `sih-learning-postgres`/`sih-learning-keycloak` and disposable volume
+  `backend_sih_learning_postgres_data` were removed and are not recoverable; fresh, healthy
+  `prism-postgres`/`prism-keycloak` services and `backend_prism_postgres_data` now exist. A fresh
+  PostgreSQL migration ran all five revisions to `4631f204d4ba (head)` and `alembic check` returned
+  `No new upgrade operations detected`. PRISM Keycloak discovery and a documented-user token flow
+  succeeded; the old realm returns 404. The corrected backup CLI was then invoked for both backup
+  and restore **without `--container`** and produced/restored a real 37,279-byte archive, proving
+  the default now targets the renamed service. The temporary archive was removed.
+
+  Full backend suite under the repository's intended SQLite-default unit profile, with the opt-in
+  PostgreSQL server reachable: **348 passed, 2 warnings in 34.94s**. For transparency, a prior run
+  with a globally forced PostgreSQL `DATABASE_URL` produced **1 failed, 347 passed** because
+  `test_defaults_to_true_on_the_sqlite_test_process` explicitly requires the default SQLite test
+  process; this was a test-profile mismatch, not represented as a passing gate. Focused backup
+  suite remained **25 passed**. Main frontend `npm run lint` and `npm run build` both passed (14
+  routes generated). The ignored local `frontend/.env.local` still contained the inert deleted flag
+  `NEXT_PUBLIC_USE_MOCK=false`; Codex removed only that local line without reading or changing any
+  secret and there is intentionally no commit for ignored local state.
+
+  **Review of Claude main commit `1946351`: conditionally accepted, strengthening requested before
+  propagation.** The two real HTTP/database tests correctly kill the old flat-1 damage bug and
+  prove incorrect answers deal zero. However, the proportional test supplies the internally
+  inconsistent pair `verdict="correct", score=0.5`; use `verdict="partial"`. Also assert the join
+  response establishes one-member HP at `RAID_BOSS_HP_PER_MEMBER == 270`, the 100-damage partial
+  answer does not complete that raid, and (preferably) two active members establish 540 HP. This
+  covers the HP rescaling shipped in the same fix, not only damage arithmetic. The test was added to
+  legacy `test_combat_model.py` despite `tests/conftest.py` assigning that file as read-only; this
+  explicit cross-lane user request can authorize the exception, but it must be acknowledged or the
+  new checks should move to an owner-scoped integration file. Do not propagate `1946351` as fully
+  reviewed until these points are resolved.
+
+  Additional Claude-owned current-doc cleanup: `CODEX.md` and `CLAUDE.md` hard-code the old local
+  checkout directory `C:\\Users\\shash\\Downloads\\SIHLearningTool`; replace those commands with
+  repository-relative instructions so a fresh PRISM clone is portable. The bitmap-logo and false
+  `/academy` routing claims remain the P1 blockers already assigned above.

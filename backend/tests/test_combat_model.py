@@ -44,6 +44,7 @@ from models.question import Question  # noqa: F401
 from models.submission import AnswerSubmission  # noqa: F401
 from models.accuracy_history import AccuracyHistory  # noqa: F401
 import routes.game as game_routes
+from services.game_logic import calculate_damage
 from services.monsters import monster_name_for
 
 
@@ -466,3 +467,74 @@ def test_refill_hints_restores_to_max_from_zero(client):
 
     after = client.get(f"/game/player/{player_id}").json()
     assert after["hint_tokens"] == game_routes.MAX_HINT_TOKENS
+
+
+def _create_guild_with_member(client, creator_username="raid-leader"):
+    player_id = client.post("/game/player/create", json={"username": creator_username}).json()["player_id"]
+    guild = client.post(
+        "/game/guild/create", json={"name": f"guild-{creator_username}", "creator_player_id": player_id}
+    ).json()
+    return guild["guild_id"], player_id
+
+
+def _insert_question(client, *, max_damage):
+    db = client._SessionLocal()
+    question = Question(
+        topic="arrays", difficulty="medium", question_text="q", expected_answer="a",
+        max_damage=max_damage,
+    )
+    db.add(question)
+    db.commit()
+    question_id = question.question_id
+    db.close()
+    return question_id
+
+
+def test_raid_damage_is_score_scaled_not_a_flat_count_per_correct_answer(client):
+    """Regression for the flat "1 damage per correct answer" raid bug fixed
+    alongside the PRISM rebrand: submit_raid_answer must deal
+    calculate_damage(question.max_damage, score) -- the same continuous,
+    score-scaled model the solo dungeon uses -- never a flat 1 (or 0) per
+    verdict. A max_damage=200 question answered at score=0.5 must deal 100
+    damage, not 1.
+    """
+    guild_id, player_id = _create_guild_with_member(client)
+    client.post("/game/guild/raid/join", json={"guild_id": guild_id, "player_id": player_id})
+    question_id = _insert_question(client, max_damage=200)
+
+    client.verdict_box.update({"verdict": "correct", "score": 0.5})
+    resp = client.post(
+        "/game/guild/raid/submit",
+        json={
+            "guild_id": guild_id, "player_id": player_id, "question_id": question_id,
+            "player_answer": "partial-strength answer",
+        },
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    expected_damage = calculate_damage(200, 0.5)
+    assert expected_damage == 100  # sanity: pins the formula this test relies on
+    assert body["raid_boss_damage"] == expected_damage
+    assert body["raid_boss_damage"] != 1  # the old flat-per-correct-answer bug's exact wrong value
+
+
+def test_raid_damage_is_zero_for_an_incorrect_verdict_regardless_of_score(client):
+    """calculate_damage is only reached for a non-"incorrect" verdict; an
+    "incorrect" verdict must deal zero raid damage even if the judge somehow
+    returned a nonzero score alongside it."""
+    guild_id, player_id = _create_guild_with_member(client)
+    client.post("/game/guild/raid/join", json={"guild_id": guild_id, "player_id": player_id})
+    question_id = _insert_question(client, max_damage=200)
+
+    client.verdict_box.update({"verdict": "incorrect", "score": 0.9})
+    resp = client.post(
+        "/game/guild/raid/submit",
+        json={
+            "guild_id": guild_id, "player_id": player_id, "question_id": question_id,
+            "player_answer": "wrong answer",
+        },
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["raid_boss_damage"] == 0

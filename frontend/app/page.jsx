@@ -29,7 +29,7 @@ export default function LandingPage() {
             asset, not a candidate for next/image's remote optimization pipeline */}
         <img
           src="/sprites/bats/logo.png"
-          alt="SIH Learning Tool"
+          alt="PRISM"
           className="mx-auto"
           style={{ imageRendering: 'pixelated', maxWidth: '45%', height: 'auto' }}
         />

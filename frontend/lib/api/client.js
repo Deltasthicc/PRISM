@@ -5,7 +5,7 @@ import { API_BASE_URL } from '../config';
 import { TOPIC_GRAPH, TOPIC_LABELS } from '../statMap';
 import { monsterForTopic } from '../sprites/monsterSprites';
 
-const SESSION_KEY = 'sih-learning-tool-api-session';
+const SESSION_KEY = 'prism-api-session';
 
 let live = {
   playerId: null,

@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 
-const XP_PER_LEVEL = 150;
+// Mirrors backend/services/game_logic.py's calculate_level: floor(total_xp / 100) + 1.
+const XP_PER_LEVEL = 100;
 
 export default function XPBar({ level, totalXp }) {
   const xpIntoLevel = totalXp % XP_PER_LEVEL;

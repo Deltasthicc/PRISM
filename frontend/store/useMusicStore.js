@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 
-const STORAGE_KEY = 'codecrypt_music_enabled';
+const STORAGE_KEY = 'prism_music_enabled';
 
 function loadInitial() {
   if (typeof window === 'undefined') return false;

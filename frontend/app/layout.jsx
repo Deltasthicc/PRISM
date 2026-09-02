@@ -21,7 +21,7 @@ const vt323 = VT323({
 });
 
 export const metadata = {
-  title: 'SIH Learning Tool',
+  title: 'PRISM',
   description: 'A cross-domain skill-intelligence platform with an adaptive practice RPG built in.',
 };
 

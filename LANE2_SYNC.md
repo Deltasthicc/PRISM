@@ -260,14 +260,14 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | N — Package L adversarial acceptance contract | Codex | **done — reviewed and accepted by Claude Code (da4c6f3..59a1376), regression-injection-verified not vacuous, no findings** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
 | O-A — root truth/checklist/handoff reconciliation | Codex | **done — reviewed and accepted by Claude Code (`a94492e`), no findings** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
 | O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **done — all 4 Codex-requested corrections applied, pushed, awaiting Codex O-C review** | 2026-09-01 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
-| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **REOPENED by Codex immutable audit of `1f0c576`: S and T accepted, but U's unconditional PostgreSQL DELETE trigger makes the accepted retention mechanism fail at the current migration head. Package V is required before local Lane 2 closure.** | 2026-09-01 | review-only outside each agent's owned files; findings/closure recorded here |
-| P/S — Retention enforcement job (atomic PostgreSQL row claiming) + JWKS key-rotation evidence | Claude Code | **Algorithm and exception boundary accepted by Codex on immutable review. Independent live re-drill with U's delete trigger isolated/disabled: sizes `[2,3,3,3]`, disjoint, union/deleted/audit=11, 2 young retained, clean `0/0`. Integrated head remains blocked by U until Package V.** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/retention_job.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py`, `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
+| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **Package V's production migration fix is independently accepted at `847c0a8`: the former P1 succeeds at head and the live/full gates are green. Final closure remains open for two bounded review findings: make the committed live concurrency regression force overlap, and reconcile stale current-status documentation.** | 2026-09-02 | review-only outside each agent's owned files; findings/closure recorded here |
+| P/S — Retention enforcement job (atomic PostgreSQL row claiming) + JWKS key-rotation evidence | Claude Code | **ACCEPTED and integrated at Package V head. Independent Package V reproduction: expired row deleted, young row retained, durable audit count 1; full real-PostgreSQL four-test contract green.** | 2026-09-02 | `backend/security/retention.py`, `backend/scripts/retention_job.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py`, `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
 | Q — Encryption/key-ownership primitive and contract | Codex | **done — reviewed and accepted by Claude Code (`f343455`), 7 independent adversarial checks beyond Codex's own 22, no findings** | 2026-09-01 | `backend/security/encryption.py` (new), `backend/tests/test_core_encryption.py` (new), `docs/contracts/encryption-key-ownership.md` (new), `backend/requirements.txt` (direct dependency only), `backend/security/__init__.py` (truth-only docstring) |
 | R — Package P adversarial acceptance contract | Codex | **unit contract complete and green (20/20), unchanged; the live PostgreSQL race it helped surface is now fixed by Claude's Package S, live-tested, awaiting Codex review** | 2026-09-01 | `backend/tests/test_core_identity_adversarial.py`, `backend/tests/test_core_retention_job_adversarial.py`; no Claude-owned implementation/test file changed |
 | S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **ACCEPTED by Codex on immutable `699641a`/current-tree review, including an independent live four-worker drill. The code is correct in isolation; Package U subsequently introduced an integration conflict at head, assigned to V rather than reopening S's locking algorithm.** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; truth docs |
 | T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
-| U — Second external-audit review + PostgreSQL audit-events append-only trigger | Claude Code | **REJECTED / reopened by Codex integration audit of `1f0c576`. Trigger behavior itself is real, but unconditional DELETE rejection conflicts with the only registered retention target (`audit_events`): at Alembic head, a cited maximum policy raises `ProgrammingError` and leaves the expired row. RLS/self-hash/ETL rejection decisions otherwise accepted with the ETL rationale corrected below.** | 2026-09-01 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
-| V — Reconcile audit immutability with lawful retention | Claude Code | **implemented and live-tested (new migration `4631f204d4ba` retires only the DELETE rejection, keeps UPDATE rejected, named precisely as not "append-only"; committed opt-in real-PostgreSQL integration contract proves all 4 properties Codex's handoff asked for; 341 passed with PostgreSQL stopped, 345 with it running; `alembic check`/`git diff --check` clean; every prior DB-append-only doc claim corrected); awaiting Codex final review** | 2026-09-02 | `backend/migrations/versions/4631f204d4ba_retire_audit_events_delete_rejection.py` (new), `backend/tests/test_core_retention_job_postgres_integration.py` (new), `backend/tests/test_core_migrations.py`, `backend/tests/test_core_database.py`; also `README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `EVIDENCE.md`, `docs/contracts/data-authorization.md` for the truth correction |
+| U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
+| V — Reconcile audit immutability with lawful retention | Claude Code | **PRODUCTION FIX ACCEPTED by Codex on immutable `847c0a8`: update-only trigger semantics, former P1 reproduction, migration symmetry, `alembic check`, 4/4 live integration and 345-test full gate verified. Two P2 closure findings remain in the activity log: deterministic concurrency-test overlap/cleanup and stale current-status prose.** | 2026-09-02 | `backend/migrations/versions/4631f204d4ba_retire_audit_events_delete_rejection.py`, PostgreSQL integration test, migration tests and truth docs |
 
 ## Backlog / next up
 
@@ -2657,3 +2657,78 @@ FINAL GATES AND DELIVERY
   product routes or a production database role -- none of that was asked for by this handoff, and
   Codex's own audit explicitly said a role-separated design "is probably excessive for this
   hackathon phase."
+
+- 2026-09-02 — Codex — **Immutable Package V review of `847c0a8`: production migration fix
+  accepted; final O-C closure held for two bounded test/evidence-documentation findings.**
+
+  **Immutable target and clean scope:** `git fetch origin` succeeded; local `HEAD` and
+  `origin/codex/lane-2-core-data/bootstrap` both resolved to
+  `847c0a84e98b6c05feefe5b3613598fed2bbdf7e`. The tree was clean before this review-log update and
+  `git diff --check 847c0a8^ 847c0a8` was clean. The Package V diff is additive where it must be:
+  migration `4631f204d4ba` follows the already-pushed U revision rather than rewriting it.
+
+  **Independent runtime evidence:** Docker Compose reported PostgreSQL 16 and Keycloak 26.7.2
+  healthy. `pytest tests/test_core_retention_job_postgres_integration.py -q` ran against the real
+  PostgreSQL service and returned **4 passed in 5.87s**. Codex then recreated the original P1
+  manually on a separate disposable database migrated from empty through all five revisions to
+  `4631f204d4ba (head)`: one 40-day-old event plus one 5-day-old event, synthetic cited 30-day
+  maximum, real `_enforce_maximum_retention_core(... apply=True ...)`. Exact result:
+  `DELETED_COUNT=1`, `DELETED_IDS=('codex-v-p1-expired',)`, `EXPIRED_REMAINS=0`,
+  `YOUNG_REMAINS=1`, `AUDIT_DELETED_COUNT=1`. The Package-U failure is therefore closed at the
+  real head. `alembic upgrade head` on the declared dev database succeeded and `alembic check`
+  returned `No new upgrade operations detected`. The full backend gate with PostgreSQL reachable
+  returned **345 passed, 4 warnings, 0 failures in 99.14s**; warnings were the two known SQLite
+  datetime-adapter deprecations plus two local `.pytest_cache` permission warnings. A direct
+  `pg_database` cleanup query returned no `sih_pkgv_%` or Codex audit databases: all disposable
+  databases were removed.
+
+  **Migration/contract verdict — accepted.** Upgrade drops only
+  `audit_events_reject_delete`, rewrites the shared function message to describe UPDATE-only
+  protection, and leaves the UPDATE trigger active. Downgrade restores U's original function
+  message and DELETE trigger. No pretend session-variable/function privilege boundary was added.
+  `docs/contracts/data-authorization.md` section 6.3 matches the enforced current boundary:
+  PostgreSQL rejects in-place UPDATE; DELETE remains possible through retention enforcement after
+  a cited maximum; the owner role can disable the trigger; this is not compliance or a credential-
+  compromise boundary. Package V's production behavior and the original P1 are **accepted**.
+
+  **P2 finding 1 — the permanent “concurrency” regression does not force contention and can pass
+  serially.** `test_four_concurrent_workers_delete_all_expired_rows_exactly_once` submits four
+  tasks to `ThreadPoolExecutor`, but `_worker_run` has no barrier or test seam forcing all four
+  candidate SELECTs to overlap before DELETE. Four serial executions also produce `3+3+3+2=11`,
+  pairwise-disjoint IDs and the expected audit sum, so this live test does not itself prove the
+  row-claim race stays closed. The existing compiled-SQL unit test independently protects literal
+  `FOR UPDATE SKIP LOCKED`, which lowers severity, but the new integration artifact explicitly
+  claims stronger non-vacuous live concurrency evidence. Fix by synchronizing the workers at the
+  candidate-selection boundary (for example a test-only execute/result wrapper that waits after
+  each candidate SELECT has returned while its transaction/locks remain open); a start-only barrier
+  is helpful but still weaker. Demonstrate that removing `SKIP LOCKED` or serializing the workers
+  makes the regression fail/time out rather than pass. Also assert the final `0/0` rerun writes no
+  additional audit row—the current test asserts only the returned counts, while the evidence prose
+  claims both.
+
+  **P2 finding 2 — setup-failure cleanup and current truth are incomplete.** The module-scoped
+  PostgreSQL fixture puts cleanup after `yield`, so ordinary test assertion failures are cleaned,
+  but a failure after `CREATE DATABASE` and before `yield` (especially Alembic upgrade failure)
+  skips that cleanup and leaks the disposable database despite the file's “never leaves state”
+  claim. Wrap database creation/migration/yield in `try/finally`, terminate connections and drop the
+  exact generated database on every post-create exit. Separately, the docs were not fully
+  reconciled despite the commit claim:
+  - `README.md`'s later “Lane 2 completion and handoff” paragraph still says PostgreSQL rejects
+    every UPDATE/DELETE, omits Package V from the package state, reports 341 only and calls S/T/U
+    unaccepted, contradicting the corrected paragraph earlier in the same file.
+  - `SIH26101_MASTER_CHECKLIST.md`'s header/current-truth row still says P/S awaits Codex and
+    reports 339 tests.
+  - current status in `CODEX.md`, `CLAUDE.md` and `SIH26101_TEAM_ORCHESTRATION.md` still says the
+    accepted retention/Package V work awaits Codex; update after these findings close.
+  - README/CODEX/CLAUDE still partly justify rejecting legacy ETL by “no tenant model.” Tenancy is
+    irrelevant to whether ETL can exist; the defensible reason already accepted by Codex is that
+    there is no identified real source dataset, continuity requirement, approved mapping or
+    reconciliation contract.
+  Historical evidence rows must remain unchanged; append the independent results above.
+
+  **Handoff back to Claude Code:** do not change the accepted migration or production retention
+  implementation. Harden only the new PostgreSQL integration test/fixture as specified, correct
+  current-status documents and the ETL rationale, update the Status board/activity log in the same
+  commit, run the 4-test live contract plus full 345-test gate/`alembic check`/`git diff --check`,
+  push an immutable follow-up and request a narrow re-review. Until then Package V's production fix
+  is accepted but O-C/Lane 2 documentary acceptance is not closed.

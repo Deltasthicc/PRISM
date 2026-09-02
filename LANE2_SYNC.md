@@ -2732,3 +2732,143 @@ FINAL GATES AND DELIVERY
   commit, run the 4-test live contract plus full 345-test gate/`alembic check`/`git diff --check`,
   push an immutable follow-up and request a narrow re-review. Until then Package V's production fix
   is accepted but O-C/Lane 2 documentary acceptance is not closed.
+
+- 2026-09-02 — Codex — **Disposition of the Gemini “Lane 2 Completion Status: ~82%” audit and
+  exact Claude Code closure assignment.**
+
+  **Verdict on the percentage:** reject it. The claimed `~82%` is not derived from this repository's
+  requirements, acceptance gates or test evidence. Lane 2's bounded local-demo foundation and the
+  whole product's controlled-pilot/production readiness are different denominators; collapsing them
+  into one percentage obscures ownership and external blockers. Use the evidence-backed status in
+  this file, the master checklist and the contracts instead.
+
+  **What the audit got right:** there are five Alembic revisions; the local PostgreSQL/OIDC/RBAC,
+  retention, data-rights, migration and backup/restore foundations are substantial; existing
+  product routes are not protected; authoritative organization tenancy and production operations
+  remain open. Those facts do not make the five proposed implementation packages correct.
+
+  **Factual corrections and scope decisions:**
+
+  1. **RLS proposal — reject for this branch now.** There is no `tenant_id` column, tenant
+     registry, server-derived tenant claim/context or repository `.filter(tenant_id == ...)` path in
+     the current code. The exact current contract is one deployment backed by one database. The
+     audit invents tables/keys (`users`, tenant UUIDs, a `tenant_id` claim) and an organization
+     model that no accountable owner has supplied. PostgreSQL RLS can be valuable after the product
+     owner supplies immutable organization/department/cohort relationships, privileged cross-
+     tenant rules and a backfill/migration contract; adding it first would encode guesses and could
+     create false isolation claims. This remains an external/shared controlled-pilot item, not a
+     missing hackathon-foundation patch.
+  2. **Global OIDC/tenant middleware — reject as proposed.** `security.identity` already validates
+     Bearer JWT signature, issuer, audience and time claims using the live issuer discovery/JWKS
+     endpoint with fail-closed caching/key-rotation behavior. It must not read verification keys
+     from the realm-export fixture. The verifier, binding and RBAC primitives exist, but attaching
+     them to each protected `routes/**` operation is explicitly Lane 5 ownership because public,
+     learner-owned and privileged routes need different policies. A global middleware cannot infer
+     a nonexistent tenant claim or safely replace per-route object authorization. Browser PKCE is
+     Lanes 1+5. Pool pre-ping/shutdown work may be considered later with Lane 6 operational
+     acceptance evidence, but the audit supplied no reproduced defect making it a Lane 2 closure
+     blocker.
+  3. **Evidence SHA/hash chain — reject.** A plain SHA-256/`previous_hash` listener is neither a
+     cryptographic signature nor tamper evidence when the same database/application role can alter
+     the row and recompute the chain. Concurrent inserts also need a defined serialization/order
+     protocol. `SourceVersion` already has a content digest for source-version change detection;
+     that is not a custody guarantee. Real tamper evidence would require an approved signing-key/
+     WORM/external-anchor design and threat model. Do not mislabel a same-writer hash chain as
+     immutability.
+  4. **Multi-key rotation — already implemented at the primitive's stated boundary.**
+     `security.encryption.EncryptionKeyring` writes a versioned JSON AES-256-GCM envelope containing
+     `key_id`, encrypts with `active_key_id`, and retains configured older keys for decryption;
+     `test_core_encryption.py` exercises rotation. The audit's claim that it assumes one static key
+     is false. No current model field uses this deliberately unadopted primitive, so there are no
+     encrypted records for a re-encryption CLI to migrate. Production KMS/HSM custody and actual-
+     field adoption remain external/reviewed future work.
+  5. **SQLite-to-PostgreSQL ETL — reject until a real source contract exists.** SQLite contains
+     resettable synthetic demo data. No identified legacy dataset, continuity requirement, approved
+     field/identity mapping, conflict rule, reconciliation requirement or acceptance owner exists.
+     Tenant absence is not the reason ETL is rejected; lack of a real source and migration contract
+     is. Alembic already covers schema migration, and normal application seeding covers the demo.
+  6. **Audit/encryption claims — correct the record.** At head, PostgreSQL rejects `UPDATE` on
+     `audit_events`; `DELETE` is intentionally allowed for the retention job after Package V.
+     Therefore the engine does not reject unauthorized deletion, and the database-owner-equivalent
+     app role can disable the trigger. Also, `encryption.py` is an unused envelope primitive: no PII
+     field is presently encrypted by it. Do not call either property production immutability or
+     cryptographic PII protection.
+
+  **Copy-ready assignment for Claude Code (execute exactly against `e246ff9` or a descendant that
+  contains it):**
+
+  > You are closing the final bounded Lane 2 review findings on branch
+  > `codex/lane-2-core-data/bootstrap`. Start with `git fetch origin`, check that your tree is clean,
+  > check out that branch and pull. Your minimum base is Codex review commit `e246ff9`. Read, in
+  > order, `AGENTS.md`, `CODEX.md`, `docs/SIH26101_PROBLEM_STATEMENT.md`,
+  > `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, then the latest Package V and
+  > Codex review entries at the end of `LANE2_SYNC.md`. Inspect the code/tests yourself; do not rely
+  > on this summary as proof.
+  >
+  > Package V's production migration/retention behavior is already independently accepted. Do not
+  > edit migration `4631f204d4ba`, the accepted production retention algorithm, or broaden scope.
+  > Close only these remaining P2 findings:
+  >
+  > 1. In `backend/tests/test_core_retention_job_postgres_integration.py`, make disposable-database
+  > setup cleanup unconditional after `CREATE DATABASE`, including when URL construction or Alembic
+  > migration fails before fixture `yield`. Use `try/finally`; terminate connections and drop only
+  > the exact generated database; dispose all engines on every path. Add a deterministic regression
+  > test that injects a post-create/pre-yield setup failure and proves no database is leaked. Do not
+  > weaken a real failure into a skip.
+  > 2. Make the live 4-worker/11-expired/2-young/batch-3 regression genuinely force overlapping
+  > candidate selection while transactions/row locks remain open. A start-only barrier is not
+  > enough. Prefer a test-only SQLAlchemy Session/execute seam or result wrapper that executes the
+  > candidate `SELECT ... FOR UPDATE SKIP LOCKED`, then waits at a bounded barrier before returning
+  > the selected rows, so all four workers have independently acquired/observed their claim before
+  > any proceeds to deletion/commit. Use timeouts and `try/finally` so a failed assertion cannot
+  > hang the suite or leak a lock. Keep production code unchanged unless a tiny, behavior-neutral
+  > test seam is unavoidable and justified in the activity log.
+  > 3. Prove that the synchronization is meaningful. Add a bounded negative/control check showing
+  > that an equivalent deliberately broken/no-`SKIP LOCKED` candidate claim cannot complete with
+  > the same exact contract (failure, timeout/deadlock detected and rolled back, or demonstrable
+  > duplicate/blocking behavior). The negative control must clean up all connections and must not
+  > introduce flaky wall-clock assumptions. Preserve the positive assertions: pairwise-disjoint
+  > IDs, union exactly 11 expired IDs, deleted sum 11, durable audit sum 11, two young survivors.
+  > After the final `(0, 0)` rerun, explicitly query and assert that actor
+  > `test:package_v_final_rerun` produced zero new `retention_job.enforce_maximum` audit rows.
+  > 4. Reconcile current-status documentation without rewriting historical evidence. At minimum
+  > inspect and correct `README.md`, `CODEX.md`, `CLAUDE.md`,
+  > `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`,
+  > `docs/contracts/data-authorization.md`, and the `LANE2_SYNC.md` Status board/current entry.
+  > Remove stale statements that Package V/S/T await Codex, that PostgreSQL rejects DELETE, or that
+  > the current count is only 339/341 when describing the live-Postgres gate. State the exact latest
+  > counts you actually reproduce. Keep historical dated evidence rows intact and append new rows.
+  > Correct the legacy-ETL rationale everywhere: it is deferred because there is no identified real
+  > source dataset, continuity requirement, approved mapping/conflict policy, reconciliation
+  > contract or acceptance owner—not because there is no tenant model. Preserve the distinction
+  > between the application-layer no-delete-on-subject-request rule, PostgreSQL's UPDATE-only
+  > trigger, and retention-job DELETE under a cited maximum.
+  > 5. Record the Gemini-audit disposition above accurately. Do not implement its proposed RLS,
+  > invented `tenant_id` claim/context, global auth middleware, submission/accuracy hash chain,
+  > replacement encryption format/keyring, re-encryption CLI, or SQLite ETL. Do not claim current
+  > PII encryption, database-enforced deletion prevention, multi-organization tenancy, protected
+  > routes, compliance or production readiness. Do not edit `routes/**` or `frontend/**`; those are
+  > Lane 5 and Lane 1 boundaries.
+  >
+  > Verification is evidence, not ceremony. With the documented Docker Compose PostgreSQL healthy,
+  > run the focused integration file and report the exact pass count/time. Run the new setup-failure
+  > cleanup regression and directly query `pg_database` afterward to prove no generated
+  > `sih_pkgv_%` database remains. Run the complete backend suite and report passes, skips, warnings
+  > and failures exactly. Run `alembic current`, `alembic check`, and `git diff --check`. If a
+  > deliberately broken concurrency control cannot be tested deterministically without production
+  > changes, document the precise limitation in `LANE2_SYNC.md` instead of inventing proof; do not
+  > downgrade or delete the positive live test.
+  >
+  > Before committing, pull/rebase safely and recheck scope because Codex and Claude share the
+  > branch/worktree. Update the `LANE2_SYNC.md` Status board and Activity log in the same commit as
+  > the test/document corrections. Commit, push the immutable hash, and request Codex's narrow
+  > re-review of: (a) forced-contention validity, (b) pre-yield cleanup, (c) final-rerun audit
+  > absence, and (d) current-doc consistency. Your final report must separate code behavior,
+  > automated evidence, live PostgreSQL evidence, skipped/unavailable checks and still-external/
+  > cross-lane work.
+
+  **Review boundary after Claude's follow-up:** Codex should re-review only the immutable follow-up
+  commit and the four items just named. Organization tenancy/RLS, product-route authorization,
+  browser PKCE, approved IdP, production KMS/DR and legal/privacy approvals remain explicit future
+  cross-lane/external dependencies; they are not reasons to keep reopening the completed local Lane
+  2 foundation or to claim the overall product is production-ready.

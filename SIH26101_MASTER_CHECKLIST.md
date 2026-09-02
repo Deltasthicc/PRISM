@@ -20,7 +20,9 @@ re-review of `ac5a2e7`. See `LANE2_SYNC.md` for the full audit trail.
 
 Requirement source: `docs/SIH26101_PROBLEM_STATEMENT.md` (`PS-01`…`PS-18`)
 
-Companion documents: `SIH26101_WINNING_PLAYBOOK.md` and `SIH26101_TEAM_ORCHESTRATION.md`
+Companion documents: `SIH26101_WINNING_PLAYBOOK.md` and `SIH26101_TEAM_ORCHESTRATION.md`.
+`LANE2_HANDOFF_FOR_OTHER_LANES.md` (2 Sep 2026) catalogs issues raised after live testing that are
+genuinely Lane 1/3/5's work, not Lane 2's, with exactly what Lane 2 already provides for each.
 
 This is the single execution ledger for the project. It separates what the repository proves, what an official source proves, and what is still a proposal. A checked item means its acceptance evidence exists; it does not mean that an AI suggested it.
 

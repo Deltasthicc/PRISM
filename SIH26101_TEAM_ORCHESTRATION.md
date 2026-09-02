@@ -245,9 +245,11 @@ tests skip cleanly without Docker), **408 passed** with the local Compose Postgr
 94% line coverage and added `players.preferred_mode` — see
 `docs/contracts/data-authorization.md` section 8 — the base data-layer scaffold for the team's
 two-mode decision: a non-gamified professional default with the existing Quest layer preserved as
-an explicit opt-in). The following assignments are copy-ready messages for the remaining owners.
-They are dependencies of a controlled pilot or production claim, not reasons to reopen completed
-Lane 2 packages.
+an explicit opt-in). See `LANE2_HANDOFF_FOR_OTHER_LANES.md` for a punch list of issues raised after
+live testing that are genuinely Lane 1/3/5's work, not Lane 2's, with exactly what Lane 2 already
+provides ready to build on for each. The following assignments are copy-ready messages for the
+remaining owners. They are dependencies of a controlled pilot or production claim, not reasons to
+reopen completed Lane 2 packages.
 
 **Send to the Lane 5 person — Product API, Integrations & Analytics**
 

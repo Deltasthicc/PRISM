@@ -37,13 +37,22 @@ export default function DungeonMapPage() {
     if (ready) loadDungeon(DUNGEON_ID);
   }, [ready, loadDungeon]);
 
+  // Login/registration no longer force hero selection before landing here --
+  // Academy is the default post-auth destination, so a professional-track
+  // user may never pick one. Combat and powerups assume a hero exists, so
+  // the first visit to the dungeon itself is the right place to send a
+  // heroless player to /character, rather than gating it earlier.
+  useEffect(() => {
+    if (ready && player && !player.hero_id) router.replace('/character');
+  }, [ready, player, router]);
+
   // rowHeight must be >= the room tile's rendered height (tile - 20 = 130px)
   // plus a visible gap, or adjacent depth rows overlap on the map.
   const tile = 150;
   const rowHeight = 170;
   const positions = useMemo(() => layoutGraph({ colWidth: 170, rowHeight }), []);
 
-  if (!ready || loadingDungeon || !dungeon) {
+  if (!ready || loadingDungeon || !dungeon || (player && !player.hero_id)) {
     return <p className="font-body text-parchment-dim text-center mt-10">Descending into the dungeon…</p>;
   }
   if (dungeonError) {

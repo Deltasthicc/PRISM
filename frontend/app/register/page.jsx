@@ -22,10 +22,10 @@ export default function RegisterPage() {
     setSubmitting(true);
     const ok = await register(username);
     setSubmitting(false);
-    if (ok) {
-      const player = useAuthStore.getState().player;
-      router.push(player?.hero_id ? '/dungeon' : '/character');
-    }
+    // Academy is the default professional destination, not Quest mode --
+    // a player who wants the dungeon can still reach it (and pick a hero
+    // there if they haven't yet) from the NavBar.
+    if (ok) router.push('/academy');
   }
 
   return (

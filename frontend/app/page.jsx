@@ -25,14 +25,17 @@ export default function LandingPage() {
     >
       <div className="w-full">
         <PixelBadge tone="arcane" className="mb-4">SKILL-INTELLIGENCE PLATFORM</PixelBadge>
-        {/* eslint-disable-next-line @next/next/no-img-element -- fixed local
-            asset, not a candidate for next/image's remote optimization pipeline */}
-        <img
-          src="/sprites/bats/logo.png"
-          alt="PRISM"
-          className="mx-auto"
-          style={{ imageRendering: 'pixelated', maxWidth: '45%', height: 'auto' }}
-        />
+        {/* Text wordmark, not the old logo.png sprite -- that asset's pixels
+            spell out the inherited "SkillQuest: The AI Dungeon" branding, and
+            an alt-text change alone doesn't fix what's actually rendered. */}
+        <PixelPanel as="div" className="inline-block mx-auto px-8 py-5">
+          <p className="font-display text-3xl md:text-4xl text-arcane leading-tight">PRISM</p>
+          <p className="font-display text-[9px] md:text-[11px] text-gold mt-2 tracking-wide leading-relaxed">
+            Personalized Readiness Intelligence
+            <br />
+            &amp; Skill Mapping
+          </p>
+        </PixelPanel>
       </div>
 
       <p className="font-body text-xl text-parchment-dim max-w-xl">

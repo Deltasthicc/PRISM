@@ -1,6 +1,6 @@
 # CODEX.md
 
-Persistent project guidance for Codex working in `SIHLearningTool`.
+Persistent project guidance for Codex working on `PRISM`.
 
 ## Read order and source of truth
 
@@ -18,7 +18,7 @@ The problem-statement capture is preserved at `docs/SIH26101_PROBLEM_STATEMENT.m
 
 ## Product definition
 
-This is a working-name prototype for SIH26101, supplied as a MoSPI/DIID Smart Education problem. The target is a professional skill-intelligence and learning platform for India’s Official Statistical System that:
+This is PRISM (Personalized Readiness Intelligence & Skill Mapping), a prototype for SIH26101, supplied as a MoSPI/DIID Smart Education problem. The target is a professional skill-intelligence and learning platform for India’s Official Statistical System that:
 
 - builds profiles from role, assignment, qualifications, experience and training;
 - maps statistical, technical, digital-governance and behavioural/managerial competencies;

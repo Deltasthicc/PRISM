@@ -1,5 +1,5 @@
 """
-Backend entry point — FastAPI app for the SIH Learning Tool.
+Backend entry point — FastAPI app for PRISM (Personalized Readiness Intelligence & Skill Mapping).
 """
 import os
 from contextlib import asynccontextmanager
@@ -60,7 +60,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="SIH Learning Tool API",
+    title="PRISM API",
     description=(
         "Skill-intelligence backend for SIH26101: role-aware competency profiles, "
         "explainable gap analysis, adaptive practice quests, and source-grounded quiz "
@@ -128,7 +128,7 @@ async def health_check():
 @app.get("/")
 async def root():
     return {
-        "app": "SIH Learning Tool",
+        "app": "PRISM",
         "version": "0.1.0",
         "docs": "/docs",
         "status": "prototype -- see README.md and docs/ for what's real vs. aspirational",

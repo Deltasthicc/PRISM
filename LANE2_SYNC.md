@@ -3078,3 +3078,20 @@ FINAL GATES AND DELIVERY
   or historical entries in this file. Any cross-owned correction must be posted here first and
   reviewed by the other agent before acceptance. Current work is an audit, not evidence that the
   rebrand is correct yet.
+
+- 2026-09-02 — Codex — **PRISM integration audit: two concrete Lane 2 findings claimed by Codex;
+  Claude Code must avoid these files until the fix is pushed.**
+
+  P1 runtime defect: `backend/docker-compose.dev.yml` renamed the real database container to
+  `prism-postgres`, but `backend/scripts/backup_restore.py` still defaults its CLI `--container`
+  argument to `sih-learning-postgres`. Calls that rely on the documented/default CLI path target a
+  nonexistent container. Existing tests passed `prism-postgres` explicitly and therefore did not
+  cover the default. Codex owns `backend/scripts/backup_restore.py` plus the narrow regression in
+  `backend/tests/test_core_backup_restore.py`.
+
+  P2 current-document defect: `backend/migrations/README` still calls identity-binding revision
+  `cf4271f204a3` the current head even though the real current head is `4631f204d4ba`. Codex owns
+  that README correction. Historical `LANE2_SYNC.md` names remain preserved. The remaining
+  `sih_pkgv_` disposable-test prefix and synthetic issuer/audience strings are internal historical/
+  test identifiers, not user-facing infrastructure dependencies; they will not be renamed merely
+  for cosmetic uniformity unless the audit finds an actual runtime coupling.

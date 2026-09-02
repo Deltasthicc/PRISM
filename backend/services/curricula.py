@@ -10,6 +10,17 @@ iGOT or Karmayogi Competency Model catalog.
 from copy import deepcopy
 
 
+# SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 acceptance evidence:
+# "Every competency/target has source, authoring status and version." The
+# per-curriculum `source` key below records origin; `authoring_status` records
+# assurance using the fixed documented vocabulary (CODEX.md architectural
+# invariants), and PROVISIONAL is the only honest value until a named domain
+# reviewer validates this taxonomy -- SIH26101_MASTER_CHECKLIST.md section 4.1
+# marks that BLOCKED-EXTERNAL.
+PROVISIONAL = "PROVISIONAL"
+COMPETENCY_VERSION = 1
+
+
 CURRICULA = {
     "dsa-fundamentals": {
         "name": "DSA Fundamentals",
@@ -88,8 +99,25 @@ CURRICULA = {
 }
 
 
+def stamp_competency_provenance(catalog: dict = CURRICULA) -> None:
+    """Give every competency its own source, authoring status and version.
+
+    Stamped once at import rather than repeated on 34 literal entries: the
+    values are uniform today (nothing is reviewed), but they live on the
+    competency itself so a reviewer can later validate one competency without
+    a data-model change -- the same per-item shape services/behavioral_anchors.py
+    and services/role_targets.py use.
+    """
+    for curriculum in catalog.values():
+        for competency in curriculum.get("competencies", []):
+            competency.setdefault("source", curriculum.get("source", "internal-prototype"))
+            competency.setdefault("authoring_status", PROVISIONAL)
+            competency.setdefault("version", COMPETENCY_VERSION)
+
+
 def validate_curricula(catalog: dict = CURRICULA) -> None:
-    """Fail fast on duplicate IDs, dangling prerequisites, invalid levels, or cycles."""
+    """Fail fast on duplicate IDs, dangling prerequisites, invalid levels, cycles,
+    or a competency missing its provenance fields."""
     global_ids = set()
     for slug, curriculum in catalog.items():
         competencies = curriculum.get("competencies", [])
@@ -107,6 +135,11 @@ def validate_curricula(catalog: dict = CURRICULA) -> None:
             target = item.get("target_level")
             if not isinstance(target, int) or not 1 <= target <= 5:
                 raise ValueError(f"{item['id']} must have a target_level from 1 to 5")
+            missing_provenance = {"source", "authoring_status", "version"} - set(item)
+            if missing_provenance:
+                raise ValueError(
+                    f"{item['id']} is missing provenance fields: {', '.join(sorted(missing_provenance))}"
+                )
             prerequisites = list(item.get("prerequisites", []))
             unknown = set(prerequisites) - local_ids
             if unknown:
@@ -170,4 +203,5 @@ def public_curricula() -> list[dict]:
     ]
 
 
+stamp_competency_provenance()
 validate_curricula()

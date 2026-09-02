@@ -1,5 +1,6 @@
 """Deterministic, explainable competency-gap and pathway calculation."""
 
+from services.behavioral_anchors import DEFAULT_SOURCE, DEFAULT_STATUS, get_anchor
 from services.curricula import get_curriculum
 from services.learning_catalog import recommend_courses
 from services.role_targets import FRAMEWORK_VERSION, experience_cap, resolve_role_target
@@ -9,6 +10,26 @@ from services.role_targets import FRAMEWORK_VERSION, experience_cap, resolve_rol
 # Distinct from role_targets.FRAMEWORK_VERSION, which versions target
 # selection -- these are two independently-changeable policies.
 ASSESSMENT_POLICY_VERSION = "prototype-v1"
+
+# The one documented status term that applies to a Lane 3 competency result
+# (CODEX.md architectural invariants: use SIMULATED, CATALOGUE, LIVE,
+# PROVISIONAL and NO EVIDENCE "precisely"; SIH26101_TEAM_ORCHESTRATION.md
+# section 5 has Lane 1 render exactly these). The vocabulary defines no
+# positive counterpart, so evidence_state is this string or None -- the
+# present case is described by evidence_sources instead of an invented term.
+NO_EVIDENCE = "NO EVIDENCE"
+
+# Qualitative uncertainty band -- SIH26101_MASTER_CHECKLIST.md section 4.1:
+# "Display evidence coverage and uncertainty." Deliberately qualitative: a
+# numeric confidence interval would imply psychometric validation this policy
+# does not have (CLAUDE.md invariant #4). "high" is intentionally unreachable
+# until a validated instrument exists -- do not add it without one.
+CONFIDENCE_BY_COVERAGE = {
+    (): "none",
+    ("self_report",): "low",
+    ("observed_practice",): "moderate",
+    ("observed_practice", "self_report"): "moderate",
+}
 
 
 def _level_label(score: float) -> str:
@@ -32,6 +53,8 @@ def analyse_competencies(
     experience_level: str = "beginner",
     job_role: str = "",
     designation: str = "",
+    current_assignment: str = "",
+    department: str = "",
 ) -> dict:
     curriculum = get_curriculum(curriculum_slug)
     if not curriculum:
@@ -72,7 +95,12 @@ def analyse_competencies(
             evidence = "no evidence yet"
 
         role_target_info = resolve_role_target(
-            competency_id, item.get("target_level", 3), job_role, designation
+            competency_id,
+            item.get("target_level", 3),
+            job_role,
+            designation,
+            current_assignment,
+            department,
         )
         role_target = role_target_info["target_level"]
         pathway_target = min(role_target, float(target_cap))
@@ -101,14 +129,20 @@ def analyse_competencies(
                 "prerequisites": item.get("prerequisites", []),
                 "observed_level": round(observed, 2),
                 "observed_label": _level_label(observed),
+                "observed_anchor": get_anchor(competency_id, observed),
+                "target_anchor": get_anchor(competency_id, pathway_target),
                 "pathway_target": pathway_target,
                 "role_target": role_target,
                 "role_target_source": role_target_info["source"],
+                "role_target_assurance": role_target_info["assurance"],
                 "matched_role": role_target_info["matched_role"],
+                "matched_field": role_target_info["matched_field"],
                 "gap": round(gap, 2),
                 "priority": priority,
                 "has_evidence": has_evidence,
                 "evidence_sources": evidence_sources,
+                "evidence_state": None if has_evidence else NO_EVIDENCE,
+                "confidence": CONFIDENCE_BY_COVERAGE[tuple(evidence_sources)],
                 "evidence": evidence,
             }
         )
@@ -154,6 +188,8 @@ def analyse_competencies(
         "experience_level": experience_level,
         "job_role": job_role,
         "designation": designation,
+        "current_assignment": current_assignment,
+        "department": department,
         "method": {
             "scale": "0-5 proficiency",
             "demonstrated_weight": 0.65,
@@ -161,6 +197,12 @@ def analyse_competencies(
             "note": "Self-ratings never override demonstrated performance; missing evidence is surfaced explicitly.",
             "policy_version": ASSESSMENT_POLICY_VERSION,
             "role_target_framework_version": FRAMEWORK_VERSION,
+            # Per-anchor source/status live inside each observed_anchor/
+            # target_anchor record; these two are just the module-wide
+            # starting defaults, for a consumer that wants one summary value
+            # without inspecting every anchor individually.
+            "behavioral_anchor_default_source": DEFAULT_SOURCE,
+            "behavioral_anchor_default_status": DEFAULT_STATUS,
         },
         "competencies": competency_results,
         "skill_gaps": skill_gaps,

@@ -8,6 +8,8 @@ import pytest
 from services.learning_engine import analyse_competencies
 from services.role_targets import (
     FRAMEWORK_VERSION,
+    PROVISIONAL,
+    RESOLUTION_ORDER,
     experience_cap,
     resolve_role_target,
 )
@@ -22,6 +24,44 @@ def test_resolve_role_target_matches_job_role_case_insensitively():
     assert result["framework_version"] == FRAMEWORK_VERSION
     assert result["approved_by"] is None
     assert result["matched_role"] == "statistical officer"
+    assert result["matched_field"] == "job_role"
+
+
+def test_every_target_is_labelled_provisional():
+    # SIH26101_MASTER_CHECKLIST.md section 3.3: "label any team-authored
+    # target as PROVISIONAL" -- true for both an override and the fallback.
+    override = resolve_role_target("os_official_statistics", 3, job_role="statistical officer")
+    fallback = resolve_role_target("os_gis", 4)
+    assert override["assurance"] == PROVISIONAL == "PROVISIONAL"
+    assert fallback["assurance"] == PROVISIONAL
+
+
+def test_current_assignment_and_department_also_select_targets():
+    # SIH26101_MASTER_CHECKLIST.md section 4.1 requires all four profile
+    # fields to be usable, not just job role and designation.
+    by_assignment = resolve_role_target(
+        "os_sampling_design", 3, current_assignment="Household Survey Round"
+    )
+    assert by_assignment["target_level"] == 4
+    assert by_assignment["matched_field"] == "current_assignment"
+
+    by_department = resolve_role_target("os_official_statistics", 3, department="Statistics Division")
+    assert by_department["target_level"] == 4
+    assert by_department["matched_field"] == "department"
+
+
+def test_resolution_order_prefers_the_more_specific_field():
+    # Both keys carry a target for this competency; the job role must win
+    # over the broader department bucket.
+    result = resolve_role_target(
+        "os_official_statistics",
+        3,
+        job_role="statistical officer",
+        department="statistics division",
+    )
+    assert result["target_level"] == 5  # the role's value, not the department's 4
+    assert result["matched_field"] == "job_role"
+    assert RESOLUTION_ORDER.index("job_role") < RESOLUTION_ORDER.index("department")
 
 
 def test_resolve_role_target_falls_back_to_designation_when_job_role_silent():
@@ -39,6 +79,7 @@ def test_resolve_role_target_falls_back_to_curriculum_default_for_unknown_role()
     assert result["target_level"] == 4
     assert result["source"] == "curriculum-default"
     assert result["matched_role"] == "*"
+    assert result["matched_field"] is None
 
 
 def test_resolve_role_target_ignores_blank_role_strings():

@@ -23,6 +23,10 @@ has actually been retrieved.
 |---|---|---|---|
 | 2026-08-29 | `python -m pytest` (backend) | 42 passed | See `SIH26101_MASTER_CHECKLIST.md` section 8 for the full log |
 | 2026-08-29 | `npm run lint` (frontend) | passed | |
+| 2026-09-01 | `python -m pytest` (backend) | 58 passed | Lane 3: versioned role targets + evidence-coverage priority (16 new tests) |
+| 2026-09-02 | `python -m pytest` (backend) | 70 passed | Lane 3: L1-L5 behavioural anchors, per-anchor provenance records (12 tests) |
+| 2026-09-02 | `python -m pytest` (backend) | 89 passed | Lane 3: bounded sampling-design lab, PS-08 (19 new tests) |
+| 2026-09-02 | `python -m pytest` (backend) | 103 passed | Lane 3: documented status-vocabulary compliance pass (14 new tests) |
 
 ## Demo rehearsal evidence
 

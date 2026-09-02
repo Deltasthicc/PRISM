@@ -30,7 +30,7 @@ Every arrow must be visible in the demo. “AI” is used where it helps; determ
 - “The role matrix and level anchors are a versioned prototype derived from public MoSPI/CBC/NSSTA sources; MoSPI validation is pending.”
 - “The current provider path is a contract-tested simulator/catalogue fallback. Live iGOT sync needs approved endpoints, credentials and partner authorization.”
 - “Generated questions show their supporting source; publication into scored assessment requires reviewer approval in the target design.”
-- “Quest mode is an optional engagement view; the professional workspace is the primary government-facing experience.”
+- “Quest mode is an optional engagement view; the professional workspace is the primary government-facing experience.” Not just a separate route: the default landing uses a plain, non-game visual identity, and Quest's pixel-art/dungeon skin is confined to its own opt-in routes -- a dungeon-themed screen on startup would read as off-putting to a government-official audience.
 
 ### Never say this unless runtime evidence changes
 
@@ -133,7 +133,7 @@ Do not spend hackathon time splitting this into microservices, Kafka, Kubernetes
 
 ### Sprint B — one coherent Official Statistics loop
 
-- Professional learner/admin shell.
+- Professional learner/admin shell -- its own plain, non-game visual identity as the default landing, separate from Quest mode's pixel-art skin, which stays opt-in only.
 - Versioned prototype role target with competency-specific behavioural anchors.
 - Evidence-aware gap explanation and pathway.
 - One deterministic lab.

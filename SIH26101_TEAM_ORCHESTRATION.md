@@ -216,12 +216,22 @@ independent security/data audit that found and fixed two further real issues), a
 second, independent external audit's four DB-hardening claims — RLS, database-level audit
 triggers, evidence self-hashing, legacy SQLite ETL — each independently re-derived rather than
 taken on faith; three rejected with technical reasoning, one correctly scoped and implemented as a
-live-verified PostgreSQL trigger that makes `audit_events` append-only at the database level; see
-`LANE2_SYNC.md` for all three packages' full evidence) are implemented and live-tested by Claude
-Code but not yet Codex-reviewed — Codex handed remaining Lane 2 implementation work to Claude Code
-after running out of session budget mid-review; exact review state remains in `LANE2_SYNC.md`. The
-current full backend gate is **341 passed** (Package U's migration is schema-only and adds no new
-test cases). The following assignments are copy-ready messages for the remaining owners. They are
+PostgreSQL trigger rejecting UPDATE/DELETE on `audit_events`) are implemented and live-tested by
+Claude Code. Codex's own cold immutable audit of S/T/U (2026-09-01) accepted S and T but rejected
+U's integration verdict: the unconditional DELETE rejection directly conflicted with
+`scripts/retention_job.py`, whose only registered category is `audit_events` — the retention job
+would become permanently unable to delete it the moment any maximum retention is ever cited.
+Package V (2026-09-02) fixed this with a follow-up migration (`4631f204d4ba`) that retires only the
+DELETE rejection — the database now blocks UPDATE only (named precisely as that, not
+"append-only", since DELETE through the retention job is intentional and the genuine append-only
+guarantee is an application-layer property), live-verified via a committed opt-in real-PostgreSQL
+integration contract (`tests/test_core_retention_job_postgres_integration.py`). See `LANE2_SYNC.md`
+for all four packages' full evidence; Package V is implemented and live-tested by Claude Code but
+not yet Codex-reviewed — Codex handed remaining Lane 2 implementation work to Claude Code after
+running out of session budget mid-review; exact review state remains in `LANE2_SYNC.md`. The
+current full backend gate is **341 passed** with no PostgreSQL running, **345 passed** with the
+local Compose Postgres up (Package V adds 4 opt-in integration tests that skip cleanly without
+Docker). The following assignments are copy-ready messages for the remaining owners. They are
 dependencies of a controlled pilot or production claim, not reasons to reopen completed Lane 2
 packages.
 

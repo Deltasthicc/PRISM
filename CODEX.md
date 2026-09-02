@@ -51,10 +51,17 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
   and a non-injective `audit_actor` encoding) and evaluated a second external audit's four
   DB-hardening claims (Package U: rejected RLS and legacy-ETL as targeting no existing tenant model,
   rejected evidence self-hashing as providing no tamper-evidence from the same writer role, and
-  implemented a scoped, live-verified PostgreSQL trigger making `audit_events` append-only at the
-  database level, explicitly not a security boundary against the owning role) — full evidence and
-  reasoning in `LANE2_SYNC.md`, also not yet Codex-reviewed. Existing product routes do not invoke
-  any of this foundation; there is no browser SSO, row-level organization tenancy, approved
+  implemented a scoped PostgreSQL trigger rejecting UPDATE/DELETE on `audit_events`). Codex's own
+  cold immutable audit of S/T/U (2026-09-01) accepted S and T but rejected U's integration verdict:
+  the unconditional DELETE rejection directly broke `scripts/retention_job.py`, whose only
+  registered category is `audit_events` -- the retention job would become permanently unable to
+  delete it the moment any maximum retention is ever cited. Claude Code's Package V (2026-09-02)
+  fixed this with a follow-up migration (`4631f204d4ba`) retiring only the DELETE rejection --
+  UPDATE stays blocked at the database level (named precisely as that, not "append-only", since
+  DELETE through the retention job is intentional), live-verified via a committed opt-in real-
+  PostgreSQL integration contract, not yet Codex-reviewed. Full evidence and reasoning for all of
+  S/T/U/V in `LANE2_SYNC.md`. Existing product routes do not invoke any of this foundation; there
+  is no browser SSO, row-level organization tenancy, approved
   production IdP, frontend test suite, observability stack or production authorization. A CI
   workflow exists, but its presence alone is not evidence of a green remote run.
 

@@ -14,7 +14,8 @@ BACKEND_DIRECTORY = Path(__file__).resolve().parents[1]
 BASELINE_REVISION = "65bc8695fadc"
 GOVERNANCE_REVISION = "2baf7d4bd8a2"
 IDENTITY_REVISION = "cf4271f204a3"
-HEAD_REVISION = "036de46dd515"
+AUDIT_APPEND_ONLY_REVISION = "036de46dd515"
+HEAD_REVISION = "4631f204d4ba"
 GOVERNANCE_TABLES = {
     "audit_events",
     "evidence_records",

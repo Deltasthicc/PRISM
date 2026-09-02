@@ -48,17 +48,29 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
   Package P/S closed both Codex's Package R adversarial findings and a live-PostgreSQL concurrency
   defect Codex reproduced (2026-09-01) — re-run before repeating this count, it changes often; prior
   snapshots in this file's history (267, 299, 337) were each taken mid-edit or before a subsequent
-  fix, so treat any count here as a snapshot to re-verify, not a citation. `.github/workflows/ci.yml`
-  exists, but no run against this branch is evidenced (`gh run list --branch <this-branch>` returns
-  nothing as of this writing) — do not claim a green CI run without checking.
-- Package T (independent audit) and Package U (a second independent external audit's four
-  DB-hardening claims, individually re-derived) are also closed as of 2026-09-01: Package T fixed
-  two real correctness bugs (a stale pre-delete snapshot in `delete_subject_data()`'s reported
-  counts, and a non-injective `audit_actor` encoding); Package U rejected three of the second
-  audit's four claims (RLS and legacy-ETL target no existing tenant model; evidence self-hashing by
-  the same writer role provides no tamper-evidence) and implemented the fourth in scoped form — a
-  live-verified PostgreSQL trigger that makes `audit_events` append-only at the database level, not
-  a security boundary against the owning role. Full evidence and reasoning in `LANE2_SYNC.md`.
+  fix, so treat any count here as a snapshot to re-verify, not a citation. As of Package V
+  (2026-09-02), `pytest -q` reports 341 passed with no PostgreSQL running (4 opt-in integration
+  tests in `test_core_retention_job_postgres_integration.py` skip cleanly) and 345 passed with the
+  local `docker-compose.dev.yml` Postgres up — both counts are correct, they are not a discrepancy.
+  `.github/workflows/ci.yml` exists, but no run against this branch is evidenced (`gh run list
+  --branch <this-branch>` returns nothing as of this writing) — do not claim a green CI run without
+  checking.
+- Package T (independent audit), Package U (a second independent external audit's four
+  DB-hardening claims, individually re-derived) and Package V (a fix for a real cross-package
+  conflict Codex's cold audit of U found) are also closed as of 2026-09-02: Package T fixed two
+  real correctness bugs (a stale pre-delete snapshot in `delete_subject_data()`'s reported counts,
+  and a non-injective `audit_actor` encoding); Package U rejected three of the second audit's four
+  claims (RLS and legacy-ETL target no existing tenant model; evidence self-hashing by the same
+  writer role provides no tamper-evidence) and implemented the fourth in scoped form — a
+  PostgreSQL trigger on `audit_events`. Codex's audit then found that trigger's unconditional
+  `DELETE` rejection broke `scripts/retention_job.py`, whose only registered category is
+  `audit_events` — the retention job would be unable to ever delete it once a maximum retention is
+  cited. Package V's follow-up migration (`4631f204d4ba`) retired only the `DELETE` rejection,
+  keeping the `UPDATE` rejection (named precisely: an UPDATE-only trigger is not "append-only");
+  the genuine append-only guarantee remains an application-layer property, never a database one.
+  Live-verified end-to-end, including a committed opt-in real-PostgreSQL integration contract
+  (`tests/test_core_retention_job_postgres_integration.py`, skips cleanly without Docker). Full
+  evidence and reasoning in `LANE2_SYNC.md`.
 - Next.js frontend; lint passed in the last verification.
 - Four backend curricula/34 competencies exist, but do not cover the full supplied competency list and have no MoSPI/CBC/NSSTA approval.
 - DSA Quest works in the browser; non-DSA backend dungeons are blocked by frontend routing/filter assumptions.

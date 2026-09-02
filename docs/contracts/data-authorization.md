@@ -229,17 +229,27 @@ keep forever). Today that is exactly one fact, not a full schedule:
   them today is the verified-subject-request boundary itself (`export_subject_data`/
   `delete_subject_data`), not a schedule.
 
-On PostgreSQL, `audit_events`' append-only-ness is no longer only an application-code convention:
-migration `036de46dd515` (Package U) adds a trigger that makes PostgreSQL itself reject any
-`UPDATE`/`DELETE` against the table, live-verified including that the database owner role can
-still `ALTER TABLE ... DISABLE TRIGGER` to bypass it (used deliberately, and re-enabled, only to
-clean up a test drill's own synthetic rows). This is a bug-catching safety net for the
-application's own connection role — not a security boundary against someone holding those same
-credentials, and not a compliance claim. A second external audit proposed a broader version
-(full audit triggers across tables with captured actor/purpose context); that version was rejected
+On PostgreSQL, `audit_events` rows are additionally protected against in-place mutation at the
+database level, but the genuine append-only guarantee — rows are never removed except through the
+dedicated retention job — remains an application-layer property, not a database one. Migration
+`036de46dd515` (Package U) originally added a trigger rejecting both `UPDATE` and `DELETE`
+unconditionally; Codex's cold immutable audit (`LANE2_SYNC.md`, 2026-09-01) found this directly
+broke `scripts/retention_job.py`, whose only registered category is `audit_events` — the moment any
+maximum retention is ever cited for that category, the retention job's own `DELETE` would be
+rejected by its own project's trigger. Follow-up migration `4631f204d4ba` (Package V) retired only
+the `DELETE` rejection: PostgreSQL now rejects `UPDATE` against `audit_events` (naming this
+precisely — an UPDATE-only trigger is not "append-only"; nothing in this project ever needs to
+update an existing audit row, so this closes a real gap with no cost), while `DELETE` remains
+possible and is governed entirely by `scripts/retention_job.py` under a cited, minimum-retention-
+checked maximum, exactly like every other category. The database owner role can still
+`ALTER TABLE ... DISABLE TRIGGER` to bypass the `UPDATE` rejection (live-verified, and re-enabled,
+only to clean up a test drill's own synthetic rows) — this remains a bug-catching safety net for
+the application's own connection role, not a security boundary against someone holding those same
+credentials, and not a compliance claim. A second external audit proposed a broader version (full
+audit triggers across tables with captured actor/purpose context); that version was rejected
 because it would need session-context plumbing that does not exist and would misrepresent what a
-trigger the app's own role can disable actually proves — see `LANE2_SYNC.md` for the full
-technical reasoning.
+trigger the app's own role can disable actually proves — see `LANE2_SYNC.md` for the full technical
+reasoning on both the original scoping (Package U) and the cross-package conflict/fix (Package V).
 
 `security.retention.assert_minimum_retention_satisfied()` is a guard for whatever automated
 deletion is built *next* (an expiry job, a cleanup script) — it refuses to let such code delete a

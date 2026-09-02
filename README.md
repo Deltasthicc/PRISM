@@ -82,10 +82,14 @@ from a proposal.
   PostgreSQL 16 migrations, migration-gated startup, local Keycloak OIDC verification, identity
   binding, fixed RBAC policy, audit/data-rights primitives and local backup/restore drills are real
   and accepted by both agents. The retention-enforcement job (including a live-tested fix for a real
-  PostgreSQL concurrency defect Codex found) and a PostgreSQL trigger that makes `audit_events`
-  append-only at the database level (not just application convention) are implemented and
-  live-tested but still awaiting Codex's final review — see `LANE2_SYNC.md` for exact status.
-  Existing HTTP routes do not compose any of these primitives yet; see the handoff below.
+  PostgreSQL concurrency defect Codex found) and a PostgreSQL trigger on `audit_events` are
+  implemented and live-tested but still awaiting Codex's final review — see `LANE2_SYNC.md` for
+  exact status. The trigger blocks `UPDATE` only, not `DELETE`: an earlier version blocked both and
+  Codex's cold audit caught that this made the retention job unable to ever delete its only
+  registered category once a maximum retention is cited, so a follow-up migration retired the
+  `DELETE` rejection — the genuine append-only guarantee (rows are never removed except through the
+  retention job) is an application-layer property, never a database one. Existing HTTP routes do
+  not compose any of these primitives yet; see the handoff below.
 - **`npm audit --omit=dev` reports 0 vulnerabilities** after bumping the `next`/postcss dependency
   override that was pinning an old vulnerable version.
 

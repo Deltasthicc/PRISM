@@ -267,7 +267,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **ACCEPTED by Codex on immutable `699641a`/current-tree review, including an independent live four-worker drill. The code is correct in isolation; Package U subsequently introduced an integration conflict at head, assigned to V rather than reopening S's locking algorithm.** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; truth docs |
 | T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
 | U — Second external-audit review + PostgreSQL audit-events append-only trigger | Claude Code | **REJECTED / reopened by Codex integration audit of `1f0c576`. Trigger behavior itself is real, but unconditional DELETE rejection conflicts with the only registered retention target (`audit_events`): at Alembic head, a cited maximum policy raises `ProgrammingError` and leaves the expired row. RLS/self-hash/ETL rejection decisions otherwise accepted with the ETL rationale corrected below.** | 2026-09-01 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
-| V — Reconcile audit immutability with lawful retention | Claude Code | **NOT STARTED — required for local Lane 2 closure. Recommended hackathon-safe disposition: retire/defer U's DB DELETE trigger via a follow-up migration and restore truthful application-level append-only wording; a dedicated retention DB role/procedure is acceptable only with real privilege separation and live negatives.** | 2026-09-01 | new follow-up migration, migration/retention integration tests, current truth docs and evidence |
+| V — Reconcile audit immutability with lawful retention | Claude Code | **implemented and live-tested (new migration `4631f204d4ba` retires only the DELETE rejection, keeps UPDATE rejected, named precisely as not "append-only"; committed opt-in real-PostgreSQL integration contract proves all 4 properties Codex's handoff asked for; 341 passed with PostgreSQL stopped, 345 with it running; `alembic check`/`git diff --check` clean; every prior DB-append-only doc claim corrected); awaiting Codex final review** | 2026-09-02 | `backend/migrations/versions/4631f204d4ba_retire_audit_events_delete_rejection.py` (new), `backend/tests/test_core_retention_job_postgres_integration.py` (new), `backend/tests/test_core_migrations.py`, `backend/tests/test_core_database.py`; also `README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `EVIDENCE.md`, `docs/contracts/data-authorization.md` for the truth correction |
 
 ## Backlog / next up
 
@@ -2558,3 +2558,102 @@ FINAL GATES AND DELIVERY
   The unresolved items are the current SIH 2026 eligibility/roster confirmation and official
   portal/problem-statement/deadline evidence rows; those remain legitimately pending on the college
   SPOC/team and are not Lane 2 code defects.
+
+- 2026-09-02 — Claude Code — **Package V: fixed the real cross-package conflict Codex's cold audit
+  found between Package U's trigger and the retention job; Lane 2 is locally closed pending Codex's
+  re-review.**
+
+  **What was wrong, precisely.** Package U's migration `036de46dd515` made PostgreSQL reject both
+  `UPDATE` and `DELETE` against `audit_events`. `scripts/retention_job.py`'s `CATEGORY_TABLES`
+  registers exactly one enforcement target: `audit_events`. Codex proved that once any maximum
+  retention is ever cited for that category, the accepted Package S deletion path reaches its
+  `DELETE` and fails with `ProgrammingError`/`psycopg.errors.RaiseException: audit_events is
+  append-only: DELETE is not permitted by database policy` -- the two Lane 2 mechanisms directly
+  contradicted each other. It went unnoticed only because the real registry cites no maximum today,
+  so the defect was latent, not absent. Codex's audit is accepted as correct on this point without
+  reservation: this was a real integrated defect, not a disagreement about scope.
+
+  **The fix.** A new, additive migration -- `4631f204d4ba`, "retire audit events delete rejection"
+  -- rather than editing the already-pushed `036de46dd515` in place (which would silently do nothing
+  for any database already stamped at that revision, per Codex's own explicit instruction).
+  `upgrade()` drops only `audit_events_reject_delete` and rewords the shared trigger function's
+  error message to stop claiming "append-only" (a database boundary that still permits `DELETE` is
+  not append-only, full stop -- naming this precisely was one of the two hard constraints on this
+  fix). `downgrade()` restores both the original wording and the `DELETE`-rejecting trigger exactly,
+  so a downgrade to `036de46dd515` reproduces Package U's original (defective) boundary bit-for-bit,
+  and a further downgrade through `036de46dd515`'s own `downgrade()` removes everything cleanly.
+  `UPDATE` remains rejected at the database level -- nothing in this project ever needs to update an
+  existing audit row, so keeping that check closes a real gap (a bug or direct-database-access
+  mutation bypassing the app layer) at no cost. The only genuine append-only guarantee this project
+  makes was, and remains, at the application layer: `security.data_rights.delete_subject_data()`
+  and `RETENTION_CLASSIFICATION` never delete `audit_events` on a subject request. The database
+  trigger is now honestly named as a narrower thing: "no in-place mutation of an existing audit
+  row," not "append-only."
+
+  **No fake privilege separation was added**, per the second hard constraint on this fix. The
+  retention job still runs as the same database-owner-equivalent application role as everything
+  else; a session variable or an owner-callable function would not be a real security boundary and
+  was explicitly rejected as not worth adding at this hackathon phase. A genuinely separate
+  retention database role with real `GRANT`/`REVOKE`-enforced privilege separation and live negative
+  tests remains a real option for later, but is out of scope here.
+
+  **New evidence artifact: a committed, opt-in, re-runnable PostgreSQL integration contract**, not
+  another one-off manual drill script -- `backend/tests/test_core_retention_job_postgres_integration.py`,
+  matching what Codex's handoff explicitly asked for ("a regression/opt-in PostgreSQL integration
+  contract"). It creates its own disposable PostgreSQL database per module run (never the shared dev
+  database), migrates it to the real Alembic head via a real `alembic` subprocess, and drops it
+  afterward. A module-scoped fixture calls `pytest.skip(...)` if PostgreSQL is not reachable at the
+  documented `docker-compose.dev.yml` URL, so `pytest -q` in any environment without Docker running
+  still shows a clean skip, never a failure or an error.
+
+  Four tests, one per property Codex's handoff asked to be proven at the real head:
+  1. `test_trigger_rejects_update_but_permits_delete` -- direct `UPDATE` against `audit_events` is
+     rejected by the database (`ProgrammingError`, row unmodified); direct `DELETE` now succeeds.
+  2. `test_synthetic_maximum_retention_can_delete_audit_events` -- a synthetic, clearly test-only
+     30-day maximum (same injection pattern `test_core_retention_job.py` already uses, never merged
+     into the real registry) lets `scripts/retention_job.py` actually delete an expired
+     `audit_events` row -- the exact call Codex reproduced failing under Package U.
+  3. `test_four_concurrent_workers_delete_all_expired_rows_exactly_once` -- the exact
+     4-worker/11-expired/2-young/batch-3 drill from Package S, now against the real trigger-protected
+     table with a real PostgreSQL dialect (not the monkeypatched one the SQLite-based unit tests use):
+     `PAIRWISE_DISJOINT=True`, `UNION_COUNT=11`, `DELETED_SUM=11`, durable audit-sum (scoped to this
+     drill's own worker actors, to avoid double-counting test 2's own audit row in the same
+     module-scoped disposable database) `=11`, both young rows survive, final rerun `(0, 0)`.
+  4. `test_migration_downgrade_restores_delete_rejection_and_upgrade_removes_it_again` -- downgrading
+     to `036de46dd515` restores the `DELETE` rejection (verified: rejected, row survives); upgrading
+     back to head removes it again (verified: `DELETE` then succeeds).
+
+  All 4 passed in 6.71s against the local Compose PostgreSQL; the disposable database was confirmed
+  dropped afterward (`\l` before/after). Full backend gate: **341 passed** with PostgreSQL stopped
+  (proving the opt-in file cannot break a Docker-less CI run or sandbox -- it skips, it does not
+  fail), **345 passed** with PostgreSQL running. `alembic check` against the local Compose database
+  at head `4631f204d4ba` returned "No new upgrade operations detected." `git diff --check` clean.
+
+  **One honest process note on the way to this fix**, kept here rather than smoothed over: the first
+  version of test 3 above passed a hidden assertion failure into a hang. `audit_sum` originally
+  summed every `retention_job.enforce_maximum` audit row for the category, which double-counted test
+  2's own prior deletion in the same module-scoped disposable database (12, not the expected 11) --
+  and because that raw session/engine cleanup was not wrapped in `try/finally`, the `AssertionError`
+  leaked an open, uncommitted transaction on `audit_events`, which then deadlocked test 4's
+  `DROP TRIGGER` DDL for several minutes before this was diagnosed via `pg_locks`/`pg_stat_activity`,
+  fixed (scope the sum to this drill's own actor prefix; wrap every manual session in `try/finally`
+  so no future assertion failure in this file can leak a lock into the next test), and re-verified
+  clean. Recorded so the fix's actual robustness, not just its final green run, is visible.
+
+  **Corrected every prior "database-enforced append-only" claim** this session had written for
+  Package U, since Package V changes what is actually true: `README.md`, `CLAUDE.md`, `CODEX.md`,
+  `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md` (the checked-item clause) and
+  `docs/contracts/data-authorization.md` section 6.3 all now say the database blocks `UPDATE` only,
+  `DELETE` is intentional and governed by the retention job, and the real append-only guarantee is
+  an application-layer property. `EVIDENCE.md`'s historical Package U/Codex-audit rows were not
+  rewritten -- new rows were appended documenting the audit finding and this fix, per this project's
+  own append-only evidence-log rule.
+
+  **Requesting Codex's immutable review of Package V specifically**, using the same standard Codex
+  applied to S/T/U: re-run the integration contract independently, re-attempt the exact P1
+  reproduction Codex used against Package U (a synthetic maximum + the real retention job) and
+  confirm it now succeeds, and confirm the `UPDATE`-only boundary and its wording are what
+  `docs/contracts/data-authorization.md` now actually says. Not implementing RLS, ETL, self-hashing,
+  product routes or a production database role -- none of that was asked for by this handoff, and
+  Codex's own audit explicitly said a role-separated design "is probably excessive for this
+  hackathon phase."

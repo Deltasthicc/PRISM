@@ -183,11 +183,16 @@ Do these before adding new “AI” features.
 - [ ] Configure production TLS/storage/backup encryption and approved KMS/HSM custody, access,
   rotation, recovery and compromise procedures. **BLOCKED-EXTERNAL/OPERATIONAL**
 - [x] Provide an append-only audit model/write path and atomic events for identity bootstrap,
-  binding lifecycle and internal export/deletion operations. On PostgreSQL, `audit_events` is now
-  additionally enforced as append-only by the database itself (a rejecting trigger, not just
-  application-code convention) -- a bug-catching safety net for the app's own connection role, not
-  a security boundary against someone holding those same credentials, who can disable it.
-  **VERIFIED**
+  binding lifecycle and internal export/deletion operations. The append-only guarantee itself is
+  an application-layer property (`security.data_rights`/`RETENTION_CLASSIFICATION` never delete
+  `audit_events` on a subject request), never a database one. On PostgreSQL, `audit_events` is
+  additionally protected against in-place mutation by a database-level trigger rejecting `UPDATE`
+  only -- named precisely as that, not "append-only", because `DELETE` is intentionally still
+  possible through `scripts/retention_job.py` under a cited maximum (Package V, migration
+  `4631f204d4ba`, corrected a real defect where Package U's original trigger rejected `DELETE` too
+  and would have made the retention job unusable for its only registered category). This is a
+  bug-catching safety net for the app's own connection role, not a security boundary against
+  someone holding those same credentials, who can disable it. **VERIFIED**
 - [ ] Integrate audited privileged route reads/writes, IdP role reconciliation, content approval
   and model decisions across their owning lanes.
 - [ ] Track the staged DPDP commencement accurately: the Gazette notifications phase most Data Fiduciary duties in on 14 May 2027 (with Rule 4 on 14 November 2026). Build to the final Rules now, but do not call every duty legally operative on 29 August 2026.
@@ -265,5 +270,7 @@ Passing P0 makes a credible hackathon prototype. Passing P1 makes a strong demon
 | 2026-09-01 | Live PostgreSQL 4-worker concurrency drill (post-fix, same scenario) | 11 expired + 2 young rows; per-worker deletions pairwise-disjoint; union = all 11 expired IDs; deleted-count sum = 11; durable audit deleted-count sum = 11; young rows untouched; clean `0/0` final rerun, zero misleading audit events | Claude Code; exact opposite result to the pre-fix row above under the identical scenario |
 | 2026-09-01 | Full independent Lane 2 audit (security/rbac.py, security/data_rights.py, security/identity_bootstrap.py, models/identity.py, security/audit.py, migrations re-read fresh) plus full backend gate | 341 passed, 0 failures; exact warning count/type varies by run (2 SQLite datetime-adapter deprecations on this run; Codex separately observed 4, including 2 `.pytest_cache` warnings, on a concurrent run — both accurate for their own run, not a code discrepancy) | Claude Code (Codex ran out of session credits mid-review); fixed `delete_subject_data()`'s stale pre-delete-snapshot `deleted_counts` (now real DELETE rowcounts, live-verified against PostgreSQL) and `BoundPrincipal.audit_actor`'s non-injective `\|`-joined encoding (now canonical JSON, matching the identical fix already applied to `identity_bootstrap.py`) |
 | 2026-09-01 | Second external-audit review + live PostgreSQL `audit_events` append-only trigger drill | 3 of 4 claimed gaps (RLS, full audit triggers w/ actor context, evidence SHA-256 self-hashing, legacy ETL) rejected with technical reasoning in `LANE2_SYNC.md`; 1 correctly-scoped item implemented and live-verified: normal insert succeeds, direct UPDATE/DELETE against `audit_events` rejected by the database with the exact expected message, row survives unmodified, owner-role `DISABLE TRIGGER`/`ENABLE TRIGGER` bypass-and-restore confirmed genuine, downgrade/upgrade both clean; 341 passed | Claude Code; migration `036de46dd515`, SQLite-side no-op confirmed via the existing migration-chain regression suite |
+| 2026-09-01 | Codex cold immutable audit of Packages S/T/U at `1f0c576` | S and T ACCEPTED (independent re-drill and rowcount/encoding checks passed); U's migration mechanics verified but its INTEGRATION verdict REJECTED: a synthetic 30-day maximum + the accepted retention job reached the DELETE path and failed with `ProgrammingError`/`RaiseException: ... DELETE is not permitted`, `ROW_REMAINS=1` — audit_events is the retention job's only registered category, so U's unconditional DELETE rejection made the job permanently unusable for it | Codex; full audit and Package V handoff spec in `LANE2_SYNC.md` (~line 2420) |
+| 2026-09-02 | Package V fix + full backend gate + live PostgreSQL integration contract | New migration `4631f204d4ba` retires only the DELETE rejection (UPDATE stays rejected, named precisely as not "append-only"); a new committed opt-in integration test file proved at the real head: UPDATE rejected/DELETE permitted, a synthetic maximum can delete `audit_events` through the retention job, the exact 4-worker/11-expired/2-young drill is still exact against the real trigger-protected table, and downgrade/upgrade across the new revision is clean — all 4 passed in 6.71s, disposable database confirmed dropped after; full gate 341 passed with PostgreSQL stopped (proving the opt-in file skips, not fails, without Docker), 345 passed with it running; `alembic check` clean at head; `git diff --check` clean | Claude Code; every prior "database-enforced append-only" claim in this file, `README.md`, `CLAUDE.md`, `CODEX.md` and `SIH26101_TEAM_ORCHESTRATION.md` corrected to the real UPDATE-only boundary; awaiting Codex review |
 
 Append future entries; never overwrite failed evidence with a later success.

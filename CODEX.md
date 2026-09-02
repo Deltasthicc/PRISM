@@ -34,7 +34,9 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
 ## Current verified reality
 
 - Backend: FastAPI + SQLAlchemy with a zero-setup SQLite demo profile and an additive PostgreSQL
-  16/Alembic profile; 341 backend tests passed in the latest recorded full gate.
+  16/Alembic profile; 341 backend tests passed in the latest recorded full gate with no PostgreSQL
+  running (6 opt-in real-PostgreSQL tests skip cleanly), 347 passed with the local Compose
+  PostgreSQL up.
 - Frontend: Next.js; lint passed in the last verification.
 - Four curricula/34 competencies exist in the backend, but the supplied problem statement names a broader competency set.
 - Only the DSA Quest browser path is currently verified; three other backend dungeons are blocked by frontend route/filter assumptions.
@@ -43,27 +45,32 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
 - Recommendations are internal practice/catalogue fallback. There is no authorized live iGOT/NSSTA enrolment, completion, SSO or score-writeback integration.
 - Lane 2 provides a cross-reviewed local OIDC verifier, issuer/subject binding, fixed RBAC policy,
   deployment-database tenant boundary, audited data-rights/retention primitives and PostgreSQL
-  migrations/backup-restore drills. The retention-enforcement job now atomically claims its
-  PostgreSQL batch (`FOR UPDATE SKIP LOCKED`, live-drilled with 4 concurrent workers after a real
-  race was found and reproduced) but is implemented/live-tested only, not yet Codex-reviewed —
-  Codex handed remaining Lane 2 work to Claude Code after running out of session budget. Since then,
-  Claude Code ran a further independent audit (Package T: fixed a stale-snapshot deleted-count bug
-  and a non-injective `audit_actor` encoding) and evaluated a second external audit's four
-  DB-hardening claims (Package U: rejected RLS and legacy-ETL as targeting no existing tenant model,
-  rejected evidence self-hashing as providing no tamper-evidence from the same writer role, and
-  implemented a scoped PostgreSQL trigger rejecting UPDATE/DELETE on `audit_events`). Codex's own
-  cold immutable audit of S/T/U (2026-09-01) accepted S and T but rejected U's integration verdict:
-  the unconditional DELETE rejection directly broke `scripts/retention_job.py`, whose only
-  registered category is `audit_events` -- the retention job would become permanently unable to
-  delete it the moment any maximum retention is ever cited. Claude Code's Package V (2026-09-02)
-  fixed this with a follow-up migration (`4631f204d4ba`) retiring only the DELETE rejection --
-  UPDATE stays blocked at the database level (named precisely as that, not "append-only", since
-  DELETE through the retention job is intentional), live-verified via a committed opt-in real-
-  PostgreSQL integration contract, not yet Codex-reviewed. Full evidence and reasoning for all of
-  S/T/U/V in `LANE2_SYNC.md`. Existing product routes do not invoke any of this foundation; there
-  is no browser SSO, row-level organization tenancy, approved
-  production IdP, frontend test suite, observability stack or production authorization. A CI
-  workflow exists, but its presence alone is not evidence of a green remote run.
+  migrations/backup-restore drills. The retention-enforcement job's atomic PostgreSQL batch claiming
+  (`FOR UPDATE SKIP LOCKED`, live-drilled with 4 concurrent workers after a real race was found and
+  reproduced) and Package T (a stale-snapshot deleted-count fix and a non-injective `audit_actor`
+  encoding fix) are **Codex-accepted** on independent cold immutable review, including Codex's own
+  reproduction of the four-worker drill. Claude Code separately evaluated a second external audit's
+  four DB-hardening claims (Package U): rejected RLS and legacy-ETL because there is no identified
+  real source dataset, continuity requirement, approved mapping/conflict policy, reconciliation
+  contract or acceptance owner (not because of any tenant model -- tenancy is irrelevant to whether
+  that migration could exist), rejected evidence self-hashing as providing no tamper-evidence from
+  the same writer role, and implemented a scoped PostgreSQL trigger rejecting UPDATE/DELETE on
+  `audit_events`. Codex's own cold immutable audit of S/T/U (2026-09-01) accepted S and T outright
+  but rejected U's integration verdict: the unconditional DELETE rejection directly broke
+  `scripts/retention_job.py`, whose only registered category is `audit_events` -- the retention job
+  would become permanently unable to delete it the moment any maximum retention is ever cited.
+  Package V (2026-09-02) fixed this with a follow-up migration (`4631f204d4ba`) retiring only the
+  DELETE rejection -- UPDATE stays blocked at the database level (named precisely as that, not
+  "append-only", since DELETE through the retention job is intentional). Codex's review of Package V
+  **accepted its production migration/retention behavior outright**, and raised two bounded
+  test/evidence-hardening findings (a disposable-database cleanup gap, and a concurrency regression
+  that needed genuinely forced candidate-selection overlap plus a negative control proving that
+  forcing overlap is meaningful) -- both closed in a follow-up commit, awaiting Codex's narrow
+  re-review of exactly those four items. Full evidence and reasoning for all of S/T/U/V in
+  `LANE2_SYNC.md`. Existing product routes do not invoke any of this foundation; there is no browser
+  SSO, row-level organization tenancy, approved production IdP, frontend test suite, observability
+  stack or production authorization. A CI workflow exists, but its presence alone is not evidence of
+  a green remote run.
 
 Reinspect code and run tests before repeating any status claim; these bullets are a baseline, not permanent truth.
 

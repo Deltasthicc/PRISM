@@ -211,29 +211,38 @@ Lanes 1 and 6 start immediately against frozen fixtures. They do not wait idle f
 
 Lane 2 Packages A–N and Q are implemented and reciprocally reviewed on
 `codex/lane-2-core-data/bootstrap`. Package P/S (retention enforcement, including a live-tested fix
-for a real PostgreSQL concurrency defect Codex found and reproduced), Package T (a full
-independent security/data audit that found and fixed two further real issues), and Package U (a
-second, independent external audit's four DB-hardening claims — RLS, database-level audit
-triggers, evidence self-hashing, legacy SQLite ETL — each independently re-derived rather than
-taken on faith; three rejected with technical reasoning, one correctly scoped and implemented as a
-PostgreSQL trigger rejecting UPDATE/DELETE on `audit_events`) are implemented and live-tested by
-Claude Code. Codex's own cold immutable audit of S/T/U (2026-09-01) accepted S and T but rejected
-U's integration verdict: the unconditional DELETE rejection directly conflicted with
-`scripts/retention_job.py`, whose only registered category is `audit_events` — the retention job
-would become permanently unable to delete it the moment any maximum retention is ever cited.
-Package V (2026-09-02) fixed this with a follow-up migration (`4631f204d4ba`) that retires only the
-DELETE rejection — the database now blocks UPDATE only (named precisely as that, not
-"append-only", since DELETE through the retention job is intentional and the genuine append-only
-guarantee is an application-layer property), live-verified via a committed opt-in real-PostgreSQL
-integration contract (`tests/test_core_retention_job_postgres_integration.py`). See `LANE2_SYNC.md`
-for all four packages' full evidence; Package V is implemented and live-tested by Claude Code but
-not yet Codex-reviewed — Codex handed remaining Lane 2 implementation work to Claude Code after
-running out of session budget mid-review; exact review state remains in `LANE2_SYNC.md`. The
-current full backend gate is **341 passed** with no PostgreSQL running, **345 passed** with the
-local Compose Postgres up (Package V adds 4 opt-in integration tests that skip cleanly without
-Docker). The following assignments are copy-ready messages for the remaining owners. They are
-dependencies of a controlled pilot or production claim, not reasons to reopen completed Lane 2
-packages.
+for a real PostgreSQL concurrency defect Codex found and reproduced) and Package T (a full
+independent security/data audit that found and fixed two further real issues) are
+**Codex-accepted** on independent cold immutable review (2026-09-01), including Codex's own
+reproduction of the four-worker drill. Package U (a second, independent external audit's four
+DB-hardening claims — RLS, database-level audit triggers, evidence self-hashing, legacy SQLite
+ETL — each independently re-derived rather than taken on faith) rejected three with technical
+reasoning (RLS and legacy ETL because there is no identified real source dataset, continuity
+requirement, approved field/identity mapping, conflict policy, reconciliation contract or
+acceptance owner — not because of any tenant model, which is irrelevant to whether that migration
+could exist; evidence self-hashing because the same writer role can recompute it) and implemented
+the fourth, correctly scoped, as a PostgreSQL trigger rejecting UPDATE/DELETE on `audit_events`.
+Codex's own cold immutable audit of S/T/U accepted S and T but rejected U's integration verdict:
+the unconditional DELETE rejection directly conflicted with `scripts/retention_job.py`, whose only
+registered category is `audit_events` — the retention job would become permanently unable to
+delete it the moment any maximum retention is ever cited. Package V (2026-09-02) fixed this with a
+follow-up migration (`4631f204d4ba`) that retires only the DELETE rejection — the database now
+blocks UPDATE only (named precisely as that, not "append-only", since DELETE through the retention
+job is intentional and the genuine append-only guarantee is an application-layer property).
+Codex's review of Package V **accepted its production migration/retention behavior outright**, and
+raised two bounded test/evidence-hardening findings: the disposable-database fixture in
+`tests/test_core_retention_job_postgres_integration.py` only cleaned up after `yield`, leaking the
+database on a pre-yield failure (fixed with unconditional `try/finally` plus a deterministic
+regression proving no leak), and the four-worker concurrency regression only synchronized workers
+at thread-pool submission, not at genuinely overlapping candidate selection (fixed with a test-only
+`Session` seam that forces real overlap via a shared barrier, plus a deterministic negative control
+proving an equivalent unlocked-select flow fails the same contract under identical forced overlap).
+See `LANE2_SYNC.md` for all four packages' full evidence; Package V's test hardening is implemented
+and live-tested by Claude Code, awaiting Codex's narrow re-review of exactly those two findings.
+The current full backend gate is **341 passed** with no PostgreSQL running (6 opt-in integration
+tests skip cleanly without Docker), **347 passed** with the local Compose Postgres up. The
+following assignments are copy-ready messages for the remaining owners. They are dependencies of a
+controlled pilot or production claim, not reasons to reopen completed Lane 2 packages.
 
 **Send to the Lane 5 person — Product API, Integrations & Analytics**
 

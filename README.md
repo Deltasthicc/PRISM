@@ -69,27 +69,34 @@ from a proposal.
   upload/preview flow, built on the existing Pixel design-system primitives.
 - **An honest admin view.** `frontend/app/admin` shows aggregate-only organizational gap data (no
   individual learner record, ever) with an explicit banner stating there is no RBAC boundary yet.
-- **341/341 backend tests pass on the current Lane 2 branch.** The latest full gate covers the earlier cross-domain engine and
+- **341/341 backend tests pass on the current Lane 2 branch (347/347 with the local PostgreSQL
+  Compose service reachable).** The latest full gate covers the earlier cross-domain engine and
   ingestion behavior plus database migrations, governance records, OIDC verification, identity
   binding/RBAC, bootstrap invariants, data rights (including accurate deletion-count reporting under
   concurrent writes), retention (including atomic PostgreSQL row-claiming for concurrent enforcement
-  runs) and adversarial backup/restore cases. Reported warnings are not failed tests; the exact
-  warning count/type varies by run (SQLite datetime-adapter deprecations from two regression tests,
-  and possibly `.pytest_cache` write-contention warnings when both agents run the suite
-  concurrently in the same shared working tree) — re-run and read the actual warning text before
-  citing a specific count.
-- **Lane 2's core platform foundation is implemented; most of it is reciprocally reviewed.**
+  runs, live-verified against a real trigger-protected table with genuinely forced concurrent
+  candidate-selection overlap and a negative control) and adversarial backup/restore cases. The 6
+  additional PostgreSQL-only tests skip cleanly (not fail) without Docker running. Reported warnings
+  are not failed tests; the exact warning count/type varies by run (SQLite datetime-adapter
+  deprecations from two regression tests, and possibly `.pytest_cache` write-contention warnings
+  when both agents run the suite concurrently in the same shared working tree) — re-run and read the
+  actual warning text before citing a specific count.
+- **Lane 2's core platform foundation is implemented and reciprocally reviewed.**
   PostgreSQL 16 migrations, migration-gated startup, local Keycloak OIDC verification, identity
-  binding, fixed RBAC policy, audit/data-rights primitives and local backup/restore drills are real
-  and accepted by both agents. The retention-enforcement job (including a live-tested fix for a real
-  PostgreSQL concurrency defect Codex found) and a PostgreSQL trigger on `audit_events` are
-  implemented and live-tested but still awaiting Codex's final review — see `LANE2_SYNC.md` for
-  exact status. The trigger blocks `UPDATE` only, not `DELETE`: an earlier version blocked both and
-  Codex's cold audit caught that this made the retention job unable to ever delete its only
-  registered category once a maximum retention is cited, so a follow-up migration retired the
-  `DELETE` rejection — the genuine append-only guarantee (rows are never removed except through the
-  retention job) is an application-layer property, never a database one. Existing HTTP routes do
-  not compose any of these primitives yet; see the handoff below.
+  binding, fixed RBAC policy, audit/data-rights primitives, local backup/restore drills, the
+  atomic-row-claiming retention-enforcement job (a live-tested fix for a real PostgreSQL
+  concurrency defect Codex found), and a PostgreSQL trigger on `audit_events` are all
+  **Codex-accepted** on independent immutable review. The trigger blocks `UPDATE` only, not
+  `DELETE`: an earlier version blocked both and Codex's cold audit caught that this made the
+  retention job unable to ever delete its only registered category once a maximum retention is
+  cited, so a follow-up migration (Package V) retired the `DELETE` rejection — accepted by Codex as
+  correct production behavior — while the genuine append-only guarantee (rows are never removed
+  except through the retention job) remains an application-layer property, never a database one.
+  Package V's own new test/evidence hardening (closing two bounded findings from that same Codex
+  review — a disposable-database cleanup gap and a concurrency test needing genuinely forced
+  overlap) is implemented and live-tested but awaiting Codex's narrow re-review of just those
+  findings — see `LANE2_SYNC.md` for exact status. Existing HTTP routes do not compose any of these
+  primitives yet; see the handoff below.
 - **`npm audit --omit=dev` reports 0 vulnerabilities** after bumping the `next`/postcss dependency
   override that was pinning an old vulnerable version.
 
@@ -128,14 +135,28 @@ Package P/S adds retention/key-rotation evidence, including a live-tested atomic
 concurrency fix, and a deliberately unwired authenticated-encryption envelope; Package T is a full
 independent security/data audit that found and fixed two further real issues; Package U reviewed a
 second external audit's four proposed database-hardening items, rejected three with technical
-reasoning (PostgreSQL row-level security and a legacy data migration have no tenant model to
-target yet; a self-stored evidence hash and a "logs lost on crash" justification for full audit
-triggers don't hold up), and implemented the one correctly-scoped item that did — PostgreSQL now
-rejects any `UPDATE`/`DELETE` against `audit_events` at the database level (see `LANE2_SYNC.md` for
-the full audits and reasoning). Codex handed remaining Lane 2 work to Claude Code after running out
-of session budget, so Package P/S/T/U is implemented and live-tested but not yet marked
-Codex-accepted. The current full backend gate is 341 passing tests. This completes the current
-hackathon Lane 2 foundation; it does **not** make the whole application production-ready.
+reasoning (PostgreSQL row-level security and a legacy SQLite-to-PostgreSQL data migration are
+deferred because there is no identified real source dataset, continuity requirement, approved
+field/identity mapping, conflict policy, reconciliation contract or acceptance owner — not because
+of any tenant model, which is irrelevant to whether that migration could exist; a self-stored
+evidence hash and a "logs lost on crash" justification for full audit triggers don't hold up
+either), and implemented the one correctly-scoped item that did — a PostgreSQL trigger on
+`audit_events`. Codex's own cold immutable audit accepted Package S and Package T outright, but
+found that Package U's original trigger (which rejected both `UPDATE` and `DELETE`) directly
+conflicted with the retention job, whose only registered category is `audit_events`: once any
+maximum retention is cited, the job's own `DELETE` would fail against its own project's trigger.
+Package V fixed this with a follow-up migration that retires only the `DELETE` rejection — the
+database now blocks `UPDATE` only, and the genuine append-only guarantee (rows are never removed
+except through the retention job under a cited maximum) is an application-layer property, never a
+database one. Codex's subsequent review accepted Package V's production migration/retention
+behavior outright and raised two bounded test/evidence-hardening findings (a disposable-database
+cleanup gap and a concurrency test needing genuinely forced overlap plus a negative control), both
+of which are now closed — see `LANE2_SYNC.md` for the full audit trail and evidence. The current
+full backend gate is 341 passing tests (6 skipped) with no PostgreSQL running, and 347 passing
+tests with the local Compose PostgreSQL up — the difference is exactly the six opt-in real-
+PostgreSQL integration tests in `test_core_retention_job_postgres_integration.py`, which skip
+cleanly rather than fail in any environment without Docker. This completes the current hackathon
+Lane 2 foundation; it does **not** make the whole application production-ready.
 
 - **Lane 5 — Product API/Integrations:** attach Bearer verification, binding, permission,
   deployment-tenant and object-scope checks to every protected route; stop treating request

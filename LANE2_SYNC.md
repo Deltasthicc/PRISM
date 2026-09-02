@@ -267,7 +267,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **ACCEPTED by Codex on immutable `699641a`/current-tree review, including an independent live four-worker drill. The code is correct in isolation; Package U subsequently introduced an integration conflict at head, assigned to V rather than reopening S's locking algorithm.** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; truth docs |
 | T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
-| V — Reconcile audit immutability with lawful retention | Claude Code | **PRODUCTION FIX ACCEPTED by Codex on immutable `847c0a8`: update-only trigger semantics, former P1 reproduction, migration symmetry, `alembic check`, 4/4 live integration and 345-test full gate verified. Two P2 closure findings remain in the activity log: deterministic concurrency-test overlap/cleanup and stale current-status prose.** | 2026-09-02 | `backend/migrations/versions/4631f204d4ba_retire_audit_events_delete_rejection.py`, PostgreSQL integration test, migration tests and truth docs |
+| V — Reconcile audit immutability with lawful retention | Claude Code | **PRODUCTION FIX ACCEPTED by Codex on immutable `847c0a8`: update-only trigger semantics, former P1 reproduction, migration symmetry, `alembic check`, 4/4 live integration and 345-test full gate verified. Both P2 closure findings (deterministic concurrency-test forced overlap/cleanup, and stale current-status prose) are now CLOSED: disposable-database cleanup is unconditional with a deterministic leak regression, the 4-worker drill genuinely forces overlapping candidate selection via a test-only Session barrier seam with a deterministic negative control proving the methodology is meaningful, the final-rerun audit-absence is explicitly queried, and every stale current-status/ETL-rationale doc claim is corrected. 6 opt-in PostgreSQL tests, 341/347-test full gate. Awaiting Codex's narrow re-review of exactly these four items.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`) |
 
 ## Backlog / next up
 
@@ -2872,3 +2872,121 @@ FINAL GATES AND DELIVERY
   browser PKCE, approved IdP, production KMS/DR and legal/privacy approvals remain explicit future
   cross-lane/external dependencies; they are not reasons to keep reopening the completed local Lane
   2 foundation or to claim the overall product is production-ready.
+
+- 2026-09-02 — Claude Code — **Closed both Codex P2 findings on Package V (forced-contention
+  validity, pre-yield cleanup) plus final-rerun audit-absence and current-doc consistency, exactly
+  the four items named in Codex's handoff. `4631f204d4ba` and the accepted retention algorithm were
+  not touched.**
+
+  **Scope discipline.** Fetched `origin/codex/lane-2-core-data/bootstrap` (`d3a0516`, this session's
+  minimum base), confirmed a clean tree, and worked only in
+  `backend/tests/test_core_retention_job_postgres_integration.py` plus the seven named
+  current-status documents. Production files (`backend/scripts/retention_job.py`,
+  `backend/migrations/versions/4631f204d4ba_*`, `backend/security/**`) were not opened for editing.
+  No RLS, invented `tenant_id`, global auth middleware, hash chain, encryption-format change,
+  re-encryption CLI, SQLite ETL, `routes/**` or `frontend/**` change was made.
+
+  **P2 finding 2 (disposable-database cleanup leak) — closed.** The original fixture put cleanup
+  after a generator's `yield`, so a failure between a successful `CREATE DATABASE` and `yield`
+  (Codex's example: an Alembic migration failure) skipped cleanup entirely. Extracted the whole
+  create/migrate/yield sequence into `_disposable_postgres_database()`, a `contextlib.contextmanager`
+  wrapping everything in `try/finally` — Python's `finally` clause runs during exception unwinding
+  regardless of whether execution ever reached `yield`, which is exactly the property needed. Added
+  `test_setup_failure_between_create_and_yield_does_not_leak_database`: monkeypatches the module's
+  `_run_alembic` to unconditionally raise, captures the generated database name via an optional
+  `_name_holder` dict populated immediately after `CREATE DATABASE` succeeds (before migration,
+  before `yield` — necessary because the test itself can never reach the `with` block's body to
+  learn the name any other way), then queries `pg_database` directly and asserts the name does not
+  exist. Passed on the first run. The existing `postgres_head_database` pytest fixture is now a thin
+  wrapper around the same hardened context manager, so every other test in the file inherits the fix
+  automatically.
+
+  **P2 finding 1 (forced contention + meaningfulness) — closed.** Two parts, both requested
+  explicitly:
+
+  *Forcing genuine overlap.* Added `_BarrierSyncSession`, a test-only `sqlalchemy.orm.Session`
+  subclass. Its `execute()` override calls through to the real `Session.execute()` unchanged, then
+  -- only for the exact statement matching `getattr(statement, "_for_update_arg", None)` with
+  `.skip_locked` true (verified empirically against this project's SQLAlchemy 2.0.35: a plain
+  `select()` has `_for_update_arg is None`, `.with_for_update(skip_locked=True)` sets a
+  `ForUpdateArg` with `.skip_locked is True`, and `Delete` constructs have no such attribute at all,
+  so the interception is exact and cannot accidentally catch the `more_remain` check or the DELETE)
+  -- buffers the already-fetched rows and blocks at a shared `threading.Barrier(4,
+  timeout=20.0)` before returning them. Row locks acquired by `FOR UPDATE SKIP LOCKED` are held for
+  the transaction's duration, not released by fetching rows into Python, so blocking here genuinely
+  holds all four workers' locks open simultaneously until every worker has independently reached the
+  same point -- forcing real overlap, not relying on `ThreadPoolExecutor` submission-order luck.
+  `scripts/retention_job.py` itself was never opened; the seam only wraps the `Session` object
+  handed into the existing, unmodified `_enforce_maximum_retention_core()` call.
+
+  *Proving it's meaningful.* Added `test_negative_control_without_skip_locked_fails_the_same_contract`:
+  four workers run `_broken_worker_run`, a deliberately unlocked candidate-select-then-delete flow
+  (no `.with_for_update()` at all -- the exact shape `scripts/retention_job.py`'s own inline comment
+  names as the pre-Package-S bug), synchronized at the identical barrier point right after their
+  unlocked SELECT. Result, run against real PostgreSQL: `union == {expired[0], expired[1],
+  expired[2]}` exactly (not the full 11), `total_deleted == 3`, the other 8 expired rows and both
+  young rows survive untouched. This is deterministic PostgreSQL MVCC/row-lock behavior, not a
+  timing race: forcing all four workers to complete their unlocked SELECT before any DELETE
+  guarantees they observe the identical oldest-3-rows snapshot; whichever transaction's DELETE
+  commits first genuinely removes those 3; the other three block on those rows' locks and, once
+  unblocked, re-check their WHERE clause against now-current data, find the rows already gone, and
+  delete 0 -- no sleep, no wall-clock assumption anywhere.
+
+  As a further sanity check beyond what was asked (not committed -- a throwaway scratch script), ran
+  the SAME broken/unlocked selection logic **serially** (four sequential calls, no barrier, no
+  `ThreadPoolExecutor`) against a fresh disposable database: `union == all 11 expired IDs`, i.e. the
+  bug does **not** reproduce without forced concurrent overlap. This is the proof that the negative
+  control's failure genuinely depends on the barrier forcing real overlap -- not an unrelated flaw
+  in the broken shape that would fail regardless of concurrency, which would have made the negative
+  control meaningless.
+
+  **Final-rerun audit-absence — closed.** `test_four_concurrent_workers_delete_all_expired_rows_exactly_once`
+  now explicitly runs `SELECT count(*) FROM audit_events WHERE action = 'retention_job.enforce_maximum'
+  AND actor = 'test:package_v_final_rerun'` after the `(0, 0)` rerun and asserts it is `0`, rather
+  than inferring "no audit event" from the returned `RetentionEnforcementResult` dataclass fields
+  alone (which the evidence prose had been claiming without the file itself proving it).
+
+  **Live verification, in full.** With the local Compose PostgreSQL up:
+  `pytest tests/test_core_retention_job_postgres_integration.py -v` → **6 passed in 8.65s** (the
+  original 4 plus the 2 new). Direct `pg_database` query for `datname LIKE 'sih_pkgv_%'` afterward
+  returned zero rows. Full backend gate: **341 passed, 6 skipped, 2 warnings in 54.67s** with
+  PostgreSQL stopped (confirming the file cannot break a Docker-less CI run or sandbox -- it skips
+  every one of its 6 tests, it does not fail); **347 passed, 2 warnings in 60.40s** with PostgreSQL
+  running. `alembic current` against the local dev database → `4631f204d4ba (head)`. `alembic check`
+  → `No new upgrade operations detected`. `git diff --check` → clean (only Git's own CRLF-conversion
+  notices, no actual whitespace errors). `git fetch origin` immediately before staging showed no
+  commits past `d3a0516` -- no concurrent Codex changes to reconcile.
+
+  **Current-doc consistency — closed**, per Codex's exact list. Corrected every stale claim: the
+  contradictory later paragraph in `README.md` ("PostgreSQL now rejects any UPDATE/DELETE",
+  omitting Package V, calling S/T/U "not yet Codex-accepted", 341-only) now matches the corrected
+  earlier paragraph and states Codex's actual verdicts (S/T Codex-accepted; Package V production
+  accepted, test hardening awaiting narrow re-review) and both current counts (341/6-skipped without
+  Postgres, 347 with it). `SIH26101_MASTER_CHECKLIST.md`'s header paragraph and "Automated tests" row
+  no longer say Package P/S "awaits Codex" or cite 339 as current. `CODEX.md`, `CLAUDE.md` and
+  `SIH26101_TEAM_ORCHESTRATION.md` all now state Codex's actual S/T/V verdicts instead of a blanket
+  "awaiting review," and cite 341/347. The ETL rejection rationale is corrected everywhere it still
+  said "no tenant model" (`README.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `CODEX.md`) to the reasoning
+  Codex's own disposition actually accepted: no identified real source dataset, continuity
+  requirement, approved field/identity mapping, conflict policy, reconciliation contract or
+  acceptance owner -- tenancy is irrelevant to whether that migration could exist.
+  `docs/contracts/data-authorization.md` section 6.3 already stated the correct UPDATE-only/DELETE-
+  via-retention-job boundary from the original Package V pass and needed no further change. All
+  historical dated rows in `EVIDENCE.md` and `SIH26101_MASTER_CHECKLIST.md` were preserved unchanged;
+  new rows were appended for Codex's Package V review and this closure pass.
+
+  **What this does not claim.** No RLS, multi-organization tenancy, protected product routes,
+  cryptographic PII protection, compliance, or production readiness. The database owner-equivalent
+  application role can still disable the `UPDATE`-rejecting trigger -- this remains a bug-catching
+  safety net, not a credential-compromise or compliance boundary. Organization tenancy/RLS,
+  product-route authorization (Lane 5), browser PKCE (Lanes 1+5), approved production IdP,
+  production KMS/DR and legal/privacy sign-off remain explicit external/cross-lane dependencies, not
+  Lane 2 defects.
+
+  **Requesting Codex's narrow re-review of exactly the four named items:** (1) forced-contention
+  validity -- does `_BarrierSyncSession` genuinely force overlapping candidate selection, and does
+  the negative control prove that meaningfully; (2) pre-yield cleanup -- does the new regression
+  actually prove no leak; (3) final-rerun audit absence -- is the explicit query sufficient; (4)
+  current-doc consistency -- do the corrected documents now agree with each other and with Codex's
+  own verdicts. Not requesting re-review of the already-accepted production migration or retention
+  algorithm, which were not touched.

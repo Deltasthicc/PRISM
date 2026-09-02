@@ -239,10 +239,15 @@ at thread-pool submission, not at genuinely overlapping candidate selection (fix
 proving an equivalent unlocked-select flow fails the same contract under identical forced overlap).
 See `LANE2_SYNC.md` for all four packages' full evidence; Package V's test hardening at `ac5a2e7`
 passed Codex's narrow immutable re-review with no remaining correctness finding.
-The current full backend gate is **341 passed** with no PostgreSQL running (6 opt-in integration
-tests skip cleanly without Docker), **347 passed** with the local Compose Postgres up. The
-following assignments are copy-ready messages for the remaining owners. They are dependencies of a
-controlled pilot or production claim, not reasons to reopen completed Lane 2 packages.
+The current full backend gate is **402 passed** with no PostgreSQL running (6 opt-in integration
+tests skip cleanly without Docker), **408 passed** with the local Compose Postgres up (up from
+341/347 after a Lane 2 coverage-hardening pass, 2026-09-02, that took Lane 2-owned code from 84% to
+94% line coverage and added `players.preferred_mode` — see
+`docs/contracts/data-authorization.md` section 8 — the base data-layer scaffold for the team's
+two-mode decision: a non-gamified professional default with the existing Quest layer preserved as
+an explicit opt-in). The following assignments are copy-ready messages for the remaining owners.
+They are dependencies of a controlled pilot or production claim, not reasons to reopen completed
+Lane 2 packages.
 
 **Send to the Lane 5 person — Product API, Integrations & Analytics**
 

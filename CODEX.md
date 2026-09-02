@@ -34,9 +34,12 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
 ## Current verified reality
 
 - Backend: FastAPI + SQLAlchemy with a zero-setup SQLite demo profile and an additive PostgreSQL
-  16/Alembic profile; 341 backend tests passed in the latest recorded full gate with no PostgreSQL
-  running (6 opt-in real-PostgreSQL tests skip cleanly), 347 passed with the local Compose
-  PostgreSQL up.
+  16/Alembic profile; 402 backend tests passed in the latest recorded full gate with no PostgreSQL
+  running (6 opt-in real-PostgreSQL tests skip cleanly), 408 passed with the local Compose
+  PostgreSQL up. `players.preferred_mode` (migration `640603a37f2f`, `models/enums.py`'s
+  `LearningMode`) is a new base scaffold for the team's two-mode decision — see
+  `docs/contracts/data-authorization.md` section 8 for the exact boundary; no route reads or
+  writes it yet.
 - Frontend: Next.js; lint passed in the last verification.
 - Four curricula/34 competencies exist in the backend, but the supplied problem statement names a broader competency set.
 - Only the DSA Quest browser path is currently verified; three other backend dungeons are blocked by frontend route/filter assumptions.

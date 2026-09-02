@@ -20,6 +20,7 @@ from db.database import (
 
 # Import all models so tables are registered with Base.metadata
 from models.player import Player
+from models.enums import DEFAULT_LEARNING_MODE
 from models.accuracy_history import AccuracyHistory
 from models.question import Question
 from models.submission import AnswerSubmission
@@ -54,6 +55,7 @@ async def lifespan(app: FastAPI):
         ("pending_force_correct", "BOOLEAN DEFAULT 0"),
         ("powerup_window_start", "TEXT"),
         ("powerup_uses_this_window", "INTEGER DEFAULT 0"),
+        ("preferred_mode", f"TEXT DEFAULT '{DEFAULT_LEARNING_MODE}'"),
     ])
     ensure_columns("accuracy_history", [
         ("mastered", "BOOLEAN DEFAULT 0"),

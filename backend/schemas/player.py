@@ -6,9 +6,18 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
+from models.enums import LearningMode
+
 
 class PlayerCreate(BaseModel):
     username: str
+    # preferred_mode is deliberately NOT accepted here yet: routes/game.py's
+    # create_player() (Lane 5-owned) does not read it, so a client-supplied
+    # value would be silently ignored -- every new player gets the model's
+    # own professional/base default (models/enums.py) regardless. Accepting
+    # a field the route can't yet honor would be exactly the kind of
+    # looks-implemented-but-isn't gap this project explicitly guards
+    # against; add it here once Lane 5 wires it through.
 
 
 class PlayerResponse(BaseModel):
@@ -22,6 +31,7 @@ class PlayerResponse(BaseModel):
     last_active: Optional[datetime] = None
     guild_id: Optional[str] = None
     hint_tokens: int
+    preferred_mode: LearningMode
 
 
 class PlayerStatsResponse(BaseModel):

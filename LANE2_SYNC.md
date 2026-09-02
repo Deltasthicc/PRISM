@@ -3256,3 +3256,113 @@ FINAL GATES AND DELIVERY
   Nothing further claimed pending from either side of this specific PRISM-integration audit; regular
   Lane 2 O-C closure (Packages A-V) from before this rebrand remains separately closed as recorded
   earlier in this file.
+
+- 2026-09-02 — Claude Code — **Merged `main` into `codex/lane-2-core-data/bootstrap` (user request,
+  Codex out of session credits); implemented the base data-layer scaffold for the team's two-mode
+  decision; ran a Lane 2 test-coverage hardening pass.**
+
+  **Merge.** `git merge main` onto lane-2's tip (`0e768b7`). One conflict, on
+  `frontend/app/page.jsx` -- caused by this session's own local branch ref having gone stale (it
+  still pointed at `71b8a1d`, three commits behind what had actually been pushed to origin from an
+  earlier detached-worktree session), not a real content disagreement. Aborted, fast-forwarded the
+  local branch to `origin/codex/lane-2-core-data/bootstrap`, retried: clean merge, no conflicts.
+  Post-merge: 351 passed, `git grep` for conflict markers outside `docs/archive/**` found none.
+  Pushed as `b839327`.
+
+  **Two-mode scaffold.** The user relayed a WhatsApp thread with a teammate (2 Sep 2026): the
+  product's primary audience is government officials being trained against KCM (Karmayogi
+  Competency Model)/Mission Karmayogi, so the base/default experience must be non-gamified, with
+  the existing dungeon/Quest layer preserved as an explicit, secondary opt-in for reaching a
+  broader audience -- not a new decision, this is the same "professional default, Quest optional"
+  split already recorded in `SIH26101_MASTER_CHECKLIST.md`/`SIH26101_WINNING_PLAYBOOK.md`, now
+  asked to get a real, even if minimal, data-layer foundation rather than staying only a frontend-
+  routing convention. Scoped strictly to Lane 2 ownership (models/schemas/migrations), explicitly
+  not curriculum-per-mode policy (Lane 3) or routing/rendering (Lane 1/5), per the user's own
+  instruction to implement it in Lane 2 first rather than another lane's territory.
+
+  Added `models/enums.py`'s `LearningMode` (`"professional"` default, `"quest"`) and
+  `players.preferred_mode` (migration `640603a37f2f`, revises `4631f204d4ba`). A `CHECK` constraint
+  (`ck_players_preferred_mode_known_value`) is declared identically in the model's `__table_args__`
+  and the migration, and applied via Alembic **batch mode** rather than a PostgreSQL-only dialect
+  gate -- unlike `036de46dd515`/`4631f204d4ba`'s trigger (which has no SQLite equivalent at all), an
+  added *column* is part of SQLAlchemy's own comparable table metadata, so gating it to a no-op on
+  SQLite would have left a real, `alembic check`-detectable drift between the model and a live-
+  migrated SQLite database, not just an absent PostgreSQL-only feature. Batch mode works on both
+  dialects via Alembic's copy-and-move strategy on SQLite and a plain `ALTER` on PostgreSQL.
+
+  Live-verified against real PostgreSQL: migration applies cleanly, `\d players` shows the column
+  with `server_default='professional'` and the constraint; a direct
+  `INSERT ... preferred_mode='nonsense'` is rejected by the database itself
+  (`ck_players_preferred_mode_known_value` violation); downgrade removes the column, re-upgrade
+  restores it; `alembic check` returns "No new upgrade operations detected" at head. Also verified
+  directly against a real Alembic-migrated SQLite file (not just `Base.metadata.create_all()`):
+  batch mode's table recreation genuinely enforces the same `CHECK` constraint there too --
+  confirmed by a raw `sqlite3` INSERT of an invalid value failing with
+  `CHECK constraint failed: ck_players_preferred_mode_known_value`.
+
+  One real bug caught and fixed before this was ever committed: the model's `Column` first declared
+  only `default=` (an ORM-side Python default), not `server_default=`. `alembic check` against the
+  live-migrated PostgreSQL database (which genuinely has a `server_default`, set by the migration)
+  correctly flagged this as a drift -- `modify_default` -- since the model and the real schema
+  disagreed. Fixed by declaring `server_default=DEFAULT_LEARNING_MODE` on the model too, matching
+  the migration exactly; `alembic check` came back clean immediately after. Recorded because this is
+  exactly the kind of gap `alembic check` exists to catch, and it would have shipped invisibly
+  without actually running it against a live database rather than just eyeballing the migration file.
+
+  `schemas/player.py`'s `PlayerResponse` now exposes `preferred_mode` (read-only, reflects real
+  stored state). `PlayerCreate` deliberately does **not** accept it: `routes/game.py`'s
+  `create_player()` (Lane 5-owned) doesn't read it, so accepting a field the route can't yet honor
+  would misrepresent what's actually implemented -- flagged in the schema's own docstring for
+  whoever wires the route through next. `docs/contracts/data-authorization.md` section 8 (new)
+  documents the full boundary: presentation/audience discriminator only, never an authorization
+  check; RBAC and the deployment-database tenant boundary remain the only real access-control axes;
+  Lane 3 owns which curricula are offered per mode; Lane 1/5 own routing; a pre-existing SQLite demo
+  file upgraded only through `ensure_columns()` gets the column but not the constraint (matching
+  this project's existing, accepted precedent for every other `ensure_columns()`-added column).
+
+  New test file `tests/test_core_learning_mode.py` (9 tests): enum/default consistency, the model
+  default applies without specifying it, an explicit `"quest"` value round-trips, the database-level
+  constraint genuinely rejects an unknown value (not just documented as rejecting one), the schema
+  layer independently rejects an out-of-enum value too, and a real subprocess-driven SQLite
+  migration up/downgrade/re-upgrade cycle -- matching this project's established per-migration
+  verification pattern (see the `4631f204d4ba` precedent).
+
+  **Lane 2 test-coverage hardening.** The user separately asked for "more robust and more complete"
+  Lane 2 test coverage. Installed `pytest-cov` (now in `requirements-dev.txt`, not ad hoc) and ran
+  `pytest --cov=db --cov=models --cov=schemas --cov=security --cov=scripts --cov-report=term-missing`
+  to find real gaps rather than guessing: **84% overall going in**. Targeted every 0%-or-large file:
+
+  - `db/database.py` (74% to 100%): new tests for `ensure_columns()` (adds a missing column,
+    idempotent on a second call, genuine no-op on PostgreSQL -- via monkeypatching the module's own
+    `_is_sqlite`/`engine` globals rather than subprocess reimports), `get_db()` (yields a working
+    session, genuinely calls `.close()` on generator exhaustion -- verified with a close() spy, not
+    just "did iteration stop"), `is_sqlite_database()`, and `migration_head_revision()`'s multi-head
+    `RuntimeError` branch (mocked `ScriptDirectory.get_heads()` to return two heads).
+  - `db/seed.py` (0% to 78%): smoke tests only, deliberately not asserting on Lane 3-owned content
+    (exact topic names/counts) -- exactly one DSA dungeon created with a boss room, a demo player
+    exists, `seed_database()` is idempotent on rerun (a real local-dev restart scenario), one dungeon
+    gets created per non-DSA curriculum straight from the real `services.curricula.CURRICULA` (not a
+    hardcoded expectation of what Lane 3 currently defines), `seed_curricula_dungeons()` idempotent
+    on rerun too.
+  - `schemas/accuracy.py`, `schemas/question.py`, `schemas/learning.py` (all 0% to 100%): direct
+    Pydantic-validation unit tests -- bounds (`years_experience` 0-60, self-ratings 0-5, bounded
+    list lengths), the `experience_level` regex pattern's exact allowed set, whitespace-stripping/
+    blank-entry-dropping in `_bounded_list`, and -- the one genuinely security-relevant case found --
+    pinning as an executable fact (not just trusting the source comment) that `QuestionResponse`
+    has no `expected_answer` field at all while `QuestionFullResponse` requires one, so a future
+    accidental field addition to the client-facing schema would fail a test immediately instead of
+    leaking answers silently.
+
+  Full gate after this pass: **402 passed** with PostgreSQL stopped (6 skipped), **408 passed** with
+  it running -- up from 351 after the merge (57 new tests: 9 mode scaffold, 15 database.py additions
+  -6 pre-existing = net +9, 5 seed.py, 11 accuracy/question schemas, 26 learning schemas). Overall
+  Lane 2-owned coverage: **84% to 94%**. Remaining gaps (`security/encryption.py` 89%,
+  `security/rbac.py` 93%, `scripts/retention_job.py`'s CLI `_main()` 81%, a handful of narrow error
+  branches elsewhere) are smaller and lower-value than what was closed; not chased further in this
+  pass to keep it finishing rather than open-ended. `alembic check` clean at head `640603a37f2f`;
+  `git diff --check` clean; `.coverage` added to `.gitignore` rather than committed.
+
+  Updated current-status counts (402/408, replacing 341/347) in `CLAUDE.md`, `CODEX.md`,
+  `SIH26101_TEAM_ORCHESTRATION.md`. Historical dated rows in `EVIDENCE.md`/
+  `SIH26101_MASTER_CHECKLIST.md` preserved unchanged; new rows appended for the merge, the scaffold,
+  and the coverage pass.

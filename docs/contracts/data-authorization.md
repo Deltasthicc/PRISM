@@ -312,3 +312,42 @@ authorization rule opens a contract-change proposal against this file
 (`SIH26101_TEAM_ORCHESTRATION.md` section 8, “Cross-lane handoff”) instead of editing Lane 2's
 models or silently inventing query semantics. The proposal must identify required migrations,
 backfill behavior, consumers, tests and rollback impact.
+
+## 8. Learning mode scaffold (professional vs. quest)
+
+`players.preferred_mode` (migration `640603a37f2f`, `models/enums.py`'s `LearningMode`) records
+which experience surface a learner is currently associated with: `"professional"` (the default —
+the non-gamified, KCM/Mission Karmayogi-oriented base product for government-official learners) or
+`"quest"` (the existing optional dungeon/XP/combat layer, an explicit opt-in per the team's own
+recorded decision — see `SIH26101_MASTER_CHECKLIST.md` and `SIH26101_WINNING_PLAYBOOK.md` — never
+the default a learner lands in). New rows default to `"professional"` at both the ORM (`default=`)
+and database (`server_default`) level; a `CHECK` constraint (`ck_players_preferred_mode_known_value`,
+declared identically in the model's `__table_args__` and the migration so `alembic check` and a
+fresh `Base.metadata.create_all()` SQLite database agree) rejects any other value.
+
+**This is a presentation/audience discriminator only, never an authorization boundary.** RBAC
+(`docs/contracts/identity-authorization.md`) and the deployment-database tenant boundary (section 1
+above) remain the only real access-control axes; no route, permission or the competency engine
+itself may be gated on this value — gap analysis, adaptive assessment and recommendations run
+identically regardless of mode, only the presenting surface differs.
+
+**What this scaffold deliberately does not do**, so the boundary with other lanes' ownership stays
+explicit:
+
+- It does not decide which curricula/competencies are offered per mode — that is Lane 3's decision
+  (`services/curricula.py`), not encoded in this column or this migration.
+- It does not route or render anything — that is Lane 1 (`frontend/**`) and Lane 5's decision.
+- No route currently reads or writes this field. `schemas/player.py`'s `PlayerCreate` intentionally
+  does not accept it yet, since `routes/game.py`'s `create_player()` (Lane 5-owned) does not read
+  it — every new player gets the model default regardless of what a client might send. Accepting a
+  field a route can't yet honor would misrepresent what is actually implemented. `PlayerResponse`
+  does expose the stored value (read-only), since that reflects real state.
+- A pre-existing SQLite demo database file (upgraded only through `db/database.py`'s
+  `ensure_columns()`, a plain `ALTER TABLE ADD COLUMN`, called from `main.py`'s startup) gets the
+  column but not the `CHECK` constraint — SQLite cannot `ALTER` a constraint onto an existing table
+  outside Alembic's batch/copy-and-move mode. This matches the existing, accepted precedent that
+  `ensure_columns()` is best-effort compatibility for every other column it adds, not enforcement.
+
+Any lane building the next layer on this (Lane 3's per-mode curriculum policy, Lane 1/5's routing,
+a route that lets a learner actually change their own mode) follows the normal section 7 change
+process for anything that isn't purely additive to what's declared here.

@@ -44,13 +44,19 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 ## Current verified baseline
 
 - FastAPI + SQLAlchemy backend; PostgreSQL/Alembic is the migration-managed target, SQLite remains
-  a documented local zero-setup demo profile only. As of Package V's hardening pass (2026-09-02),
-  `pytest -q` reports **341 passed with no PostgreSQL running** (6 opt-in real-PostgreSQL tests in
-  `test_core_retention_job_postgres_integration.py` skip cleanly) and **347 passed with the local
-  `docker-compose.dev.yml` Postgres up** — both counts are correct, they are not a discrepancy;
-  re-run before repeating either, it changes often. Prior snapshots in this file's history (267,
-  299, 337, 339, 341/345) were each taken mid-edit or before a subsequent fix, so treat any count
-  here as a snapshot to re-verify, not a citation. `.github/workflows/ci.yml` exists, but no run
+  a documented local zero-setup demo profile only. As of the two-mode scaffold and Lane 2 test
+  hardening pass (2026-09-02), `pytest -q` reports **402 passed with no PostgreSQL running** (6
+  opt-in real-PostgreSQL tests in `test_core_retention_job_postgres_integration.py` skip cleanly)
+  and **408 passed with the local `docker-compose.dev.yml` Postgres up** — both counts are correct,
+  they are not a discrepancy; re-run before repeating either, it changes often. `pytest --cov=db
+  --cov=models --cov=schemas --cov=security --cov=scripts` (requires `pytest-cov`, now in
+  `requirements-dev.txt`) reports 94% line coverage across Lane 2-owned code, up from 84% before
+  this pass — `db/database.py` went from 74% to 100%, and every file that was previously at 0%
+  (`db/seed.py`, `schemas/accuracy.py`, `schemas/learning.py`, `schemas/question.py`) now has
+  direct tests. Prior
+  snapshots in this file's history (267, 299, 337, 339, 341/345, 347) were each taken mid-edit or
+  before a subsequent fix, so treat any count here as a snapshot to re-verify, not a citation.
+  `.github/workflows/ci.yml` exists, but no run
   against this branch is evidenced (`gh run list --branch <this-branch>` returns nothing as of this
   writing) — do not claim a green CI run without checking.
 - Package P/S (atomic PostgreSQL row-claiming for the retention job, closing both Codex's Package R

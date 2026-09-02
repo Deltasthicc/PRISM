@@ -114,15 +114,17 @@ Do not build microservices, unrestricted code execution, speculative psychometri
 
 ## Verification
 
-Run the smallest relevant checks during implementation and the full gate before handoff:
+Run the smallest relevant checks during implementation and the full gate before handoff, from the
+repository root wherever this checkout lives (its own directory name is not part of the product
+name and varies by clone -- do not assume `SIHLearningTool` or `PRISM`):
 
 ```powershell
-cd C:\Users\shash\Downloads\SIHLearningTool\backend
+cd backend
 & .\.venv\Scripts\python.exe -m pytest
 ```
 
 ```powershell
-cd C:\Users\shash\Downloads\SIHLearningTool\frontend
+cd frontend
 npm run lint
 npm run build
 ```

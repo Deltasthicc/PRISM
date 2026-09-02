@@ -91,8 +91,9 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
   (`security/encryption.py`). A bounded/validated retention-enforcement job is also implemented,
   including atomic `FOR UPDATE SKIP LOCKED` row-claiming for concurrent PostgreSQL `--apply` runs
   (live-drilled with 4 real concurrent workers after Codex reproduced a real race in the pre-fix
-  version), and passes its own adversarial acceptance contract, but is still pending Codex's final
-  immutable re-review — treat it as under cross-review, not yet accepted. See
+  version), and passes its own adversarial acceptance contract. Its final cleanup/forced-contention
+  hardening at `ac5a2e7` passed Codex's narrow immutable re-review with no remaining correctness
+  finding. See
   `docs/contracts/identity-authorization.md`, `docs/contracts/data-authorization.md` and
   `docs/contracts/encryption-key-ownership.md`. **None of this is wired into `backend/routes/**`
   yet** — every existing route remains an unauthenticated demo interface, and the product must not

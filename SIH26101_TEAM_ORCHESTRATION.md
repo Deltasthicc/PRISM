@@ -189,10 +189,10 @@ Lanes 1 and 6 start immediately against frozen fixtures. They do not wait idle f
 - **FOUNDATION DONE / cross-reviewed:** local OIDC verification, server-derived issuer/sub binding,
   fixed RBAC, deployment-database tenant guard and immutable audit events. Protected route wiring
   and real organization-row tenant filters remain open.
-- **PARTIAL:** internal retention/deletion/export primitives, a dry-run-first retention enforcement
+- **DONE for the local Lane 2 boundary:** internal retention/deletion/export primitives, a dry-run-first retention enforcement
   mechanism (now with atomic `FOR UPDATE SKIP LOCKED` row-claiming for concurrent PostgreSQL
-  `--apply`, live-drilled after a real race was found and fixed -- implemented/live-tested, not yet
-  Codex-reviewed), and local PostgreSQL backup/restore are done and tested. The real registry has no
+  `--apply`, live-drilled after a real race was found and fixed and independently Codex-reviewed),
+  and local PostgreSQL backup/restore are done and tested. The real registry has no
   approved maximum, so it currently deletes nothing; accountable durations and production
   scheduling remain open. A tested, deliberately unused application encryption envelope is Package
   Q; production KMS/HSM custody, storage/TLS/backup encryption, scheduled/offsite backup and DR
@@ -237,8 +237,8 @@ regression proving no leak), and the four-worker concurrency regression only syn
 at thread-pool submission, not at genuinely overlapping candidate selection (fixed with a test-only
 `Session` seam that forces real overlap via a shared barrier, plus a deterministic negative control
 proving an equivalent unlocked-select flow fails the same contract under identical forced overlap).
-See `LANE2_SYNC.md` for all four packages' full evidence; Package V's test hardening is implemented
-and live-tested by Claude Code, awaiting Codex's narrow re-review of exactly those two findings.
+See `LANE2_SYNC.md` for all four packages' full evidence; Package V's test hardening at `ac5a2e7`
+passed Codex's narrow immutable re-review with no remaining correctness finding.
 The current full backend gate is **341 passed** with no PostgreSQL running (6 opt-in integration
 tests skip cleanly without Docker), **347 passed** with the local Compose Postgres up. The
 following assignments are copy-ready messages for the remaining owners. They are dependencies of a

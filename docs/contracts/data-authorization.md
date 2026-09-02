@@ -8,9 +8,9 @@ Change approval: Lanes 5 and 6 (`SIH26101_TEAM_ORCHESTRATION.md` section 4)
 
 Status: **v1 demo contract — storage and query semantics, internal subject-data export/deletion
 primitives, and PostgreSQL backup/restore are defined and independently reviewed/accepted. A
-retention-enforcement job (a real no-op today, no cited maximum exists) is implemented and passes
-its own adversarial acceptance contract, pending Codex's final immutable re-review — treat it as
-under cross-review, not yet accepted, until that lands. Authentication and RBAC *primitives* exist
+retention-enforcement job (a real no-op today, no cited maximum exists) is implemented and has
+passed its adversarial contract plus Codex's final immutable PostgreSQL re-review. Authentication
+and RBAC *primitives* exist
 (`docs/contracts/identity-authorization.md`) but are not yet composed into existing routes;
 multi-tenant isolation and subject-rights HTTP APIs are not implemented.**
 
@@ -279,8 +279,9 @@ unprocessed. A follow-up live drill under the identical scenario (11 expired + 2
 concurrent workers, batch size 3) confirmed the fix: disjoint per-worker deletions, a union of
 exactly the 11 expired IDs, a durable audit-event deleted-count sum of 11, both young rows
 untouched, and a clean `0/0` final rerun with no misleading audit event. See `LANE2_SYNC.md`'s
-Activity log for exact evidence. This fix is implemented and live-tested; it is not yet claimed as
-independently accepted pending Codex's review.
+Activity log for exact evidence. The production fix and its forced-contention/cleanup regression
+contract are independently accepted; this remains local PostgreSQL evidence, not a production
+operations or compliance claim.
 
 ### 6.4 PostgreSQL backup/restore (Package L)
 

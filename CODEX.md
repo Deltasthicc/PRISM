@@ -65,9 +65,10 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
   **accepted its production migration/retention behavior outright**, and raised two bounded
   test/evidence-hardening findings (a disposable-database cleanup gap, and a concurrency regression
   that needed genuinely forced candidate-selection overlap plus a negative control proving that
-  forcing overlap is meaningful) -- both closed in a follow-up commit, awaiting Codex's narrow
-  re-review of exactly those four items. Full evidence and reasoning for all of S/T/U/V in
-  `LANE2_SYNC.md`. Existing product routes do not invoke any of this foundation; there is no browser
+  forcing overlap is meaningful) -- both closed in follow-up `ac5a2e7` and accepted after Codex's
+  narrow immutable re-review: five consecutive 6-test live PostgreSQL runs, a fresh 347-test full
+  gate, clean Alembic head/check and no leaked disposable database. Full evidence and reasoning for
+  all of S/T/U/V is in `LANE2_SYNC.md`. Existing product routes do not invoke any of this foundation; there is no browser
   SSO, row-level organization tenancy, approved production IdP, frontend test suite, observability
   stack or production authorization. A CI workflow exists, but its presence alone is not evidence of
   a green remote run.

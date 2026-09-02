@@ -92,11 +92,11 @@ from a proposal.
   cited, so a follow-up migration (Package V) retired the `DELETE` rejection — accepted by Codex as
   correct production behavior — while the genuine append-only guarantee (rows are never removed
   except through the retention job) remains an application-layer property, never a database one.
-  Package V's own new test/evidence hardening (closing two bounded findings from that same Codex
+  Package V's own test/evidence hardening (closing two bounded findings from that same Codex
   review — a disposable-database cleanup gap and a concurrency test needing genuinely forced
-  overlap) is implemented and live-tested but awaiting Codex's narrow re-review of just those
-  findings — see `LANE2_SYNC.md` for exact status. Existing HTTP routes do not compose any of these
-  primitives yet; see the handoff below.
+  overlap) has also passed Codex's narrow immutable re-review at `ac5a2e7`; the local Lane 2
+  foundation is accepted with no remaining correctness finding. Existing HTTP routes do not
+  compose any of these primitives yet; see the handoff below.
 - **`npm audit --omit=dev` reports 0 vulnerabilities** after bumping the `next`/postcss dependency
   override that was pinning an old vulnerable version.
 

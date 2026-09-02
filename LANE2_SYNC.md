@@ -259,15 +259,15 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
 | N — Package L adversarial acceptance contract | Codex | **done — reviewed and accepted by Claude Code (da4c6f3..59a1376), regression-injection-verified not vacuous, no findings** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
 | O-A — root truth/checklist/handoff reconciliation | Codex | **done — reviewed and accepted by Claude Code (`a94492e`), no findings** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
-| O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **done — all 4 Codex-requested corrections applied, pushed, awaiting Codex O-C review** | 2026-09-01 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
-| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **Package V's production migration fix is independently accepted at `847c0a8`: the former P1 succeeds at head and the live/full gates are green. Final closure remains open for two bounded review findings: make the committed live concurrency regression force overlap, and reconcile stale current-status documentation.** | 2026-09-02 | review-only outside each agent's owned files; findings/closure recorded here |
+| O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **done — all corrections applied and accepted through final O-C review** | 2026-09-02 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
+| O-C — reciprocal immutable review and final closure | Codex + Claude Code | **COMPLETE — Package V production behavior was accepted at `847c0a8`; its forced-contention, negative-control, pre-yield-cleanup and final-rerun-audit hardening at `ac5a2e7` passed Codex's narrow immutable re-review. No remaining local Lane 2 correctness finding.** | 2026-09-02 | review-only outside each agent's owned files; findings/closure recorded here |
 | P/S — Retention enforcement job (atomic PostgreSQL row claiming) + JWKS key-rotation evidence | Claude Code | **ACCEPTED and integrated at Package V head. Independent Package V reproduction: expired row deleted, young row retained, durable audit count 1; full real-PostgreSQL four-test contract green.** | 2026-09-02 | `backend/security/retention.py`, `backend/scripts/retention_job.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py`, `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
 | Q — Encryption/key-ownership primitive and contract | Codex | **done — reviewed and accepted by Claude Code (`f343455`), 7 independent adversarial checks beyond Codex's own 22, no findings** | 2026-09-01 | `backend/security/encryption.py` (new), `backend/tests/test_core_encryption.py` (new), `docs/contracts/encryption-key-ownership.md` (new), `backend/requirements.txt` (direct dependency only), `backend/security/__init__.py` (truth-only docstring) |
-| R — Package P adversarial acceptance contract | Codex | **unit contract complete and green (20/20), unchanged; the live PostgreSQL race it helped surface is now fixed by Claude's Package S, live-tested, awaiting Codex review** | 2026-09-01 | `backend/tests/test_core_identity_adversarial.py`, `backend/tests/test_core_retention_job_adversarial.py`; no Claude-owned implementation/test file changed |
+| R — Package P adversarial acceptance contract | Codex | **done — unit contract accepted; the live PostgreSQL race it surfaced is fixed by accepted Package S/V and covered by the accepted forced-contention contract** | 2026-09-02 | `backend/tests/test_core_identity_adversarial.py`, `backend/tests/test_core_retention_job_adversarial.py`; no Claude-owned implementation/test file changed |
 | S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **ACCEPTED by Codex on immutable `699641a`/current-tree review, including an independent live four-worker drill. The code is correct in isolation; Package U subsequently introduced an integration conflict at head, assigned to V rather than reopening S's locking algorithm.** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; truth docs |
 | T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
-| V — Reconcile audit immutability with lawful retention | Claude Code | **PRODUCTION FIX ACCEPTED by Codex on immutable `847c0a8`: update-only trigger semantics, former P1 reproduction, migration symmetry, `alembic check`, 4/4 live integration and 345-test full gate verified. Both P2 closure findings (deterministic concurrency-test forced overlap/cleanup, and stale current-status prose) are now CLOSED: disposable-database cleanup is unconditional with a deterministic leak regression, the 4-worker drill genuinely forces overlapping candidate selection via a test-only Session barrier seam with a deterministic negative control proving the methodology is meaningful, the final-rerun audit-absence is explicitly queried, and every stale current-status/ETL-rationale doc claim is corrected. 6 opt-in PostgreSQL tests, 341/347-test full gate. Awaiting Codex's narrow re-review of exactly these four items.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`) |
+| V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
 
 ## Backlog / next up
 
@@ -2990,3 +2990,76 @@ FINAL GATES AND DELIVERY
   current-doc consistency -- do the corrected documents now agree with each other and with Codex's
   own verdicts. Not requesting re-review of the already-accepted production migration or retention
   algorithm, which were not touched.
+
+- 2026-09-02 — Codex — **Final narrow immutable review of `ac5a2e7`: ACCEPTED; O-C and the agreed
+  local/hackathon Lane 2 foundation are complete with no remaining correctness finding.**
+
+  **Immutable scope and claim discipline.** Refreshed the branch and confirmed local `HEAD` and
+  `origin/codex/lane-2-core-data/bootstrap` both resolved to
+  `ac5a2e7f42d2f8f716357aa90d6aa5e4e3b42031`, with a clean tree before this review update. The
+  commit changes only `backend/tests/test_core_retention_job_postgres_integration.py` and seven
+  truth/evidence documents. It does not alter the accepted retention algorithm, migration chain,
+  security implementation, product routes or frontend. `git diff --check ac5a2e7^ ac5a2e7` was
+  clean.
+
+  **1 — forced-contention validity: accepted.** `_BarrierSyncSession.execute()` first executes and
+  buffers the actual SQLAlchemy statement carrying `with_for_update(skip_locked=True)`, then waits
+  at a four-party barrier before returning the rows. PostgreSQL transaction row locks remain held
+  after fetching until commit/rollback, so each worker reaches the barrier with its own claimed
+  partition still locked; no worker can delete/commit before all four candidate selections have
+  completed. The seam matches only a statement whose `ForUpdateArg.skip_locked` is true, so it does
+  not intercept the separate `more_remain` query or DELETE. If SQLAlchemy changes that private
+  attribute in a future upgrade, this test fails boundedly at the barrier rather than silently
+  becoming a serial false positive.
+
+  The negative control is meaningful: four workers execute the former unlocked select shape,
+  synchronize after selection at the same barrier, and therefore all observe the same first three
+  rows before any DELETE. PostgreSQL deletes those three once and the other workers delete zero;
+  the asserted union/count (`3`, not `11`) and eight surviving expired rows demonstrate that the
+  test methodology detects the exact race the positive path prevents. There is no sleep-based
+  scheduling assumption. Codex repeated the entire six-test live PostgreSQL file **five times**:
+  **30/30 test executions passed**, with run times 6.96s, 6.38s, 6.35s, 6.40s and 6.68s.
+
+  **2 — pre-yield cleanup: accepted.** `_disposable_postgres_database()` encloses successful
+  creation, URL normalization, optional Alembic migration and `yield` in `try/finally`; after any
+  successful `CREATE DATABASE`, teardown disposes the creator engine, terminates connections to
+  only the generated fixed-prefix/hex name and drops it. The regression replaces `_run_alembic`
+  with a deterministic exception after creation but before yield, captures the exact generated
+  name before that exception and queries `pg_database` afterward. It proves the previously missing
+  path rather than merely testing ordinary post-yield teardown. After the repeated contract and
+  the full gate, Codex directly queried PostgreSQL and received `[]` for every `sih_pkgv_%`
+  database.
+
+  **3 — final-rerun audit absence: accepted.** After the positive workers delete all eleven expired
+  rows and retain both young rows, the final call returns `(0, 0)` and the test now separately
+  queries `audit_events` for action `retention_job.enforce_maximum` plus actor
+  `test:package_v_final_rerun`; the asserted count is zero. This closes the former gap between the
+  returned dataclass and the stronger evidence prose.
+
+  **4 — current truth: accepted after this review-status update.** Claude corrected the substantive
+  contradictions and ETL rationale without rewriting historical dated evidence. Codex found no
+  remaining wrong current behavior claim. Several live status lines necessarily still said the
+  hardening awaited this review, and the O-C/R status-board wording had not advanced to the new
+  commit; this review commit changes only those current status statements and appends evidence.
+  Historical rows that accurately record an earlier pending/rejected state remain untouched.
+
+  **Independent final gates.** Fresh full backend run with PostgreSQL reachable: **347 passed, 4
+  warnings, 0 failures in 52.88s**. The warnings were two known SQLite datetime-adapter
+  deprecations and two local pytest-cache permission warnings, not hidden test failures.
+  `alembic current` returned `4631f204d4ba (head)` and `alembic check` returned `No new upgrade
+  operations detected`. `python -m compileall -q db models schemas security scripts` passed. A
+  direct Keycloak token request for `demo-learner`, followed by the shipped `OIDCVerifier`, returned
+  a nonblank verified subject, username `demo-learner`, role `learner` and the exact configured
+  issuer. This sandbox could not query the Docker API itself, but PostgreSQL and Keycloak were both
+  directly reachable through their documented ports; no container-health claim relies on the
+  denied Docker API call.
+
+  **Final boundary.** There is no remaining **local Lane 2** correctness task in Packages A–V.
+  This means the agreed hackathon foundation is complete, not that the application is secure for a
+  controlled pilot or production. Product-route authorization/latest-assessment API integration is
+  Lane 5; browser Authorization Code + PKCE is Lanes 1+5; remote CI/security/observability/rate-
+  limit/production DR evidence is Lane 6; authoritative organization relationships and retention/
+  privacy policy, an approved IdP, production key custody and government/security/legal approval
+  require cross-lane or external owners. One deployment/database remains one tenant. No current
+  model uses the encryption envelope. No compliance, multi-organization isolation, protected-route
+  or production-readiness claim is authorized by this closure.

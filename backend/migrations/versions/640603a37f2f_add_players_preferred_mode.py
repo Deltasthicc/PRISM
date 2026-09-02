@@ -48,9 +48,6 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from models.enums import DEFAULT_LEARNING_MODE, LEARNING_MODE_VALUES
-
-
 # revision identifiers, used by Alembic.
 revision: str = '640603a37f2f'
 down_revision: Union[str, None] = '4631f204d4ba'
@@ -58,17 +55,22 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 _CONSTRAINT_NAME = "ck_players_preferred_mode_known_value"
+# Migration history must remain reproducible even after the application enum
+# grows. Keep this revision's original two-value snapshot local instead of
+# importing mutable current-model constants into historical DDL.
+_DEFAULT_LEARNING_MODE = "professional"
+_LEARNING_MODE_VALUES = ("professional", "quest")
 
 
 def upgrade() -> None:
-    allowed = ", ".join(f"'{value}'" for value in LEARNING_MODE_VALUES)
+    allowed = ", ".join(f"'{value}'" for value in _LEARNING_MODE_VALUES)
     with op.batch_alter_table("players") as batch_op:
         batch_op.add_column(
             sa.Column(
                 "preferred_mode",
                 sa.String(),
                 nullable=False,
-                server_default=DEFAULT_LEARNING_MODE,
+                server_default=_DEFAULT_LEARNING_MODE,
             )
         )
         batch_op.create_check_constraint(

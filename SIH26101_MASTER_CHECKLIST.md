@@ -1,6 +1,6 @@
 # SIH26101 master checklist
 
-Last evidence review: 2 September 2026
+Last evidence review: 3 September 2026
 
 Historical repository baseline: commit `429df46` on `main`
 
@@ -42,7 +42,7 @@ This is the single execution ledger for the project. It separates what the repos
 | Automated tests | 402/402 backend tests passed with no PostgreSQL running (6 opt-in real-PostgreSQL tests skip cleanly), 408/408 with the local Compose PostgreSQL up, as of 2 Sep 2026 after `main` was merged into lane-2, the `players.preferred_mode` two-mode scaffold shipped, and a Lane 2 coverage-hardening pass took Lane 2-owned code from 84% to 94% line coverage; Package S/T/V are Codex-accepted, including five consecutive live runs of V's 6-test hardening contract during the final immutable review; earlier counts (42/237/272/337/339/341/347) remain historical, not overwritten; 29 Aug frontend lint evidence remains historical | **VERIFIED** |
 | Curricula | Four curricula and 34 competencies are seeded and usable through backend APIs | **VERIFIED** |
 | Quest UI | DSA is playable; the other three domains are not currently reachable end-to-end through the browser | **VERIFIED** |
-| Default landing / professional theme | Root `/` and `Providers` already route an authenticated learner to `/academy`, not `/dungeon` -- Quest is not the startup route. But `AcademyHub.jsx` (the default landing) still imports the same `Pixel*` kit as Quest mode (`PixelPanel`, `PixelButton`, `PixelBadge`, `PixelInput`, `arcane`/`stone` variants, chunky pixel borders, the display pixel font) -- there is no visually distinct plain/professional theme yet, only separate routing | **VERIFIED** |
+| Default landing / professional theme | Root `/` links authenticated learners to `/academy`, and successful login/registration now route there; `Providers` only bootstraps auth and does not navigate. Quest is no longer the startup route. `BatSwarm` is confined to Quest routes, but `AcademyHub.jsx` still imports the same `Pixel*` kit and the global layout still supplies pixel fonts, music/onboarding and the torch overlay -- there is not yet a distinct professional theme | **VERIFIED** |
 | Competency targeting | Target cap is selected only from `experience_level`; designation, department, job role, assignment, qualifications and career goal are stored but do not affect targets | **VERIFIED** |
 | Assessment formula | 65% demonstrated performance + 35% self-rating when both exist; this is a transparent prototype policy, not validated psychometrics | **VERIFIED** |
 | Quiz grounding | TXT/MD/PDF/DOCX extraction is bounded; generated excerpts are matched after whitespace/case normalization, not as literal byte-for-byte substrings | **VERIFIED** |
@@ -56,7 +56,8 @@ This is the single execution ledger for the project. It separates what the repos
 | Guild/leaderboard | Guild backend exists; frontend lacks raid question/submit flow. UI says weekly while backend rank is lifetime XP | **VERIFIED** |
 | Delivery | CI workflow and Alembic migration framework exist; no fresh remote-CI result is claimed here. Frontend tests, production deployment definition, observability stack and repository licence remain absent/unverified | **VERIFIED** |
 
-The frontend production build was not independently completed in the current restricted environment. Existing `.next` output is not release evidence. A clean CI build remains mandatory.
+A clean local frontend production build completed independently on 3 September 2026 (14 routes),
+but this is not remote-CI or deployment evidence. A clean CI build remains mandatory.
 
 ## 2. Decisions and corrections from the pasted 174 KB planning source
 

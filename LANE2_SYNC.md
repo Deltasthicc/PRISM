@@ -3366,3 +3366,42 @@ FINAL GATES AND DELIVERY
   `SIH26101_TEAM_ORCHESTRATION.md`. Historical dated rows in `EVIDENCE.md`/
   `SIH26101_MASTER_CHECKLIST.md` preserved unchanged; new rows appended for the merge, the scaffold,
   and the coverage pass.
+
+- 2026-09-03 — Codex — **Independent post-merge audit of `bee1a20`; Lane 2 storage is sound, but
+  the product wiring and professional experience remain explicitly open.**
+
+  Re-ran the merged repository rather than trusting prior output: **408 passed** with the local
+  PostgreSQL integration service reachable (4 warnings; two SQLite datetime deprecations and two
+  local pytest-cache permission warnings), `alembic current` returned `640603a37f2f (head)`, and
+  `alembic check` found no new operations. Frontend lint passed and a fresh production build
+  generated 14 routes. Browser verification against the correct local listener showed the PRISM
+  landing with no old brand, no error overlay and no current console errors; username login reached
+  `/academy`; Academy had zero rendered bats. A separate stale frontend listener on the same port
+  initially produced a historical `ChunkLoadError`; direct verification against the newly started
+  listener and a reload were clean, so this was a two-server/local-cache collision, not accepted as
+  an application-code fix claim.
+
+  Live local PostgreSQL is healthy, at head, and currently empty: zero players, questions,
+  submissions, assessments, generated quizzes, learning materials, learner profiles, role targets,
+  evidence records, identity bindings and audit events. This is expected because PostgreSQL demo
+  seeding defaults off. It is a persistent **local Docker database**, not a deployed online/cloud
+  database. A hosted shared database still requires Lane 6 deployment/secrets/operations work.
+
+  Browser/source evidence confirms the remaining handoff in `LANE2_HANDOFF_FOR_OTHER_LANES.md`:
+  `players.preferred_mode` is a valid constrained storage foundation but no route writes it and no
+  UI reads it, so Dungeon/Guild/Ranks remain visible in professional mode (Lanes 1+5). Academy still
+  has the torch overlay and eleven `Pixel*` panels in the inspected viewport; only the bats were
+  separated (Lane 1). Preferred language remains a free-text `PixelInput`, not a language dropdown,
+  and no UI translation system exists (Lane 1; Lane 4 for translated generated content). The admin
+  HTTP route still lacks OIDC/RBAC dependencies (Lane 5, using Lane 2's primitives). Competency
+  scoring still uses demonstrated evidence at 65% and self-report at 35%, or self-report alone with
+  a diagnostic-required label when no measured evidence exists; changing that evidence policy or
+  requiring a real diagnostic first is Lane 3.
+
+  Two Lane 2 maintenance defects were closed in this audit: `backend/migrations/README` still
+  identified `4631f204d4ba` as head after the new migration, and revision `640603a37f2f` imported
+  mutable application enum constants, meaning a future enum expansion could silently rewrite the
+  behavior of historical DDL. The README now identifies `640603a37f2f`, and the migration snapshots
+  its original `professional`/`quest` values locally while producing identical current DDL.
+  Current-truth checklist language was also corrected: `Providers` does not route, and the newly
+  reproduced local production build is evidence even though remote CI remains open.

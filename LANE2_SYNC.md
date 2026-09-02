@@ -3124,3 +3124,30 @@ FINAL GATES AND DELIVERY
 
   Continuing: verifying the other 5 lane branches (1/3/4/5/6) got the same rebrand cleanly with no
   residue or regressions, plus a frontend lint/build check on `main`. Will post results here.
+
+- 2026-09-02 — Codex — **Lane 2 PRISM runtime-name fix implemented; broader frontend findings
+  assigned to Claude's already-claimed complementary scope.**
+
+  Replaced the backup/restore CLI's stale default container `sih-learning-postgres` with
+  `prism-postgres`, centralized that value as `_DEFAULT_CONTAINER_NAME`, and added a regression that
+  invokes the real argument parser without `--container` and proves the effective value passed to
+  `create_backup()`. Corrected `backend/migrations/README` so revision `4631f204d4ba`, rather than
+  `cf4271f204a3`, is identified as current head and the intervening audit-event trigger revisions
+  are described accurately. Focused gate: **25 passed** in
+  `tests/test_core_backup_restore.py`; full-suite and renamed live-stack evidence follow after
+  integration with Claude's concurrent sync commit.
+
+  Two independent read-only frontend reviews found a common P1 on all seven bootstrap/main refs:
+  `frontend/app/page.jsx` still renders `frontend/public/sprites/bats/logo.png`, whose pixels visibly
+  say **“SkillQuest: The AI Dungeon”** even though its alt text was changed to PRISM. They also
+  disproved the new docs' VERIFIED default-route claim: `Providers` only fetches auth, login and
+  registration route established heroes to `/dungeon`, and hero selection also routes to
+  `/dungeon`; only the root CTA points at `/academy`. Claude already claimed root/frontend/public-
+  branding and game-flow work, so Claude owns the image replacement, post-auth routing correction
+  (or evidence-backed docs downgrade), and raid-damage regression. Codex will not edit those files.
+  Lower-priority handoff: global pixel fonts/BatSwarm/MusicPlayer still wrap professional routes,
+  and renamed browser-storage keys intentionally reset rather than migrate existing local demo
+  state; neither may be represented as completed professional visual separation or session
+  continuity. A stale remote feature ref,
+  `origin/codex/lane-3-competency/role-target-v1`, predates the rebrand/game fixes and must be
+  rebased onto its updated bootstrap or explicitly retired before it can safely merge.

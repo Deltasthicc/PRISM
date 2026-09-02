@@ -8,12 +8,15 @@ in this project (SEED_DEMO_DATA, the Alembic migrations, Keycloak).
 """
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pytest
 
 from scripts.backup_restore import (
     BackupRestoreError,
+    _DEFAULT_CONTAINER_NAME,
+    _main,
     _connection_parts,
     _redact,
     _run,
@@ -23,6 +26,33 @@ from scripts.backup_restore import (
 )
 
 REAL_URL = "postgresql://prism_app:prism_dev_local_only@localhost:55432/prism"
+
+
+def test_cli_defaults_to_the_prism_compose_container(monkeypatch, tmp_path):
+    captured = {}
+    output = tmp_path / "default-container.pgdump"
+
+    def _fake_create_backup(container_name, database_url, output_path):
+        captured["container_name"] = container_name
+        captured["database_url"] = database_url
+        result = Path(output_path)
+        result.write_bytes(b"synthetic backup")
+        return result
+
+    monkeypatch.setattr("scripts.backup_restore.create_backup", _fake_create_backup)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["backup_restore.py", "backup", str(output), "--database-url", REAL_URL],
+    )
+
+    _main()
+
+    assert _DEFAULT_CONTAINER_NAME == "prism-postgres"
+    assert captured == {
+        "container_name": "prism-postgres",
+        "database_url": REAL_URL,
+    }
 
 
 def test_connection_parts_extracts_from_a_postgres_url():

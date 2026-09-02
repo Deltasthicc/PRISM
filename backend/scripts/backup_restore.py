@@ -38,6 +38,7 @@ _SUPPORTED_LOCAL_HOSTS = {"localhost", "127.0.0.1"}
 # `-h localhost`), so a mismatched port is the same class of configuration
 # error as a mismatched host and must fail closed the same way.
 _SUPPORTED_LOCAL_PORT = 55432
+_DEFAULT_CONTAINER_NAME = "prism-postgres"
 
 
 class BackupRestoreError(RuntimeError):
@@ -276,7 +277,7 @@ def _main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=["backup", "restore"])
     parser.add_argument("path", help="File to write to (backup) or read from (restore)")
-    parser.add_argument("--container", default="sih-learning-postgres")
+    parser.add_argument("--container", default=_DEFAULT_CONTAINER_NAME)
     parser.add_argument(
         "--database-url",
         default=os.environ.get("DATABASE_URL", ""),

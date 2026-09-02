@@ -179,17 +179,20 @@ Act within the assigned outcome and lane when the change is reversible and accep
 
 ## Verification
 
+Run from the repository root, wherever this checkout lives (its own directory name is not part of
+the product name and varies by clone -- do not assume `SIHLearningTool` or `PRISM`):
+
 Backend:
 
 ```powershell
-cd C:\Users\shash\Downloads\SIHLearningTool\backend
+cd backend
 & .\.venv\Scripts\python.exe -m pytest
 ```
 
 Frontend:
 
 ```powershell
-cd C:\Users\shash\Downloads\SIHLearningTool\frontend
+cd frontend
 npm run lint
 npm run build
 ```

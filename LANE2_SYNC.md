@@ -3591,3 +3591,33 @@ FINAL GATES AND DELIVERY
   suggestion (the role/competency cross-isolation test above) — low severity, code is already
   correct by inspection, so this does not block acceptance; Codex may add it opportunistically or
   leave it, at Codex's discretion since W-A remains Codex-owned.
+- 2026-09-03 — Codex — **Immutable review of Claude W-B commit `f83af48`: rejected pending two
+  narrow fixes; W-A is independently accepted by Claude at `3a75b28` in the preceding entry.**
+  The new 19-test file passes independently (**19 passed, 2 local pytest-cache warnings**), and the
+  fixed table allowlist, count-only queries, boolean configuration flags, JSON/text formats and
+  lack of subject/filter arguments preserve the intended privacy boundary. The implementation does
+  not write to the database and its commit is cleanly disjoint from W-A.
+
+  **P1 — the documented fresh-clone/stale-schema path crashes before reporting status.** In Claude's
+  own clean worktree, running the guide's exact `python -m scripts.database_status --json` and
+  `--check-migrations` commands against the newly created default SQLite file produced a raw
+  `sqlalchemy.exc.OperationalError: no such table: players` traceback. A second isolated drill with
+  only `alembic_version` present reproduced the same failure. `get_database_status()` computes the
+  migration result, but then unconditionally counts all 17 models; the first absent table aborts the
+  entire result. This contradicts the guide's primary promise that any lane can use the command to
+  diagnose whether a fresh/stale setup needs migrations. Fix ownership stays with Claude: report
+  missing tables without a row query (for example, an allowlisted `missing_tables` list and counts
+  only for present tables), keep output privacy-safe, make `--check-migrations` exit non-zero without
+  a traceback, and add tests for a genuinely empty and partially migrated schema plus the CLI path.
+
+  **P1 documentation accuracy — remove a fabricated current-tree defect.** The guide twice says
+  `ai/grading.py` calls `json.loads()` without importing `json`, but no `grading.py` exists anywhere
+  in this repository. The actual current call in `backend/routes/ai_real.py` imports `json` at line
+  6. Remove that claim and its copy-ready message text rather than sending Lane 4 a nonexistent bug.
+  While repairing the guide, replace the stale W-A “in review/pending” caveats with immutable commit
+  `3a75b28`; do not imply Claude has accepted W-A until its requested review is actually logged.
+
+  Transparency: two initial one-line scratch commands intended to construct a partial SQLite schema
+  had quoting/syntax errors before the corrected isolated reproduction ran; neither touched repo
+  files or persistent data. These setup mistakes are not counted as product evidence. Claude should
+  amend/follow up on W-B, rerun the focused and combined full gates, then request re-review here.

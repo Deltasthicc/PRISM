@@ -269,8 +269,8 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
 | V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
 | W-A — Cross-lane read repository facade | Codex | **ACCEPTED by Claude on immutable `3a75b28`; Claude's one non-blocking competency-isolation test suggestion was closed at `be9e338`.** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
-| W-B — Database operator UX + per-lane integration handbook | Claude Code | **Claude's handbook/privacy boundary and whole-table repair accepted by Codex; partial-column failure repaired in W-C and awaiting Claude's final immutable review.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
-| W-C — Legacy-column-safe table counts | Codex | **implemented and verified; awaiting Claude immutable review of the W-C commit** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status_adversarial.py`, `LANE2_SYNC.md` |
+| W-B — Database operator UX + per-lane integration handbook | Claude Code | **Claude's handbook/privacy boundary and whole-table repair accepted by Codex; partial-column failure repaired in W-C, which Claude has now ACCEPTED — see the W-C row.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
+| W-C — Legacy-column-safe table counts | Codex | **ACCEPTED by Claude on independent immutable review of `8d0d1de`: table-level `COUNT(*)` confirmed via captured compiled SQL (no ORM column projection), independently-constructed legacy schema and private-looking values confirmed absent from output, all six requested commands reproduced with matching results. Package W is closed.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status_adversarial.py`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -3738,3 +3738,60 @@ FINAL GATES AND DELIVERY
   `alembic current`, and `alembic check` all passed at `640603a37f2f (head)` with all 17 allowlisted
   tables present. The PostgreSQL-enabled full gate remains **448 passed, 4 warnings**. Current-truth
   docs and evidence logs were updated to these executed counts; historical rows were preserved.
+
+- 2026-09-03 — Claude Code — **Final immutable review of Codex's W-C commit (`8d0d1de`): ACCEPTED.
+  Package W (W-A/W-B/W-C) is now closed.** Read-only review in an isolated worktree pinned exactly
+  at `8d0d1de` (`git worktree add --detach ... 8d0d1de`); did not edit
+  `backend/tests/test_core_database_status_adversarial.py` or any other W-C file. Did not infer
+  success from Codex's report — every claim below was independently reproduced.
+
+  **1. Legacy-schema construction.** Built my own `players` table independent of Codex's fixture —
+  same two mapped columns (`player_id`, `username`) but different data
+  (`ssn-123-45-6789`, `my.secret.email@example.com` instead of Codex's `private-a`/`private-b`), so
+  passing this isn't just re-running the shipped test with its own inputs.
+
+  **2. Table-level `COUNT(*)`, confirmed by the actual SQL sent to the engine, not by reading the
+  diff.** Attached a SQLAlchemy `before_cursor_execute` listener to capture the literal compiled
+  statement `get_table_row_counts()` executes against my legacy schema. Result: exactly
+  `'SELECT count(*) AS count_1 \nFROM players'` — zero mapped-column projection (`level`,
+  `total_xp`, etc. never appear), which is precisely the class of statement that would have raised
+  `no such column` under the pre-`8d0d1de` `db.query(model).count()` implementation. This is
+  stronger evidence than re-running the test, since it inspects the exact wire-level SQL rather than
+  trusting the Python source reads as intended.
+
+  **3. Privacy boundary under the legacy schema.** Ran `get_database_status()` against my
+  independently-seeded legacy table and serialized both JSON and `format_human()` text output.
+  Neither `ssn-123-45-6789` nor `my.secret.email@example.com` appears in either output; `players`
+  correctly reports count `2`; all 16 other advertised tables correctly report as `missing`.
+
+  **4. All six requested commands, reproduced exactly:**
+  - `pytest tests/test_core_database_status.py tests/test_core_database_status_adversarial.py -q`
+    → **28 passed** (matches).
+  - Full suite with PostgreSQL stopped (`docker stop prism-postgres`, confirmed via
+    `docker inspect --format='{{.State.Health.Status}}'` before proceeding) → **442 passed, 6
+    skipped** (matches).
+  - PostgreSQL restarted and confirmed `healthy` again before continuing (state restored, not left
+    stopped) → full suite → **448 passed** (matches; 2 warnings observed both times, not 4 — the
+    same pytest-cache-permission warning class noted elsewhere in this log as non-deterministic
+    across machines, not a test-count discrepancy).
+  - `python -m scripts.database_status --check-migrations`: first run with no `DATABASE_URL` set in
+    my shell correctly fell back to the documented unmigrated-SQLite-demo behavior (dialect sqlite,
+    `unversioned`, all 17 tables reported missing, clean structured output, exit 1, **no
+    traceback**) — itself a useful independent confirmation of the fix on a genuinely fresh
+    environment. Re-ran with `DATABASE_URL` exported to the real Postgres DSN
+    (`backend/.env.example`'s documented value against `localhost:55432`): dialect postgresql,
+    `current=640603a37f2f head=640603a37f2f (AT HEAD)`, all 17 tables present with count `0`, exit
+    **0** — matches Codex's reported live-Postgres result.
+  - `python -m alembic current` (same `DATABASE_URL`): `640603a37f2f (head)`, exit 0 — matches.
+  - `python -m alembic check` (same `DATABASE_URL`): `No new upgrade operations detected.`, exit 0 —
+    matches.
+
+  **5. Verdict: ACCEPT.** No defect found. The fix is exactly what it claims to be: a genuine
+  `SELECT count(*) FROM <table>` with no ORM entity-column projection, verified at the SQL-text
+  level rather than the source-code level, and the privacy boundary holds under an independently
+  constructed adversarial legacy schema, not just the shipped fixture. Combined with the two prior
+  accepted findings (W-A at `3a75b28`, W-B's whole-table repair at `7e11634`), **Package W is
+  closed**: cross-lane repository facade, database operator status tool, and per-lane integration
+  guide are all independently reviewed and accepted by the non-implementing agent, with two real
+  rejections along the way (missing-table crash, then legacy-column crash) each fixed and
+  re-reviewed rather than accepted on a first pass. No W-C file was modified during this review.

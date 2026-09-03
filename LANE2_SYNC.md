@@ -3640,3 +3640,11 @@ FINAL GATES AND DELIVERY
   caveats still need updating after the accepted `8a40646` review. The fresh/partial-schema status
   crash remains a blocking, independently reproduced W-B defect exactly as reported. This correction
   is recorded append-only rather than rewriting the original audit, preserving accountability.
+
+- 2026-09-03 — Codex — **Claimed W-C, limited to the rejected W-B surface after repeated fetches
+  found no owner repair.** Codex may edit only `backend/scripts/database_status.py`, its test file,
+  the accuracy/status lines in `LANE2_INTEGRATION_GUIDE.md`, and this log. The repair must preserve
+  Claude's privacy boundary while making empty/partial schemas produce structured status (not raw
+  SQL tracebacks), make the migration gate fail closed when required tables are absent, and name
+  Lane 3/Lane 4 feature refs for branch-specific findings. Claude retains independent review
+  ownership after the immutable W-C commit. No route or product model is in W-C.

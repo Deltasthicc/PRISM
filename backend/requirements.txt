@@ -1,12 +1,32 @@
-fastapi==0.115.0
+# Direct top-level pins. `requirements.lock` (generated via
+# `pip-compile --generate-hashes --output-file=requirements.lock requirements.txt`,
+# from this file plus requirements-dev.txt's extra lines) is the fully
+# resolved, hash-verified closure -- install from that in CI/production
+# (`pip install --require-hashes -r requirements.lock`) for a reproducible
+# build; this file is what you hand-edit and re-compile from. See
+# LANE2_SYNC.md's Package X entry for the pip-audit evidence that drove the
+# 2026-09 version bumps below.
+fastapi==0.141.1
+# Starlette is fastapi's own ASGI layer and parses every request body
+# (including the unauthenticated multipart upload at routes/learning.py's
+# file: UploadFile = File(...)) -- pinned explicitly, not left to float as a
+# bare transitive dependency, after fastapi==0.115.0's own metadata capped it
+# below several since-fixed advisories (see LANE2_SYNC.md's Package X for the
+# pip-audit evidence). Re-check this pin whenever fastapi is bumped; do not
+# let it silently drift back below a fixed range.
+starlette==1.6.0
 uvicorn==0.30.6
 sqlalchemy==2.0.35
-python-dotenv==1.0.1
+alembic==1.14.0
+psycopg[binary]==3.2.3
+python-dotenv==1.2.3
 google-generativeai==0.8.3
 pydantic==2.9.2
 httpx==0.27.2
+pyjwt[crypto]==2.13.0
+cryptography==50.0.1
 
 # Learning-platform additions (backend/routes/learning.py):
-python-multipart==0.0.12
-pypdf==5.1.0
+python-multipart==0.0.32
+pypdf==6.16.2
 python-docx==1.1.2

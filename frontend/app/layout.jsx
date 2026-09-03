@@ -21,14 +21,23 @@ const vt323 = VT323({
 });
 
 export const metadata = {
-  title: 'SIH Learning Tool',
+  title: 'PRISM',
   description: 'A cross-domain skill-intelligence platform with an adaptive practice RPG built in.',
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${pressStart.variable} ${vt323.variable}`}>
-      <body>
+      {/* suppressHydrationWarning: browser extensions (Grammarly, password
+          managers, etc.) inject their own attributes -- e.g.
+          data-new-gr-c-s-check-loaded, data-gr-ext-installed -- into <body>
+          before React hydrates. React then reports a mismatch between the
+          server-rendered HTML and what it finds in the DOM, but the
+          "mismatch" is the extension's own attribute, not anything this app
+          rendered differently. This only silences that one, one-level-deep
+          false positive on <body> itself; a real mismatch inside the page
+          content still reports normally. */}
+      <body suppressHydrationWarning>
         <div className="torch-flicker" aria-hidden="true" />
         <BatSwarm />
         <MusicPlayer />

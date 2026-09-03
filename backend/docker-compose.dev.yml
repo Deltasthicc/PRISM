@@ -1,0 +1,67 @@
+# Local PostgreSQL and Keycloak for testing Lane 2's Alembic migrations and
+# OIDC identity layer against real services instead of mocks. Not a
+# deployment artifact -- see /docker for that (still an empty scaffold as of
+# this file). Neither service is a government-approved production system;
+# Keycloak here is a real, standards-compliant local OIDC provider used to
+# test backend/security/identity.py honestly, not a claim of a real IdP
+# integration (see docs/contracts/data-authorization.md and
+# SIH26101_MASTER_CHECKLIST.md section 5.1, which tracks the real IdP as
+# BLOCKED-EXTERNAL).
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml up -d --wait
+#   $env:DATABASE_URL='postgresql://prism_app:prism_dev_local_only@localhost:55432/prism'
+#   & ./.venv/Scripts/python.exe -m alembic upgrade head
+#   & ./.venv/Scripts/python.exe -m uvicorn main:app --reload --port 8000
+#
+# Keycloak admin console: http://localhost:8180 (admin/prism_dev_local_only).
+# Realm "prism" and its test users are auto-imported from
+# backend/keycloak/prism-realm-export.json on first boot -- see that folder's
+# README for the exact test users/passwords and how to mint a real token.
+#
+# Credentials here are for local dev only -- never reused for anything real
+# (CODEX.md "Never commit a real API key or secret").
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: prism-postgres
+    environment:
+      POSTGRES_USER: prism_app
+      POSTGRES_PASSWORD: prism_dev_local_only
+      POSTGRES_DB: prism
+    ports:
+      - "55432:5432"
+    volumes:
+      - prism_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.7.2
+    container_name: prism-keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: prism_dev_local_only
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./keycloak/prism-realm-export.json:/opt/keycloak/data/import/prism-realm-export.json:ro
+    healthcheck:
+      # Keycloak's health endpoint lives on the management port (9000), not
+      # the main port (8080) -- verified directly against this image; the
+      # image has no curl/wget, so /dev/tcp via `sh` is the only thing that
+      # actually works inside the container.
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '\"status\": \"UP\"' <&3"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+volumes:
+  prism_postgres_data:

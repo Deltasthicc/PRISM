@@ -1,6 +1,7 @@
-# SIH Learning Tool — Frontend
+# PRISM — Frontend
 
-Next.js 15 (App Router) frontend for the SIH Learning Tool: a role-aware competency profile,
+Next.js 15 (App Router) frontend for PRISM (Personalized Readiness Intelligence & Skill Mapping):
+a role-aware competency profile,
 explainable gap analysis, a prerequisite-ordered pathway, source-grounded quiz generation, and an
 adaptive practice RPG spanning DSA, Official Statistics, Public Policy, and Digital Literacy.
 

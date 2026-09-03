@@ -41,6 +41,12 @@ router = APIRouter(prefix="/game", tags=["Game"])
 
 MAX_HINT_TOKENS = int(os.getenv("MAX_HINT_TOKENS", "3"))
 
+# Raid boss HP per member -- roughly 3 medium-difficulty hits' worth of damage
+# points, preserving the old "3 questions per member" design intent now that
+# raid damage is continuous (score-scaled), matching the rest of the app's
+# combat model instead of a flat 1-per-correct-answer count.
+RAID_BOSS_HP_PER_MEMBER = 270
+
 # Mirrors services/config.py's JUDGE_CORRECT_THRESHOLD/JUDGE_PARTIAL_THRESHOLD
 # defaults -- used here only to re-derive a verdict after Shadow Step's score
 # boost changes the score post-judging (see submit_answer).
@@ -794,7 +800,7 @@ async def join_raid(body: RaidJoinRequest, db: Session = Depends(get_db)):
         guild.raid_active = True
         guild.raid_boss_id = str(uuid.uuid4())
         members = db.query(Player).filter(Player.guild_id == guild.guild_id).all()
-        guild.raid_boss_hp = len(members) * 3  # 3 questions per member
+        guild.raid_boss_hp = len(members) * RAID_BOSS_HP_PER_MEMBER
         guild.raid_boss_damage = 0
 
     # Assign topic to player based on weakest area
@@ -849,8 +855,12 @@ async def submit_raid_answer(body: dict, db: Session = Depends(get_db)):
     player.total_xp += xp_gained
     player.level = calculate_level(player.total_xp)
 
-    # Deal damage to raid boss
-    damage = 1 if verdict == "correct" else 0
+    # Deal damage to raid boss -- same continuous, score-scaled model as the
+    # solo dungeon (see submit_answer): a perfect score deals this question's
+    # full max_damage, "partial" still chips in proportionally, "incorrect"
+    # deals zero. Matches the rest of the app instead of a flat 1-per-correct
+    # count against a "3 questions per member" HP pool.
+    damage = 0 if verdict == "incorrect" else calculate_damage(question.max_damage, score)
     guild.raid_boss_damage = (guild.raid_boss_damage or 0) + damage
 
     raid_complete = guild.raid_boss_damage >= guild.raid_boss_hp

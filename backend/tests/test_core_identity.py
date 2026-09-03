@@ -1,0 +1,729 @@
+"""Tests for security/identity.py bearer-token verification.
+
+Fully offline: generates its own RSA keypair and signs test tokens directly,
+so this suite never needs a running OIDC provider -- the real Keycloak
+container in backend/docker-compose.dev.yml is verified manually instead
+(see LANE2_SYNC.md's Activity log for that evidence), matching the
+SEED_DEMO_DATA/Postgres precedent of not making pytest hard-depend on an
+external service.
+"""
+from __future__ import annotations
+
+import base64
+import json
+import threading
+import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from types import SimpleNamespace
+
+import httpx
+import jwt
+import pytest
+from cryptography.hazmat.primitives.asymmetric import rsa
+from jwt.algorithms import RSAAlgorithm
+
+from security.identity import (
+    AuthenticationError,
+    OIDCVerifier,
+    extract_bearer_token,
+    get_current_subject,
+    verifier_from_env,
+)
+
+ISSUER = "https://test-issuer.invalid/realms/test"
+AUDIENCE = "sih-backend-test"
+KID = "test-key-1"
+
+
+@pytest.fixture(scope="module")
+def keypair():
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    return private_key, private_key.public_key()
+
+
+def _make_token(
+    private_key,
+    kid=KID,
+    issuer=ISSUER,
+    audience=AUDIENCE,
+    subject="user-1",
+    roles=("learner",),
+    extra_claims=None,
+    expires_in=300,
+):
+    now = int(time.time())
+    payload = {
+        "iss": issuer,
+        "sub": subject,
+        "aud": audience,
+        "iat": now,
+        "exp": now + expires_in,
+        "realm_access": {"roles": list(roles)},
+        "preferred_username": f"{subject}-username",
+        "typ": "Bearer",  # required since verify() now rejects a missing/wrong typ claim
+    }
+    if extra_claims:
+        payload.update(extra_claims)
+    return jwt.encode(payload, private_key, algorithm="RS256", headers={"kid": kid})
+
+
+class _StubJWKClient:
+    """Stands in for PyJWKClient -- returns a fixed public key instead of
+    fetching one over the network, so these tests need no live JWKS endpoint."""
+
+    def __init__(self, public_key):
+        self._public_key = public_key
+
+    def get_signing_key_from_jwt(self, token):
+        return SimpleNamespace(key=self._public_key)
+
+
+@pytest.fixture
+def verifier(keypair, monkeypatch):
+    _, public_key = keypair
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
+    monkeypatch.setattr(v, "_get_jwks_client", lambda: _StubJWKClient(public_key))
+    return v
+
+
+def test_verify_accepts_a_valid_token(keypair, verifier):
+    private_key, _ = keypair
+    token = _make_token(private_key)
+    subject = verifier.verify(token)
+    assert subject.subject_id == "user-1"
+    assert subject.username == "user-1-username"
+    assert subject.roles == frozenset({"learner"})
+    assert subject.issuer == ISSUER
+
+
+def test_verify_rejects_expired_token(keypair, verifier):
+    private_key, _ = keypair
+    token = _make_token(private_key, expires_in=-10)
+    with pytest.raises(AuthenticationError):
+        verifier.verify(token)
+
+
+@pytest.mark.parametrize(
+    "bad_exp",
+    [
+        "1788269436",  # a numeric-looking string -- PyJWT's own expiry check accepts it
+        10**100,  # an absurdly large integer -- overflows datetime.fromtimestamp's platform limits
+    ],
+)
+def test_verify_never_leaks_a_raw_python_error_for_an_unusable_exp_claim(keypair, verifier, bad_exp):
+    # jwt.decode()'s options={"require": ["exp", ...]} only proves "exp" is
+    # PRESENT, not that it is a usable number. Both cases above pass PyJWT's
+    # own signature/expiry checks (a numeric string, and a huge-but-technically
+    # numeric int) and previously reached datetime.fromtimestamp(claims["exp"])
+    # unguarded, raising a raw TypeError or OverflowError instead of this
+    # module's documented AuthenticationError.
+    private_key, _ = keypair
+    token = _make_token(private_key, extra_claims={"exp": bad_exp})
+    with pytest.raises(AuthenticationError, match="exp"):
+        verifier.verify(token)
+
+
+def test_verify_rejects_wrong_issuer(keypair, verifier):
+    private_key, _ = keypair
+    token = _make_token(private_key, issuer="https://attacker.invalid/realm")
+    with pytest.raises(AuthenticationError):
+        verifier.verify(token)
+
+
+def test_verify_rejects_wrong_audience(keypair, verifier):
+    private_key, _ = keypair
+    token = _make_token(private_key, audience="some-other-service")
+    with pytest.raises(AuthenticationError):
+        verifier.verify(token)
+
+
+def test_verify_rejects_token_signed_by_a_different_key(verifier):
+    other_private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    token = _make_token(other_private_key)
+    with pytest.raises(AuthenticationError):
+        verifier.verify(token)
+
+
+def test_verify_rejects_none_algorithm_token(verifier):
+    # A hand-built, unsigned "alg: none" token -- the classic JWT library
+    # vulnerability class called out in RFC 8725 section 3.1. Must never
+    # verify just because the claims inside look valid.
+    header = base64.urlsafe_b64encode(json.dumps({"alg": "none", "typ": "JWT"}).encode()).rstrip(b"=")
+    payload = base64.urlsafe_b64encode(
+        json.dumps(
+            {
+                "iss": ISSUER,
+                "sub": "attacker",
+                "aud": AUDIENCE,
+                "iat": int(time.time()),
+                "exp": int(time.time()) + 300,
+            }
+        ).encode()
+    ).rstrip(b"=")
+    token = (header + b"." + payload + b".").decode()
+    with pytest.raises(AuthenticationError):
+        verifier.verify(token)
+
+
+def test_verify_rejects_token_missing_a_required_claim(keypair, verifier):
+    private_key, _ = keypair
+    now = int(time.time())
+    payload = {"iss": ISSUER, "aud": AUDIENCE, "iat": now, "exp": now + 300}  # no "sub"
+    token = jwt.encode(payload, private_key, algorithm="RS256", headers={"kid": KID})
+    with pytest.raises(AuthenticationError):
+        verifier.verify(token)
+
+
+def test_verify_rejects_an_empty_string_sub_claim(keypair, verifier):
+    # "sub" being merely PRESENT is not enough -- an empty string satisfies
+    # PyJWT's require-claim check but is not a usable stable identity key.
+    private_key, _ = keypair
+    now = int(time.time())
+    payload = {
+        "iss": ISSUER, "sub": "", "aud": AUDIENCE, "iat": now, "exp": now + 300,
+        "typ": "Bearer",
+    }
+    token = jwt.encode(payload, private_key, algorithm="RS256", headers={"kid": KID})
+    with pytest.raises(AuthenticationError, match="non-empty string"):
+        verifier.verify(token)
+
+
+def test_verify_rejects_a_whitespace_only_sub_claim(keypair, verifier):
+    private_key, _ = keypair
+    now = int(time.time())
+    payload = {
+        "iss": ISSUER, "sub": "   ", "aud": AUDIENCE, "iat": now, "exp": now + 300,
+        "typ": "Bearer",
+    }
+    token = jwt.encode(payload, private_key, algorithm="RS256", headers={"kid": KID})
+    with pytest.raises(AuthenticationError, match="non-empty string"):
+        verifier.verify(token)
+
+
+def test_verify_returns_empty_roles_when_realm_access_is_absent(keypair, verifier):
+    private_key, _ = keypair
+    now = int(time.time())
+    payload = {
+        "iss": ISSUER, "sub": "user-2", "aud": AUDIENCE, "iat": now, "exp": now + 300,
+        "typ": "Bearer",
+    }
+    token = jwt.encode(payload, private_key, algorithm="RS256", headers={"kid": KID})
+    subject = verifier.verify(token)
+    assert subject.roles == frozenset()
+
+
+@pytest.mark.parametrize(
+    "malformed_realm_access",
+    [
+        {"roles": {"learner": True, "trainer": True}},  # dict, not a list -- must not become {"learner","trainer"}
+        {"roles": ["learner", 123, None]},  # non-string entries must be dropped, not crash
+        {"roles": "learner"},  # a bare string is iterable but is not a list of roles
+        "not-even-a-dict",
+    ],
+)
+def test_verify_ignores_malformed_realm_access_shapes(keypair, verifier, malformed_realm_access):
+    private_key, _ = keypair
+    now = int(time.time())
+    payload = {
+        "iss": ISSUER, "sub": "user-3", "aud": AUDIENCE, "iat": now, "exp": now + 300,
+        "typ": "Bearer", "realm_access": malformed_realm_access,
+    }
+    token = jwt.encode(payload, private_key, algorithm="RS256", headers={"kid": KID})
+    subject = verifier.verify(token)
+    assert subject.roles == frozenset()  # malformed shape -> fail closed to zero roles, never a crash
+
+
+def test_verify_accepts_a_clean_string_list_of_roles(keypair, verifier):
+    private_key, _ = keypair
+    now = int(time.time())
+    payload = {
+        "iss": ISSUER, "sub": "user-4", "aud": AUDIENCE, "iat": now, "exp": now + 300,
+        "typ": "Bearer", "realm_access": {"roles": ["learner", "trainer"]},
+    }
+    token = jwt.encode(payload, private_key, algorithm="RS256", headers={"kid": KID})
+    subject = verifier.verify(token)
+    assert subject.roles == frozenset({"learner", "trainer"})
+
+
+def test_verify_fails_closed_on_a_mixed_type_roles_list_rather_than_salvaging_strings(keypair, verifier):
+    # A privileged-looking string sitting in an otherwise-malformed array
+    # must not grant that role just because it happened to parse as a
+    # string -- the whole claim is untrusted, not just the non-string entries.
+    private_key, _ = keypair
+    now = int(time.time())
+    payload = {
+        "iss": ISSUER, "sub": "user-5", "aud": AUDIENCE, "iat": now, "exp": now + 300,
+        "typ": "Bearer", "realm_access": {"roles": ["organization_admin", 42, None]},
+    }
+    token = jwt.encode(payload, private_key, algorithm="RS256", headers={"kid": KID})
+    subject = verifier.verify(token)
+    assert subject.roles == frozenset()
+
+
+def test_extract_bearer_token_requires_the_bearer_scheme():
+    assert extract_bearer_token("Bearer abc.def.ghi") == "abc.def.ghi"
+    with pytest.raises(AuthenticationError):
+        extract_bearer_token(None)
+    with pytest.raises(AuthenticationError):
+        extract_bearer_token("Basic abc123")
+    with pytest.raises(AuthenticationError):
+        extract_bearer_token("Bearer ")
+
+
+def test_get_current_subject_composes_extraction_and_verification(keypair, verifier):
+    private_key, _ = keypair
+    token = _make_token(private_key)
+    subject = get_current_subject(f"Bearer {token}", verifier=verifier)
+    assert subject.subject_id == "user-1"
+
+
+def test_oidc_verifier_requires_issuer_and_audience():
+    with pytest.raises(ValueError):
+        OIDCVerifier(issuer="", audience=AUDIENCE)
+    with pytest.raises(ValueError):
+        OIDCVerifier(issuer=ISSUER, audience="")
+
+
+def test_verifier_from_env_requires_both_env_vars(monkeypatch):
+    monkeypatch.delenv("OIDC_ISSUER", raising=False)
+    monkeypatch.delenv("OIDC_AUDIENCE", raising=False)
+    with pytest.raises(AuthenticationError):
+        verifier_from_env()
+
+
+# --- issuer scheme, discovery-document, and typ hardening
+# (findings from Codex's pre-commit review of this file, LANE2_SYNC.md
+# Phase 2 Activity log) ---
+
+
+def test_oidc_verifier_rejects_non_loopback_http_issuer():
+    with pytest.raises(ValueError):
+        OIDCVerifier(issuer="http://issuer.example.com/realm", audience=AUDIENCE)
+
+
+def test_oidc_verifier_allows_https_issuer():
+    # Construction alone must not require network access.
+    OIDCVerifier(issuer="https://issuer.example.com/realm", audience=AUDIENCE)
+
+
+def test_oidc_verifier_allows_loopback_http_issuer():
+    OIDCVerifier(issuer="http://localhost:8180/realms/test", audience=AUDIENCE)
+
+
+def test_oidc_verifier_rejects_trailing_slash_issuer_instead_of_silently_stripping_it():
+    with pytest.raises(ValueError, match="trailing slash"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm/", audience=AUDIENCE)
+
+
+# ---------------------------------------------------------------------------
+# jwks_cache_seconds / discovery_timeout_seconds validation -- Package P
+# follow-up. Neither was validated at all before: a NaN jwks_cache_seconds
+# reached `int(float('nan'))` inside _get_jwks_client() during verify(),
+# which raises a bare ValueError -- not a jwt.PyJWTError, so it leaked past
+# verify()'s "callers only ever see AuthenticationError" exception boundary.
+# These tests fail fast at construction instead.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_a_boolean_duration(field):
+    with pytest.raises(ValueError, match="must be a real number of seconds"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: True})
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_a_non_numeric_duration(field):
+    with pytest.raises(ValueError, match="must be a real number of seconds"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: "300"})
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_nan_duration(field):
+    with pytest.raises(ValueError, match="must be finite"):
+        OIDCVerifier(
+            issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: float("nan")}
+        )
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_infinite_duration(field):
+    with pytest.raises(ValueError, match="must be finite"):
+        OIDCVerifier(
+            issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: float("inf")}
+        )
+
+
+@pytest.mark.parametrize("field", ["jwks_cache_seconds", "discovery_timeout_seconds"])
+def test_oidc_verifier_rejects_negative_or_zero_duration(field):
+    with pytest.raises(ValueError, match="must be positive"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: -1})
+    with pytest.raises(ValueError, match="must be positive"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=AUDIENCE, **{field: 0})
+
+
+def test_oidc_verifier_accepts_valid_durations():
+    OIDCVerifier(
+        issuer="https://issuer.example.com/realm",
+        audience=AUDIENCE,
+        jwks_cache_seconds=60,
+        discovery_timeout_seconds=2.5,
+    )
+
+
+@pytest.mark.parametrize("issuer", [True, 123, [], {}, None])
+def test_oidc_verifier_rejects_a_non_string_issuer(issuer):
+    # `not issuer` alone catches falsy values (None, "", [], {}) but lets a
+    # truthy non-string like True/123 through to issuer.endswith("/") a few
+    # lines later, which raised a raw AttributeError instead of ValueError.
+    with pytest.raises(ValueError, match="issuer"):
+        OIDCVerifier(issuer=issuer, audience=AUDIENCE)
+
+
+@pytest.mark.parametrize("audience", [True, 123, [], {}, None, "", "   "])
+def test_oidc_verifier_rejects_a_non_string_or_blank_audience(audience):
+    with pytest.raises(ValueError, match="audience"):
+        OIDCVerifier(issuer="https://issuer.example.com/realm", audience=audience)
+
+
+def test_oidc_verifier_rejects_leading_whitespace_issuer_even_though_urlparse_tolerates_it():
+    # urlparse(" https://issuer.example/realm") parses to a clean https URL
+    # with the right hostname -- confirmed directly against this Python
+    # version -- so relying on urlparse alone to catch this would silently
+    # accept a value carrying a leading space that a different HTTP client
+    # or the exact-match check against a real `iss` claim might handle
+    # differently. Found by Codex's review of Package I; verified before
+    # fixing.
+    with pytest.raises(ValueError, match="whitespace or control characters"):
+        OIDCVerifier(issuer=" https://issuer.example.com/realm", audience=AUDIENCE)
+
+
+@pytest.mark.parametrize("control_character", ["\n", "\t", "\r", "\x00", "\x7f"])
+def test_oidc_verifier_rejects_embedded_control_characters_in_issuer(control_character):
+    with pytest.raises(ValueError, match="whitespace or control characters"):
+        OIDCVerifier(
+            issuer=f"https://issuer.example.com/re{control_character}alm", audience=AUDIENCE
+        )
+
+
+@pytest.mark.parametrize(
+    "bad_issuer",
+    [
+        "realms/test",  # relative -- no scheme/host at all
+        "https://user:pass@issuer.example.com/realm",  # userinfo
+        "https://issuer.example.com/realm?next=/admin",  # query string
+        "https://issuer.example.com/realm#fragment",  # fragment
+        "https://issuer.example.com:invalid/realm",  # non-numeric port
+        "https://issuer.example.com:70000/realm",  # out-of-range port
+    ],
+)
+def test_oidc_verifier_rejects_unsafe_issuer_url_shapes(bad_issuer):
+    # The port cases were found by symmetry with Codex's equivalent fix in
+    # security/rbac.py's independent _issuer() validator: urlsplit/urlparse
+    # only validate a URL's port lazily, on first access of `.port` -- until
+    # that attribute is actually read, a malformed port sails through
+    # unnoticed. Confirmed this module had the same gap before fixing it.
+    with pytest.raises(ValueError):
+        OIDCVerifier(issuer=bad_issuer, audience=AUDIENCE)
+
+
+def test_discover_jwks_uri_rejects_unsafe_jwks_uri_shapes(monkeypatch):
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
+    monkeypatch.setattr(
+        "security.identity.httpx.get",
+        lambda *a, **k: _FakeHttpxResponse(
+            {"issuer": ISSUER, "jwks_uri": "https://user:pass@test-issuer.invalid/jwks"}
+        ),
+    )
+    with pytest.raises(AuthenticationError, match="unsafe"):
+        v._discover_jwks_uri()
+
+
+class _FakeHttpxResponse:
+    def __init__(self, json_value=None, json_error=None):
+        self._json_value = json_value
+        self._json_error = json_error
+
+    def raise_for_status(self):
+        pass
+
+    def json(self):
+        if self._json_error is not None:
+            raise self._json_error
+        return self._json_value
+
+
+def test_discover_jwks_uri_rejects_mismatched_document_issuer(monkeypatch):
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
+    monkeypatch.setattr(
+        "security.identity.httpx.get",
+        lambda *a, **k: _FakeHttpxResponse({"issuer": "https://wrong-issuer.invalid", "jwks_uri": "https://x/jwks"}),
+    )
+    with pytest.raises(AuthenticationError, match="does not exactly match"):
+        v._discover_jwks_uri()
+
+
+def test_discover_jwks_uri_rejects_non_object_document(monkeypatch):
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
+    monkeypatch.setattr(
+        "security.identity.httpx.get", lambda *a, **k: _FakeHttpxResponse(["not", "an", "object"])
+    )
+    with pytest.raises(AuthenticationError, match="not a JSON object"):
+        v._discover_jwks_uri()
+
+
+def test_discover_jwks_uri_rejects_malformed_json(monkeypatch):
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
+    monkeypatch.setattr(
+        "security.identity.httpx.get",
+        lambda *a, **k: _FakeHttpxResponse(json_error=ValueError("boom")),
+    )
+    with pytest.raises(AuthenticationError, match="not valid JSON"):
+        v._discover_jwks_uri()
+
+
+def test_discover_jwks_uri_never_leaks_a_bare_httpx_invalid_url(monkeypatch):
+    # httpx.InvalidURL does not subclass httpx.HTTPError -- confirmed via
+    # their MRO -- so it needed its own except clause to honor "callers only
+    # ever see AuthenticationError". Construction-time port validation should
+    # make this unreachable through the normal flow, but this test pins the
+    # backstop directly by making httpx.get raise it, rather than relying on
+    # the (also tested) construction-time rejection alone.
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
+    monkeypatch.setattr(
+        "security.identity.httpx.get",
+        lambda *a, **k: (_ for _ in ()).throw(httpx.InvalidURL("boom")),
+    )
+    with pytest.raises(AuthenticationError, match="could not reach"):
+        v._discover_jwks_uri()
+
+
+def test_malformed_port_issuer_is_rejected_before_any_network_call(monkeypatch):
+    # Pins the actual scenario found during cross-review: OIDCVerifier(...)
+    # must reject a malformed-port issuer at construction, so
+    # _discover_jwks_uri() is never even reachable with a bad URL.
+    def _network_call_should_never_happen(*args, **kwargs):
+        raise AssertionError("httpx.get must not be called for a rejected issuer")
+
+    monkeypatch.setattr("security.identity.httpx.get", _network_call_should_never_happen)
+    with pytest.raises(ValueError, match="invalid port"):
+        OIDCVerifier(issuer="https://issuer.example.com:bad/realm", audience=AUDIENCE)
+
+
+def test_discover_jwks_uri_rejects_insecure_jwks_uri(monkeypatch):
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
+    monkeypatch.setattr(
+        "security.identity.httpx.get",
+        lambda *a, **k: _FakeHttpxResponse({"issuer": ISSUER, "jwks_uri": "http://attacker.example.com/jwks"}),
+    )
+    with pytest.raises(AuthenticationError, match="unsafe"):
+        v._discover_jwks_uri()
+
+
+def test_discover_jwks_uri_accepts_a_matching_secure_document(monkeypatch):
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE)
+    monkeypatch.setattr(
+        "security.identity.httpx.get",
+        lambda *a, **k: _FakeHttpxResponse({"issuer": ISSUER, "jwks_uri": "https://test-issuer.invalid/jwks"}),
+    )
+    assert v._discover_jwks_uri() == "https://test-issuer.invalid/jwks"
+
+
+def test_jwks_client_lifespan_matches_configured_jwks_cache_seconds(monkeypatch):
+    # Found during a self-audit: PyJWKClient has its OWN independent
+    # cache_jwk_set/lifespan (default 300s), separate from OIDCVerifier's
+    # own jwks_cache_seconds-gated rebuild logic. Left unwired, a non-default
+    # jwks_cache_seconds would look configured but the underlying signing
+    # keys would silently still refresh on PyJWKClient's own 300s default.
+    v = OIDCVerifier(issuer=ISSUER, audience=AUDIENCE, jwks_cache_seconds=3600)
+    monkeypatch.setattr(
+        "security.identity.httpx.get",
+        lambda *a, **k: _FakeHttpxResponse({"issuer": ISSUER, "jwks_uri": "https://test-issuer.invalid/jwks"}),
+    )
+    client = v._get_jwks_client()
+    assert client.jwk_set_cache is not None
+    assert client.jwk_set_cache.lifespan == 3600
+
+
+def test_verify_accepts_explicit_bearer_typ_claim(keypair, verifier):
+    private_key, _ = keypair
+    token = _make_token(private_key, extra_claims={"typ": "Bearer"})
+    subject = verifier.verify(token)
+    assert subject.subject_id == "user-1"
+
+
+def test_verify_rejects_non_bearer_typ_claim(keypair, verifier):
+    private_key, _ = keypair
+    token = _make_token(private_key, extra_claims={"typ": "ID"})
+    with pytest.raises(AuthenticationError, match="expected an access token"):
+        verifier.verify(token)
+
+
+def test_default_verifier_is_a_cached_singleton_per_process(monkeypatch):
+    from security.identity import _default_verifier
+
+    _default_verifier.cache_clear()
+    monkeypatch.setenv("OIDC_ISSUER", "http://localhost:9999/realms/cache-test")
+    monkeypatch.setenv("OIDC_AUDIENCE", "cache-test-audience")
+    try:
+        first = _default_verifier()
+        second = _default_verifier()
+        assert first is second
+    finally:
+        _default_verifier.cache_clear()
+
+
+# ---------------------------------------------------------------------------
+# Key rotation -- Package P.
+#
+# Every test above uses `_StubJWKClient`, which always returns the same
+# fixed public key regardless of the token's `kid` -- it never exercises
+# PyJWT's real `PyJWKClient.get_signing_key()` kid-matching/refetch logic at
+# all. Key rotation is specifically about THAT mechanism, so it needs a real
+# `PyJWKClient` talking to a real (local, ephemeral) HTTP server whose JWKS
+# document can change between requests -- simulating what a real IdP does
+# when it rotates its signing key. No live Keycloak dependency is needed:
+# this proves PyJWT's own documented behavior (jwt/jwks_client.py's
+# get_signing_key(): an unmatched kid triggers `refresh=True` and retries)
+# actually works end-to-end through security/identity.py's real
+# OIDCVerifier, not just that the library claims to support it.
+# ---------------------------------------------------------------------------
+
+
+class _RotatingDiscoveryHandler(BaseHTTPRequestHandler):
+    """Serves an OIDC discovery document + a mutable JWKS document. Tests
+    mutate `jwks_document` on the class between requests to simulate the
+    IdP rotating its signing key without restarting anything."""
+
+    issuer = ""
+    jwks_document: dict = {"keys": []}
+
+    def log_message(self, format, *args):  # noqa: A002 - stdlib signature
+        pass  # keep test output quiet
+
+    def do_GET(self):
+        if self.path == "/.well-known/openid-configuration":
+            body = json.dumps(
+                {"issuer": self.issuer, "jwks_uri": f"{self.issuer}/jwks"}
+            ).encode()
+        elif self.path == "/jwks":
+            body = json.dumps(self.jwks_document).encode()
+        else:
+            self.send_response(404)
+            self.end_headers()
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+
+def _jwk_from_public_key(public_key, kid: str) -> dict:
+    jwk = json.loads(RSAAlgorithm.to_jwk(public_key))
+    jwk["kid"] = kid
+    jwk["use"] = "sig"
+    jwk["alg"] = "RS256"
+    return jwk
+
+
+@pytest.fixture
+def rotation_server():
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _RotatingDiscoveryHandler)
+    issuer = f"http://127.0.0.1:{server.server_port}"
+    _RotatingDiscoveryHandler.issuer = issuer
+    _RotatingDiscoveryHandler.jwks_document = {"keys": []}
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield issuer, _RotatingDiscoveryHandler
+    finally:
+        server.shutdown()
+        thread.join(timeout=5)
+
+
+def test_key_rotation_is_handled_without_restart_or_code_change(rotation_server):
+    issuer, handler_cls = rotation_server
+    old_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    new_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    OLD_KID, NEW_KID = "old-key", "new-key"
+
+    handler_cls.jwks_document = {"keys": [_jwk_from_public_key(old_key.public_key(), OLD_KID)]}
+
+    # A large cache window: any successful verification of the new-kid token
+    # below must come from PyJWKClient's own kid-miss-triggers-refetch
+    # behavior, not from this class rebuilding its client due to staleness.
+    verifier = OIDCVerifier(issuer=issuer, audience=AUDIENCE, jwks_cache_seconds=3600)
+
+    old_token = _make_token(old_key, kid=OLD_KID, issuer=issuer)
+    subject = verifier.verify(old_token)
+    assert subject.subject_id == "user-1"
+
+    # Rotate: the IdP now serves both keys, the realistic shape during a
+    # grace period (old key still valid for already-issued tokens; new
+    # tokens are signed with the new key).
+    handler_cls.jwks_document = {
+        "keys": [
+            _jwk_from_public_key(old_key.public_key(), OLD_KID),
+            _jwk_from_public_key(new_key.public_key(), NEW_KID),
+        ]
+    }
+
+    new_token = _make_token(new_key, kid=NEW_KID, issuer=issuer)
+    subject_after_rotation = verifier.verify(new_token)
+    assert subject_after_rotation.subject_id == "user-1"
+
+    # The old key, still served during the grace period, must keep working too.
+    old_token_2 = _make_token(old_key, kid=OLD_KID, issuer=issuer)
+    assert verifier.verify(old_token_2).subject_id == "user-1"
+
+
+def test_a_fully_retired_key_is_rejected_once_a_refetch_has_occurred(rotation_server):
+    issuer, handler_cls = rotation_server
+    old_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    new_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    OLD_KID, NEW_KID = "old-key", "new-key"
+
+    handler_cls.jwks_document = {"keys": [_jwk_from_public_key(old_key.public_key(), OLD_KID)]}
+    verifier = OIDCVerifier(issuer=issuer, audience=AUDIENCE, jwks_cache_seconds=3600)
+    verifier.verify(_make_token(old_key, kid=OLD_KID, issuer=issuer))
+
+    # Full rotation: the old key is retired entirely from the live document
+    # (removed, not just superseded).
+    handler_cls.jwks_document = {"keys": [_jwk_from_public_key(new_key.public_key(), NEW_KID)]}
+
+    # PyJWT's PyJWKClient caches the fetched JWKS document for `lifespan`
+    # seconds and only refetches when a requested kid is missing from that
+    # cache (jwt/jwks_client.py's get_signing_key()) -- it does not notice a
+    # key vanishing from the live document on its own. So immediately after
+    # rotation, a token for the (still cached) old key still verifies, using
+    # stale cached key material. This is real PyJWKClient behavior, not a
+    # bug in this project's code -- and exactly why key rotation matters:
+    # a still-cached old key keeps working for a while, by design.
+    still_works = verifier.verify(_make_token(old_key, kid=OLD_KID, issuer=issuer))
+    assert still_works.subject_id == "user-1"
+
+    # The new key's kid is NOT in that stale cache, so verifying it forces
+    # PyJWKClient to refetch -- pulling the rotated document, which no
+    # longer contains the old key.
+    assert verifier.verify(_make_token(new_key, kid=NEW_KID, issuer=issuer)).subject_id == "user-1"
+
+    # Now that an actual refetch has happened, the retired old key is
+    # correctly rejected.
+    with pytest.raises(AuthenticationError):
+        verifier.verify(_make_token(old_key, kid=OLD_KID, issuer=issuer))
+
+
+def test_an_unknown_kid_that_never_appears_in_the_jwks_is_rejected(rotation_server):
+    issuer, handler_cls = rotation_server
+    real_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    attacker_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+
+    handler_cls.jwks_document = {"keys": [_jwk_from_public_key(real_key.public_key(), "real-key")]}
+    verifier = OIDCVerifier(issuer=issuer, audience=AUDIENCE, jwks_cache_seconds=3600)
+
+    # A token claiming a kid that has never been published by the IdP (e.g.
+    # an attacker's own key with a made-up kid) must never verify, even
+    # though PyJWKClient will try a refetch looking for it.
+    forged_token = _make_token(attacker_key, kid="never-published-kid", issuer=issuer)
+    with pytest.raises(AuthenticationError):
+        verifier.verify(forged_token)

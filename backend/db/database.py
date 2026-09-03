@@ -2,22 +2,44 @@
 Database configuration and session management.
 """
 import os
+from pathlib import Path
+
+from alembic.config import Config
+from alembic.runtime.migration import MigrationContext
+from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, event, text
+from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
-_is_sqlite = "sqlite" in DATABASE_URL
+
+
+def normalize_database_url(database_url: str) -> str:
+    """Select psycopg 3 for conventional and legacy PostgreSQL URLs."""
+    if database_url.startswith("postgresql://"):
+        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    if database_url.startswith("postgres://"):
+        return database_url.replace("postgres://", "postgresql+psycopg://", 1)
+    return database_url
+
+
+SQLALCHEMY_DATABASE_URL = normalize_database_url(DATABASE_URL)
+_database_backend = make_url(SQLALCHEMY_DATABASE_URL).get_backend_name()
+_is_sqlite = _database_backend == "sqlite"
+_is_postgresql = _database_backend == "postgresql"
 
 engine = create_engine(
-    DATABASE_URL,
+    SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread": False} if _is_sqlite else {},
     echo=False,
+    pool_pre_ping=_is_postgresql,
 )
 
 if _is_sqlite:
+
     @event.listens_for(engine, "connect")
     def _set_sqlite_pragmas(dbapi_connection, connection_record):
         # WAL lets readers and the writer proceed concurrently instead of
@@ -34,6 +56,65 @@ if _is_sqlite:
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+_BACKEND_DIRECTORY = Path(__file__).resolve().parents[1]
+
+
+def is_sqlite_database() -> bool:
+    """Return whether the configured application database is SQLite."""
+    return _is_sqlite
+
+
+_TRUE_VALUES = {"1", "true", "yes", "on"}
+
+
+def should_seed_demo_data(*, database_backend: str | None = None) -> bool:
+    """Whether startup should seed synthetic demo data (a demo player, all
+    curricula/dungeons).
+
+    `SEED_DEMO_DATA` wins either way when set. Left unset, this defaults to
+    True on the SQLite zero-setup demo profile (the README's "Run it locally"
+    promise depends on this) and False on PostgreSQL: a migration-managed
+    database implies something closer to a shared or persistent environment,
+    where silently injecting a fake player and curriculum content is not a
+    safe default. See docs/contracts/data-authorization.md and LANE2_SYNC.md
+    for why this boundary exists -- it is not yet a real controlled-pilot
+    seeding policy, just an explicit off switch for anything other than the
+    local SQLite demo.
+    """
+    override = os.getenv("SEED_DEMO_DATA")
+    if override is not None:
+        return override.strip().lower() in _TRUE_VALUES
+    return (database_backend or _database_backend) == "sqlite"
+
+
+def migration_head_revision() -> str:
+    """Return the repository's single Alembic head revision."""
+    config = Config(str(_BACKEND_DIRECTORY / "alembic.ini"))
+    config.set_main_option("script_location", str(_BACKEND_DIRECTORY / "migrations"))
+    heads = ScriptDirectory.from_config(config).get_heads()
+    if len(heads) != 1:
+        raise RuntimeError(f"Expected one Alembic head, found {len(heads)}: {heads}")
+    return heads[0]
+
+
+def database_revision(bind: Engine = engine) -> str | None:
+    """Read the database's current Alembic revision, or None if unversioned."""
+    with bind.connect() as connection:
+        return MigrationContext.configure(connection).get_current_revision()
+
+
+def require_database_at_migration_head(bind: Engine = engine) -> None:
+    """Refuse startup when a migration-managed database is not current."""
+    expected = migration_head_revision()
+    current = database_revision(bind)
+    if current != expected:
+        current_label = current or "unversioned"
+        raise RuntimeError(
+            "Database schema is not at the required Alembic revision "
+            f"(current={current_label}, required={expected}). "
+            "Run `python -m alembic upgrade head` before starting the API."
+        )
 
 
 def get_db():
@@ -56,7 +137,7 @@ def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
     "no such column" against pre-existing rows. Call once at startup, after
     create_all().
     """
-    if "sqlite" not in DATABASE_URL:
+    if not _is_sqlite:
         return
     with engine.connect() as conn:
         existing = {row[1] for row in conn.execute(text(f"PRAGMA table_info({table})"))}

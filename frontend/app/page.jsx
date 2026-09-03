@@ -23,16 +23,23 @@ export default function LandingPage() {
           'repeating-linear-gradient(0deg, #15101f 0 2px, transparent 2px 32px), repeating-linear-gradient(90deg, #15101f 0 2px, transparent 2px 32px)',
       }}
     >
-      <div className="w-full">
+      <div className="w-full flex flex-col items-center">
+        {/* items-center (not inline-block + mx-auto, which only reliably
+            centers a block-level box, not this span-based badge) keeps the
+            badge and the wordmark on the same centerline instead of the
+            badge drifting to the left edge of the full-width wrapper. */}
         <PixelBadge tone="arcane" className="mb-4">SKILL-INTELLIGENCE PLATFORM</PixelBadge>
-        {/* eslint-disable-next-line @next/next/no-img-element -- fixed local
-            asset, not a candidate for next/image's remote optimization pipeline */}
-        <img
-          src="/sprites/bats/logo.png"
-          alt="SIH Learning Tool"
-          className="mx-auto"
-          style={{ imageRendering: 'pixelated', maxWidth: '45%', height: 'auto' }}
-        />
+        {/* Text wordmark, not the old logo.png sprite -- that asset's pixels
+            spell out the inherited "SkillQuest: The AI Dungeon" branding, and
+            an alt-text change alone doesn't fix what's actually rendered. */}
+        <PixelPanel as="div" className="px-8 py-5 text-center">
+          <p className="font-display text-3xl md:text-4xl text-arcane leading-tight">PRISM</p>
+          <p className="font-display text-[9px] md:text-[11px] text-gold mt-2 tracking-wide leading-relaxed">
+            Personalized Readiness Intelligence
+            <br />
+            &amp; Skill Mapping
+          </p>
+        </PixelPanel>
       </div>
 
       <p className="font-body text-xl text-parchment-dim max-w-xl">

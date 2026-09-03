@@ -44,6 +44,7 @@ from models.question import Question  # noqa: F401
 from models.submission import AnswerSubmission  # noqa: F401
 from models.accuracy_history import AccuracyHistory  # noqa: F401
 import routes.game as game_routes
+from services.game_logic import calculate_damage
 from services.monsters import monster_name_for
 
 
@@ -466,3 +467,105 @@ def test_refill_hints_restores_to_max_from_zero(client):
 
     after = client.get(f"/game/player/{player_id}").json()
     assert after["hint_tokens"] == game_routes.MAX_HINT_TOKENS
+
+
+def _create_guild_with_member(client, creator_username="raid-leader"):
+    player_id = client.post("/game/player/create", json={"username": creator_username}).json()["player_id"]
+    guild = client.post(
+        "/game/guild/create", json={"name": f"guild-{creator_username}", "creator_player_id": player_id}
+    ).json()
+    return guild["guild_id"], player_id
+
+
+def _insert_question(client, *, max_damage):
+    db = client._SessionLocal()
+    question = Question(
+        topic="arrays", difficulty="medium", question_text="q", expected_answer="a",
+        max_damage=max_damage,
+    )
+    db.add(question)
+    db.commit()
+    question_id = question.question_id
+    db.close()
+    return question_id
+
+
+def test_raid_boss_hp_scales_with_member_count_at_the_new_per_member_constant(client):
+    """The same fix that made raid damage continuous also rescaled
+    raid_boss_hp from `len(members) * 3` to `len(members) *
+    RAID_BOSS_HP_PER_MEMBER` -- this covers that rescaling directly, not
+    just the damage arithmetic."""
+    guild_id, player_id = _create_guild_with_member(client)
+    solo_join = client.post(
+        "/game/guild/raid/join", json={"guild_id": guild_id, "player_id": player_id}
+    ).json()
+    assert solo_join["raid_boss_hp"] == game_routes.RAID_BOSS_HP_PER_MEMBER == 270
+
+    # A second, separate guild+raid to observe the 2-member HP total --
+    # raid_boss_hp is fixed at raid-start time from however many members the
+    # guild has right then, so this needs its own guild rather than adding a
+    # member to the already-1-member-sized raid above.
+    guild_id_2, leader_id_2 = _create_guild_with_member(client, creator_username="raid-leader-2")
+    member_id_2 = client.post("/game/player/create", json={"username": "raid-member-2"}).json()["player_id"]
+    client.post("/game/guild/join", json={"player_id": member_id_2, "guild_id": guild_id_2})
+    two_member_join = client.post(
+        "/game/guild/raid/join", json={"guild_id": guild_id_2, "player_id": leader_id_2}
+    ).json()
+    assert two_member_join["raid_boss_hp"] == 2 * game_routes.RAID_BOSS_HP_PER_MEMBER == 540
+
+
+def test_raid_damage_is_score_scaled_not_a_flat_count_per_correct_answer(client):
+    """Regression for the flat "1 damage per correct answer" raid bug fixed
+    alongside the PRISM rebrand: submit_raid_answer must deal
+    calculate_damage(question.max_damage, score) -- the same continuous,
+    score-scaled model the solo dungeon uses -- never a flat 1 (or 0) per
+    verdict. A max_damage=200 question answered at score=0.5 (a realistic
+    "partial" score -- JUDGE_PARTIAL_THRESHOLD=0.30 <= 0.5 <
+    JUDGE_CORRECT_THRESHOLD=0.65, see services/config.py -- "correct" would
+    never actually pair with a 0.5 score from the real judge) must deal 100
+    damage, not 1, and must not by itself complete a solo (270 HP) raid.
+    """
+    guild_id, player_id = _create_guild_with_member(client)
+    join_resp = client.post(
+        "/game/guild/raid/join", json={"guild_id": guild_id, "player_id": player_id}
+    ).json()
+    assert join_resp["raid_boss_hp"] == game_routes.RAID_BOSS_HP_PER_MEMBER
+    question_id = _insert_question(client, max_damage=200)
+
+    client.verdict_box.update({"verdict": "partial", "score": 0.5})
+    resp = client.post(
+        "/game/guild/raid/submit",
+        json={
+            "guild_id": guild_id, "player_id": player_id, "question_id": question_id,
+            "player_answer": "partial-strength answer",
+        },
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    expected_damage = calculate_damage(200, 0.5)
+    assert expected_damage == 100  # sanity: pins the formula this test relies on
+    assert body["raid_boss_damage"] == expected_damage
+    assert body["raid_boss_damage"] != 1  # the old flat-per-correct-answer bug's exact wrong value
+    assert body["raid_complete"] is False  # 100 damage must not clear a 270 HP solo raid
+
+
+def test_raid_damage_is_zero_for_an_incorrect_verdict_regardless_of_score(client):
+    """calculate_damage is only reached for a non-"incorrect" verdict; an
+    "incorrect" verdict must deal zero raid damage even if the judge somehow
+    returned a nonzero score alongside it."""
+    guild_id, player_id = _create_guild_with_member(client)
+    client.post("/game/guild/raid/join", json={"guild_id": guild_id, "player_id": player_id})
+    question_id = _insert_question(client, max_damage=200)
+
+    client.verdict_box.update({"verdict": "incorrect", "score": 0.9})
+    resp = client.post(
+        "/game/guild/raid/submit",
+        json={
+            "guild_id": guild_id, "player_id": player_id, "question_id": question_id,
+            "player_answer": "wrong answer",
+        },
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["raid_boss_damage"] == 0

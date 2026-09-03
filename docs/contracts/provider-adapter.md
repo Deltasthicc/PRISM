@@ -4,9 +4,9 @@ Owner: Lane 5 (Product API, Integrations & Analytics)
 Consumers: Lanes 1, 2, 3, 4, 6
 Change approval: Lanes 1, 2 and 6
 
-Status: **NOT YET DEFINED** — this is a scaffold. `backend/services/learning_catalog.py` is the
-current, honest catalog-fallback implementation; there is no `LearningProviderAdapter` interface
-yet.
+Status: **INITIAL INTERFACE IMPLEMENTED** — `backend/integrations/provider.py` defines the
+replaceable protocol and deterministic `SimulatedIGOTAdapter`. Live provider access remains
+blocked until an approved endpoint, authentication, data-sharing contract and sandbox exist.
 
 ## What this contract must define once implemented
 
@@ -19,6 +19,10 @@ yet.
 - The deterministic `SimulatedIGOTAdapter` fixture contract and its test data.
 - Timeout, retry/jitter, circuit-breaker, idempotency-key and dead-letter behavior expected of any
   real adapter.
+
+The initial implementation returns `ProviderResult(status="SIMULATED", ...)` for every simulator
+operation. It never creates course, enrolment, completion or health records and uses empty fixed
+fixtures, making it suitable for contract tests without implying provider connectivity.
 
 ## Change process
 

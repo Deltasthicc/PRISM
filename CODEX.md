@@ -1,6 +1,6 @@
 # CODEX.md
 
-Persistent project guidance for Codex working in `SIHLearningTool`.
+Persistent project guidance for Codex working on `PRISM`.
 
 ## Read order and source of truth
 
@@ -18,7 +18,7 @@ The problem-statement capture is preserved at `docs/SIH26101_PROBLEM_STATEMENT.m
 
 ## Product definition
 
-This is a working-name prototype for SIH26101, supplied as a MoSPI/DIID Smart Education problem. The target is a professional skill-intelligence and learning platform for India’s Official Statistical System that:
+This is PRISM (Personalized Readiness Intelligence & Skill Mapping), a prototype for SIH26101, supplied as a MoSPI/DIID Smart Education problem. The target is a professional skill-intelligence and learning platform for India’s Official Statistical System that:
 
 - builds profiles from role, assignment, qualifications, experience and training;
 - maps statistical, technical, digital-governance and behavioural/managerial competencies;
@@ -33,14 +33,50 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
 
 ## Current verified reality
 
-- Backend: FastAPI + SQLAlchemy + SQLite prototype; 42 backend tests passed in the last verification.
+- Backend: FastAPI + SQLAlchemy with a zero-setup SQLite demo profile and an additive PostgreSQL
+  16/Alembic profile; the 3 September Package W gate passed **442 tests with PostgreSQL stopped
+  (6 skipped)** and **448 with the local Compose PostgreSQL healthy**. Package W adds accepted
+  deterministic read repositories plus a privacy-safe database-status command and per-lane
+  integration guide; its final legacy-column count repair at `8d0d1de` awaits Claude's immutable
+  review. `players.preferred_mode` (migration `640603a37f2f`, `models/enums.py`'s
+  `LearningMode`) is a new base scaffold for the team's two-mode decision — see
+  `docs/contracts/data-authorization.md` section 8 for the exact boundary; no route reads or
+  writes it yet.
 - Frontend: Next.js; lint passed in the last verification.
 - Four curricula/34 competencies exist in the backend, but the supplied problem statement names a broader competency set.
 - Only the DSA Quest browser path is currently verified; three other backend dungeons are blocked by frontend route/filter assumptions.
 - The current “role-aware” result is actually experience-level-capped; other stored profile fields do not select a role target.
 - Quiz generation supports bounded TXT/MD/PDF/DOCX and normalized source-span checking. It is context stuffing, not retrieval RAG; PPTX/video ingestion and item review are absent.
 - Recommendations are internal practice/catalogue fallback. There is no authorized live iGOT/NSSTA enrolment, completion, SSO or score-writeback integration.
-- There is no real authentication/RBAC/tenancy, PostgreSQL migration path, CI, frontend test suite, observability stack or production authorization.
+- Lane 2 provides a cross-reviewed local OIDC verifier, issuer/subject binding, fixed RBAC policy,
+  deployment-database tenant boundary, audited data-rights/retention primitives and PostgreSQL
+  migrations/backup-restore drills. The retention-enforcement job's atomic PostgreSQL batch claiming
+  (`FOR UPDATE SKIP LOCKED`, live-drilled with 4 concurrent workers after a real race was found and
+  reproduced) and Package T (a stale-snapshot deleted-count fix and a non-injective `audit_actor`
+  encoding fix) are **Codex-accepted** on independent cold immutable review, including Codex's own
+  reproduction of the four-worker drill. Claude Code separately evaluated a second external audit's
+  four DB-hardening claims (Package U): rejected RLS and legacy-ETL because there is no identified
+  real source dataset, continuity requirement, approved mapping/conflict policy, reconciliation
+  contract or acceptance owner (not because of any tenant model -- tenancy is irrelevant to whether
+  that migration could exist), rejected evidence self-hashing as providing no tamper-evidence from
+  the same writer role, and implemented a scoped PostgreSQL trigger rejecting UPDATE/DELETE on
+  `audit_events`. Codex's own cold immutable audit of S/T/U (2026-09-01) accepted S and T outright
+  but rejected U's integration verdict: the unconditional DELETE rejection directly broke
+  `scripts/retention_job.py`, whose only registered category is `audit_events` -- the retention job
+  would become permanently unable to delete it the moment any maximum retention is ever cited.
+  Package V (2026-09-02) fixed this with a follow-up migration (`4631f204d4ba`) retiring only the
+  DELETE rejection -- UPDATE stays blocked at the database level (named precisely as that, not
+  "append-only", since DELETE through the retention job is intentional). Codex's review of Package V
+  **accepted its production migration/retention behavior outright**, and raised two bounded
+  test/evidence-hardening findings (a disposable-database cleanup gap, and a concurrency regression
+  that needed genuinely forced candidate-selection overlap plus a negative control proving that
+  forcing overlap is meaningful) -- both closed in follow-up `ac5a2e7` and accepted after Codex's
+  narrow immutable re-review: five consecutive 6-test live PostgreSQL runs, a fresh 347-test full
+  gate, clean Alembic head/check and no leaked disposable database. Full evidence and reasoning for
+  all of S/T/U/V is in `LANE2_SYNC.md`. Existing product routes do not invoke any of this foundation; there is no browser
+  SSO, row-level organization tenancy, approved production IdP, frontend test suite, observability
+  stack or production authorization. A CI workflow exists, but its presence alone is not evidence of
+  a green remote run.
 
 Reinspect code and run tests before repeating any status claim; these bullets are a baseline, not permanent truth.
 
@@ -82,7 +118,9 @@ The exact path map, test subtrees, contracts and reviewers live in `SIH26101_TEA
 4. Add versioned role targets/evidence and one bounded statistics lab.
 5. Add cited retrieval, assistant, quiz review and one PPTX/transcript path.
 6. Add labelled provider simulator, analytics and reconciliation.
-7. Add real identity/RBAC/tenancy, migrations, accessibility/security and operational gates for a controlled pilot.
+7. Wire the existing identity/RBAC foundation into product routes, add authoritative organization
+   tenancy and browser login, and complete accessibility/security/operational gates for a
+   controlled pilot.
 
 Do not build microservices, unrestricted code execution, speculative psychometric models or predictive workforce claims before the verified vertical loop works.
 
@@ -114,15 +152,17 @@ Do not build microservices, unrestricted code execution, speculative psychometri
 
 ## Verification
 
-Run the smallest relevant checks during implementation and the full gate before handoff:
+Run the smallest relevant checks during implementation and the full gate before handoff, from the
+repository root wherever this checkout lives (its own directory name is not part of the product
+name and varies by clone -- do not assume `SIHLearningTool` or `PRISM`):
 
 ```powershell
-cd C:\Users\shash\Downloads\SIHLearningTool\backend
+cd backend
 & .\.venv\Scripts\python.exe -m pytest
 ```
 
 ```powershell
-cd C:\Users\shash\Downloads\SIHLearningTool\frontend
+cd frontend
 npm run lint
 npm run build
 ```

@@ -12,6 +12,13 @@ that lane next has a ready punch list instead of rediscovering the same gaps.
 Each item below states: what was observed, why it's not Lane 2's file to fix, which lane owns it,
 and what Lane 2 already provides that the owning lane can build on.
 
+**See also `LANE2_INTEGRATION_GUIDE.md`** (Package W-B, 3 September 2026): the standing reference
+for *how* to integrate with Lane 2 at all — exact repository/security function signatures, a
+`database_status.py` tool for checking your own local setup, and a "Lane 2 provides / you provide /
+route and DB usage / acceptance evidence" section per lane. This file stays the dated,
+issue-by-issue punch list of specific defects found from live testing; that one is the
+general-purpose map.
+
 ## 1. Quest/dungeon mode is not yet genuinely optional (only the default landing page changed)
 
 **Observed:** Login and registration now route to `/academy` instead of `/dungeon` (fixed in an

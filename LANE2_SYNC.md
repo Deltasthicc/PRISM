@@ -269,7 +269,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
 | V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
 | W-A — Cross-lane read repository facade | Codex | **implemented and verified; awaiting Claude immutable review of the W-A commit** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
-| W-B — Database operator UX + per-lane integration handbook | Claude Code | **proposed to Claude; do not start until claimed in this row/activity log** | 2026-09-03 | proposed: `backend/scripts/database_status.py` (new), `backend/tests/test_core_database_status.py` (new), `LANE2_INTEGRATION_GUIDE.md` (new), `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
+| W-B — Database operator UX + per-lane integration handbook | Claude Code | **claimed and implemented; 19/19 new tests passed, 427/427 full suite passed; awaiting Codex immutable review after commit** | 2026-09-03 | `backend/scripts/database_status.py` (new), `backend/tests/test_core_database_status.py` (new), `LANE2_INTEGRATION_GUIDE.md` (new), `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -362,6 +362,66 @@ always knows what's claimed.
   exact tests. Claude reviews that commit without editing W-A files; Codex later reviews Claude's
   separate W-B commit. Findings return to the original owner. No route file is in either package:
   actual HTTP wiring stays Lane 5-owned.
+
+- 2026-09-03 — Claude Code — **Claimed and implemented W-B in an isolated worktree
+  (`codex/lane-2-core-data/integration-ergonomics`, branched from `origin/main` at `e939f69`), never
+  touching the shared checkout Codex was actively editing W-A in.** Read (not edited) Codex's
+  in-progress `backend/db/repositories.py`/`docs/contracts/data-authorization.md` diffs only to
+  document their real signatures accurately in `LANE2_INTEGRATION_GUIDE.md`, explicitly caveated as
+  "Package W-A, in review — check this file for the accepted commit hash" rather than presented as
+  already merged.
+
+  **`backend/scripts/database_status.py` (new).** A privacy-safe, read-only status tool: migration
+  state (`current` vs. the repository's Alembic head, via the existing `database_revision()`/
+  `migration_head_revision()`, never raising on drift the way
+  `require_database_at_migration_head()` does — a status tool must be able to *report* "not at
+  head," not treat it as fatal), a fixed-allowlist `COUNT(*)` per Lane-2-owned table
+  (`TABLE_COUNTERS`, 17 tables), and boolean-only configured-integration flags
+  (`DATABASE_URL`/`OIDC_ISSUER`/`OIDC_AUDIENCE`/`GEMINI_API_KEY`/`SEED_DEMO_DATA` — present/absent
+  only, the value itself is never read into any return value). `--json` for machine consumption,
+  `--check-migrations` for a CI-style non-zero exit on drift. No parameter anywhere accepts a
+  player ID, username or other free-text filter — `test_status_accepts_no_player_or_free_text_argument_of_any_kind`
+  pins this as an executable fact via `inspect.signature`, not a comment asking a reviewer to
+  notice.
+
+  **`backend/tests/test_core_database_status.py` (new, 19 tests).** Migration status
+  (unversioned/at-head/behind-head, and an explicit `TypeError` when a caller mistakenly passes a
+  bare `Connection` instead of an `Engine`-bound `Session`); row counts against known seeded values,
+  plus a regression guard (`monkeypatch`-ing `Query.all` to explode) proving the counter never
+  materializes full rows; configured-flag blank/missing/non-blank handling. The privacy-critical
+  tests: `test_full_status_shape_matches_the_declared_allowlist` pins the exact top-level/migration
+  key sets so a future field addition fails loudly instead of silently starting to leak;
+  `test_status_never_leaks_a_forbidden_field_name` seeds a real `Player`/`EvidenceRecord` row
+  (username `"alice"`, evidence `detail` text, a `DATABASE_URL` containing a fake embedded
+  password) and asserts none of ~19 forbidden field names or literal secret/content strings appear
+  anywhere in the serialized JSON output — this is the test that would have caught a leak, not just
+  documented the intent not to have one. (One iteration: the forbidden set originally included the
+  bare substring `"sub"` for the OIDC subject claim, which false-failed against the legitimate
+  `"submissions"` table label — fixed by relying on the more precise `"subject_id"` instead, noted
+  inline so a future reviewer doesn't reintroduce the same false positive.) CLI tests monkeypatch
+  `db.database.SessionLocal` to an in-memory fixture session (matching this module's own
+  call-time-local-import pattern, the same precedent as `scripts/retention_job.py`) rather than
+  touching the real configured database.
+
+  **`LANE2_INTEGRATION_GUIDE.md` (new).** Per Package W-A/W-B's own proposal, one section per Lane
+  1/3/4/5/6 with exactly "Lane 2 provides / you provide / route and DB usage / acceptance evidence"
+  plus a copy-ready team message — grounded in the actual current contracts, models and this
+  package's tool, not aspirational. Explicitly flags, without overstepping into fixing them: Lane
+  5's `routes/learning.py` never forwarding `job_role`/`designation`/`department`/
+  `current_assignment` into `analyse_competencies()` (making Lane 3's role-aware targeting
+  currently unreachable by any real user); the missing `player_id` in
+  `labs/sampling_lab.py`'s `evidence_payload()`; the un-flagged fallback response in
+  `routes/ai_real.py`'s Quest-mode question generator; and the live but dormant `json` import bug in
+  `ai/grading.py`. Cross-referenced from `LANE2_HANDOFF_FOR_OTHER_LANES.md`'s header, which remains
+  the separate dated issue list rather than being merged into this new file.
+
+  **Evidence.** `pytest backend/tests/test_core_database_status.py`: 19 passed. Full backend suite
+  in the same isolated worktree: 427 passed (408 prior + 19 new), 0 failed — run against the shared
+  `backend/.venv` interpreter from a separate worktree so Codex's uncommitted W-A changes in the
+  main checkout were never on this run's `sys.path`. Does not modify, and this commit's diff will
+  show it did not touch, any W-A file (`backend/db/repositories.py`,
+  `backend/tests/test_core_repository_consumers.py`). Awaiting Codex's immutable review per the
+  collision rule above.
 
 ## Activity log
 

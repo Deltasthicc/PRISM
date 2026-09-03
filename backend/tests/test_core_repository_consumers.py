@@ -149,6 +149,31 @@ def test_current_role_target_is_exact_and_does_not_invent_lane3_policy(db):
     )
 
 
+def test_current_role_target_isolated_by_competency_for_same_role(db):
+    db.add_all(
+        [
+            _target("requested", level=3),
+            _target(
+                "other-competency-newer",
+                competency_id="os_data_quality",
+                valid_from=T0 + timedelta(hours=1),
+                created_at=T0 + timedelta(days=1),
+                level=5,
+            ),
+        ]
+    )
+    db.commit()
+
+    result = get_current_role_target(
+        db,
+        "statistical officer",
+        COMPETENCY,
+        as_of=T0 + timedelta(hours=2),
+    )
+    assert result.target_id == "requested"
+    assert result.competency_id == COMPETENCY
+
+
 def test_current_role_target_validates_keys_and_timezone(db):
     with pytest.raises(ValueError, match="role"):
         get_current_role_target(db, " ", COMPETENCY, as_of=T0)

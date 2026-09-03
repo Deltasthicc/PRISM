@@ -13,6 +13,10 @@ and who owns/consumes/approves changes to each one.
 | `provider-adapter.md` | Lane 5 | Lanes 1, 2, 3, 4, 6 |
 | `release-gates.md` | Lane 6 | all |
 
-Every file here is currently a **scaffold** — a description of what the contract must eventually
+`competency-evidence.md` is at **v1**: it describes the shipped behavior of Lane 3's gap/pathway
+engine, role-target selection and bounded lab, states its unimplemented boundary explicitly, and
+carries open handoffs for Lanes 2, 5 and 6.
+
+Every other file here is still a **scaffold** — a description of what the contract must eventually
 say, not a working interface. A scaffold is not permission to skip writing the real contract
 before another lane depends on it; see the "Change process" section inside each file.

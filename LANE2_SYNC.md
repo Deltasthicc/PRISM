@@ -273,6 +273,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | W-C — Legacy-column-safe table counts | Codex | **ACCEPTED by Claude on independent immutable review of `8d0d1de`: table-level `COUNT(*)` confirmed via captured compiled SQL (no ORM column projection), independently-constructed legacy schema and private-looking values confirmed absent from output, all six requested commands reproduced with matching results. Package W is closed.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status_adversarial.py`, `LANE2_SYNC.md` |
 | X — Dependency security and reproducibility | Claude Code | **implemented; independently re-verified by Claude Code on the current merged `main` tip (459/459 full suite including Lane 5's PR #2, `pip-audit` clean) after Shashwat dropped the per-package stop-and-wait review gate — see Activity log. Not yet reviewed by Codex; will close on review if Codex still does one, but is not blocked on it.** | 2026-09-03 | `backend/requirements.txt`, `backend/requirements-dev.txt`, `backend/requirements.lock` (new), `backend/models/governance.py`, `backend/tests/test_core_dependency_upgrade_adversarial.py` (new), `LANE2_SYNC.md` |
 | Y — SQLite foreign-key enforcement and transaction-semantics parity | Claude Code | **implemented and verified** | 2026-09-03 | `backend/db/database.py`, `backend/tests/test_core_sqlite_fk_transactions.py` (new), `backend/tests/test_core_repository_consumers.py`, `backend/tests/test_core_database_status.py`, `LANE2_SYNC.md` |
+| Z — Composed authorization dependency hardening (review/repair of Lane 5 PR #2) | Codex | **implemented and verified; integrated onto `main` by Claude Code from `codex/lane2-package3`@`0559348`** | 2026-09-04 | `backend/routes/authorization.py`, `backend/routes/learning.py`, `backend/tests/test_authorization_dependencies.py` (new), `backend/tests/test_api_integration_lane5.py`, `LANE2_INTEGRATION_GUIDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -4014,3 +4015,57 @@ FINAL GATES AND DELIVERY
   Alembic revision. The class-level `Engine` listener touches only `backend/db/database.py`.
 
   Moving to whichever package Codex hasn't already claimed — see the scratch file.
+
+- 2026-09-04 — Codex — **Package 3 implemented: audited and closed the real gaps in Lane 5 PR #2's
+  composed authorization adapter (`da084bf`/merge `d4dfb46`).** The user's superseding instruction
+  removed the stop-and-wait gate between packages but retained separate commits, worktrees and exact
+  evidence. Claude claimed Package 2, so Codex yielded its earlier Package 2 claim without making an
+  edit and completed Package 3 in an isolated worktree based on `origin/main`.
+
+  **What was already correct and retained:** `require_principal()` verified the Bearer token,
+  resolved the active `(issuer, sub)` binding, used a constant sanitized 401/403 body, emitted
+  `WWW-Authenticate: Bearer` on 401, and returned its `BoundPrincipal`; the permission factory was
+  real; Lane 5 had attached it to organization-admin overview and latest-assessment reads. This was
+  a review-and-repair package, not a replacement implementation.
+
+  **Real gaps reproduced before repair:** the tenant check existed only inside
+  `require_principal`, so overriding that dependency could bypass the tenant layer; own-player
+  object scope was translated by hand in the route rather than being separately composable; and
+  the tests did not prove exact HTTP envelopes, sensitive-detail non-disclosure, object identity,
+  dependency overrides, wrong-tenant overrides, or cross-player/unbound denial. Independently,
+  Lane 5's focused test file was not isolated: run by itself on the immutable PR merge it produced
+  **3 failed, 4 passed** because its `Base.metadata.create_all()` fixture had not registered
+  `guilds`/the other `Player` relationship targets (`NoReferencedTableError`) and could pass only
+  after another test happened to import the full model graph.
+
+  **Repair:** added `require_deployment_tenant_dependency()` and
+  `require_own_player_dependency(permission)` while preserving the exact resolved principal object
+  through every successful layer. The permission factory now composes the explicit deployment
+  tenant adapter; therefore a test override of `require_principal` cannot silently skip tenant
+  enforcement. Latest-assessment now uses the permission-plus-own-player dependency as Lane 5's
+  concrete consumption example instead of repeating a handler-level `try/except`. Added a dedicated
+  HTTP contract covering missing/invalid Bearer tokens, `WWW-Authenticate`, stable sanitized
+  bodies, binding/permission/tenant/object failures, dependency overrides, unbound administrative
+  identities and `is` identity preservation. Made Lane 5's fixture genuinely standalone by
+  registering its referenced model graph and matching the app's cross-thread SQLite TestClient
+  setting. Updated the identity/data contracts and integration guide to state the precise partial
+  route reality.
+
+  **Evidence actually run:** combined Package 3/Lane 5 HTTP contract **18 passed**; focused identity
+  + RBAC + Package 3/Lane 5 gate **120 passed** before the final real-route regression was added;
+  final pre-commit full backend gate **470 passed, 2 warnings, 0 skipped in 44.40s** while the local PostgreSQL
+  service was reachable. The two warnings are the existing Python 3.12 SQLite datetime-adapter
+  deprecations in retention tests, not failures. `scripts.database_status --check-migrations`,
+  `alembic current`, and `alembic check` all passed against real PostgreSQL at
+  `640603a37f2f (head)` with all 17 allowlisted tables present and no new upgrade operations.
+  A fresh real local Keycloak `demo-learner` access token verified through the actual
+  `get_current_subject()`/JWKS path with the expected `learner` role; no token value was printed or
+  persisted. `compileall` and `git diff --check` passed.
+
+  **Bounded Lane 5 finding, not hidden or expanded into this package:** the protected latest-
+  assessment route uses the correct repository and authorization, but still differs from
+  `data-authorization.md` section 4 by nesting under `assessment`, omitting
+  `recommended_course_ids`, and returning 200/null instead of 404 for an empty stream. The contract
+  and integration guide now say this explicitly; response-shape repair remains Lane 5 ownership.
+  Most product routes and the browser remain unprotected; no government IdP, multi-organization
+  row tenancy, production authorization or compliance is claimed.

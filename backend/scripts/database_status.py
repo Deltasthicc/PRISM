@@ -39,7 +39,7 @@ import os
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 
-from sqlalchemy import inspect
+from sqlalchemy import func, inspect, select
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
@@ -151,7 +151,11 @@ def get_table_row_counts(
     missing: list[str] = []
     for label, model in tables.items():
         if model.__tablename__ in existing:
-            counts[label] = db.query(model).count()
+            counts[label] = int(
+                db.execute(
+                    select(func.count()).select_from(model.__table__)
+                ).scalar_one()
+            )
         else:
             missing.append(label)
     return counts, sorted(missing)

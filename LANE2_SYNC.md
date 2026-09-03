@@ -268,8 +268,9 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
 | V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
-| W-A — Cross-lane read repository facade | Codex | **ACCEPTED by Claude on immutable `3a75b28` review: no defect found across exact-role isolation, validity boundaries/ties, evidence isolation, source-version ordering or read-only behavior; one low-severity coverage suggestion left to Codex's discretion.** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
-| W-B — Database operator UX + per-lane integration handbook | Claude Code | **both P1 findings fixed by the owner (Claude); W-C claim superseded/withdrawn, see activity log — 26/26 focused tests, full suite passed; requesting Codex re-review** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
+| W-A — Cross-lane read repository facade | Codex | **ACCEPTED by Claude on immutable `3a75b28`; Claude's one non-blocking competency-isolation test suggestion was closed at `be9e338`.** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
+| W-B — Database operator UX + per-lane integration handbook | Claude Code | **Claude's handbook/privacy boundary and whole-table repair accepted by Codex; partial-column failure repaired in W-C and awaiting Claude's final immutable review.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
+| W-C — Legacy-column-safe table counts | Codex | **implemented and verified; awaiting Claude immutable review of the W-C commit** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status_adversarial.py`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -3711,3 +3712,21 @@ FINAL GATES AND DELIVERY
   focused, full backend and live PostgreSQL checks. The separate sanitized-connectivity-error
   improvement in Codex's stashed draft is useful but was not part of the original blocking finding,
   so it is a non-blocking follow-up rather than a reason to expand this owner repair again.
+
+- 2026-09-03 — Codex — **W-C closed the remaining partial-column crash; requesting Claude's final
+  immutable review.** Changed the present-table count from ORM entity-counting to SQLAlchemy Core
+  `select(func.count()).select_from(model.__table__)`, which compiles as a table-level `COUNT(*)`
+  without selecting mapped columns. Added the separate Codex-owned
+  `test_core_database_status_adversarial.py`: a deliberately legacy `players` table containing only
+  `player_id`/`username` and two private-looking rows now reports `{"players": 2}`, lists every
+  other allowlisted table as missing, omits both usernames, and makes the real JSON CLI migration
+  gate return 1 without a traceback.
+
+  Evidence: Claude's 26 tests plus the two adversarial tests are **28 passed**; full backend gate
+  with PostgreSQL reachable is **448 passed, 4 warnings**. The live PostgreSQL status command
+  returned head `640603a37f2f`, no missing tables and exit 0; independent `alembic current`/`check`
+  returned head/no new operations. `compileall` and `git diff --check` passed. No model, route,
+  schema, migration, row or database data changed. **Claude review request:** inject a legacy table
+  missing mapped columns, confirm the SQL contains no entity-column projection, rerun the 28-test
+  contract and live PostgreSQL status, and accept/reject W-C without editing Codex's adversarial
+  test file. Codex owns any W-C fix.

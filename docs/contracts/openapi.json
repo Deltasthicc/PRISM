@@ -2,8 +2,42 @@
   "openapi": "3.0.3",
   "info": {
     "title": "PRISM API",
-    "version": "0.0.0-unpublished",
-    "description": "Scaffold only, not the real API surface. Lane 5's immediate package is to publish the actual versioned OpenAPI document here (see SIH26101_TEAM_ORCHESTRATION.md section 5). Until then, the live, accurate schema is served by FastAPI itself at /docs and /openapi.json when the backend is running -- do not treat this file as authoritative or as evidence of a stable public contract."
+    "version": "0.2.0",
+    "description": "Versioned Lane 5 contract for protected assessment and aggregate analytics reads. Live provider access is not implied."
   },
-  "paths": {}
+  "paths": {
+    "/learning/assessment/{player_id}/latest": {
+      "get": {
+        "operationId": "getLatestAssessment",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"name": "player_id", "in": "path", "required": true, "schema": {"type": "string"}},
+          {"name": "curriculum_slug", "in": "query", "required": true, "schema": {"type": "string", "minLength": 2, "maxLength": 120}}
+        ],
+        "responses": {
+          "200": {"description": "Latest assessment or null when no assessment exists"},
+          "401": {"$ref": "#/components/responses/Unauthorized"},
+          "403": {"$ref": "#/components/responses/Forbidden"}
+        }
+      }
+    },
+    "/learning/admin/overview": {
+      "get": {
+        "operationId": "getAdminOverview",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Privacy-safe latest-distinct-learner aggregates"},
+          "401": {"$ref": "#/components/responses/Unauthorized"},
+          "403": {"$ref": "#/components/responses/Forbidden"}
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}},
+    "responses": {
+      "Unauthorized": {"description": "Missing or invalid bearer token"},
+      "Forbidden": {"description": "Verified principal lacks binding, permission or object scope"}
+    }
+  }
 }

@@ -124,22 +124,66 @@ For a set of learners, use the same ordering with
 `MAX(created_at)` and join back without the `assessment_id` tie-breaker, and do not aggregate all
 historical assessment rows as though they represented distinct learners.
 
-The contracted read interface, when Lane 2 exposes it, is:
+The contracted HTTP read interface, when Lane 5 exposes it, is:
 
 ```text
 GET /learning/assessment/{player_id}/latest?curriculum_slug={canonical_slug}
 ```
 
 It returns the eight fields in the table above, with `created_at` as an RFC 3339 UTC string, or
-404 when that stream has no assessment. This endpoint is **not implemented yet**. Until a shared
-repository/service function is introduced, consumers needing this data must implement the query
-order exactly as specified here.
+404 when that stream has no assessment. This endpoint is **not implemented yet**. Lane 2's shared
+`get_latest_assessment()` repository function is implemented and tested; Lane 5 must reuse it
+rather than reimplementing the ordering inside a route.
 
 The existing `GET /learning/pathway/{player_id}?curriculum_slug=...` is a derived view: it takes
 `self_ratings` from the latest snapshot but intentionally recomputes measured scores from current
 `AccuracyHistory`. It is not a verbatim read of the stored latest assessment. Its current code
 orders by `created_at` only; adding the `assessment_id` tie-breaker is tracked as follow-up work so
 all consumers converge on this contract.
+
+### 4.1 Shared read repository interface for Lanes 3–5
+
+`backend/db/repositories.py` is the canonical storage-read facade for ordering and validity rules
+that more than one lane consumes. It now exposes these four functions:
+
+```python
+get_latest_assessment(db, player_id, curriculum_slug)
+get_current_role_target(db, role, competency_id, *, as_of=None)
+get_latest_evidence(db, player_id, competency_id, evidence_type)
+get_latest_source_version(db, material_id)
+```
+
+These functions return SQLAlchemy model rows or `None`; they never commit, mutate, authorize or
+serialize. Callers must use the response schemas in `backend/schemas/**` at an HTTP boundary and
+must not return unrestricted ORM objects directly.
+
+`get_current_role_target` performs an **exact** `(role, competency_id)` lookup at a timezone-aware
+instant. A target is eligible only during the half-open interval
+`valid_from <= as_of < valid_to`; null `valid_to` means no scheduled end, while null `valid_from`
+is ineligible because its effective start cannot be established. Overlaps resolve by newest
+`valid_from`, then non-null/newest `created_at`, then descending `target_id`. It deliberately does
+not normalize aliases, choose among profile fields or fall back to role `"*"`: those are Lane 3
+policy decisions. `approved_by=None` is returned honestly rather than silently promoted to an
+approved target; the consumer must display/enforce authoring status appropriate to its flow.
+
+`get_latest_evidence` accepts only the storage vocabulary in
+`models.governance.EVIDENCE_TYPES`. It isolates by exact player, competency and evidence type,
+then orders non-null `recorded_at` first/newest and `evidence_id` descending. This supplies one
+observation, not a blended competency score. Weighting self-report, diagnostic,
+observed-practice, reviewer and provider-imported evidence remains Lane 3's versioned policy.
+
+`get_latest_source_version` isolates by exact `material_id`, orders highest `version_number`
+first, then non-null/newest `created_at`, then descending `source_version_id`. A duplicate version
+number is made deterministic but is not thereby declared valid, approved or safe for retrieval.
+Lane 4 remains responsible for ingestion, chunking, approval and citation policy.
+
+**Security boundary:** accepting a `player_id`, `role` or `material_id` argument proves nothing
+about the caller. Before invoking a repository read, a Lane 5 route must verify the token, resolve
+an active local binding, require the relevant permission, and enforce own-player/content scope as
+specified in `identity-authorization.md`. Tenant scope still comes only from the server-selected
+deployment database. A browser-supplied tenant, role, reviewer or player identifier must never be
+converted into authority merely because one of these queries accepts the same value as a lookup
+key.
 
 ## 5. Aggregate rules for Lanes 4 and 5
 

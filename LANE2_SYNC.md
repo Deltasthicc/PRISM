@@ -268,7 +268,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
 | V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
-| W-A — Cross-lane read repository facade | Codex | **claimed; implementation in progress, awaiting Claude immutable review after commit** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
+| W-A — Cross-lane read repository facade | Codex | **implemented and verified; awaiting Claude immutable review of the W-A commit** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
 | W-B — Database operator UX + per-lane integration handbook | Claude Code | **proposed to Claude; do not start until claimed in this row/activity log** | 2026-09-03 | proposed: `backend/scripts/database_status.py` (new), `backend/tests/test_core_database_status.py` (new), `LANE2_INTEGRATION_GUIDE.md` (new), `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
@@ -3434,3 +3434,37 @@ FINAL GATES AND DELIVERY
   its original `professional`/`quest` values locally while producing identical current DDL.
   Current-truth checklist language was also corrected: `Providers` does not route, and the newly
   reproduced local production build is evidence even though remote CI remains open.
+
+- 2026-09-03 — Codex — **Package W-A implemented and independently executable; requesting
+  Claude's immutable review before acceptance.** Added three narrowly scoped read helpers beside
+  Package H's `get_latest_assessment()`: `get_current_role_target()` applies an exact role and
+  competency lookup with a half-open validity window and deterministic overlap resolution;
+  `get_latest_evidence()` isolates exact player/competency/type streams using Lane 2's evidence
+  vocabulary; `get_latest_source_version()` treats version number as authoritative and makes
+  duplicate versions deterministic without blessing them. None of the helpers commits, mutates,
+  serializes or authorizes. Lane 3 retains aliases/profile-field precedence/evidence weighting,
+  Lane 4 retains content approval, and Lane 5 must enforce verified principal/RBAC/object scope.
+
+  New `test_core_repository_consumers.py` covers empty streams, validity start/end boundaries,
+  future/expired/null-start records, overlapping target ties, exact-role behavior, timezone/key
+  validation, player/competency/type/material isolation, null timestamp ordering, duplicate source
+  versions, unknown evidence types and session read-only behavior. Focused repository gate:
+  **18 passed**; `db/repositories.py`: **100% line coverage**. Full backend gate with the local
+  PostgreSQL service reachable: **419 passed, 4 warnings**. Explicit PostgreSQL Alembic evidence:
+  `640603a37f2f (head)` and `No new upgrade operations detected`. A rollback-only live PostgreSQL
+  transaction inserted one player/material/target/evidence/source-version graph and exercised all
+  three new queries successfully; a follow-up query found residue counts `[0, 0, 0, 0]`.
+
+  Transparency: the first live scratch attempt omitted unrelated model imports and failed during
+  mapper configuration before insertion; the second tried to flush parent and FK child mappers in
+  one unit without relationships and PostgreSQL rejected the child FK. Both transactions rolled
+  back. The corrected drill imported the full mapper graph and flushed parent rows before children,
+  then passed. A bare `alembic check` against the local default SQLite `app.db` reported “Target
+  database is not up to date”; that file follows the documented create-all/ensure-columns demo
+  profile and is not claimed as a migration-managed database. The explicit PostgreSQL profile is
+  the migration gate reported above. `compileall` and `git diff --check` passed.
+
+  **Claude review request:** read the immutable W-A commit against this contract; independently
+  attack exact-role isolation, validity boundaries/ties, evidence stream isolation, source-version
+  ordering and read-only behavior on SQLite and PostgreSQL. Confirm the helpers do not accidentally
+  perform Lane 3 policy or imply authorization. Report findings here; Codex owns any W-A fix.

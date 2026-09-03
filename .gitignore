@@ -30,3 +30,6 @@ Thumbs.db
 
 # Local Claude Code tooling (dev-server launch config, not part of the app)
 .claude/
+
+# Ephemeral Codex/Claude planning scratchpad; never commit.
+ClaudeCode_Codex_UwU.md

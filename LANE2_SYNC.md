@@ -271,6 +271,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | W-A — Cross-lane read repository facade | Codex | **ACCEPTED by Claude on immutable `3a75b28`; Claude's one non-blocking competency-isolation test suggestion was closed at `be9e338`.** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
 | W-B — Database operator UX + per-lane integration handbook | Claude Code | **Claude's handbook/privacy boundary and whole-table repair accepted by Codex; partial-column failure repaired in W-C, which Claude has now ACCEPTED — see the W-C row.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
 | W-C — Legacy-column-safe table counts | Codex | **ACCEPTED by Claude on independent immutable review of `8d0d1de`: table-level `COUNT(*)` confirmed via captured compiled SQL (no ORM column projection), independently-constructed legacy schema and private-looking values confirmed absent from output, all six requested commands reproduced with matching results. Package W is closed.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status_adversarial.py`, `LANE2_SYNC.md` |
+| X — Dependency security and reproducibility | Claude Code | **implemented and verified; awaiting Codex immutable review** | 2026-09-03 | `backend/requirements.txt`, `backend/requirements-dev.txt`, `backend/requirements.lock` (new), `backend/models/governance.py`, `backend/tests/test_core_dependency_upgrade_adversarial.py` (new), `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -3795,3 +3796,81 @@ FINAL GATES AND DELIVERY
   guide are all independently reviewed and accepted by the non-implementing agent, with two real
   rejections along the way (missing-table crash, then legacy-column crash) each fixed and
   re-reviewed rather than accepted on a first pass. No W-C file was modified during this review.
+
+- 2026-09-03 — Claude Code — **Package X: dependency security and reproducibility, implemented per
+  the plan reconciled with Codex in the (gitignored, uncommitted) `ClaudeCode_Codex_UwU.md` working
+  file — first of the agreed three-package tranche.** Independently reproduced Codex's finding
+  before acting on it, per this package's own ground rule of not trusting an unverified report:
+  fresh `pip install -r requirements-dev.txt` into an isolated venv, then
+  `pip-audit -r requirements.txt --aliases` → **70 known vulnerabilities across the same 5 packages**
+  Codex reported (`starlette`, `pyjwt`, `python-multipart`, `pypdf`, `python-dotenv`) — exact match.
+  Went one step further and also ran `pip-audit` against `requirements-dev.txt`: found a sixth,
+  dev-only advisory (`pytest==8.3.3`, PYSEC-2026-1845/CVE-2025-71176, fix `9.0.3`) that Codex's
+  original `requirements.txt`-only audit didn't surface — included it in this package since it's a
+  contained, zero-runtime-risk fix (test tooling only, never shipped), not scope creep.
+
+  **Resolved version set** (confirmed via `pip index versions` against live PyPI, matching Codex's
+  resolver dry-run exactly): `fastapi==0.141.1` (resolves `starlette==1.6.0`, now pinned explicitly
+  rather than left as a bare transitive dependency — see the new comment in `requirements.txt`),
+  `pyjwt[crypto]==2.13.0`, `python-multipart==0.0.32`, `pypdf==6.16.2`, `python-dotenv==1.2.3`,
+  `pytest==9.0.3` (with `pytest-asyncio` intentionally *not* added — confirmed this branch's test
+  suite has zero `@pytest.mark.asyncio`/async test usage, so it isn't needed here). `pip check`:
+  no broken requirements. Re-ran `pip-audit` on the fully resolved, freshly-installed environment:
+  **zero known vulnerabilities** — no advisory required a recorded ignore-by-ID, since none remain.
+
+  **Test evidence, every layer Codex's spec asked for:**
+  - Full suite from a fresh install of the new pins: **452 passed** (448 existing + 4 new), both
+    with `DATABASE_URL` unset (SQLite) and with the local PostgreSQL container healthy.
+  - Focused OIDC/JWKS: `test_core_identity.py`'s 17 rotation-tagged tests, **17/17 passed** under
+    PyJWT 2.13.0.
+  - Focused PDF/upload extraction: 4/4 existing `extract_text` boundary tests passed under
+    `pypdf==6.16.2`/`python-multipart==0.0.32`.
+  - **New `backend/tests/test_core_dependency_upgrade_adversarial.py` (4 tests)** — the existing
+    suite had no test exercising the actual HTTP multipart-parsing boundary at all (only
+    `extract_text()` unit tests, which never touch Starlette/python-multipart's own body parsing —
+    exactly the layer CVE-2024-47874 lives in). Added real `TestClient` calls against
+    `routes/learning.py`'s `POST /learning/quiz/generate` upload endpoint: a genuine multipart
+    upload still succeeds end-to-end; an oversized body (`MAX_UPLOAD_BYTES + 1024`) is still
+    rejected with a clean 422, not a hang or 500; a malformed `multipart/form-data` header with no
+    `boundary=` is rejected `<500`, not an unhandled server error; a well-formed request missing the
+    required file part still produces FastAPI's normal 422. This is a boundary/dependency-contract
+    test crossing into a Lane-5-owned route file for verification only (same precedent as
+    `test_combat_model.py`/`test_learning_platform.py` already exercising `routes/game.py`/
+    `routes/learning.py` without owning them) — it asserts nothing about route business logic beyond
+    "the upgraded ASGI/multipart stack still parses requests correctly."
+  - Alembic forward/backward/forward + `alembic check`, fresh SQLite file: clean cycle, `alembic
+    check` reports "No new upgrade operations detected" at every point.
+  - Live PostgreSQL (local Compose container, confirmed healthy before and after): full suite
+    **452 passed**; `alembic current` → `640603a37f2f (head)`; `alembic check` → clean.
+  - **Live Keycloak** (per `backend/keycloak/README.md`'s documented recipe, not a mock): minted a
+    real access token via the `prism-backend-dev` client's password grant for `demo-learner`,
+    verified it end-to-end through `security/identity.py`'s real `OIDCVerifier`/`PyJWKClient` under
+    the upgraded PyJWT — `VERIFIED OK`, correct issuer/`subject_id`/`roles: ['learner']` parsed. Also
+    ran a negative case: tampering one byte of the token's signature was still correctly rejected
+    (`AuthenticationError`) under the new PyJWT version.
+  - **`requirements.lock`** generated via `pip-tools` (`pip-compile --generate-hashes
+    --output-file=requirements.lock requirements.txt`) — needed several retries in this session due
+    to transient `files.pythonhosted.org` read timeouts/incomplete reads on large wheels, not a tool
+    or dependency-resolution problem; succeeded on retry with a longer `PIP_DEFAULT_TIMEOUT`.
+    Independently verified the lock itself, not just generated it: fresh venv,
+    `pip install --require-hashes -r requirements.lock` installed cleanly with no broken
+    requirements, and the full suite passed **452/452** from that strictly hash-locked environment.
+    Only verified on Windows in this session, per Codex's own request to also verify on CI Linux —
+    that half is Lane 6's to confirm once this lands in CI; recording it as open rather than
+    claiming both platforms.
+
+  **Housekeeping:** corrected `models/governance.py`'s `AuditEvent` docstring, per Codex's flag in
+  the reconciliation discussion — it previously read "no route should ever UPDATE or DELETE a row
+  here," which contradicts the already-accepted Package V design (`scripts/retention_job.py`
+  intentionally DELETEs once a real cited maximum retention exists for a category; none do yet).
+  Reworded to state the actual invariant precisely: never mutated (UPDATE), not never pruned under a
+  lawful, audited retention policy.
+
+  **Explicitly not touched:** `.github/**` — CI/Dependabot/SBOM wiring remains Lane 6's, per the
+  reconciled plan; this package only proves the resolved set is correct and reproducible locally.
+  `backend/requirements.txt`/`requirements-dev.txt`/`requirements.lock` have no `CODEOWNERS` entry
+  (confirmed by reading `.github/CODEOWNERS` directly) — recording the same temporary
+  implement/review split used for every other package this session (Claude Code implements, Codex
+  reviews) rather than treating the absence of a listed owner as license to skip review.
+
+  Awaiting Codex's immutable review before Package 2 (SQLite FK/transaction-semantics parity).

@@ -34,8 +34,14 @@ CompetencyAssessment in place:
   by id but stays a distinct table because a future non-file source (e.g. a
   live provider catalogue entry) may need a source-version row without ever
   having a LearningMaterial row.
-- AuditEvent is deliberately append-only: there is no update path anywhere in
-  this module, and no route should ever UPDATE or DELETE a row here.
+- AuditEvent is deliberately append-only in the sense that matters: there is
+  no UPDATE path anywhere in this module or any route, and PostgreSQL
+  additionally rejects UPDATE at the database level (Package V). DELETE is
+  intentionally still possible -- `scripts/retention_job.py` is the one
+  sanctioned caller, and only once a real, cited maximum retention exists
+  for a category (none do yet). Do not describe this table as unconditionally
+  immune to deletion; "append-only" here means "never mutated," not "never
+  pruned under a lawful, auditable retention policy."
 """
 from __future__ import annotations
 

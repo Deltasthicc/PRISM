@@ -60,6 +60,28 @@ def db():
     session.close()
 
 
+@pytest.fixture
+def empty_db():
+    """A genuinely fresh database with zero tables -- not even
+    `alembic_version`. Reproduces the fresh-clone crash Codex found in
+    review: `get_table_row_counts` must report this, not raise."""
+    engine = create_engine("sqlite:///:memory:")
+    session = sessionmaker(bind=engine)()
+    yield session
+    session.close()
+
+
+@pytest.fixture
+def partially_migrated_db(db):
+    """Two tables dropped after a full create_all() -- simulates a database
+    stamped at a revision whose migration never actually finished, or a
+    demo file that predates a couple of newer models."""
+    db.execute(text("DROP TABLE players"))
+    db.execute(text("DROP TABLE audit_events"))
+    db.commit()
+    return db
+
+
 def _set_alembic_version(db, revision: str) -> None:
     db.execute(text("CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL)"))
     db.execute(text("INSERT INTO alembic_version (version_num) VALUES (:rev)"), {"rev": revision})
@@ -118,9 +140,10 @@ def test_get_database_status_rejects_a_session_bound_to_a_bare_connection(db):
 
 
 def test_all_advertised_tables_start_at_zero(db):
-    counts = get_table_row_counts(db)
+    counts, missing = get_table_row_counts(db)
     assert set(counts) == set(TABLE_COUNTERS)
     assert all(count == 0 for count in counts.values())
+    assert missing == []
 
 
 def test_counts_reflect_inserted_rows_exactly(db):
@@ -140,12 +163,13 @@ def test_counts_reflect_inserted_rows_exactly(db):
     )
     db.commit()
 
-    counts = get_table_row_counts(db)
+    counts, missing = get_table_row_counts(db)
     assert counts["players"] == 2
     assert counts["competency_assessments"] == 1
     # Untouched tables must remain zero, not silently drift.
     assert counts["role_targets"] == 0
     assert counts["audit_events"] == 0
+    assert missing == []
 
 
 def test_counts_only_ever_call_count_never_fetch_rows(db, monkeypatch):
@@ -163,6 +187,27 @@ def test_counts_only_ever_call_count_never_fetch_rows(db, monkeypatch):
         get_table_row_counts(db)
     finally:
         monkeypatch.setattr(Query, "all", original_all)
+
+
+def test_get_table_row_counts_reports_missing_tables_instead_of_raising(empty_db):
+    """Regression test for the fresh-clone crash Codex found on review:
+    a database with zero tables must be reportable, not fatal."""
+    counts, missing = get_table_row_counts(empty_db)
+    assert counts == {}
+    assert missing == sorted(TABLE_COUNTERS)
+
+
+def test_get_table_row_counts_reports_a_partially_migrated_schema_correctly(
+    partially_migrated_db,
+):
+    counts, missing = get_table_row_counts(partially_migrated_db)
+    assert missing == sorted(["players", "audit_events"])
+    assert "players" not in counts
+    assert "audit_events" not in counts
+    # Every still-present table is still counted normally, not skipped just
+    # because two unrelated tables are missing.
+    assert counts["role_targets"] == 0
+    assert set(counts) == set(TABLE_COUNTERS) - {"players", "audit_events"}
 
 
 # ---------------------------------------------------------------------------
@@ -210,6 +255,7 @@ _ALLOWED_TOP_LEVEL_KEYS = {
     "tenant_scope",
     "migration",
     "table_row_counts",
+    "missing_tables",
     "configured",
 }
 _ALLOWED_MIGRATION_KEYS = {"dialect", "current_revision", "head_revision", "at_head"}
@@ -278,6 +324,19 @@ def test_status_never_leaks_a_forbidden_field_name(db):
     assert SECRET_LOOKING_VALUE not in serialized
 
 
+def test_get_database_status_on_a_genuinely_empty_database_does_not_raise(empty_db):
+    status = get_database_status(empty_db)
+    assert status.table_row_counts == {}
+    assert status.missing_tables == sorted(TABLE_COUNTERS)
+    assert status.migration.at_head is False
+
+
+def test_get_database_status_on_a_partially_migrated_database(partially_migrated_db):
+    status = get_database_status(partially_migrated_db)
+    assert set(status.missing_tables) == {"players", "audit_events"}
+    assert "role_targets" in status.table_row_counts
+
+
 def test_status_accepts_no_player_or_free_text_argument_of_any_kind():
     """Executable documentation: get_database_status's signature has no
     parameter that could be pointed at one subject or one free-text filter."""
@@ -308,6 +367,14 @@ def test_format_human_never_contains_a_configured_secret_value(db):
     assert SECRET_LOOKING_VALUE not in format_human(status)
 
 
+def test_format_human_lists_missing_tables_when_present(empty_db):
+    status = get_database_status(empty_db)
+    rendered = format_human(status)
+    assert "missing_tables" in rendered
+    for label in TABLE_COUNTERS:
+        assert label in rendered
+
+
 # ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
@@ -333,4 +400,28 @@ def test_main_check_migrations_passes_when_at_head(monkeypatch, db, capsys):
     monkeypatch.setattr("db.database.SessionLocal", lambda: db)
     exit_code = status_module._main(["--check-migrations"])
     assert exit_code == 0
+    capsys.readouterr()
+
+
+def test_main_on_a_genuinely_empty_database_does_not_crash(monkeypatch, empty_db, capsys):
+    """Direct regression test for Codex's review finding: the documented
+    fresh-clone path must not raise a raw OperationalError traceback."""
+    monkeypatch.setattr("db.database.SessionLocal", lambda: empty_db)
+    exit_code = status_module._main(["--json"])
+    assert exit_code == 0
+    parsed = json.loads(capsys.readouterr().out)
+    assert parsed["missing_tables"] == sorted(TABLE_COUNTERS)
+    assert parsed["table_row_counts"] == {}
+
+
+def test_main_check_migrations_fails_on_a_partially_migrated_database_even_if_stamped_at_head(
+    monkeypatch, partially_migrated_db, capsys
+):
+    """A revision stamped at head with tables still missing (e.g. a
+    migration that failed partway through) must still fail --check-migrations,
+    not just "not yet stamped" databases."""
+    _set_alembic_version(partially_migrated_db, migration_head_revision())
+    monkeypatch.setattr("db.database.SessionLocal", lambda: partially_migrated_db)
+    exit_code = status_module._main(["--check-migrations"])
+    assert exit_code == 1
     capsys.readouterr()

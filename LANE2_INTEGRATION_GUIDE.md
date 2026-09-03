@@ -69,16 +69,27 @@ and Quest-only nav items disappearing; no UI claim that data is organization-iso
 
 ## Lane 3 — Competency & Learning Intelligence
 
-**Lane 2 provides today:**
+**A note on scope, same reason as Lane 4's:** `main`'s `services/learning_engine.py::analyse_competencies()`
+today accepts only `(curriculum_slug, self_ratings, measured_scores, experience_level)` — no
+role/designation/department parameters exist yet on `main`, and `backend/services/role_targets.py`,
+`behavioral_anchors.py` and `backend/labs/sampling_lab.py` do not exist on `main` at all (`backend/labs/`
+is currently just an empty `__init__.py` scaffold). If your working branch has role-aware targeting,
+behavioral anchors or a sampling lab already built, that's real progress not yet merged — this
+section describes `main` as it stands, not your branch, specifically so it doesn't repeat the same
+mistake this guide's first draft made about Lane 4 (see that section's note).
+
+**Lane 2 provides today, ready for whenever role-aware targeting merges into `main`:**
 - `models/governance.py`'s `RoleTarget` table (`framework_version`, `role`, `competency_id`,
-  `target_level`, `source`, `approved_by`, `valid_from`/`valid_to`) — the versioned, sourced
-  replacement for `EXPERIENCE_TARGET_CAP`/`ROLE_TARGET_OVERRIDES`.
+  `target_level`, `source`, `approved_by`, `valid_from`/`valid_to`) — a versioned, sourced target
+  store, independent of whatever in-memory or hardcoded target logic exists on any lane's branch.
 - `models/governance.py`'s `EvidenceRecord` table (`evidence_id`, `player_id`, `competency_id`,
   `evidence_type` from `EVIDENCE_TYPES`, `value`, `detail`, `recorded_at`) for separating evidence
-  by type, per `SIH26101_MASTER_CHECKLIST.md` §4.1's ask.
-- **Package W-A** (Codex, in review as of this writing — check `LANE2_SYNC.md`'s Package W entry
-  for its accepted commit hash before depending on it in production code) adds three read-only
-  repository functions to `backend/db/repositories.py`:
+  by type, per `SIH26101_MASTER_CHECKLIST.md` §4.1's ask. Note `EvidenceRecordCreate`
+  (`schemas/governance.py`) requires `player_id` — any evidence-writing code (a lab, a diagnostic,
+  a reviewer action) needs to supply it.
+- **Package W-A** (Codex, commit `3a75b28`, ACCEPTED on Claude's independent review — see
+  `LANE2_SYNC.md`'s Package W entry) adds three read-only repository functions to
+  `backend/db/repositories.py`:
   ```python
   get_current_role_target(db, role, competency_id, *, as_of=None)   # exact-role lookup, half-open validity window
   get_latest_evidence(db, player_id, competency_id, evidence_type)  # one evidence type, newest row
@@ -87,88 +98,99 @@ and Quest-only nav items disappearing; no UI claim that data is organization-iso
   `get_current_role_target` is an **exact** `(role, competency_id)` match at one instant — it does
   not normalize aliases, pick among `job_role`/`designation`/`department`, or fall back to a
   role-agnostic default. That precedence logic is explicitly left to you; see
-  `docs/contracts/data-authorization.md` §4.1 once W-A lands for the exact tie-breaking rules.
+  `docs/contracts/data-authorization.md` §4.1 for the exact tie-breaking rules.
 
 **You provide:**
-- The actual migration off `ROLE_TARGET_OVERRIDES`/`EXPERIENCE_TARGET_CAP` to
-  `get_current_role_target()`, including your own precedence/fallback policy on top of the exact
-  lookup Lane 2 provides.
-- `services/learning_engine.py`'s `resolve_role_target()` currently receives `job_role`,
-  `designation`, `department`, `current_assignment` from `analyse_competencies()`'s own parameters
-  — but `routes/learning.py` (Lane 5-owned) never forwards them from the loaded `LearnerProfile`.
-  This is Lane 5's fix, not yours, but flag it explicitly rather than assuming it's already wired —
-  it currently is not, so every real user gets curriculum-default targeting today regardless of
-  what your role-target code can do.
-- `backend/labs/sampling_lab.py`'s `evidence_payload()` currently returns
+- Whichever role-aware targeting, behavioral-anchor and lab work exists on your own branch, merged
+  through the normal PR process and built against `get_current_role_target()` rather than a
+  standalone in-memory map, so there's one source of truth once it lands.
+- Once `analyse_competencies()` gains role/designation/department parameters, coordinate with Lane 5
+  so `routes/learning.py` actually forwards `LearnerProfile`'s corresponding fields — a new parameter
+  nobody calls with real data is as unreachable as one that was never added.
+- Any evidence-writing code (a lab, a diagnostic) constructing an `EvidenceRecordCreate` payload
+  must include `player_id`, `competency_id`, `evidence_type` from `EVIDENCE_TYPES`, and `value`.
+  **On `origin/codex/lane-3-competency/role-target-v1`** (checked directly, not assumed): that
+  branch's `backend/labs/sampling_lab.py::evidence_payload(task_id)` returns only
   `{competency_id, evidence_type, value, detail}` — missing `player_id`, which
-  `EvidenceRecordCreate` requires. Add it before wiring the lab to write real evidence rows, or the
-  write will fail Pydantic validation.
+  `EvidenceRecordCreate` requires. Add it there before merging, or the write will fail Pydantic
+  validation the first time the lab is actually wired to persist evidence.
 
-**Route and DB usage:** call the repository functions above from your own service code
-(`services/learning_engine.py`, `backend/labs/**`) with a `Session` passed in from whichever route
-calls you — never open your own engine/session. These functions return raw ORM rows, not API
-responses; serialize through `backend/schemas/**` (Lane 2-owned) at any HTTP boundary, never return
-an ORM object directly from a route.
+**Route and DB usage:** call the repository functions above from your own service code with a
+`Session` passed in from whichever route calls you — never open your own engine/session. These
+functions return raw ORM rows, not API responses; serialize through `backend/schemas/**`
+(Lane 2-owned) at any HTTP boundary, never return an ORM object directly from a route.
 
-**Acceptance evidence Lane 2 will look for:** a test proving `analyse_competencies()` output changes
-when `get_current_role_target()` returns a real row vs. `None`; the lab's evidence payload
-validating against `EvidenceRecordCreate` without modification.
+**Acceptance evidence Lane 2 will look for:** once role-aware targeting merges, a test proving
+`analyse_competencies()`'s output actually changes when `get_current_role_target()` returns a real
+row vs. `None` — not just that the lookup function itself is tested in isolation.
 
 **Copy-ready message:**
-> Lane 2 (with Codex's Package W-A, check `LANE2_SYNC.md` for its accepted commit before relying on
-> it) is adding `get_current_role_target()`, `get_latest_evidence()` and `get_latest_source_version()`
-> to `backend/db/repositories.py` — exact signatures and validity-window semantics are in
-> `docs/contracts/data-authorization.md` §4.1. Please plan the migration off
-> `ROLE_TARGET_OVERRIDES`/`EXPERIENCE_TARGET_CAP` once that lands. Separately and not blocked on
-> W-A: your sampling lab's `evidence_payload()` is missing `player_id`, which
-> `schemas/governance.py`'s `EvidenceRecordCreate` requires — worth fixing before wiring the lab to
-> write real evidence. And please raise with Lane 5 that `routes/learning.py` never forwards
-> `job_role`/`designation`/`department`/`current_assignment` into `analyse_competencies()` today —
-> your role-aware targeting code is real but currently unreachable by any live user for that reason.
+> Lane 2 (with Codex's Package W-A, commit `3a75b28`, accepted) has added `get_current_role_target()`,
+> `get_latest_evidence()` and `get_latest_source_version()` to `backend/db/repositories.py` — exact
+> signatures and validity-window semantics are in `docs/contracts/data-authorization.md` §4.1.
+> Worth checking: `main`'s `analyse_competencies()` doesn't take role/designation parameters yet, so
+> if your branch has role-aware targeting built against a different in-memory structure, this is the
+> moment to point it at the real `RoleTarget` table instead before merging. Also, once you do add
+> role parameters, please coordinate with Lane 5 so `routes/learning.py` actually forwards them from
+> `LearnerProfile` — otherwise the new parameter exists but nothing ever calls it with real data. On
+> `origin/codex/lane-3-competency/role-target-v1`: `backend/labs/sampling_lab.py`'s
+> `evidence_payload(task_id)` is missing `player_id`, which `EvidenceRecordCreate` requires — worth
+> fixing before wiring the lab to write real evidence.
 
 ## Lane 4 — Content AI, RAG & Evaluation
+
+**A note on scope and sourcing:** `backend/ai/` on `main` is currently just an empty `__init__.py`
+scaffold — none of the ingestion/retrieval/assistant/review-lifecycle claims below describe `main`
+itself. An earlier draft of this guide stated a `backend/ai/grading.py` bug as if it were a fact
+about the shared codebase without saying which branch it lived on; Codex flagged the ambiguity on
+review (see `LANE2_SYNC.md`'s Package W entry), and on rechecking, the finding is real — it's just
+scoped to `origin/codex/lane-4-content-ai/bootstrap`, your active working branch, not `main`. Every
+branch-specific claim below now names its branch explicitly so this doesn't happen again.
 
 **Lane 2 provides today:**
 - `sha256` whole-file hashing on every upload (`LearningMaterial.sha256`, written in
   `routes/learning.py`) as your immutable file-level locator today.
 - `models/governance.py`'s `SourceVersion` table (`material_id`, `version_number`, `sha256`,
   `locator`) plus Package W-A's `get_latest_source_version()` (see Lane 3's section above for the
-  exact signature) — ready if/when you want chunk- or version-level persistence instead of
-  process-memory (`InMemoryChunkStore`).
+  exact signature) — ready if/when you want chunk- or version-level persistence for whatever
+  ingestion/retrieval pipeline lands on `main`.
 
 **You provide:**
-- A decision on whether `SourceVersion`/a new `Chunk`/`ReviewState` table shape should replace the
-  current in-memory store before a pilot. If yes, send the exact fields you need (chunk text length
-  bound, locator shape, review-state enum values) as a contract-change proposal against
+- A decision on whether `SourceVersion`/a new `Chunk`/`ReviewState` table shape should back your
+  pipeline once it's merged. If yes, send the exact fields you need (chunk text length bound,
+  locator shape, review-state enum values) as a contract-change proposal against
   `data-authorization.md` §7 and Lane 2 will add the migration.
-- `routes/ai_real.py`'s Quest-mode fallback (when Gemini fails) returns a templated question with no
-  flag marking it as a fallback, unlike your own quiz-path `generation_mode` tagging — worth
-  aligning for the same reason you built the honest one.
-- The live `ai/grading.py` bug independent of anything Lane 2 owns: it calls `json.loads()` with no
-  `import json` in the file. It's dormant only because no `GEMINI_API_KEY` is configured in most
-  local environments — run `database_status.py` (see the "How to check your own setup" section
-  above) to see at a glance whether a given environment has that key set, since that's exactly the
-  condition under which this bug goes live.
+- `routes/ai_real.py`'s Quest-mode fallback (when Gemini fails) returns a templated question
+  (`f"Explain the concept of {topic} in {domain}."`) with no flag marking it as a fallback — worth
+  tagging honestly the same way `quiz_generator.py` should distinguish an AI-grounded quiz from a
+  locally-generated one, if/when that distinction is merged into `main`.
+- **On `origin/codex/lane-4-content-ai/bootstrap`** (checked directly, not assumed):
+  `backend/ai/grading.py` calls `json.loads()` with no `import json` anywhere in the file — a live
+  `NameError` on the semantic-grading path, currently dormant only because no environment here has
+  a real `GEMINI_API_KEY` set (run `database_status.py`'s `configured` section to check). Fix this
+  before merging or before anyone configures a real key, whichever comes first, since it currently
+  fails silently into the word-overlap fallback grader with no visible error.
 
 **Route and DB usage:** Lane 2 does not own or gate any `/ai/*` route. If you persist chunks/review
 state, use a `Session` the same way as every other lane — no direct engine access, no bypassing
-`backend/schemas/**` at an HTTP boundary. Several `/ai/*` routes currently accept `tenant_id`,
-`user_id`, `roles`, and `reviewer_id` directly from the request body — once Lane 5's auth dependency
-(see Lane 5's section) exists, derive these from the verified principal instead; don't keep trusting
-client-supplied identity once there's something better to call.
+`backend/schemas/**` at an HTTP boundary. Once Lane 5's auth dependency exists (see Lane 5's
+section), derive tenant/user/role/reviewer identity from the verified principal rather than a
+request-body field.
 
 **Acceptance evidence Lane 2 will look for:** if you persist review state, a migration and a test
 proving a role/tenant value can't be spoofed once Lane 5's dependency is attached to your routes.
 
 **Copy-ready message:**
-> If you want chunk/citation/review-state persistence instead of process-memory, propose the exact
-> schema against `docs/contracts/data-authorization.md` §7 and Lane 2 will add the migration —
+> If you want chunk/citation/review-state persistence for your ingestion/retrieval work, propose the
+> exact schema against `docs/contracts/data-authorization.md` §7 and Lane 2 will add the migration —
 > `SourceVersion` and Package W-A's `get_latest_source_version()` already give you a starting point
-> for version-level locators. Separately: `ai/grading.py` has a live `json.loads()` NameError with
-> no `import json` — currently dormant only because no environment here has `GEMINI_API_KEY` set;
-> worth fixing before anyone configures a real key. And once Lane 5 ships an auth dependency, please
-> stop accepting `tenant_id`/`user_id`/`roles`/`reviewer_id` from request bodies on `/ai/*` routes —
-> right now any caller can self-declare any of them.
+> for version-level locators. Separately: `routes/ai_real.py`'s Quest-mode fallback returns a
+> templated question with no flag marking it as a fallback when Gemini fails — worth tagging
+> honestly. On `origin/codex/lane-4-content-ai/bootstrap`: `backend/ai/grading.py` has a live
+> `json.loads()` NameError with no `import json` — currently dormant only because no environment
+> here has `GEMINI_API_KEY` set; worth fixing before merging or before anyone configures a real key.
+> And once Lane 5 ships an auth dependency, please derive tenant/user/role/reviewer identity from
+> the verified principal on `/ai/*` routes rather than trusting a request-body field.
 
 ## Lane 5 — Product API, Integrations & Analytics
 
@@ -177,10 +199,10 @@ proving a role/tenant value can't be spoofed once Lane 5's dependency is attache
   — real token verification, live-tested against Keycloak with JWKS rotation.
 - `security/rbac.py`: `resolve_bound_principal()`, `require_permission()`,
   `scoped_to_own_player()`, the fixed permission matrix in `identity-authorization.md` §3-4.
-- `db/repositories.py`: `get_latest_assessment()` (implemented) and, pending Package W-A's review,
-  `get_current_role_target()`, `get_latest_evidence()`, `get_latest_source_version()` — see Lane 3's
-  section above for signatures. None of these authorize a caller by themselves; see the security
-  boundary note below.
+- `db/repositories.py`: `get_latest_assessment()` and, as of Package W-A (commit `3a75b28`,
+  accepted), `get_current_role_target()`, `get_latest_evidence()`, `get_latest_source_version()` —
+  see Lane 3's section above for signatures. None of these authorize a caller by themselves; see the
+  security boundary note below.
 - `backend/scripts/database_status.py` (Package W-B, this package) — run it in CI with
   `--check-migrations` to fail a deploy step before a route ever executes against a stale schema.
 
@@ -197,14 +219,14 @@ current building blocks.
   accurate today; it depends only on `get_db`, no identity or permission check.
 - Implement `GET /learning/assessment/{player_id}/latest` per `data-authorization.md` §4 — the
   query is already written (`get_latest_assessment()`); this is route wiring only, not new logic.
-- Fix `routes/learning.py`'s assessment/pathway handlers to forward `job_role`/`designation`/
-  `department`/`current_assignment` (already loaded from `profile` in the same function) into
-  `analyse_competencies()` — currently only `experience_level` is passed, silently making Lane 3's
-  role-aware targeting inert for every real user.
+- If/when Lane 3 merges role-aware targeting into `analyse_competencies()`, forward the
+  corresponding `LearnerProfile` fields from `routes/learning.py`'s assessment/pathway handlers —
+  today that function only accepts `experience_level`, so there's nothing to forward yet, but this
+  is exactly the kind of wiring step that's easy to silently skip once the parameter exists.
 - Never accept `tenant_id`, `role`, `reviewer_id` or `actor` from a request body once a verified
   principal exists — derive them, per `identity-authorization.md` §4's object/function
-  authorization table. Several `/ai/*` routes (Lane 4-owned, flagged in their section above) and
-  none of your own currently do this correctly either way, since there is no auth layer at all yet.
+  authorization table. This applies to any new route you or Lane 4 add, since there is no auth
+  layer wired into any existing route yet either.
 
 **Route and DB usage:** every repository function above takes a `Session` from your route's own
 `Depends(get_db)` — you already do this correctly in existing routes. The security boundary is
@@ -225,11 +247,11 @@ valid token lacking permission) on every newly protected route; `database_status
 > accurate. If hand-chaining three functions per route is the blocker, tell Lane 2 and a single
 > composed dependency will get prioritized. Please also implement
 > `GET /learning/assessment/{player_id}/latest` — the query is already written
-> (`db.repositories.get_latest_assessment`) — and fix `routes/learning.py`'s assessment/pathway
-> handlers to forward the profile's role fields into `analyse_competencies()`, which today silently
-> makes Lane 3's role-aware targeting dead code for every real user. Run
-> `backend/scripts/database_status.py --check-migrations` in your deploy step so a stale schema
-> fails before a route runs against it.
+> (`db.repositories.get_latest_assessment`). And whenever Lane 3 merges role-aware targeting into
+> `analyse_competencies()`, please make sure `routes/learning.py`'s assessment/pathway handlers
+> actually forward the new parameters from `LearnerProfile` — that's the kind of wiring step that's
+> easy to silently skip. Run `backend/scripts/database_status.py --check-migrations` in your deploy
+> step so a stale schema fails before a route runs against it.
 
 ## Lane 6 — Quality, Security, Release & Evidence
 
@@ -274,7 +296,7 @@ valid token lacking permission) on every newly protected route; `database_status
 | Lane | Lane 2 already provides | Biggest single unblock |
 |---|---|---|
 | 1 | `preferred_mode` field; exact browser-login spec | A route to read/write `preferred_mode` (Lane 5) |
-| 3 | `RoleTarget`/`EvidenceRecord` tables; Package W-A's read facade | Role fields never reach `analyse_competencies()` (Lane 5's fix) |
+| 3 | `RoleTarget`/`EvidenceRecord` tables; Package W-A's read facade | Merge role-aware targeting against the real table, then coordinate the `routes/learning.py` wiring with Lane 5 |
 | 4 | `SourceVersion` table; whole-file `sha256` | A schema proposal if persistence beyond process-memory is wanted |
 | 5 | `OIDCVerifier`, RBAC functions, `get_latest_assessment` | A single composed auth `Depends(...)` (ask Lane 2 to prioritize) |
 | 6 | Backup/restore, retention job, `database_status.py` | CI wiring `--check-migrations` as a named, gating step |

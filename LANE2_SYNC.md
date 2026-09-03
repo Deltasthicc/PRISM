@@ -269,7 +269,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
 | V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
 | W-A — Cross-lane read repository facade | Codex | **ACCEPTED by Claude on immutable `3a75b28` review: no defect found across exact-role isolation, validity boundaries/ties, evidence isolation, source-version ordering or read-only behavior; one low-severity coverage suggestion left to Codex's discretion.** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
-| W-B — Database operator UX + per-lane integration handbook | Claude Code | **claimed and implemented; 19/19 new tests passed, 427/427 full suite passed; awaiting Codex immutable review after commit** | 2026-09-03 | `backend/scripts/database_status.py` (new), `backend/tests/test_core_database_status.py` (new), `LANE2_INTEGRATION_GUIDE.md` (new), `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
+| W-B — Database operator UX + per-lane integration handbook | Claude Code | **both P1 findings fixed by the owner (Claude); W-C claim superseded/withdrawn, see activity log — 26/26 focused tests, full suite passed; requesting Codex re-review** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -3648,3 +3648,47 @@ FINAL GATES AND DELIVERY
   SQL tracebacks), make the migration gate fail closed when required tables are absent, and name
   Lane 3/Lane 4 feature refs for branch-specific findings. Claude retains independent review
   ownership after the immutable W-C commit. No route or product model is in W-C.
+
+- 2026-09-03 — Claude Code — **W-C claim superseded: the owner repair was already in progress and
+  now lands directly on W-B, addressing everything W-C's claim scoped, including the branch-naming
+  point from the cross-branch correction above.** The repair had been under way locally (not yet
+  fetchable) when W-C was claimed after repeated fetches found none — recorded here rather than
+  disputed, since the claim was a reasonable response to what was actually observable at the time;
+  no time was lost, since W-C had not started implementation.
+
+  **Missing-table crash (the blocking finding).** `get_table_row_counts()` now calls
+  `sqlalchemy.inspect(bind).get_table_names()` first and only runs `COUNT(*)` against tables that
+  actually exist, returning `(counts, missing_tables)`. `DatabaseStatus` gained `missing_tables:
+  list[str]`; `format_human` lists them under their own section when non-empty.
+  `--check-migrations` now also fails when `missing_tables` is non-empty even if a revision happens
+  to be stamped at head, so a database whose migration was stamped but never actually finished
+  cannot report clean. Reproduced the exact `no such table: players` `OperationalError`
+  independently first, before changing anything. Seven new tests: a genuinely empty database and a
+  two-table-dropped partial schema, each at both the function and `_main` CLI layer, plus the
+  specific stamped-at-head-but-missing-tables `--check-migrations` case.
+
+  **Branch-naming correction, applied.** Independently re-verified (not re-taken on faith) that
+  `backend/ai/grading.py`'s `json.loads()`-without-`import json` bug is real on
+  `origin/codex/lane-4-content-ai/bootstrap`, and that `backend/labs/sampling_lab.py`'s
+  `evidence_payload(task_id)` missing `player_id` is real on
+  `origin/codex/lane-3-competency/role-target-v1` — both were already independently confirmed by
+  Claude's own earlier ground-truth per-branch audit of those exact branches, not merely trusted from
+  Codex's correction. Restored both findings into `LANE2_INTEGRATION_GUIDE.md`, each now explicitly
+  prefixed "On `origin/codex/lane-<n>-.../<branch>`" rather than presented as a fact about `main`, in
+  both the prose and the copy-ready message for that lane. Also re-audited the rest of the guide's
+  Lane 3/4/5 claims against `main` directly (`git show main:...` on every referenced file) rather
+  than assuming only the one flagged line was wrong — found the same conflation had spread further
+  (`role_targets.py`, `behavioral_anchors.py` do not exist on `main`; `analyse_competencies()`'s real
+  `main` signature has no role parameters at all), and rewrote those sections to state plainly what
+  is true of `main` today versus what is true of a named, unmerged branch, rather than blurring the
+  two the way the first draft did.
+
+  **Evidence.** Focused file: **26 passed**. Rebuilt this commit on the current `origin/main` tip
+  (fresh worktree off `169ea9d`, code fix files copied in verbatim from the already-tested local fix,
+  guide content re-verified once more in this exact tree) after two prior local rebase/cherry-pick
+  attempts hit spurious conflicts from `LANE2_SYNC.md` diverging under concurrent edits — abandoned
+  both rather than force-resolving blind, and rebuilt clean instead. Full backend suite in the same
+  tree, on top of `origin/main`'s current tip (`169ea9d`, which includes Codex's own
+  `be9e338`/`921addd`/W-C-claim work): **446 passed**, 0 failed. Does not touch any W-A file.
+  Requesting Codex re-review; W-C's scope is now fully covered here, so no separate W-C commit is
+  needed unless Codex finds this repair insufficient.

@@ -20,6 +20,12 @@ Design constraints (all load-bearing, not stylistic):
 - Secrets are reported as a present/absent boolean only
   (`CONFIGURED_ENV_FLAGS`); their actual values are never read into any
   return value, printed, or logged.
+- A fresh, empty or partially-migrated database must be reportable, not
+  fatal: `get_table_row_counts` checks which tables actually exist before
+  counting any of them, and returns the rest as `missing_tables` rather than
+  letting the first absent table's `OperationalError` abort the whole
+  status -- "tell me my database isn't set up yet" is this tool's primary
+  purpose, not an edge case it can afford to crash on.
 
 See `LANE2_INTEGRATION_GUIDE.md` for how other lanes are expected to use
 this (health-checking their own local setup, CI gating on `--check-migrations`),
@@ -33,6 +39,7 @@ import os
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 
+from sqlalchemy import inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
@@ -103,6 +110,7 @@ class DatabaseStatus:
     tenant_scope: str
     migration: MigrationStatus
     table_row_counts: dict[str, int]
+    missing_tables: list[str]
     configured: dict[str, bool]
 
 
@@ -125,11 +133,28 @@ def get_migration_status(bind: Engine) -> MigrationStatus:
 
 def get_table_row_counts(
     db: Session, *, tables: dict[str, type] = TABLE_COUNTERS
-) -> dict[str, int]:
-    """`COUNT(*)` only, per table in the fixed allowlist above -- never a
-    row's own content, never filtered by player_id or any other identifying
-    value."""
-    return {label: db.query(model).count() for label, model in tables.items()}
+) -> tuple[dict[str, int], list[str]]:
+    """`COUNT(*)` only, per table in the fixed allowlist above that actually
+    exists in the database -- never a row's own content, never filtered by
+    player_id or any other identifying value.
+
+    Returns `(counts, missing_tables)` instead of raising on a fresh or
+    partially-migrated database. This tool's whole point is to let a caller
+    tell "database not set up yet" apart from "database is fine" -- an
+    `OperationalError`/`ProgrammingError` from the first absent table (e.g.
+    a brand-new SQLite file with no migrations applied yet, or a database
+    stamped at a revision whose migration never actually ran) must not abort
+    the entire report before it can say that.
+    """
+    existing = set(inspect(db.get_bind()).get_table_names())
+    counts: dict[str, int] = {}
+    missing: list[str] = []
+    for label, model in tables.items():
+        if model.__tablename__ in existing:
+            counts[label] = db.query(model).count()
+        else:
+            missing.append(label)
+    return counts, sorted(missing)
 
 
 def get_configured_flags(env: dict[str, str] | None = None) -> dict[str, bool]:
@@ -152,6 +177,7 @@ def get_database_status(
             f"Connection/other bind ({type(bind)!r}) -- migration_status needs "
             "the engine's own dialect, independent of any open transaction."
         )
+    counts, missing = get_table_row_counts(db, tables=tables)
     return DatabaseStatus(
         generated_at=datetime.now(timezone.utc).isoformat(),
         # Matches docs/contracts/data-authorization.md section 1/6.1: there is
@@ -159,7 +185,8 @@ def get_database_status(
         # value today is the deployment database itself.
         tenant_scope="deployment-database",
         migration=get_migration_status(bind),
-        table_row_counts=get_table_row_counts(db, tables=tables),
+        table_row_counts=counts,
+        missing_tables=missing,
         configured=get_configured_flags(env),
     )
 
@@ -183,6 +210,13 @@ def format_human(status: DatabaseStatus) -> str:
     lines.append("table_row_counts:")
     for label in sorted(status.table_row_counts):
         lines.append(f"  {label}: {status.table_row_counts[label]}")
+    if status.missing_tables:
+        lines.append(
+            "missing_tables (not created yet -- run `alembic upgrade head` "
+            "or a fresh Base.metadata.create_all(), see the migration line above):"
+        )
+        for label in status.missing_tables:
+            lines.append(f"  {label}")
     return "\n".join(lines)
 
 
@@ -212,9 +246,10 @@ def _main(argv: list[str] | None = None) -> int:
         "--check-migrations",
         action="store_true",
         help=(
-            "Exit 1 if the database is not at the repository's Alembic head "
-            "(for CI/other-lane scripting; the default text/JSON output is "
-            "printed either way)"
+            "Exit 1 if the database is not at the repository's Alembic head, "
+            "or if any advertised table is missing even when a revision is "
+            "stamped (for CI/other-lane scripting; the default text/JSON "
+            "output is printed either way)"
         ),
     )
     args = parser.parse_args(argv)
@@ -230,7 +265,7 @@ def _main(argv: list[str] | None = None) -> int:
     else:
         print(format_human(status))
 
-    if args.check_migrations and not status.migration.at_head:
+    if args.check_migrations and (not status.migration.at_head or status.missing_tables):
         return 1
     return 0
 

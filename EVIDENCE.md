@@ -29,6 +29,9 @@ has actually been retrieved.
 | 2026-09-02 | `python -m pytest` (backend) | 103 passed | Lane 3: documented status-vocabulary compliance pass (14 new tests) |
 | 2026-09-02 | `python -m pytest` (backend) | 114 passed | Lane 3: PS-02 taxonomy coverage, 34 -> 55 competencies, all 33 named items mapped |
 | 2026-09-02 | `python -m pyflakes` (Lane 3 files) | clean | No unused imports or dead code in services/curricula.py, role_targets.py, behavioral_anchors.py, learning_engine.py, ps02_coverage.py, labs/**, tests/test_competency_*.py |
+| 2026-09-03 | `python -m pytest` (backend) | 136 passed | Lane 3: golden policy fixtures, 6 scenarios, exact-match + repeated-call determinism tests (22 new tests) |
+| 2026-09-03 | `python -m pyflakes` (Lane 3 files incl. fixtures generator) | clean | |
+| 2026-09-03 | Deliberate fixture corruption drill | 2 tests failed as expected, restored via generator, suite back to 136 passed | Manually verified the golden tests actually catch drift, not just pass trivially |
 
 ## Demo rehearsal evidence
 

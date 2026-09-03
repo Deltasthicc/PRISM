@@ -9,17 +9,19 @@ Change approval: Lane 2, Lane 5 and a named domain reviewer
 
 Contract version: **v1**
 
-Status: **v1 — the gap/pathway result shape, role-target selection, evidence-coverage semantics
-and the bounded lab's input/output are defined and test-covered. Persistence of evidence, HTTP
-exposure of the lab, three of the five evidence types, an `activity` layer and dated target
-history are NOT implemented.** Section 8 states the boundary exactly; section 9 lists what other
+Status: **v1 — the gap/pathway result shape, role-target selection, evidence-coverage semantics,
+determinism (golden fixtures, section 5.1) and the bounded lab's input/output are defined and
+test-covered. Persistence of evidence, HTTP exposure of the lab, three of the five evidence
+types, an `activity` layer and dated target history are NOT implemented.** Section 8 states the
+boundary exactly; section 9 lists what other
 lanes must do before the loop closes end to end.
 
 Everything here describes `backend/services/learning_engine.py`,
 `backend/services/role_targets.py`, `backend/services/behavioral_anchors.py`,
-`backend/services/curricula.py` and `backend/labs/sampling_lab.py` as they actually behave, and
-is pinned by `backend/tests/test_competency_*.py` (103 backend tests passing on
-2026-09-02). It is not a claim of MoSPI/CBC validation — see section 6.
+`backend/services/curricula.py`, `backend/services/ps02_coverage.py` and
+`backend/labs/sampling_lab.py` as they actually behave, and is pinned by
+`backend/tests/test_competency_*.py` (136 backend tests passing on 2026-09-03). It is not a claim
+of MoSPI/CBC validation — see section 6.
 
 ## 1. Versioning
 
@@ -205,6 +207,26 @@ echoed back (`experience_level`, `job_role`, `designation`, `current_assignment`
 `self_assessment_weight`, `note`, `behavioral_anchor_default_source`,
 `behavioral_anchor_default_status`), and `courses` — which comes from Lane 5's
 `services/learning_catalog.py` and is governed by `provider-adapter.md`, not this contract.
+
+### 5.1 Determinism and golden fixtures
+
+"Deterministic" is proven, not asserted: `backend/tests/fixtures/golden_pathways/` pins six
+realistic scenarios' full output (minus `courses`, which is Lane 5's env-dependent concern, not a
+Lane 3 policy output). `test_competency_golden_fixtures.py` fails on any drift from the pinned
+values, and separately calls each scenario twice in the same process and asserts byte-identical
+JSON — the literal definition of deterministic, independent of whether any fixture file is stale.
+
+Each fixture's numbers were hand-verified against the documented formulas before being trusted
+(e.g. the blend scenario's `2.0 × 0.65 + 4.0 × 0.35 = 2.7`, gap `2.3`, landing in the `high` tier
+just below the `critical` threshold — confirmed by hand, not assumed from generator output). A
+fixture is golden because a human checked it once, not merely because a script produced it.
+
+A fixture is regenerated only by deliberately running
+`backend/tests/fixtures/generate_golden_fixtures.py` after a reviewed policy change (a new blend
+weight, a new priority threshold, new anchor text), followed by hand-verifying the diff before
+committing — never as a reflex to make a failing test pass. This satisfies
+`SIH26101_TEAM_ORCHESTRATION.md` section 5's Lane 3 acceptance evidence: "Golden policy fixtures
+produce stable gaps and pathways."
 
 ## 6. Status vocabulary
 

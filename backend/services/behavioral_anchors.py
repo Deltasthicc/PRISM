@@ -40,10 +40,18 @@ DEFAULT_STATUS = "unreviewed-pending-domain-expert"
 # Lane 1 renders as a badge, and it must come from that vocabulary.
 PROVISIONAL = "PROVISIONAL"
 
-# Curriculum slugs this module currently covers. Every other curriculum
-# (dsa-fundamentals, public-policy, digital-literacy) has no anchors yet --
-# get_anchor() returns None for those rather than guessing.
-ANCHOR_COVERAGE = ["official-statistics"]
+# The one curriculum with anchors. Every other curriculum (dsa-fundamentals,
+# public-policy, digital-literacy) has none -- get_anchor() returns None for
+# those rather than guessing.
+ANCHORED_CURRICULUM = "official-statistics"
+
+# Coverage inside that curriculum is deliberately partial. The nine
+# competencies anchored below are the canonical three-minute demo path
+# (SIH26101_MASTER_CHECKLIST.md section 3.3); the PS-02 breadth competencies
+# added alongside them are represented in the taxonomy but not yet described
+# level by level. unanchored_competencies() reports exactly which, so the gap
+# is visible rather than implied -- writing 60 more descriptors without a
+# domain reviewer would add volume, not credibility.
 
 
 def _anchor(
@@ -137,19 +145,29 @@ BEHAVIORAL_ANCHORS: dict[str, dict[int, dict]] = {
 _REQUIRED_ANCHOR_KEYS = {"descriptor", "source", "status", "assurance", "reviewed_by", "version"}
 
 
+def _anchored_curriculum_ids() -> list[str]:
+    return [item["id"] for item in CURRICULA[ANCHORED_CURRICULUM]["competencies"]]
+
+
+def unanchored_competencies() -> list[str]:
+    """Competencies in the anchored curriculum that have no anchors yet, in
+    curriculum order. Partial coverage is expected (see ANCHORED_CURRICULUM's
+    note); this makes it inspectable instead of silent."""
+    return [cid for cid in _anchored_curriculum_ids() if cid not in BEHAVIORAL_ANCHORS]
+
+
 def validate_anchors() -> None:
-    """Fail fast if the anchor set drifts out of sync with curricula.py, or
+    """Fail fast if an anchor references a competency that does not exist, or
     if a competency is missing a level, has a malformed record, or has an
-    anchor for a level outside 1-5."""
-    official_statistics_ids = {
-        item["id"] for item in CURRICULA["official-statistics"]["competencies"]
-    }
-    anchor_ids = set(BEHAVIORAL_ANCHORS)
-    if anchor_ids != official_statistics_ids:
-        missing = official_statistics_ids - anchor_ids
-        extra = anchor_ids - official_statistics_ids
+    anchor for a level outside 1-5.
+
+    Coverage may be partial, but it may never be wrong: an anchor for an ID
+    outside the anchored curriculum means the two files have drifted.
+    """
+    unknown = set(BEHAVIORAL_ANCHORS) - set(_anchored_curriculum_ids())
+    if unknown:
         raise ValueError(
-            f"Behavioral anchors out of sync with curricula.py: missing={sorted(missing)} extra={sorted(extra)}"
+            f"Behavioral anchors reference competencies outside {ANCHORED_CURRICULUM}: {sorted(unknown)}"
         )
 
     for competency_id, levels in BEHAVIORAL_ANCHORS.items():
@@ -169,8 +187,9 @@ def validate_anchors() -> None:
 def get_anchor(competency_id: str, level: float) -> dict | None:
     """Return a copy of the anchor record nearest to `level` (round-half-up,
     clamped to 1-5) -- {descriptor, source, status, reviewed_by, version} --
-    or None if this competency has no anchors yet (any curriculum outside
-    ANCHOR_COVERAGE) or `level` rounds below 1 (no evidence yet -- there is
+    or None if this competency has no anchors yet (anything outside
+    ANCHORED_CURRICULUM, or an unanchored competency inside it) or `level`
+    rounds below 1 (no evidence yet -- there is
     nothing observed to describe). Returns a copy so a caller mutating the
     result can never corrupt the canonical record."""
     levels = BEHAVIORAL_ANCHORS.get(competency_id)

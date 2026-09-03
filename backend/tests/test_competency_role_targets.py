@@ -3,8 +3,6 @@ wiring into services/learning_engine.py -- Lane 3's immediate-package item:
 "replace experience-only targeting with an explicit versioned role-target
 selection contract" (SIH26101_TEAM_ORCHESTRATION.md section 5).
 """
-import pytest
-
 from services.learning_engine import analyse_competencies
 from services.role_targets import (
     FRAMEWORK_VERSION,

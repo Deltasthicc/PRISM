@@ -27,6 +27,8 @@ has actually been retrieved.
 | 2026-09-02 | `python -m pytest` (backend) | 70 passed | Lane 3: L1-L5 behavioural anchors, per-anchor provenance records (12 tests) |
 | 2026-09-02 | `python -m pytest` (backend) | 89 passed | Lane 3: bounded sampling-design lab, PS-08 (19 new tests) |
 | 2026-09-02 | `python -m pytest` (backend) | 103 passed | Lane 3: documented status-vocabulary compliance pass (14 new tests) |
+| 2026-09-02 | `python -m pytest` (backend) | 114 passed | Lane 3: PS-02 taxonomy coverage, 34 -> 55 competencies, all 33 named items mapped |
+| 2026-09-02 | `python -m pyflakes` (Lane 3 files) | clean | No unused imports or dead code in services/curricula.py, role_targets.py, behavioral_anchors.py, learning_engine.py, ps02_coverage.py, labs/**, tests/test_competency_*.py |
 
 ## Demo rehearsal evidence
 

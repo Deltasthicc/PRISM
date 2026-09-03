@@ -60,6 +60,24 @@ CURRICULA = {
             {"id": "os_gis", "label": "GIS for Statistics", "description": "Spatial data, geographies, joins, and thematic mapping.", "prerequisites": ["os_data_quality", "os_visualization"], "target_level": 4},
             {"id": "os_big_data", "label": "Big Data & Cloud", "description": "Modern data pipelines, scale, governance, and cloud concepts.", "prerequisites": ["os_data_quality"], "target_level": 4},
             {"id": "os_ml", "label": "ML for Official Statistics", "description": "Responsible use of machine learning in statistical workflows.", "prerequisites": ["os_official_statistics", "os_big_data"], "target_level": 5},
+            # PS-02 "Statistical" named scope (docs/SIH26101_PROBLEM_STATEMENT.md).
+            # Traceability from each named item to these IDs lives in
+            # services/ps02_coverage.py, which fails at import if one is dropped.
+            {"id": "os_survey_design", "label": "Survey Design", "description": "Questionnaire design, modes, pilots, and respondent burden.", "prerequisites": ["os_data_collection"], "target_level": 4},
+            {"id": "os_national_accounts", "label": "National Accounts", "description": "GDP aggregates, sectoral accounts, and SNA concepts.", "prerequisites": ["os_official_statistics"], "target_level": 4},
+            {"id": "os_price_statistics", "label": "Price Statistics", "description": "CPI/WPI baskets, weights, index construction, and rebasing.", "prerequisites": ["os_official_statistics"], "target_level": 4},
+            {"id": "os_labour_statistics", "label": "Labour Statistics", "description": "Employment, unemployment, participation, and workforce classification.", "prerequisites": ["os_official_statistics"], "target_level": 4},
+            {"id": "os_agricultural_statistics", "label": "Agricultural Statistics", "description": "Crop estimation, area/yield surveys, and seasonal reporting.", "prerequisites": ["os_official_statistics"], "target_level": 4},
+            {"id": "os_industrial_statistics", "label": "Industrial Statistics", "description": "Industrial production indices, enterprise surveys, and classifications.", "prerequisites": ["os_official_statistics"], "target_level": 4},
+            {"id": "os_sdg_indicators", "label": "SDG Indicators", "description": "National indicator frameworks, tiers, disaggregation, and reporting.", "prerequisites": ["os_official_statistics"], "target_level": 4},
+            {"id": "os_metadata_standards", "label": "Metadata Standards", "description": "Documentation, classifications, and exchange standards for statistical data.", "prerequisites": ["os_data_quality"], "target_level": 4},
+            # PS-02 "Technical" named scope. GIS, Data Visualization, AI/ML and
+            # Cloud Computing are already covered by os_gis, os_visualization,
+            # os_ml and os_big_data respectively -- see ps02_coverage.py.
+            {"id": "os_statistical_programming", "label": "Statistical Programming", "description": "Reproducible analysis in Python, R, Stata, SPSS, or SAS.", "prerequisites": ["os_statistical_foundations"], "target_level": 4},
+            {"id": "os_data_management_sql", "label": "Data Management & SQL", "description": "Relational modelling, querying, joins, and data preparation.", "prerequisites": ["os_statistical_foundations"], "target_level": 3},
+            {"id": "os_apis_interoperability", "label": "APIs & Interoperability", "description": "Consuming and publishing data through documented interfaces.", "prerequisites": ["os_data_management_sql"], "target_level": 3},
+            {"id": "os_open_data", "label": "Open Data", "description": "Open formats, licensing, release policy, and public data portals.", "prerequisites": ["os_official_statistics", "os_metadata_standards"], "target_level": 3},
         ],
     },
     "public-policy": {
@@ -77,6 +95,13 @@ CURRICULA = {
             {"id": "pa_monitoring_evaluation", "label": "Monitoring & Evaluation", "description": "Indicators, baselines, targets, and learning loops.", "prerequisites": ["pa_policy_design", "pa_public_finance"], "target_level": 4},
             {"id": "pa_impact_evaluation", "label": "Impact Evaluation", "description": "Causal inference, experimental and quasi-experimental designs.", "prerequisites": ["pa_monitoring_evaluation"], "target_level": 5},
             {"id": "pa_data_storytelling", "label": "Evidence Communication", "description": "Communicating evidence clearly to decision-makers and citizens.", "prerequisites": ["pa_monitoring_evaluation"], "target_level": 4},
+            # PS-02 "Behavioural and Managerial" named scope. Project Management
+            # is covered by pa_program_management above; see ps02_coverage.py.
+            {"id": "pa_leadership", "label": "Leadership", "description": "Setting direction, developing people, and leading through influence.", "prerequisites": ["pa_governance_foundations"], "target_level": 4},
+            {"id": "pa_communication", "label": "Professional Communication", "description": "Written, verbal, and cross-team communication in an official setting.", "prerequisites": ["pa_governance_foundations"], "target_level": 3},
+            {"id": "pa_ethics", "label": "Ethics & Integrity", "description": "Conflict of interest, confidentiality, and ethical judgment in public service.", "prerequisites": ["pa_governance_foundations"], "target_level": 4},
+            {"id": "pa_decision_making", "label": "Decision Making", "description": "Structured decisions under uncertainty, trade-offs, and accountability.", "prerequisites": ["pa_policy_design"], "target_level": 4},
+            {"id": "pa_change_management", "label": "Change Management", "description": "Leading adoption, managing resistance, and sustaining new ways of working.", "prerequisites": ["pa_program_management"], "target_level": 4},
         ],
     },
     "digital-literacy": {
@@ -94,6 +119,12 @@ CURRICULA = {
             {"id": "dl_data_literacy", "label": "Data Literacy", "description": "Reading, questioning, and communicating with data.", "prerequisites": ["dl_spreadsheets"], "target_level": 3},
             {"id": "dl_ai_literacy", "label": "AI Literacy", "description": "Capabilities, limitations, prompting, and verification.", "prerequisites": ["dl_data_literacy", "dl_cyber_hygiene"], "target_level": 4},
             {"id": "dl_responsible_ai", "label": "Responsible AI", "description": "Bias, privacy, transparency, human oversight, and safe adoption.", "prerequisites": ["dl_ai_literacy"], "target_level": 4},
+            # PS-02 "Digital Governance" named scope. Cybersecurity is covered by
+            # dl_cyber_hygiene above; see ps02_coverage.py.
+            {"id": "dl_data_privacy", "label": "Data Privacy", "description": "Personal data handling, minimization, consent, and retention duties.", "prerequisites": ["dl_cyber_hygiene"], "target_level": 4},
+            {"id": "dl_digital_signatures", "label": "Digital Signatures", "description": "e-signing, certificates, non-repudiation, and document authenticity.", "prerequisites": ["dl_cyber_hygiene"], "target_level": 3},
+            {"id": "dl_government_cloud", "label": "Government Cloud", "description": "Government cloud services, hosting policy, and shared infrastructure.", "prerequisites": ["dl_digital_foundations"], "target_level": 3},
+            {"id": "dl_digital_public_infrastructure", "label": "Digital Public Infrastructure", "description": "Identity, payments, and data-exchange rails used across public services.", "prerequisites": ["dl_government_cloud", "dl_data_privacy"], "target_level": 3},
         ],
     },
 }

@@ -268,7 +268,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
 | V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
-| W-A — Cross-lane read repository facade | Codex | **implemented and verified; awaiting Claude immutable review of the W-A commit** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
+| W-A — Cross-lane read repository facade | Codex | **ACCEPTED by Claude on immutable `3a75b28` review: no defect found across exact-role isolation, validity boundaries/ties, evidence isolation, source-version ordering or read-only behavior; one low-severity coverage suggestion left to Codex's discretion.** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
 | W-B — Database operator UX + per-lane integration handbook | Claude Code | **claimed and implemented; 19/19 new tests passed, 427/427 full suite passed; awaiting Codex immutable review after commit** | 2026-09-03 | `backend/scripts/database_status.py` (new), `backend/tests/test_core_database_status.py` (new), `LANE2_INTEGRATION_GUIDE.md` (new), `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
@@ -3528,3 +3528,66 @@ FINAL GATES AND DELIVERY
   attack exact-role isolation, validity boundaries/ties, evidence stream isolation, source-version
   ordering and read-only behavior on SQLite and PostgreSQL. Confirm the helpers do not accidentally
   perform Lane 3 policy or imply authorization. Report findings here; Codex owns any W-A fix.
+
+- 2026-09-03 — Claude Code — **Independent review of the immutable W-A commit (`3a75b28`), read
+  only -- no `backend/db/repositories.py`/`test_core_repository_consumers.py` edits.** Read the full
+  module and its 18 tests directly and re-derived each of the five requested attack surfaces rather
+  than trusting the commit message:
+
+  - **Exact-role isolation:** confirmed by inspection (`RoleTarget.role ==`,
+    `RoleTarget.competency_id ==` as separate, unrelated filter clauses) and by
+    `test_current_role_target_is_exact_and_does_not_invent_lane3_policy` (role `"*"` and a
+    differently-cased role string both correctly excluded). One real, if low-severity, coverage gap
+    found: role isolation is tested (via the wildcard/case-difference case) and evidence/
+    source-version each have an explicit cross-boundary test for every one of their isolation
+    dimensions, but there is no test proving `get_current_role_target` excludes a row for the
+    **same role with a different `competency_id`** the way `test_latest_evidence_is_isolated_...`'s
+    `"other-competency"` case does for evidence. The filter code is correct by direct reading
+    (`competency_id` is an independent, unconditional `AND` clause, not reachable to skip), so this
+    is a missing regression test, not a defect -- recorded here rather than silently left
+    unmentioned, since the whole point of listing five attack surfaces was to check test coverage
+    per surface, not just eyeball the query once.
+  - **Validity boundaries/ties:** independently worked through the half-open interval by hand
+    against the actual filter (`valid_from <= instant`, `or_(valid_to IS NULL, valid_to > instant)`)
+    for both edges: `as_of == valid_from` includes the row (correct, matches the documented `[from,
+    to)` semantics); `as_of == valid_to` excludes it (also correct -- `>`, not `>=`). Confirmed the
+    `test_current_role_target_applies_half_open_validity_window` fixture actually exercises exactly
+    this boundary (`"starts-now"` valid_from equals the query instant; `"expired"` valid_to equals
+    it) rather than a wider margin that would pass even with an off-by-one in the comparison
+    operators. Tie-break order (`valid_from DESC`, then `created_at` newest-first, then `target_id`
+    DESC) is deterministic and matches its own docstring; the null-`valid_from`-rejection test forces
+    the null through a raw `UPDATE` specifically because the ORM's own `default=` would otherwise
+    silently backfill a timestamp on insert -- the same pattern already established in
+    `test_core_repositories.py` for `CompetencyAssessment.created_at`, correctly reused here rather
+    than reinvented.
+  - **Evidence stream isolation:** `test_latest_evidence_is_isolated_by_player_competency_and_type`
+    is a genuine negative test, not a tautology -- every excluded row (`other-player`, `other-type`,
+    `other-competency`) has a strictly newer `recorded_at` than the expected winner, so the test
+    would fail loudly if any one of the three filter dimensions were dropped, rather than passing
+    vacuously because the "wrong" row also happened to be older.
+  - **Source-version ordering:** `test_latest_source_version_uses_version_number_before_timestamp`
+    is the one test in this file doing real, non-obvious work -- it deliberately makes the
+    lower-version row the *newer* one by wall-clock time and confirms `version_number` still wins,
+    which is the only way to actually prove "version_number is authoritative" rather than merely
+    "version_number happens to correlate with recency" in the fixture data.
+  - **Read-only behavior:** confirmed by direct inspection (no `.add()`/`.commit()`/`.delete()`/
+    `.flush()` call anywhere in `repositories.py`) and by
+    `test_all_repository_reads_leave_the_session_unmodified` asserting `db.new`/`db.dirty`/
+    `db.deleted` are all empty after calling all three new functions in sequence on a session with
+    pending unrelated objects already added -- this would catch an accidental `db.commit()` that
+    otherwise flushed those pending adds as a side effect, not just a direct write to one of the
+    three read models.
+  - **SQLite vs PostgreSQL:** did not independently re-run a live PostgreSQL drill in this review
+    pass (out of scope for a bounded read-only review; the module's own test file, like
+    `test_core_repositories.py`, only ever constructs `sqlite:///:memory:` regardless of
+    `DATABASE_URL`). Relying on Codex's reported live-PostgreSQL rollback-only drill and the
+    `640603a37f2f (head)`/`No new upgrade operations detected` Alembic evidence above for that
+    dimension rather than re-deriving it independently. The query constructs used
+    (`case()`, `or_()`, comparison operators, `.desc()`/`.asc()`) are all portable SQLAlchemy Core,
+    with nothing SQLite-specific, which is consistent with that evidence rather than a substitute
+    for it.
+
+  **Verdict: no defect found in any of the five requested attack surfaces.** One coverage
+  suggestion (the role/competency cross-isolation test above) — low severity, code is already
+  correct by inspection, so this does not block acceptance; Codex may add it opportunistically or
+  leave it, at Codex's discretion since W-A remains Codex-owned.

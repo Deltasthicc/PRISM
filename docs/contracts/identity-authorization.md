@@ -5,11 +5,12 @@ Owner: Lane 2 (Core Platform, Identity & Data)
 Consumers: Lanes 1, 4, 5 and 6
 
 Status: **local OIDC/RBAC foundation implemented and independently reviewed by both agents
-(Packages I/J/K/M); Package P/S (retention/rotation hardening, including atomic PostgreSQL
-concurrency claiming) is implemented and live-tested, pending Codex's final immutable re-review.
-Key rotation is proven via a local mock JWKS server and the real `PyJWKClient` class this project
-ships -- not a live Keycloak key-rotation drill specifically. No government IdP, browser login flow
-or protected product route is claimed.**
+(Packages I/J/K/M). Lane 5 PR #2 added the first route adapter and protected exactly
+`GET /learning/admin/overview` and `GET /learning/assessment/{player_id}/latest`; Package 3 then
+added separately composable deployment-tenant and own-player dependencies plus HTTP-level negative
+coverage. Other product routes remain unprotected. Key rotation is proven via a local mock JWKS
+server and the real `PyJWKClient` class this project ships -- not a live Keycloak key-rotation drill
+specifically. No government IdP or browser login flow is claimed.**
 
 This contract implements the server-side boundary required by `PS-16`. It does not make the
 application production-authorized: the accountable IdP, organization/department model, route
@@ -160,9 +161,21 @@ never be written to `AuditEvent.details`.
 
 ## 6. Route handoff and present limitations
 
-Lane 2 supplies verification, binding and policy primitives only. Lane 5 owns attaching them to
-`backend/routes/**`, including negative API tests. Until that integration lands, the current routes
-remain username/player-ID demo interfaces and the application must not be described as protected.
+Lane 5 owns attaching Lane 2's verification, binding and policy primitives to
+`backend/routes/**`, including negative API tests. The reusable adapters are in
+`backend/routes/authorization.py`: `require_principal`,
+`require_deployment_tenant_dependency`, `require_permission_dependency` and
+`require_own_player_dependency`. The last dependency is the exact consumption path for a route with
+a `player_id` path parameter: it composes verified principal, deployment tenant, fixed permission
+and locally-bound own-player scope while returning the same `BoundPrincipal` object unchanged.
+
+Lane 5 PR #2 attached the adapter to exactly two routes: organization-admin aggregate access at
+`GET /learning/admin/overview`, and learner-owned assessment access at
+`GET /learning/assessment/{player_id}/latest`. Package 3 attaches the latter through
+`require_own_player_dependency` rather than translating object scope by hand. This is meaningful
+partial route enforcement, not permission to describe the whole API or browser application as
+protected; every other player-ID/form route remains a demo interface until it receives its own
+permission and object-scope contract.
 
 Still open:
 
@@ -171,7 +184,7 @@ Still open:
 - department/organization row keys and cross-tenant negative query evidence;
 - trainer/cohort assignment and scoped trainer reads;
 - role-change ingestion/audit reconciliation from the IdP;
-- route-level 401/403 wiring, rate limits and security telemetry;
+- route-level 401/403 wiring for the remaining product routes, rate limits and security telemetry;
 - IdP-side outage drills (a real Keycloak/IdP process actually going down mid-request); and
 - independent security/production authorization.
 

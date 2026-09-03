@@ -3,14 +3,21 @@
 from datetime import datetime, timezone
 
 import pytest
-from fastapi import HTTPException
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from db.database import Base
+from db.database import Base, get_db
+from models.accuracy_history import AccuracyHistory  # noqa: F401 -- mapper registration
+from models.dungeon import Dungeon, Room  # noqa: F401 -- mapper/FK registration
+from models.guild import Guild  # noqa: F401 -- mapper/FK registration
 from models.learning import CompetencyAssessment
 from models.player import Player
-from routes.learning import admin_overview, latest_assessment
+from models.question import Question  # noqa: F401 -- mapper/FK registration
+from models.session import GameSession  # noqa: F401 -- mapper registration
+from models.submission import AnswerSubmission  # noqa: F401 -- mapper registration
+from routes.learning import admin_overview, latest_assessment, router as learning_router
 from routes.authorization import require_permission_dependency, require_principal
 from security.identity import AuthenticationError
 from security.rbac import BoundPrincipal, Permission
@@ -24,7 +31,12 @@ class Subject:
 
 
 def make_db():
-    engine = create_engine("sqlite:///:memory:")
+    # TestClient executes sync dependencies/handlers in a worker thread. Match
+    # the application's SQLite profile so this isolated route contract proves
+    # authorization rather than failing at sqlite3's default thread guard.
+    engine = create_engine(
+        "sqlite:///:memory:", connect_args={"check_same_thread": False}
+    )
     Base.metadata.create_all(engine)
     return sessionmaker(bind=engine)()
 
@@ -102,6 +114,48 @@ def test_latest_assessment_returns_latest_stream():
 
     assert result["assessment"]["assessment_id"] == "new"
     assert result["assessment"]["self_ratings"] == {"new": 4}
+
+
+def test_latest_assessment_route_uses_composed_own_player_scope():
+    db = make_db()
+    player = Player(username="route-scope-learner")
+    db.add(player)
+    db.flush()
+    db.add(
+        CompetencyAssessment(
+            assessment_id="route-scope-assessment",
+            player_id=player.player_id,
+            curriculum_slug="official-statistics",
+            created_at=datetime(2026, 3, 1, tzinfo=timezone.utc),
+        )
+    )
+    db.commit()
+
+    app = FastAPI()
+    app.include_router(learning_router)
+
+    def override_db():
+        yield db
+
+    app.dependency_overrides[get_db] = override_db
+    app.dependency_overrides[require_principal] = lambda: make_principal(
+        player.player_id
+    )
+    client = TestClient(app)
+
+    own = client.get(
+        f"/learning/assessment/{player.player_id}/latest",
+        params={"curriculum_slug": "official-statistics"},
+    )
+    cross_player = client.get(
+        "/learning/assessment/another-player/latest",
+        params={"curriculum_slug": "official-statistics"},
+    )
+
+    assert own.status_code == 200
+    assert own.json()["assessment"]["assessment_id"] == "route-scope-assessment"
+    assert cross_player.status_code == 403
+    assert cross_player.json() == {"detail": "Access denied"}
 
 
 def test_simulated_igot_never_claims_live_capability():

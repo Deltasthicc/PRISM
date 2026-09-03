@@ -205,20 +205,25 @@ proving a role/tenant value can't be spoofed once Lane 5's dependency is attache
   security boundary note below.
 - `backend/scripts/database_status.py` (Package W-B, this package) — run it in CI with
   `--check-migrations` to fail a deploy step before a route ever executes against a stale schema.
+- `backend/routes/authorization.py` (Lane 5 PR #2 plus Lane 2 Package 3 review/fix): stable,
+  sanitized HTTP adapters for verified principals, deployment-tenant scope, fixed permissions and
+  own-player object scope. `require_own_player_dependency(permission)` is the exact dependency for
+  a route whose path parameter is named `player_id`.
 
-**What Lane 2 still needs to build for you (flagging, not yet shipped):** a single composed
-FastAPI dependency chaining token-verify → resolve-principal → permission-check into one
-`Depends(...)`, so protecting a route doesn't require hand-chaining four function calls per route.
-This does not exist yet — today you would have to chain `get_current_subject` →
-`resolve_bound_principal` → `require_permission` manually in every route. If this would unblock you
-sooner, say so and Lane 2 will prioritize it; otherwise treat the three functions above as the
-current building blocks.
+**What is now attached:** Lane 5 PR #2 protects `GET /learning/admin/overview` with organization
+analytics permission and `GET /learning/assessment/{player_id}/latest` with assessment-read
+permission. Package 3 makes the latter use the composed own-player dependency rather than a manual
+handler check, and proves dependency overrides cannot bypass the separately composable
+deployment-tenant layer. This protects exactly those two routes, not the rest of the API.
 
 **You provide:**
-- Attach real auth to `GET /learning/admin/overview` first — its "not production-secure" banner is
-  accurate today; it depends only on `get_db`, no identity or permission check.
-- Implement `GET /learning/assessment/{player_id}/latest` per `data-authorization.md` §4 — the
-  query is already written (`get_latest_assessment()`); this is route wiring only, not new logic.
+- Attach `require_permission_dependency()` or `require_own_player_dependency()` to every remaining
+  protected route with a route-specific permission/object contract; protection does not propagate
+  from the two routes already wired.
+- Bring `GET /learning/assessment/{player_id}/latest` fully into conformance with
+  `data-authorization.md` §4: the current route uses the correct repository and authorization but
+  still nests the row, omits `recommended_course_ids`, and returns HTTP 200/null rather than the
+  contracted 404 for an empty stream.
 - If/when Lane 3 merges role-aware targeting into `analyse_competencies()`, forward the
   corresponding `LearnerProfile` fields from `routes/learning.py`'s assessment/pathway handlers —
   today that function only accepts `experience_level`, so there's nothing to forward yet, but this
@@ -240,14 +245,13 @@ valid token lacking permission) on every newly protected route; `database_status
 --check-migrations` wired into your deploy/CI step exits 0.
 
 **Copy-ready message:**
-> Everything you need to protect a route already exists as separate functions:
-> `security.identity.get_current_subject`, `security.rbac.resolve_bound_principal`,
-> `security.rbac.require_permission` — chain them in a dependency and attach it to
-> `GET /learning/admin/overview` first, since its "not production-secure" banner is currently
-> accurate. If hand-chaining three functions per route is the blocker, tell Lane 2 and a single
-> composed dependency will get prioritized. Please also implement
-> `GET /learning/assessment/{player_id}/latest` — the query is already written
-> (`db.repositories.get_latest_assessment`). And whenever Lane 3 merges role-aware targeting into
+> The composed route dependencies now exist in `backend/routes/authorization.py`, and the first two
+> routes are attached: organization-admin `GET /learning/admin/overview` and learner-owned
+> `GET /learning/assessment/{player_id}/latest`. For every remaining route, use
+> `require_permission_dependency()` or `require_own_player_dependency()` rather than hand-mapping
+> policy errors. Please also align the latest-assessment response with
+> `docs/contracts/data-authorization.md` §4: include all eight fields, return 404 for an empty
+> stream, and use the contracted response shape. Whenever Lane 3 merges role-aware targeting into
 > `analyse_competencies()`, please make sure `routes/learning.py`'s assessment/pathway handlers
 > actually forward the new parameters from `LearnerProfile` — that's the kind of wiring step that's
 > easy to silently skip. Run `backend/scripts/database_status.py --check-migrations` in your deploy

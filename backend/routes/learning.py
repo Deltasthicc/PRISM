@@ -17,8 +17,11 @@ from services.curricula import get_curriculum, public_curricula
 from services.learning_catalog import integration_status
 from services.learning_engine import analyse_competencies
 from services.quiz_generator import generate_quiz
-from routes.authorization import require_permission_dependency
-from security.rbac import BoundPrincipal, Permission, scoped_to_own_player
+from routes.authorization import (
+    require_own_player_dependency,
+    require_permission_dependency,
+)
+from security.rbac import BoundPrincipal, Permission
 
 
 router = APIRouter(prefix="/learning", tags=["Learning Platform"])
@@ -248,13 +251,9 @@ async def latest_assessment(
     curriculum_slug: str = Query(..., min_length=2, max_length=120),
     db: Session = Depends(get_db),
     principal: BoundPrincipal = Depends(
-        require_permission_dependency(Permission.ASSESSMENT_SELF_READ)
+        require_own_player_dependency(Permission.ASSESSMENT_SELF_READ)
     ),
 ):
-    try:
-        scoped_to_own_player(principal, player_id)
-    except PermissionError as exc:
-        raise HTTPException(status_code=403, detail="Access denied") from exc
     _player_or_404(db, player_id)
     assessment = get_latest_assessment(db, player_id, curriculum_slug)
     return {"assessment": _serialize_assessment(assessment) if assessment else None}

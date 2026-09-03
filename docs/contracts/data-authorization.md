@@ -10,9 +10,10 @@ Status: **v1 demo contract — storage and query semantics, internal subject-dat
 primitives, and PostgreSQL backup/restore are defined and independently reviewed/accepted. A
 retention-enforcement job (a real no-op today, no cited maximum exists) is implemented and has
 passed its adversarial contract plus Codex's final immutable PostgreSQL re-review. Authentication
-and RBAC *primitives* exist
-(`docs/contracts/identity-authorization.md`) but are not yet composed into existing routes;
-multi-tenant isolation and subject-rights HTTP APIs are not implemented.**
+and RBAC primitives exist (`docs/contracts/identity-authorization.md`) and are now composed into
+exactly two Lane 5 routes: the organization-admin overview and learner-owned latest-assessment
+read. Remaining product routes, multi-tenant isolation and subject-rights HTTP APIs are not
+implemented.**
 
 This contract is deliberately explicit about the present boundary. It is safe guidance for the
 local hackathon demo, not evidence of production authorization or compliance.
@@ -45,25 +46,30 @@ contract change and migration; it is not part of v1.
 
 ## 2. Subject and authorization semantics today
 
-`players.player_id` is the learner-record key. It is **not an authenticated subject**. Current
-routes take `player_id` from the URL or form data, and the username-only demo flow does not create
-a server-derived session or token. Possession of a `player_id` therefore proves neither identity
-nor permission.
+`players.player_id` is the learner-record key. It is **not an authenticated subject**. Most current
+routes still take `player_id` from the URL or form data, and the username-only demo flow does not
+create a server-derived session or token. Possession of a `player_id` therefore proves neither
+identity nor permission. The protected latest-assessment route is the narrow exception: it resolves
+an OIDC subject through an active local binding and compares the path key with the bound player.
 
 Consequences for every lane:
 
-- Current `/learning/profile/{player_id}`, `/learning/assessment/{player_id}`,
+- Current `/learning/profile/{player_id}`, `POST /learning/assessment/{player_id}`,
   `/learning/pathway/{player_id}` and quiz routes are local-demo interfaces only.
-- `GET /learning/admin/overview` returns aggregates but is not administrator-authorized today.
+- `GET /learning/admin/overview` now requires organization-analytics permission and the
+  deployment-database tenant check; its response remains aggregate-only.
+- `GET /learning/assessment/{player_id}/latest` now requires assessment-read permission and
+  own-player scope through the locally persisted binding.
 - No route may be called production-secure merely because it filters on `player_id`.
 - New privileged or cross-learner routes must wait for OIDC/session identity, server-derived
   subject binding and RBAC, or explicitly remain disabled outside the demo profile.
 - Half A's `AuditEvent` write path supplies an append-only record shape; it does not itself grant
   access or make the existing routes audited.
 
-The in-progress OIDC/RBAC primitives and their route handoff are specified separately in
-`docs/contracts/identity-authorization.md`. That foundation does not protect existing routes until
-Lane 5 composes token verification, active local binding, permission and object-scope checks.
+The OIDC/RBAC primitives and route handoff are specified separately in
+`docs/contracts/identity-authorization.md`. Lane 5 must compose token verification, active local
+binding, permission and object-scope checks independently for every additional protected route;
+protection of the two routes above does not transitively protect the rest of the API.
 
 ## 3. Assessment record contract
 
@@ -124,22 +130,24 @@ For a set of learners, use the same ordering with
 `MAX(created_at)` and join back without the `assessment_id` tie-breaker, and do not aggregate all
 historical assessment rows as though they represented distinct learners.
 
-The contracted HTTP read interface, when Lane 5 exposes it, is:
+The contracted HTTP read interface is:
 
 ```text
 GET /learning/assessment/{player_id}/latest?curriculum_slug={canonical_slug}
 ```
 
-It returns the eight fields in the table above, with `created_at` as an RFC 3339 UTC string, or
-404 when that stream has no assessment. This endpoint is **not implemented yet**. Lane 2's shared
-`get_latest_assessment()` repository function is implemented and tested; Lane 5 must reuse it
-rather than reimplementing the ordering inside a route.
+It must return the eight fields in the table above, with `created_at` as an RFC 3339 UTC string, or
+404 when that stream has no assessment. Lane 5 PR #2 implemented and protected the route using Lane
+2's shared `get_latest_assessment()` repository function, but its current response is not yet fully
+contract-conformant: it nests the row under `assessment`, omits `recommended_course_ids`, and
+returns a null assessment with HTTP 200 instead of 404. That Lane 5 response-shape correction is
+tracked explicitly rather than hiding the difference in this storage contract.
 
 The existing `GET /learning/pathway/{player_id}?curriculum_slug=...` is a derived view: it takes
 `self_ratings` from the latest snapshot but intentionally recomputes measured scores from current
-`AccuracyHistory`. It is not a verbatim read of the stored latest assessment. Its current code
-orders by `created_at` only; adding the `assessment_id` tie-breaker is tracked as follow-up work so
-all consumers converge on this contract.
+`AccuracyHistory`. It is not a verbatim read of the stored latest assessment. Lane 5 PR #2 changed
+this route to use `get_latest_assessment()`, so its stored-snapshot selection now follows the same
+null and `assessment_id` tie-breakers as this contract.
 
 ### 4.1 Shared read repository interface for Lanes 3–5
 

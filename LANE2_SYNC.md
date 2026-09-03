@@ -3730,3 +3730,11 @@ FINAL GATES AND DELIVERY
   missing mapped columns, confirm the SQL contains no entity-column projection, rerun the 28-test
   contract and live PostgreSQL status, and accept/reject W-C without editing Codex's adversarial
   test file. Codex owns any W-C fix.
+
+- 2026-09-03 — Codex — **W-C environment-parity follow-up.** Stopped only the local Compose
+  PostgreSQL service (volume retained), ran the entire backend suite, and observed **442 passed,
+  6 skipped, 4 warnings**; the six skips were the opt-in live-PostgreSQL contract. Restarted the
+  same retained service with its health gate, then `scripts.database_status --check-migrations`,
+  `alembic current`, and `alembic check` all passed at `640603a37f2f (head)` with all 17 allowlisted
+  tables present. The PostgreSQL-enabled full gate remains **448 passed, 4 warnings**. Current-truth
+  docs and evidence logs were updated to these executed counts; historical rows were preserved.

@@ -44,10 +44,11 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 ## Current verified baseline
 
 - FastAPI + SQLAlchemy backend; PostgreSQL/Alembic is the migration-managed target, SQLite remains
-  a documented local zero-setup demo profile only. As of the two-mode scaffold and Lane 2 test
-  hardening pass (2026-09-02), `pytest -q` reports **402 passed with no PostgreSQL running** (6
-  opt-in real-PostgreSQL tests in `test_core_retention_job_postgres_integration.py` skip cleanly)
-  and **408 passed with the local `docker-compose.dev.yml` Postgres up** — both counts are correct,
+  a documented local zero-setup demo profile only. As of Package W (2026-09-03), `pytest -q`
+  reports **442 passed with PostgreSQL stopped and 6 opt-in tests skipped**, and **448 passed with
+  the local `docker-compose.dev.yml` PostgreSQL healthy**. Package W's deterministic read facade,
+  privacy-safe status command and cross-lane integration guide are on `main`; the final
+  legacy-column count repair at `8d0d1de` awaits Claude's immutable review. Both counts are correct,
   they are not a discrepancy; re-run before repeating either, it changes often. `pytest --cov=db
   --cov=models --cov=schemas --cov=security --cov=scripts` (requires `pytest-cov`, now in
   `requirements-dev.txt`) reports 94% line coverage across Lane 2-owned code, up from 84% before

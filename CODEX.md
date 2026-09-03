@@ -34,9 +34,11 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
 ## Current verified reality
 
 - Backend: FastAPI + SQLAlchemy with a zero-setup SQLite demo profile and an additive PostgreSQL
-  16/Alembic profile; 402 backend tests passed in the latest recorded full gate with no PostgreSQL
-  running (6 opt-in real-PostgreSQL tests skip cleanly), 408 passed with the local Compose
-  PostgreSQL up. `players.preferred_mode` (migration `640603a37f2f`, `models/enums.py`'s
+  16/Alembic profile; the 3 September Package W gate passed **442 tests with PostgreSQL stopped
+  (6 skipped)** and **448 with the local Compose PostgreSQL healthy**. Package W adds accepted
+  deterministic read repositories plus a privacy-safe database-status command and per-lane
+  integration guide; its final legacy-column count repair at `8d0d1de` awaits Claude's immutable
+  review. `players.preferred_mode` (migration `640603a37f2f`, `models/enums.py`'s
   `LearningMode`) is a new base scaffold for the team's two-mode decision — see
   `docs/contracts/data-authorization.md` section 8 for the exact boundary; no route reads or
   writes it yet.

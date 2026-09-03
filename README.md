@@ -151,12 +151,14 @@ except through the retention job under a cited maximum) is an application-layer 
 database one. Codex's subsequent review accepted Package V's production migration/retention
 behavior outright and raised two bounded test/evidence-hardening findings (a disposable-database
 cleanup gap and a concurrency test needing genuinely forced overlap plus a negative control), both
-of which are now closed — see `LANE2_SYNC.md` for the full audit trail and evidence. The current
-full backend gate is 341 passing tests (6 skipped) with no PostgreSQL running, and 347 passing
-tests with the local Compose PostgreSQL up — the difference is exactly the six opt-in real-
-PostgreSQL integration tests in `test_core_retention_job_postgres_integration.py`, which skip
-cleanly rather than fail in any environment without Docker. This completes the current hackathon
-Lane 2 foundation; it does **not** make the whole application production-ready.
+of which are now closed — see `LANE2_SYNC.md` for the full audit trail and evidence. Package W on
+`main` adds deterministic, read-only repository functions for current role targets, latest typed
+evidence, latest assessments and latest source versions; a privacy-safe database-status command;
+and an exact integration guide for every consuming lane. Its final legacy-column count repair at
+`8d0d1de` awaits Claude's immutable review. The current full backend gate is **442 passed, 6
+skipped** with PostgreSQL stopped and **448 passed** with the local Compose PostgreSQL healthy.
+This completes the current hackathon Lane 2 foundation; it does **not** make the whole application
+production-ready.
 
 - **Lane 5 — Product API/Integrations:** attach Bearer verification, binding, permission,
   deployment-tenant and object-scope checks to every protected route; stop treating request
@@ -174,7 +176,9 @@ Lane 2 foundation; it does **not** make the whole application production-ready.
   assessment and go-live. One database is one tenant today; row-level multi-organization isolation
   is not implemented.
 
-The copy-ready assignments are maintained in
+The exact database/repository usage rules and copy-ready assignments for all five consuming lanes
+are maintained in [`LANE2_INTEGRATION_GUIDE.md`](LANE2_INTEGRATION_GUIDE.md). The broader delivery
+assignments remain in
 [`SIH26101_TEAM_ORCHESTRATION.md`](SIH26101_TEAM_ORCHESTRATION.md#lane-2-completion-and-cross-lane-handoff).
 
 The current itemized backlog is [`SIH26101_MASTER_CHECKLIST.md`](SIH26101_MASTER_CHECKLIST.md),

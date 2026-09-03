@@ -183,6 +183,10 @@ Lanes 1 and 6 start immediately against frozen fixtures. They do not wait idle f
 - **DONE / contracted:** latest-assessment repository semantics and the current one-deployment-
   database tenant rule consumed by Lanes 3–5. The HTTP endpoint/pathway integration belongs to
   Lane 5.
+- **DONE / cross-reviewed except final W-C repair:** Package W exposes deterministic read helpers
+  for current role targets, latest typed evidence, latest assessments and latest source versions,
+  plus a privacy-safe schema/status command. `LANE2_INTEGRATION_GUIDE.md` is the exact per-lane
+  consumer contract; W-C commit `8d0d1de` awaits Claude's final immutable review.
 
 **Next package**
 
@@ -239,15 +243,15 @@ at thread-pool submission, not at genuinely overlapping candidate selection (fix
 proving an equivalent unlocked-select flow fails the same contract under identical forced overlap).
 See `LANE2_SYNC.md` for all four packages' full evidence; Package V's test hardening at `ac5a2e7`
 passed Codex's narrow immutable re-review with no remaining correctness finding.
-The current full backend gate is **402 passed** with no PostgreSQL running (6 opt-in integration
-tests skip cleanly without Docker), **408 passed** with the local Compose Postgres up (up from
-341/347 after a Lane 2 coverage-hardening pass, 2026-09-02, that took Lane 2-owned code from 84% to
-94% line coverage and added `players.preferred_mode` — see
+The current Package W full backend gate is **442 passed, 6 skipped** with PostgreSQL stopped and
+**448 passed** with the local Compose PostgreSQL healthy (up from 402/408 after the 2026-09-02
+Lane 2 coverage-hardening pass, which took Lane 2-owned code from 84% to 94% line coverage and
+added `players.preferred_mode` — see
 `docs/contracts/data-authorization.md` section 8 — the base data-layer scaffold for the team's
 two-mode decision: a non-gamified professional default with the existing Quest layer preserved as
-an explicit opt-in). See `LANE2_HANDOFF_FOR_OTHER_LANES.md` for a punch list of issues raised after
-live testing that are genuinely Lane 1/3/5's work, not Lane 2's, with exactly what Lane 2 already
-provides ready to build on for each. The following assignments are copy-ready messages for the
+an explicit opt-in). See `LANE2_INTEGRATION_GUIDE.md` for exact DB/repository usage and copy-ready
+messages for Lanes 1/3/4/5/6, and `LANE2_HANDOFF_FOR_OTHER_LANES.md` for the dated punch list raised
+after live testing. The following assignments remain concise copies for the
 remaining owners. They are dependencies of a controlled pilot or production claim, not reasons to
 reopen completed Lane 2 packages.
 

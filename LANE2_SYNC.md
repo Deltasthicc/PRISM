@@ -271,7 +271,8 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | W-A — Cross-lane read repository facade | Codex | **ACCEPTED by Claude on immutable `3a75b28`; Claude's one non-blocking competency-isolation test suggestion was closed at `be9e338`.** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
 | W-B — Database operator UX + per-lane integration handbook | Claude Code | **Claude's handbook/privacy boundary and whole-table repair accepted by Codex; partial-column failure repaired in W-C, which Claude has now ACCEPTED — see the W-C row.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
 | W-C — Legacy-column-safe table counts | Codex | **ACCEPTED by Claude on independent immutable review of `8d0d1de`: table-level `COUNT(*)` confirmed via captured compiled SQL (no ORM column projection), independently-constructed legacy schema and private-looking values confirmed absent from output, all six requested commands reproduced with matching results. Package W is closed.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status_adversarial.py`, `LANE2_SYNC.md` |
-| X — Dependency security and reproducibility | Claude Code | **implemented and verified; awaiting Codex immutable review** | 2026-09-03 | `backend/requirements.txt`, `backend/requirements-dev.txt`, `backend/requirements.lock` (new), `backend/models/governance.py`, `backend/tests/test_core_dependency_upgrade_adversarial.py` (new), `LANE2_SYNC.md` |
+| X — Dependency security and reproducibility | Claude Code | **implemented; independently re-verified by Claude Code on the current merged `main` tip (459/459 full suite including Lane 5's PR #2, `pip-audit` clean) after Shashwat dropped the per-package stop-and-wait review gate — see Activity log. Not yet reviewed by Codex; will close on review if Codex still does one, but is not blocked on it.** | 2026-09-03 | `backend/requirements.txt`, `backend/requirements-dev.txt`, `backend/requirements.lock` (new), `backend/models/governance.py`, `backend/tests/test_core_dependency_upgrade_adversarial.py` (new), `LANE2_SYNC.md` |
+| Y — SQLite foreign-key enforcement and transaction-semantics parity | Claude Code | **implemented and verified** | 2026-09-03 | `backend/db/database.py`, `backend/tests/test_core_sqlite_fk_transactions.py` (new), `backend/tests/test_core_repository_consumers.py`, `backend/tests/test_core_database_status.py`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -3874,3 +3875,142 @@ FINAL GATES AND DELIVERY
   reviews) rather than treating the absence of a listed owner as license to skip review.
 
   Awaiting Codex's immutable review before Package 2 (SQLite FK/transaction-semantics parity).
+
+- 2026-09-03 — Claude Code — **Process change from Shashwat: the per-package stop-and-wait
+  immutable-review gate is dropped.** Both agents now work the remaining agreed backlog (Packages
+  2-9 from `ClaudeCode_Codex_UwU.md`'s "Proposed final execution sequence") at the same time,
+  coordinating through this file and the scratch discussion instead of trading turns waiting on
+  each other; per-package commit discipline, exact evidence and live verification stay unchanged.
+  Before resuming, independently re-verified Package X on the current merged `main` tip
+  (`d4dfb46`, which also carries Lane 5's PR #2 — `da084bf`, a composed FastAPI auth dependency in
+  `routes/authorization.py` and a `SimulatedIGOTAdapter` provider stub) rather than assuming the
+  prior verification still applied after other lanes' merges landed on top of it: fresh venv from
+  `requirements.lock`, full suite **459/459** (452 + Lane 5's 7 new tests), `pip-audit` clean.
+  Also found and will report to Lane 5 separately: their new
+  `tests/test_api_integration_lane5.py` fails 3/7 when run in isolation
+  (`sqlalchemy.exc.NoReferencedTableError` on `players.guild_id → guilds`) because the file never
+  imports `models.guild` — it only passes as part of the full suite by accident of collection
+  order. Not a Package X or Package Y defect; noted here since it's the kind of thing Lane 6's
+  planned CI matrix should catch structurally.
+
+  **Claimed and starting Package 2 (SQLite FK + transaction-semantics parity).**
+
+- 2026-09-03 — Claude Code — **Package Y (renumbering Package 2 of the 9-package sequence into
+  this file's letter series): SQLite foreign-key enforcement and transaction-semantics parity,
+  implemented and verified.** Isolated worktree off `origin/main` (`d4dfb46`), per the established
+  pattern.
+
+  **The gap.** `db/database.py` set `PRAGMA journal_mode=WAL` and `PRAGMA synchronous=NORMAL` on
+  every SQLite connection but never `PRAGMA foreign_keys=ON` — confirmed missing by direct
+  inspection before touching anything, matching what both agents already independently confirmed
+  in the reconciliation discussion. SQLite ships FK enforcement OFF by default, so every
+  `ForeignKey()` column across `models/*.py` (16 columns across 9 models: `accuracy_history`,
+  `dungeon`/`Room`, `governance`'s `EvidenceRecord`/`SourceVersion`, `identity`, `learning`'s three
+  FK-bearing tables, `player.guild_id`, `session`'s two, `submission`'s two) was silently
+  unenforced on SQLite — an orphan INSERT or a parent DELETE that orphans children both succeeded
+  without error, unlike PostgreSQL, which has always enforced these unconditionally.
+
+  **The fix.** Registered the pragma at the SQLAlchemy `Engine` *class* level
+  (`@event.listens_for(Engine, "connect")`, `isinstance`-guarded to real `sqlite3.Connection`
+  objects so it no-ops on `psycopg`) instead of on `db.database`'s own `engine` instance. This is
+  SQLAlchemy's own documented pattern for this exact gap, and it matters here specifically because
+  roughly 20 other test files build their own ad hoc `create_engine("sqlite:///:memory:")` rather
+  than going through `db.database`'s instance — an instance-level fix would have missed every one
+  of them, the same class of miss Lane 5's own new test file just committed independently (see the
+  entry above). A class-level listener fires for all of them the moment `db.database` is imported,
+  which every one of those files already does.
+
+  **Deliberately did not** set the underlying `sqlite3.Connection.autocommit` to `False` (Python
+  3.12+'s PEP 249 standard autocommit-off), per the reconciled plan's explicit warning. Documented
+  why directly in `db/database.py`'s new docstring:
+  `security/identity_bootstrap.py::_acquire_bootstrap_lock()` issues a raw
+  `db.execute(text("BEGIN IMMEDIATE"))` as the *first* statement of a guaranteed-fresh session,
+  relying on SQLAlchemy's pysqlite dialect not pre-opening a transaction (the legacy
+  `isolation_level=None` driver default this engine still uses) so that literal statement is what
+  opens the transaction and grabs SQLite's write lock immediately. Standard PEP 249 autocommit-off
+  would make the driver itself open an implicit transaction first, and a `BEGIN` issued into an
+  already-open transaction raises `sqlite3.OperationalError: cannot start a transaction within a
+  transaction` — silently breaking the one-admin bootstrap serialization guarantee. Not simulated;
+  reasoned from the pysqlite/SQLAlchemy transaction model directly, and the existing regression
+  test below is what would actually catch it if this reasoning were wrong.
+
+  **New evidence — `tests/test_core_sqlite_fk_transactions.py` (11 tests, self-contained: passes
+  identically run alone or as part of the full suite, unlike the Lane 5 file flagged above):**
+  - Pragma applies process-wide, proven against a bare ad hoc engine, not `db.database`'s own.
+  - Orphan INSERT rejected on SQLite (`IntegrityError`, "FOREIGN KEY constraint failed").
+  - Deleting a still-referenced parent rejected on SQLite; a negative control proves deleting the
+    child then the parent still succeeds, so the rejection is specifically about the dangling
+    reference, not about deleting a `Player` row at all.
+  - `PRAGMA foreign_key_check` (SQLite's retroactive data-audit pragma) proven to actually find a
+    deliberately constructed pre-existing orphan row — the concrete audit step for "the legacy
+    unversioned SQLite adoption path," since no real pre-existing demo `app.db` exists in a fresh
+    checkout to inspect directly. This is the tool to point at a real deployment's existing demo
+    file if anyone needs to check one for pre-fix damage; it is not wired into any automated check
+    by this package, since Package 8 (`lane2_doctor`) is the agreed home for new operator tooling.
+  - `db/database.py::ensure_columns()` (the actual legacy-adoption `ALTER TABLE` mechanism) still
+    runs cleanly with FK enforcement on.
+  - A nested savepoint (`session.begin_nested()`) rollback discards only the nested change, proven
+    directly rather than asserted.
+  - `security/identity_bootstrap.py::_acquire_bootstrap_lock()`'s `BEGIN IMMEDIATE` still genuinely
+    acquires and holds SQLite's write lock under FK enforcement: a second connection's own
+    `BEGIN IMMEDIATE` against the same file fails with "database is locked" while the first is
+    open, then succeeds once released — the direct regression guard for the autocommit risk above.
+  - `db/seed.py`'s two real entry points (`seed_database()`, `seed_curricula_dungeons()`) run
+    end-to-end against a fresh FK-enforced engine with no `IntegrityError` — both already flush the
+    parent (`Dungeon`, `Player`) before adding a child that references it, so no fix was needed
+    there; this only proves it, since inspection alone wouldn't have caught the same-flush ordering
+    bug found below.
+  - Live PostgreSQL parity: orphan-INSERT and referenced-parent-DELETE both rejected, each against
+    a disposable database created and dropped for the test (never the shared `prism` dev database),
+    migrated to real Alembic head first — same disposable-database contract already established by
+    `test_core_retention_job_postgres_integration.py`. PostgreSQL needed no fix; this documents
+    parity, not a capability gap closed.
+
+  **Existing regression files re-run, not duplicated:** `test_core_seed.py` (5 tests) and
+  `test_core_identity_bootstrap.py` (15 tests, including
+  `test_concurrent_bootstrap_attempts_create_exactly_one_binding`'s genuine two-thread
+  `Barrier`-forced concurrent-write proof) both already existed and both still pass unchanged —
+  cited as evidence rather than re-implemented, since they already prove exactly what a new test
+  would have asserted (seed order is FK-clean; concurrent `BEGIN IMMEDIATE` still serializes).
+
+  **Real defects found and fixed by enabling enforcement (this is the "audit... for latent FK
+  violations" the package spec asked for, not a hypothetical):** running the full suite surfaced 5
+  pre-existing failures, all the same root cause — a test adds a child row (`SourceVersion`,
+  `CompetencyAssessment`, `EvidenceRecord`) in the same flush as its parent
+  (`LearningMaterial`, `Player`) with no ORM `relationship()` linking the two mapped classes.
+  SQLAlchemy's unit-of-work does **not** topologically sort INSERTs across mapper classes by raw
+  `ForeignKey` column metadata alone — that ordering guarantee only exists when a `relationship()`
+  connects them; confirmed by reading the actual failing statement in each traceback (the child
+  table's INSERT, executed before its parent's row existed) rather than assuming which of the two
+  rows was misordered. Fixed all 5 the same way `db/seed.py` already does it correctly: an explicit
+  `db.flush()` after adding the parent(s), before adding the child(ren) — in
+  `tests/test_core_repository_consumers.py` (`test_latest_source_version_uses_version_number_before_timestamp`,
+  `test_latest_source_version_does_not_cross_material_boundary`,
+  `test_all_repository_reads_leave_the_session_unmodified`) and
+  `tests/test_core_database_status.py` (`test_counts_reflect_inserted_rows_exactly`,
+  `test_status_never_leaks_a_forbidden_field_name`). Both files are Lane 2's own
+  (`test_core_*.py`), so this is an in-scope fix on Lane 2's own test fixtures, not an edit to
+  another lane's file.
+
+  **Full-suite evidence, hash-locked environment:**
+  - SQLite: **470/470** (459 baseline + 11 new; the 5 fixture bugs above are already included in
+    this count, fixed before this number was taken, not excluded from it).
+  - Live PostgreSQL (`DATABASE_URL` pointed at the dev container, migrated to head first):
+    **469/470** — the sole failure,
+    `test_core_seeding.py::test_defaults_to_true_on_the_sqlite_test_process`, is a pre-existing
+    environmental artifact unrelated to this package: that test's own docstring says it assumes
+    "the sqlite test process," and `should_seed_demo_data()`'s no-argument default reads
+    `db.database`'s module-level `_database_backend`, captured once at import time from
+    `DATABASE_URL` — it is not designed to run with `DATABASE_URL` pointed at PostgreSQL for the
+    whole process. Not a Package Y regression; out of this package's scope to fix.
+  - `alembic current`/`alembic check` against the same live PostgreSQL: unaffected, exactly as
+    expected — this package adds a connection-event listener, no model or schema change.
+  - `flake8 --select=F401` (noqa-aware; bare `pyflakes` does not honor `# noqa` and flags the same
+    intentional relationship-target imports that the already-accepted
+    `test_core_dependency_upgrade_adversarial.py` also shows under a raw `pyflakes` run, confirmed
+    directly rather than assumed) on every touched/new file: clean.
+
+  **Explicitly not touched:** `.github/**`; `backend/routes/**`; no schema/model change, so no new
+  Alembic revision. The class-level `Engine` listener touches only `backend/db/database.py`.
+
+  Moving to whichever package Codex hasn't already claimed — see the scratch file.

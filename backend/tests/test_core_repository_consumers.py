@@ -236,6 +236,7 @@ def test_latest_source_version_uses_version_number_before_timestamp(db):
         sha256="material-hash",
     )
     db.add(material)
+    db.flush()  # material_id must exist before a SourceVersion FK references it
     db.add_all(
         [
             SourceVersion(
@@ -284,6 +285,7 @@ def test_latest_source_version_does_not_cross_material_boundary(db):
         ),
     ]
     db.add_all(materials)
+    db.flush()  # material_ids must exist before a SourceVersion FK references them
     db.add_all(
         [
             SourceVersion(
@@ -318,6 +320,7 @@ def test_all_repository_reads_leave_the_session_unmodified(db):
         sha256="material-a-hash",
     )
     db.add(material)
+    db.flush()  # material_id must exist before a SourceVersion FK references it
     db.add(
         SourceVersion(
             source_version_id="source-version",

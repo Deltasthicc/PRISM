@@ -2,6 +2,7 @@
 Database configuration and session management.
 """
 import os
+import sqlite3
 from pathlib import Path
 
 from alembic.config import Config
@@ -37,6 +38,50 @@ engine = create_engine(
     echo=False,
     pool_pre_ping=_is_postgresql,
 )
+
+
+@event.listens_for(Engine, "connect")
+def _enforce_sqlite_foreign_keys(dbapi_connection, connection_record):
+    """Enable real foreign-key enforcement on every SQLite connection in
+    this process, not just this module's own `engine`.
+
+    SQLite ships FK enforcement OFF by default (per-connection, not
+    per-database), so every `ForeignKey()` column in `models/*.py` has been
+    silently unenforced -- an orphan INSERT or a parent DELETE that leaves
+    children dangling both succeeded silently instead of raising, unlike
+    PostgreSQL. Registered at the `Engine` *class* level (SQLAlchemy's own
+    documented pattern for this exact gap) rather than on `engine`
+    specifically, so it also covers the ~20 test files that build their own
+    ad hoc `create_engine("sqlite:///:memory:")` -- fixing those call sites
+    individually would be easy to miss one of, and was; this closes the
+    whole class at once. `isinstance` guards it to real `sqlite3`
+    connections only, so it no-ops on `psycopg` (PostgreSQL enforces FKs
+    unconditionally and needs no pragma).
+
+    Deliberately NOT paired with setting the underlying `sqlite3.Connection`
+    object's `autocommit` attribute to `False` (Python 3.12+'s PEP
+    249-standard transaction control). SQLAlchemy's pysqlite dialect
+    already manages transaction boundaries itself against the *legacy*
+    autocommit mode (`isolation_level=None`, the driver default this engine
+    still uses) by emitting its own `BEGIN` only when ORM activity needs
+    one. `security/identity_bootstrap.py::_acquire_bootstrap_lock()` relies
+    on that: it issues a raw `db.execute(text("BEGIN IMMEDIATE"))` as the
+    *first* statement of a guaranteed-fresh session specifically so that
+    literal statement is what opens the transaction and grabs SQLite's
+    write lock immediately. Switching the driver into standard PEP 249
+    autocommit-off would make the driver itself start an implicit
+    transaction first, and a `BEGIN` issued into an already-open
+    transaction raises `sqlite3.OperationalError: cannot start a
+    transaction within a transaction` -- silently breaking the one-admin
+    bootstrap serialization guarantee. See
+    `test_core_sqlite_fk_transactions.py::test_bootstrap_begin_immediate_still_serializes_under_fk_enforcement`
+    for the regression test that would catch exactly that.
+    """
+    if isinstance(dbapi_connection, sqlite3.Connection):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
 
 if _is_sqlite:
 

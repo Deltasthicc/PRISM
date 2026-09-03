@@ -153,6 +153,7 @@ def test_counts_reflect_inserted_rows_exactly(db):
             Player(player_id="p2", username="bob"),
         ]
     )
+    db.flush()  # player_id="p1" must exist before a CompetencyAssessment FK references it
     db.add(
         CompetencyAssessment(
             assessment_id="a1",
@@ -303,6 +304,7 @@ def test_full_status_shape_matches_the_declared_allowlist(db):
 
 def test_status_never_leaks_a_forbidden_field_name(db):
     db.add(Player(player_id="p1", username="alice"))
+    db.flush()  # player_id="p1" must exist before an EvidenceRecord FK references it
     db.add(
         EvidenceRecord(
             evidence_id="e1",

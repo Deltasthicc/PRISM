@@ -58,16 +58,32 @@ _EXPECTED_COLUMNS = {
     },
 }
 
+# These track what `Base.metadata.create_all()` actually produces for these
+# four tables *today*, not a frozen snapshot of what it produced when this
+# migration was first written. `create_all()` always reflects whichever
+# `models/*.py` code is currently deployed -- there is no versioning of a
+# "legacy create_all() database"'s shape other than "current model code" --
+# so a later migration that adds an index/column/FK to one of these tables
+# (e.g. `6564595b3466`'s composite indexes on `role_targets`/
+# `evidence_records`/`source_versions`, Package 4) must update the matching
+# dict below, or `_adopt_compatible_preexisting_tables()` will incorrectly
+# refuse to adopt a perfectly current, self-consistent SQLite demo file.
 _EXPECTED_INDEXES = {
     "audit_events": {"ix_audit_events_created_at"},
-    "role_targets": {"ix_role_targets_competency_id", "ix_role_targets_role"},
+    "role_targets": {
+        "ix_role_targets_competency_id",
+        "ix_role_targets_role",
+        "ix_role_targets_lookup_newest",  # Package 4
+    },
     "evidence_records": {
         "ix_evidence_records_competency_id",
         "ix_evidence_records_player_id",
+        "ix_evidence_records_lookup_newest",  # Package 4
     },
     "source_versions": {
         "ix_source_versions_material_id",
         "ix_source_versions_sha256",
+        "ix_source_versions_lookup_newest",  # Package 4
     },
 }
 

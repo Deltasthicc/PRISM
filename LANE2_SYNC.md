@@ -274,6 +274,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | X — Dependency security and reproducibility | Claude Code | **implemented; independently re-verified by Claude Code on the current merged `main` tip (459/459 full suite including Lane 5's PR #2, `pip-audit` clean) after Shashwat dropped the per-package stop-and-wait review gate — see Activity log. Not yet reviewed by Codex; will close on review if Codex still does one, but is not blocked on it.** | 2026-09-03 | `backend/requirements.txt`, `backend/requirements-dev.txt`, `backend/requirements.lock` (new), `backend/models/governance.py`, `backend/tests/test_core_dependency_upgrade_adversarial.py` (new), `LANE2_SYNC.md` |
 | Y — SQLite foreign-key enforcement and transaction-semantics parity | Claude Code | **implemented and verified** | 2026-09-03 | `backend/db/database.py`, `backend/tests/test_core_sqlite_fk_transactions.py` (new), `backend/tests/test_core_repository_consumers.py`, `backend/tests/test_core_database_status.py`, `LANE2_SYNC.md` |
 | Z — Composed authorization dependency hardening (review/repair of Lane 5 PR #2) | Codex | **implemented and verified; integrated onto `main` by Claude Code from `codex/lane2-package3`@`0559348`** | 2026-09-04 | `backend/routes/authorization.py`, `backend/routes/learning.py`, `backend/tests/test_authorization_dependencies.py` (new), `backend/tests/test_api_integration_lane5.py`, `LANE2_INTEGRATION_GUIDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `LANE2_SYNC.md` |
+| AA — Measured indexes + governance CHECK constraints (Package 4) | Claude Code | **implemented and verified, built on Codex's abandoned draft (ran out of tokens mid-package) after independently re-benchmarking and fixing two real bugs in it — see Activity log** | 2026-09-04 | `backend/models/governance.py`, `backend/models/learning.py`, `backend/models/session.py`, `backend/models/submission.py`, `backend/migrations/versions/6564595b3466_add_measured_indexes_and_governance_.py` (new), `backend/migrations/versions/2baf7d4bd8a2_add_governance_tables.py`, `backend/tests/test_core_measured_indexes_and_constraints.py` (new), `backend/tests/test_core_database.py`, `backend/tests/test_core_migrations.py`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -4069,3 +4070,104 @@ FINAL GATES AND DELIVERY
   and integration guide now say this explicitly; response-shape repair remains Lane 5 ownership.
   Most product routes and the browser remain unprotected; no government IdP, multi-organization
   row tenancy, production authorization or compliance is claimed.
+
+- 2026-09-04 — Claude Code — **Package AA: measured indexes and Lane 2 governance CHECK
+  constraints, implemented and verified.** Shashwat's process change also said to finish Codex's
+  work if they ran out of tokens; Codex's own `codex/lane2-package4` worktree had claimed Package 4
+  and made real, substantial progress (a representative-cardinality benchmarking harness, model
+  `__table_args__` changes, a draft migration) but never committed anything before running out.
+  Copied the draft files into my own isolated worktree (off `origin/codex/lane-2-core-data/bootstrap`,
+  per Shashwat's correction to work on our branch, not `main`, directly) and treated them as a
+  starting point to independently verify and finish, not as trusted, already-checked work.
+
+  **Bug found in Codex's benchmark methodology, fixed before trusting any number from it.** Their
+  harness ran `alembic upgrade head` — which already includes the new migration's indexes — *before*
+  capturing "before" measurements, then created a second, redundantly-named set of ad hoc indexes for
+  the "after" state. This silently corrupted the comparison for exactly the three candidates their
+  migration already indexed (`role_targets`, `game_sessions.player_id`, `submissions.player_id`):
+  "before" and "after" were both measured with the real index already present, showing a flat, "not
+  materially better" delta that was actually a measurement artifact, not evidence. The three
+  candidates *not* yet in their migration (`competency_assessments`, `evidence_records`,
+  `source_versions`) were measured correctly by accident, and already showed strong real
+  improvements Codex's draft never acted on. Fixed the harness to migrate only to the *parent*
+  revision before seeding and capturing "before", then upgrade to head for "after" — giving an honest
+  comparison for all six candidates for the first time.
+
+  **Real, corrected PostgreSQL evidence** (disposable database, ~120k rows per governance/session
+  table, `EXPLAIN (ANALYZE, BUFFERS)`, planner `total_cost` as the primary signal since execution
+  time is sub-millisecond noise at this size): `competency_assessments` 109.52 → 16.02;
+  `role_targets` 49.19 → 9.17; `evidence_records` 39.12 → 8.46; `source_versions` 42.34 → 11.5;
+  `game_sessions.player_id` **2469.0 → 109.06** (Seq Scan → Index Scan, no index existed at all
+  before); `submissions.player_id` **2622.0 → 110.18** (same). All six are materially better, not
+  just the three Codex's draft kept — added composite indexes for `competency_assessments`
+  (`models/learning.py`) and `evidence_records`/`source_versions` (`models/governance.py`) that
+  their draft was missing, each matching the exact WHERE/ORDER BY shape of the corresponding
+  `db/repositories.py` latest-row lookup. **SQLite** (50k rows, fixed after adding the `players`/
+  `learning_materials`/`dungeons`/`questions` rows their SQLite seed function never inserted —
+  another real bug in the draft harness, caught by Package Y's own FK enforcement rejecting the
+  orphaned synthetic rows): `role_targets` 11.39ms → 0.73ms and both FK indexes 23ms/20ms → ~0.5ms
+  are dramatic; `competency_assessments`/`evidence_records` show real plan changes with flat
+  wall-clock at this smaller scale; `source_versions`' composite index is real on PostgreSQL but
+  SQLite's planner didn't select it here (neutral, not regressive) — kept for the PostgreSQL win
+  since that's the actual deployment target, not the zero-setup SQLite demo.
+
+  **Migration** (`6564595b3466`, revises `640603a37f2f`, generated via `alembic revision
+  --autogenerate` then hand-extended): the autogenerate step correctly detected all six new indexes
+  and, as expected from prior sessions' Alembic-1.14 finding, none of the five CHECK constraints
+  (`role_targets.target_level BETWEEN 1 AND 5`, `role_targets` valid-window ordering,
+  `evidence_records.evidence_type` enum, `evidence_records.value BETWEEN 0 AND 5`,
+  `source_versions.version_number >= 1`) -- those are a reviewed manual addition, applied via
+  `op.batch_alter_table` so the same revision works on SQLite (which cannot `ALTER TABLE ... ADD
+  CONSTRAINT` directly). `_reject_incompatible_existing_rows()` runs first and fails with a named,
+  per-check row count before any DDL if real data would violate a new constraint, rather than
+  surfacing a raw backend-specific error partway through.
+
+  **A second real bug found and fixed, this one architectural, not just in scratch tooling:** the
+  full backend suite caught `test_core_migrations.py::test_followup_adopts_compatible_tables_from_legacy_create_all`
+  regressing. `2baf7d4bd8a2` (the original governance-tables migration) has a
+  `_adopt_compatible_preexisting_tables()` safety check for the SQLite zero-setup demo's `create_all()`
+  path, comparing a *hardcoded* snapshot of expected indexes/columns/etc. against whatever a
+  pre-existing table actually has, refusing to adopt anything that doesn't match exactly. Since
+  `Base.metadata.create_all()` always reflects *currently deployed* model code, a demo file created
+  today already has this package's new composite indexes -- but that hardcoded snapshot didn't know
+  about them yet, so it incorrectly refused to adopt an entirely current, self-consistent file.
+  Fixed by updating `_EXPECTED_INDEXES` in `2baf7d4bd8a2` for the three affected tables, with a
+  comment explaining this snapshot must be kept in sync whenever a *later* migration touches one of
+  these four tables' schema again -- otherwise this exact regression recurs for the next package
+  that does. Fixing only that surfaced a second, deeper issue: with adoption now succeeding, my own
+  new migration then tried to `create_index`/`create_check_constraint` objects the adopted table
+  already had (same root cause), failing with "index already exists". Made `6564595b3466` idempotent
+  against exactly this adopted-with-current-schema case for the three legacy-adoptable tables
+  (`role_targets`, `evidence_records`, `source_versions`) by checking `sa.inspect()` before each
+  create call and only opening a `batch_alter_table` block when at least one constraint inside it is
+  actually missing -- an empty batch would still pay for SQLite's copy/rename table rebuild, and
+  under Package Y's FK enforcement could spuriously re-check constraints for no reason.
+  `game_sessions`/`submissions` have no adoption path and keep unconditional `create_index` calls.
+
+  **Evidence:**
+  - `tests/test_core_measured_indexes_and_constraints.py` (14 new tests): all six indexes and five
+    CHECK constraints exist with the right columns on SQLite; full migration downgrade-then-upgrade
+    cycle restores everything; the preflight guard rejects an upgrade against existing out-of-range
+    `role_targets.target_level`/`evidence_records.value` data with the exact expected message and
+    performs no partial DDL; each CHECK constraint independently rejects the specific bad value it
+    guards against (role target level, valid-window ordering, evidence type enum, evidence value
+    range, source version positivity) while a negative-control test proves every legitimate value
+    every existing seed/test path uses still inserts cleanly; live PostgreSQL parity for index
+    presence, constraint rejection, the preflight guard, and a clean `alembic check`.
+  - Fixed two now-stale hardcoded head-revision-string assertions
+    (`test_core_database.py::test_identity_binding_revision_is_the_single_migration_head` and three
+    sibling assertions, `test_core_migrations.py`'s `HEAD_REVISION` constant) to the new head.
+  - Full suite: **495/495 SQLite**, **494/495 live PostgreSQL** (the one failure is the same
+    pre-existing `test_core_seeding.py` `DATABASE_URL`-environment-coupling artifact already noted in
+    Package Y/Z's evidence, unrelated to this package).
+  - `alembic current`/`alembic check` against the live dev PostgreSQL: `6564595b3466 (head)`, clean.
+  - `flake8 --select=F` on every touched file: clean.
+
+  **Explicitly not touched:** `.github/**`; `backend/routes/**`. `accuracy_history.player_id`'s
+  standalone index was left alone per the reconciled plan (real usage statistics needed first, not
+  removed speculatively). Pool tuning, TLS, and any other Lane-6-owned production topology item
+  remain out of scope. Codex's abandoned worktree/branch at
+  `.codex/visualizations/2026/08/29/01a04c92-8969-7ce2-a30b-0862cb002c87/prism-pkg4` was left alone,
+  not deleted -- it made no commit, so there's nothing there to reconcile or lose.
+
+  Claiming Package 5 (data-rights snapshot-consistency) next.

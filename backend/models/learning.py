@@ -14,7 +14,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, JSON, String
+from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, JSON, String
 from db.database import Base
 
 
@@ -63,6 +63,19 @@ class CompetencyAssessment(Base):
     """
 
     __tablename__ = "competency_assessments"
+    __table_args__ = (
+        # Matches get_latest_assessment()'s exact WHERE/ORDER BY shape
+        # (db/repositories.py) -- benchmarked against a representative
+        # 120k-row PostgreSQL table: PostgreSQL planner cost 109.52 -> 16.02
+        # for the query this repository function issues (Package 4).
+        Index(
+            "ix_competency_assessments_lookup_newest",
+            "player_id",
+            "curriculum_slug",
+            "created_at",
+            "assessment_id",
+        ),
+    )
 
     assessment_id = Column(String, primary_key=True, default=generate_uuid)
     player_id = Column(String, ForeignKey("players.player_id"), nullable=False, index=True)

@@ -48,7 +48,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, JSON, String
+from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey, Index, Integer, JSON, String
 from db.database import Base
 
 
@@ -89,6 +89,25 @@ class RoleTarget(Base):
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
+    __table_args__ = (
+        CheckConstraint(
+            "target_level BETWEEN 1 AND 5",
+            name="ck_role_targets_target_level_1_5",
+        ),
+        CheckConstraint(
+            "valid_to IS NULL OR valid_from IS NULL OR valid_to > valid_from",
+            name="ck_role_targets_valid_window",
+        ),
+        Index(
+            "ix_role_targets_lookup_newest",
+            "role",
+            "competency_id",
+            "valid_from",
+            "created_at",
+            "target_id",
+        ),
+    )
+
 
 class EvidenceRecord(Base):
     """One immutable observation of a learner's level on one competency.
@@ -109,6 +128,29 @@ class EvidenceRecord(Base):
     detail = Column(String, default="")  # e.g. a quiz_id, session_id, or reviewer note
     recorded_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
+    __table_args__ = (
+        CheckConstraint(
+            "evidence_type IN ('self_report', 'diagnostic', 'observed_practice', "
+            "'reviewer', 'provider_imported')",
+            name="ck_evidence_records_type",
+        ),
+        CheckConstraint(
+            "value IS NULL OR value BETWEEN 0 AND 5",
+            name="ck_evidence_records_value_0_5",
+        ),
+        # Matches get_latest_evidence()'s exact WHERE/ORDER BY shape
+        # (db/repositories.py) -- benchmarked against a representative
+        # 120k-row PostgreSQL table: planner cost 38.79 -> 8.46 (Package 4).
+        Index(
+            "ix_evidence_records_lookup_newest",
+            "player_id",
+            "competency_id",
+            "evidence_type",
+            "recorded_at",
+            "evidence_id",
+        ),
+    )
+
 
 class SourceVersion(Base):
     """An immutable, versioned pointer to one revision of a content source.
@@ -126,6 +168,23 @@ class SourceVersion(Base):
     sha256 = Column(String, nullable=False, index=True)
     locator = Column(String, default="")  # e.g. "page 3" / "section 2.1" -- empty until Lane 4 chunks it
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        CheckConstraint(
+            "version_number >= 1",
+            name="ck_source_versions_version_positive",
+        ),
+        # Matches get_latest_source_version()'s exact WHERE/ORDER BY shape
+        # (db/repositories.py) -- benchmarked against a representative
+        # 120k-row PostgreSQL table: planner cost 42.34 -> 11.5 (Package 4).
+        Index(
+            "ix_source_versions_lookup_newest",
+            "material_id",
+            "version_number",
+            "created_at",
+            "source_version_id",
+        ),
+    )
 
 
 class AuditEvent(Base):

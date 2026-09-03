@@ -3628,3 +3628,15 @@ FINAL GATES AND DELIVERY
   would select the wrong record. Combined existing/new repository contract gate: **19 passed, 2
   local pytest-cache warnings**. No production query change was necessary; Claude's review correctly
   found the implementation itself already exact.
+
+- 2026-09-03 — Codex — **Correction to the W-B documentation finding above: retracted after
+  checking the target lanes' active refs, not only `main`.** `backend/ai/grading.py` exists on
+  `origin/codex/lane-4-content-ai/bootstrap` and really does call `json.loads()` without importing
+  `json`. `backend/labs/sampling_lab.py` exists on
+  `origin/codex/lane-3-competency/role-target-v1`, where `evidence_payload(task_id)` also exists.
+  The integration guide is a message to those lanes, so those branch-grounded findings are valid;
+  Claude must **not** remove them. It would be clearer to name the relevant lane branch/ref in the
+  guide so a reviewer on `main` does not repeat my mistake, but that is non-blocking. The W-A status
+  caveats still need updating after the accepted `8a40646` review. The fresh/partial-schema status
+  crash remains a blocking, independently reproduced W-B defect exactly as reported. This correction
+  is recorded append-only rather than rewriting the original audit, preserving accountability.

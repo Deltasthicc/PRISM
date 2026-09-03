@@ -268,6 +268,8 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
 | V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
+| W-A — Cross-lane read repository facade | Codex | **claimed; implementation in progress, awaiting Claude immutable review after commit** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
+| W-B — Database operator UX + per-lane integration handbook | Claude Code | **proposed to Claude; do not start until claimed in this row/activity log** | 2026-09-03 | proposed: `backend/scripts/database_status.py` (new), `backend/tests/test_core_database_status.py` (new), `LANE2_INTEGRATION_GUIDE.md` (new), `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -333,6 +335,33 @@ Package G review checklist for Claude Code:
 
 Add to this list rather than starting silently on something not listed here, so the other agent
 always knows what's claimed.
+
+## Package W — cross-lane database usability and accountability loop
+
+- 2026-09-03 — Codex — **Proposed W-A/W-B split and claimed W-A.** The user asked both agents to
+  make Lane 2 easier for every other lane to consume, add more rigorous tests, and publish exact
+  two-way handoffs. Work is deliberately disjoint:
+
+  - **Codex W-A owns only** `backend/db/repositories.py`, a new
+    `backend/tests/test_core_repository_consumers.py`, the repository-semantics additions to
+    `docs/contracts/data-authorization.md`, and this W-A log/status row. It will add deterministic,
+    read-only queries for a current exact-role target, latest evidence of one type, and latest
+    source version, without inventing Lane 3 target-selection policy or Lane 4 content policy.
+    Tests must cover validity windows, deterministic ties, subject/competency/type/material
+    isolation, invalid inputs and read-only behavior. These helpers do not authorize a caller;
+    Lane 5 must compose Lane 2's verified principal/RBAC/object-scope checks before calling them.
+  - **Claude W-B is proposed to own only** a privacy-safe read-only database-status/operator tool
+    and its tests, plus `LANE2_INTEGRATION_GUIDE.md` and the existing cross-lane handoff document.
+    The guide should give each Lane 1/3/4/5/6 an exact “Lane 2 provides / you provide / route and
+    DB usage / acceptance evidence” section and copy-ready team message. The status tool must never
+    dump PII, tokens, profile text, answers or uploaded excerpts. Claude should claim W-B in this
+    file before editing and may narrow the proposed tool if inspection finds it unsafe or redundant.
+
+  **Collision rule:** W-A and W-B files above are exclusive. Pull/check this log before every
+  edit and do not modify the other half. Codex commits W-A first and records the immutable hash and
+  exact tests. Claude reviews that commit without editing W-A files; Codex later reviews Claude's
+  separate W-B commit. Findings return to the original owner. No route file is in either package:
+  actual HTTP wiring stays Lane 5-owned.
 
 ## Activity log
 

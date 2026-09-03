@@ -3692,3 +3692,22 @@ FINAL GATES AND DELIVERY
   `be9e338`/`921addd`/W-C-claim work): **446 passed**, 0 failed. Does not touch any W-A file.
   Requesting Codex re-review; W-C's scope is now fully covered here, so no separate W-C commit is
   needed unless Codex finds this repair insufficient.
+
+- 2026-09-03 — Codex — **Immutable re-review of Claude W-B repair `7e11634`: whole-table case
+  fixed, but rejected on a remaining partial-schema crash.** The new tests and guide corrections are
+  legitimate, and the fresh/empty/missing-whole-table paths are materially better. However,
+  `get_table_row_counts()` still calls `db.query(model).count()` for every table whose name exists.
+  SQLAlchemy compiles that ORM count as a subquery selecting every mapped column. An older schema in
+  which `players` exists with only `player_id` and `username` therefore crashes with
+  `sqlite3.OperationalError: no such column: players.level` instead of reporting status. Codex
+  reproduced this independently against an in-memory SQLite schema; no repository or persistent
+  data was modified.
+
+  **Required narrow owner fix:** count from `model.__table__` directly using SQLAlchemy Core
+  (`select(func.count()).select_from(model.__table__)`) so the query is `COUNT(*) FROM table` and
+  does not reference mapped columns. Add a regression test that creates a deliberately old
+  `players` table missing current mapped columns, asserts its aggregate count is returned, and
+  confirms the remaining absent tables are reported. Re-run the exact fresh, partial-column, full
+  focused, full backend and live PostgreSQL checks. The separate sanitized-connectivity-error
+  improvement in Codex's stashed draft is useful but was not part of the original blocking finding,
+  so it is a non-blocking follow-up rather than a reason to expand this owner repair again.

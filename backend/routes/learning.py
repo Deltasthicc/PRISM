@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Upload
 from sqlalchemy.orm import Session
 
 from db.database import get_db
+from db.repositories import get_latest_assessment
 from models.accuracy_history import AccuracyHistory
 from models.learning import CompetencyAssessment, GeneratedQuiz, LearnerProfile, LearningMaterial
 from models.player import Player
@@ -16,6 +17,8 @@ from services.curricula import get_curriculum, public_curricula
 from services.learning_catalog import integration_status
 from services.learning_engine import analyse_competencies
 from services.quiz_generator import generate_quiz
+from routes.authorization import require_permission_dependency
+from security.rbac import BoundPrincipal, Permission, scoped_to_own_player
 
 
 router = APIRouter(prefix="/learning", tags=["Learning Platform"])
@@ -141,15 +144,7 @@ async def get_pathway(
 ):
     _player_or_404(db, player_id)
     profile = db.query(LearnerProfile).filter(LearnerProfile.player_id == player_id).first()
-    latest = (
-        db.query(CompetencyAssessment)
-        .filter(
-            CompetencyAssessment.player_id == player_id,
-            CompetencyAssessment.curriculum_slug == curriculum_slug,
-        )
-        .order_by(CompetencyAssessment.created_at.desc())
-        .first()
-    )
+    latest = get_latest_assessment(db, player_id, curriculum_slug)
     try:
         return analyse_competencies(
             curriculum_slug,
@@ -247,10 +242,53 @@ async def list_quizzes(
     }
 
 
+@router.get("/assessment/{player_id}/latest")
+async def latest_assessment(
+    player_id: str,
+    curriculum_slug: str = Query(..., min_length=2, max_length=120),
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.ASSESSMENT_SELF_READ)
+    ),
+):
+    try:
+        scoped_to_own_player(principal, player_id)
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail="Access denied") from exc
+    _player_or_404(db, player_id)
+    assessment = get_latest_assessment(db, player_id, curriculum_slug)
+    return {"assessment": _serialize_assessment(assessment) if assessment else None}
+
+
+def _serialize_assessment(assessment: CompetencyAssessment) -> dict:
+    return {
+        "assessment_id": assessment.assessment_id,
+        "player_id": assessment.player_id,
+        "curriculum_slug": assessment.curriculum_slug,
+        "self_ratings": assessment.self_ratings or {},
+        "measured_scores": assessment.measured_scores or {},
+        "skill_gaps": assessment.skill_gaps or [],
+        "created_at": assessment.created_at.isoformat() if assessment.created_at else None,
+    }
+
+
 @router.get("/admin/overview")
-async def admin_overview(db: Session = Depends(get_db)):
+async def admin_overview(
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.ORGANIZATION_ANALYTICS_READ)
+    ),
+):
     """Aggregate-only demo dashboard; no learner PII is returned."""
-    assessments = db.query(CompetencyAssessment).all()
+    assessments_by_stream = {}
+    for assessment in db.query(CompetencyAssessment).all():
+        key = (assessment.player_id, assessment.curriculum_slug)
+        current = assessments_by_stream.get(key)
+        if current is None or (
+            assessment.created_at, assessment.assessment_id
+        ) > (current.created_at, current.assessment_id):
+            assessments_by_stream[key] = assessment
+    assessments = list(assessments_by_stream.values())
     gap_counter = Counter()
     priority_counter = Counter()
     for assessment in assessments:
@@ -268,5 +306,5 @@ async def admin_overview(db: Session = Depends(get_db)):
         ],
         "gap_priorities": dict(priority_counter),
         "integration_status": integration_status(),
-        "privacy_note": "This endpoint intentionally exposes aggregates only. Production access still requires RBAC.",
+        "privacy_note": "This endpoint intentionally exposes latest-distinct-learner aggregates only.",
     }

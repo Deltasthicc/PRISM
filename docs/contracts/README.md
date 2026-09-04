@@ -1,6 +1,6 @@
 # Contracts index
 
-Thin, versioned interfaces coordinate the six lanes without shared file ownership — eight today,
+Thin, versioned interfaces coordinate the six lanes without shared file ownership — nine today,
 listed below (not a fixed count: a lane can add a narrowly scoped contract, like Lane 2's
 `encryption-key-ownership.md`, as its own primitives grow). See `SIH26101_TEAM_ORCHESTRATION.md`
 section 4 ("Contract-first dependency model") for why these exist and who owns/consumes/approves
@@ -11,6 +11,7 @@ changes to each one.
 | `data-authorization.md` | Lane 2 | Lanes 3, 4, 5, 6 | Real, implemented interface — storage/query semantics, subject export/deletion, retention job, backup/restore; not yet an HTTP surface |
 | `identity-authorization.md` | Lane 2 | Lanes 1, 4, 5, 6 | Real, implemented interface — OIDC verification, RBAC and identity-binding primitives, live-verified; not yet wired into `routes/**` |
 | `encryption-key-ownership.md` | Lane 2 | Lanes 2, 5, 6 | Real, implemented, deliberately unwired versioned authenticated-encryption envelope — no current model uses it; not production KMS/HSM key custody |
+| `production-database-hardening.md` | Lane 2 | Lane 6, deployment/security owner | **Specify-only** — three-role PostgreSQL privilege matrix, `search_path` pinning, TLS verification policy, connection-pool budget formula; nothing in it is implemented or dev-drilled, pending real numbers/decisions from Lane 6 |
 | `competency-evidence.md` | Lane 3 | Lanes 1, 5, 6 | Scaffold |
 | `content-ai.md` | Lane 4 | Lanes 1, 5, 6 | Scaffold |
 | `openapi.json` | Lane 5 | Lanes 1, 2, 3, 4, 6 | Scaffold |

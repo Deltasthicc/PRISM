@@ -279,6 +279,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | AC — `hide_parameters`, `ensure_columns()` injection hardening, `--migration-only` status mode (Package 6) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/db/database.py`, `backend/scripts/database_status.py`, `backend/tests/test_core_database.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_SYNC.md` |
 | AD — Alembic 1.19.1 bump + live schema-contract test (Package 7) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/requirements.txt`, `backend/requirements.lock`, `backend/alembic.ini`, `backend/tests/test_core_schema_contract.py` (new), `LANE2_SYNC.md` |
 | AE — Privacy-safe `lane2_doctor` OIDC discovery/JWKS diagnostics (Package 8) | Claude Code | **implemented and verified, including a live run against the real local Keycloak container** | 2026-09-04 | `backend/security/identity.py`, `backend/scripts/lane2_doctor.py` (new), `backend/tests/test_core_lane2_doctor.py` (new), `LANE2_SYNC.md` |
+| AF — Production PostgreSQL hardening specification (Package 9) | Claude Code | **specify-only, as agreed — no implementation, no dev-drill; filed and reviewable** | 2026-09-04 | `docs/contracts/production-database-hardening.md` (new), `docs/contracts/README.md`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -4483,3 +4484,50 @@ FINAL GATES AND DELIVERY
   That is the last package in the agreed 2-9 sequence; once it's filed, Lane 2's remaining agreed
   backlog is fully closed and I'll report back for the batched merge to `main` and the redrafted
   handoff messages.
+
+- 2026-09-04 — Claude Code — **Package AF: production PostgreSQL hardening specification,
+  filed. This closes the agreed Package 2-9 backlog.**
+
+  New `docs/contracts/production-database-hardening.md`, added to `docs/contracts/README.md`'s
+  index (nine contracts now, marked **specify-only** like the status column's own vocabulary
+  distinguishes from "real, implemented" and "scaffold"). Covers exactly the four items the
+  reconciled plan named, each specified against this repository's actual current state (read
+  directly, not assumed):
+
+  - **Three-role PostgreSQL privilege matrix** (`prism_migrate`/`prism_runtime`/`prism_backup`)
+    replacing the current reality — confirmed by reading `docker-compose.dev.yml` directly —
+    that `POSTGRES_USER: prism_app` is a superuser used for absolutely everything (the app, Alembic,
+    backups, ad hoc access) with zero role separation today. A full grants matrix per role, with the
+    reasoning for exactly three roles (not a fourth "reporting" role — no real consumer needs one
+    yet) and for `prism_migrate` deliberately keeping DML rights alongside DDL (data-repairing
+    migrations, e.g. `2baf7d4bd8a2`'s legacy-adoption path and `6564595b3466`'s preflight guard,
+    need it).
+  - **`search_path` hardening**: pin it per-role (`ALTER ROLE ... SET search_path = ...`) rather
+    than leaving it at connection-time default, independent of whether a dedicated non-`public`
+    schema migration (also specified, flagged as the more thorough follow-on) ever happens.
+  - **TLS verification policy**: `sslmode=verify-full` specifically, with an explicit note that
+    `require` (encryption without identity verification) is not sufficient and that fail-closed
+    behavior under a bad certificate must not be "fixed" by silently downgrading it later.
+  - **Pool/timeout budget**: deliberately no numbers. Documents the actual formula
+    (`(pool_size + max_overflow) × worker_count ≤ max_connections − reserves`) and names exactly
+    which inputs (worker/process count, the real server's `max_connections` and reservation policy,
+    intermediate-proxy idle timeouts, acceptable request-wait latency) only Lane 6/the deployment
+    owner can supply — confirmed `pool_pre_ping=True` (Package 6) is still the one setting in this
+    area that needed no such number and remains the only thing actually true here.
+
+  **No local reference-profile dev-drill included**, per the reconciled plan's own instruction that
+  one only happens after Lane 6 supplies real numbers or explicitly accepts a stated local profile —
+  neither has happened. A drill against invented numbers would produce real-looking evidence proving
+  nothing about the actual target, which this document explicitly declines to manufacture.
+
+  **Verification proportional to a doc-only package**: full backend suite re-run for a sanity check
+  (**565/565** on SQLite, unchanged from Package AE, exactly as expected for a change that touches no
+  code) — no test file added, since there is no behavior to test yet; the document's own section 5
+  ("What this document is not") is the explicit, checkable claim boundary in place of one.
+
+  **This closes the agreed Package 2-9 backlog.** Every package Shashwat's superseding instruction
+  and the original reconciliation with Codex named is now implemented (2, 4, 5, 6, 7, 8 — 3 by
+  Codex, integrated) or specified-only as agreed (9) on `codex/lane-2-core-data/bootstrap`. Next:
+  batch-merge this branch to `main` (per Shashwat's "do it on our branch, update main later"
+  correction — nine commits: Y, Z, AA, AB, AC, AD, AE, AF, this entry) and redraft the six cross-lane
+  handoff messages against the real, fully finished state.

@@ -28,8 +28,10 @@ Design constraints (all load-bearing, not stylistic):
   purpose, not an edge case it can afford to crash on.
 
 See `LANE2_INTEGRATION_GUIDE.md` for how other lanes are expected to use
-this (health-checking their own local setup, CI gating on `--check-migrations`),
-and `LANE2_SYNC.md`'s Package W entry for the coordination that produced it.
+this (health-checking their own local setup, CI gating on `--check-migrations
+--migration-only` -- see `get_database_status`'s `include_counts` for why the
+CI form skips every table's row count), and `LANE2_SYNC.md`'s Package W (and
+Package 6/AC) entries for the coordination that produced it.
 """
 from __future__ import annotations
 
@@ -110,6 +112,7 @@ class DatabaseStatus:
     tenant_scope: str
     migration: MigrationStatus
     table_row_counts: dict[str, int]
+    counts_included: bool
     missing_tables: list[str]
     configured: dict[str, bool]
 
@@ -131,6 +134,18 @@ def get_migration_status(bind: Engine) -> MigrationStatus:
     )
 
 
+def get_missing_tables(
+    bind: Engine, *, tables: dict[str, type] = TABLE_COUNTERS
+) -> list[str]:
+    """Which advertised tables don't exist yet -- one inspector call, no
+    `COUNT(*)` against any table. This is the cheap half of what
+    `get_table_row_counts` does; split out so a caller that only needs the
+    missing-table signal (e.g. `--migration-only`) never pays for a full
+    count on every table just to get it."""
+    existing = set(inspect(bind).get_table_names())
+    return sorted(label for label, model in tables.items() if model.__tablename__ not in existing)
+
+
 def get_table_row_counts(
     db: Session, *, tables: dict[str, type] = TABLE_COUNTERS
 ) -> tuple[dict[str, int], list[str]]:
@@ -145,6 +160,14 @@ def get_table_row_counts(
     a brand-new SQLite file with no migrations applied yet, or a database
     stamped at a revision whose migration never actually ran) must not abort
     the entire report before it can say that.
+
+    A `COUNT(*)` per table is unconditional real work against every
+    advertised table, not merely a network round trip -- combining them into
+    one `UNION ALL` query would cut round trips but still perform every
+    exact count, which does not help a genuinely large table. Skip this
+    function entirely (see `get_database_status(..., include_counts=False)`
+    / `--migration-only`) when only the migration-head/missing-table signal
+    is needed, rather than trying to make counting itself cheaper.
     """
     existing = set(inspect(db.get_bind()).get_table_names())
     counts: dict[str, int] = {}
@@ -173,7 +196,20 @@ def get_database_status(
     *,
     tables: dict[str, type] = TABLE_COUNTERS,
     env: dict[str, str] | None = None,
+    include_counts: bool = True,
 ) -> DatabaseStatus:
+    """`include_counts=False` (the `--migration-only` CLI mode) skips
+    `get_table_row_counts` entirely -- no `COUNT(*)` against any table, only
+    the cheap existence check `get_missing_tables` needs. For a caller that
+    only wants the migration-head/missing-table signal (the shape of every
+    `--check-migrations` CI use this tool documents itself for), a full
+    per-table count is real, unconditional work this tool has no reason to
+    force on every table just to answer that one question -- see
+    `get_table_row_counts`'s own docstring for why `UNION ALL` doesn't fix
+    this either. `table_row_counts` is `{}` when skipped; `counts_included`
+    says which happened so a caller can't mistake "skipped" for "everything
+    is empty".
+    """
     bind = db.get_bind()
     if not isinstance(bind, Engine):
         raise TypeError(
@@ -181,7 +217,10 @@ def get_database_status(
             f"Connection/other bind ({type(bind)!r}) -- migration_status needs "
             "the engine's own dialect, independent of any open transaction."
         )
-    counts, missing = get_table_row_counts(db, tables=tables)
+    if include_counts:
+        counts, missing = get_table_row_counts(db, tables=tables)
+    else:
+        counts, missing = {}, get_missing_tables(bind, tables=tables)
     return DatabaseStatus(
         generated_at=datetime.now(timezone.utc).isoformat(),
         # Matches docs/contracts/data-authorization.md section 1/6.1: there is
@@ -190,6 +229,7 @@ def get_database_status(
         tenant_scope="deployment-database",
         migration=get_migration_status(bind),
         table_row_counts=counts,
+        counts_included=include_counts,
         missing_tables=missing,
         configured=get_configured_flags(env),
     )
@@ -211,9 +251,12 @@ def format_human(status: DatabaseStatus) -> str:
     ]
     for name in sorted(status.configured):
         lines.append(f"  {name}: {'set' if status.configured[name] else 'not set'}")
-    lines.append("table_row_counts:")
-    for label in sorted(status.table_row_counts):
-        lines.append(f"  {label}: {status.table_row_counts[label]}")
+    if status.counts_included:
+        lines.append("table_row_counts:")
+        for label in sorted(status.table_row_counts):
+            lines.append(f"  {label}: {status.table_row_counts[label]}")
+    else:
+        lines.append("table_row_counts: skipped (--migration-only)")
     if status.missing_tables:
         lines.append(
             "missing_tables (not created yet -- run `alembic upgrade head` "
@@ -256,11 +299,22 @@ def _main(argv: list[str] | None = None) -> int:
             "output is printed either way)"
         ),
     )
+    parser.add_argument(
+        "--migration-only",
+        action="store_true",
+        help=(
+            "Skip every table's COUNT(*) -- report only the migration-head/"
+            "missing-table signal. Use this for a CI gate: --check-migrations "
+            "does not need row counts, and counting every advertised table is "
+            "real, unconditional work a status check has no reason to force "
+            "on a large table just to answer a yes/no schema question."
+        ),
+    )
     args = parser.parse_args(argv)
 
     db = SessionLocal()
     try:
-        status = get_database_status(db)
+        status = get_database_status(db, include_counts=not args.migration_only)
     finally:
         db.close()
 

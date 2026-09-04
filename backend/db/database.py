@@ -2,6 +2,7 @@
 Database configuration and session management.
 """
 import os
+import re
 import sqlite3
 from pathlib import Path
 
@@ -37,6 +38,17 @@ engine = create_engine(
     connect_args={"check_same_thread": False} if _is_sqlite else {},
     echo=False,
     pool_pre_ping=_is_postgresql,
+    # A raised DBAPI error's default SQLAlchemy formatting includes the
+    # failed statement's bound parameters -- fine for a stack trace in local
+    # dev, but those parameters can be player_id, evidence detail, an
+    # uploaded excerpt, or any other real subject data, and this exact
+    # engine is what every request session (get_db(), SessionLocal) is
+    # bound to. hide_parameters replaces them with "[SQL parameters
+    # hidden due to hide_parameters=True]" in that formatted error, so a
+    # logged/reported exception can never itself become a data leak. Package
+    # 6 (Codex's plan item 5, split from the pool-tuning candidates below it
+    # since this one needs no production numbers to be an unambiguous win).
+    hide_parameters=True,
 )
 
 
@@ -171,6 +183,13 @@ def get_db():
         db.close()
 
 
+_SAFE_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+_SAFE_COLUMN_TYPE_AND_DEFAULT = re.compile(
+    r"^(TEXT|INTEGER|REAL|BOOLEAN|BLOB)"
+    r"(\s+DEFAULT\s+(-?\d+(\.\d+)?|'[^']*'|TRUE|FALSE|NULL))?$"
+)
+
+
 def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
     """
     Add any of `columns` (name, SQL type/default clause) missing from `table`.
@@ -181,9 +200,34 @@ def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
     app.db) needs this, or every query touching the new column raises
     "no such column" against pre-existing rows. Call once at startup, after
     create_all().
+
+    `table`, `name` and `type_and_default` are all interpolated into raw SQL
+    text below -- SQLite has no bind-parameter placeholder for an identifier
+    or a column-definition clause, only for a value. Every current call site
+    (main.py's lifespan) passes hardcoded literals, so this was never
+    reachable with attacker-controlled input, but the raw interpolation is
+    exactly the shape a SAST scanner flags regardless of whether a given
+    caller happens to be safe today. `table`/`name` must match a plain SQL
+    identifier; `type_and_default` must match one of this project's actual
+    SQLite column-definition shapes (a bare type, or that type with a
+    literal DEFAULT -- a number, a quoted string with no embedded quote, or
+    TRUE/FALSE/NULL) rather than an arbitrary string. This is deliberately a
+    shape check, not a literal enum of exact strings used today (which would
+    also reject `tests/test_core_database.py`'s synthetic `widgets` table),
+    per the reconciled review: a closed mapping of exact legacy operations
+    would be more restrictive than this call actually needs to stay safe.
     """
     if not _is_sqlite:
         return
+    if not _SAFE_IDENTIFIER.match(table):
+        raise ValueError(f"ensure_columns: unsafe table identifier: {table!r}")
+    for name, type_and_default in columns:
+        if not _SAFE_IDENTIFIER.match(name):
+            raise ValueError(f"ensure_columns: unsafe column identifier: {name!r}")
+        if not _SAFE_COLUMN_TYPE_AND_DEFAULT.match(type_and_default):
+            raise ValueError(
+                f"ensure_columns: unsafe or unrecognized column type/default: {type_and_default!r}"
+            )
     with engine.connect() as conn:
         existing = {row[1] for row in conn.execute(text(f"PRAGMA table_info({table})"))}
         for name, type_and_default in columns:

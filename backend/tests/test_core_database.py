@@ -207,3 +207,183 @@ def test_ensure_columns_is_a_no_op_on_postgresql(monkeypatch, tmp_path):
         columns = {row[1] for row in connection.execute(text("PRAGMA table_info(widgets)"))}
     assert "color" not in columns
     sqlite_engine.dispose()
+
+
+# --- ensure_columns() injection hardening (Package 6) ---
+#
+# All four current call sites (main.py's lifespan) pass hardcoded literals,
+# so none of these were reachable with attacker-controlled input -- these
+# tests exist because the raw f-string interpolation of `table`/`name`/
+# `type_and_default` is exactly the shape a SAST scanner flags regardless,
+# and to pin the shape-check design decision: a plausible-looking value that
+# doesn't match one of this project's real SQLite column-definition shapes
+# must be rejected, not merely a value containing an obvious `;`/`--`.
+
+
+@pytest.mark.parametrize(
+    "table",
+    ["widgets; DROP TABLE players", "widgets--", "widgets ", "1widgets", ""],
+)
+def test_ensure_columns_rejects_unsafe_table_identifier(monkeypatch, tmp_path, table):
+    sqlite_engine = create_engine(f"sqlite:///{(tmp_path / 'reject_table.db').as_posix()}")
+    monkeypatch.setattr(database_module, "_is_sqlite", True)
+    monkeypatch.setattr(database_module, "engine", sqlite_engine)
+
+    with pytest.raises(ValueError, match="unsafe table identifier"):
+        ensure_columns(table, [("color", "TEXT")])
+    sqlite_engine.dispose()
+
+
+@pytest.mark.parametrize(
+    "name",
+    ["color; DROP TABLE players", "color--", "color )", "1color", ""],
+)
+def test_ensure_columns_rejects_unsafe_column_identifier(monkeypatch, tmp_path, name):
+    sqlite_engine = create_engine(f"sqlite:///{(tmp_path / 'reject_column.db').as_posix()}")
+    with sqlite_engine.begin() as connection:
+        connection.execute(text("CREATE TABLE widgets (widget_id VARCHAR PRIMARY KEY)"))
+    monkeypatch.setattr(database_module, "_is_sqlite", True)
+    monkeypatch.setattr(database_module, "engine", sqlite_engine)
+
+    with pytest.raises(ValueError, match="unsafe column identifier"):
+        ensure_columns("widgets", [(name, "TEXT")])
+    sqlite_engine.dispose()
+
+
+@pytest.mark.parametrize(
+    "type_and_default",
+    [
+        "TEXT); DROP TABLE players; --",
+        "TEXT DEFAULT (SELECT 1)",
+        "TEXT DEFAULT 'unterminated",
+        "NOTATYPE",
+        "TEXT DEFAULT 'a' || 'b'",
+        "",
+    ],
+)
+def test_ensure_columns_rejects_unsafe_type_and_default(monkeypatch, tmp_path, type_and_default):
+    sqlite_engine = create_engine(f"sqlite:///{(tmp_path / 'reject_type.db').as_posix()}")
+    with sqlite_engine.begin() as connection:
+        connection.execute(text("CREATE TABLE widgets (widget_id VARCHAR PRIMARY KEY)"))
+    monkeypatch.setattr(database_module, "_is_sqlite", True)
+    monkeypatch.setattr(database_module, "engine", sqlite_engine)
+
+    with pytest.raises(ValueError, match="unsafe or unrecognized column type/default"):
+        ensure_columns("widgets", [("color", type_and_default)])
+    sqlite_engine.dispose()
+
+
+@pytest.mark.parametrize(
+    "type_and_default",
+    [
+        "TEXT",
+        "INTEGER",
+        "REAL",
+        "BOOLEAN",
+        "BLOB",
+        "REAL DEFAULT 1.0",
+        "BOOLEAN DEFAULT 0",
+        "INTEGER DEFAULT 80",
+        "INTEGER DEFAULT -1",
+        "TEXT DEFAULT 'professional'",
+        "TEXT DEFAULT NULL",
+        "BOOLEAN DEFAULT TRUE",
+    ],
+)
+def test_ensure_columns_still_accepts_every_real_call_site_shape(monkeypatch, tmp_path, type_and_default):
+    """Negative control for the rejection tests above: every shape this
+    project's own real call sites (main.py) and the synthetic `widgets`
+    tests actually use must still work -- the hardening must reject unsafe
+    input, not merely everything."""
+    sqlite_engine = create_engine(f"sqlite:///{(tmp_path / 'accept_real_shapes.db').as_posix()}")
+    with sqlite_engine.begin() as connection:
+        connection.execute(text("CREATE TABLE widgets (widget_id VARCHAR PRIMARY KEY)"))
+    monkeypatch.setattr(database_module, "_is_sqlite", True)
+    monkeypatch.setattr(database_module, "engine", sqlite_engine)
+
+    ensure_columns("widgets", [("probe_column", type_and_default)])
+
+    with sqlite_engine.connect() as connection:
+        columns = {row[1] for row in connection.execute(text("PRAGMA table_info(widgets)"))}
+    assert "probe_column" in columns
+    sqlite_engine.dispose()
+
+
+def test_ensure_columns_validates_every_column_before_altering_any_table(monkeypatch, tmp_path):
+    """One unsafe entry in a multi-column call must block the whole call --
+    proves validation happens up front, not per-column as each ALTER runs
+    (which would leave a partial schema change behind an exception)."""
+    sqlite_engine = create_engine(f"sqlite:///{(tmp_path / 'validate_before_alter.db').as_posix()}")
+    with sqlite_engine.begin() as connection:
+        connection.execute(text("CREATE TABLE widgets (widget_id VARCHAR PRIMARY KEY)"))
+    monkeypatch.setattr(database_module, "_is_sqlite", True)
+    monkeypatch.setattr(database_module, "engine", sqlite_engine)
+
+    with pytest.raises(ValueError, match="unsafe or unrecognized column type/default"):
+        ensure_columns(
+            "widgets",
+            [("safe_column", "TEXT"), ("unsafe_column", "TEXT); DROP TABLE widgets; --")],
+        )
+
+    with sqlite_engine.connect() as connection:
+        columns = {row[1] for row in connection.execute(text("PRAGMA table_info(widgets)"))}
+    assert "safe_column" not in columns
+    sqlite_engine.dispose()
+
+
+# --- hide_parameters (Package 6) ---
+
+
+def test_real_module_engine_has_hide_parameters_enabled():
+    """Direct configuration check against the actual engine every request
+    session (`get_db()`/`SessionLocal`) is bound to -- not a fresh test
+    engine standing in for it."""
+    assert database_module.engine.hide_parameters is True
+
+
+def test_hide_parameters_actually_hides_bound_values_on_a_raised_dbapi_error():
+    """Proves the mechanism itself, not just the config flag: a real
+    constraint violation carrying an identifying value, on a fresh isolated
+    engine built with the identical `hide_parameters=True` this project's
+    real engine uses, must not surface that value in the raised exception's
+    own string form. Uses its own in-memory engine, not
+    `database_module.engine` (which is bound to the real, shared demo
+    SQLite file), so this test cannot write to or depend on that file."""
+    engine = create_engine("sqlite:///:memory:", hide_parameters=True)
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE widgets (widget_id VARCHAR PRIMARY KEY)"))
+
+    identifying_value = "definitely-not-a-real-player-marker-9f3ac2"
+    with pytest.raises(Exception) as excinfo:
+        with engine.begin() as connection:
+            connection.execute(
+                text("INSERT INTO widgets (widget_id) VALUES (:wid)"), {"wid": identifying_value}
+            )
+            connection.execute(
+                text("INSERT INTO widgets (widget_id) VALUES (:wid)"), {"wid": identifying_value}
+            )
+    assert identifying_value not in str(excinfo.value)
+    assert "hidden due to hide_parameters" in str(excinfo.value)
+    engine.dispose()
+
+
+def test_negative_control_without_hide_parameters_the_value_is_visible():
+    """Proves the previous test is not vacuous: the identical error, on an
+    otherwise-identical engine without `hide_parameters`, does leak the
+    value into the exception -- confirming the test actually distinguishes
+    the two configurations rather than passing regardless."""
+    engine = create_engine("sqlite:///:memory:")
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE widgets (widget_id VARCHAR PRIMARY KEY)"))
+
+    identifying_value = "definitely-not-a-real-player-marker-9f3ac2"
+    with pytest.raises(Exception) as excinfo:
+        with engine.begin() as connection:
+            connection.execute(
+                text("INSERT INTO widgets (widget_id) VALUES (:wid)"), {"wid": identifying_value}
+            )
+            connection.execute(
+                text("INSERT INTO widgets (widget_id) VALUES (:wid)"), {"wid": identifying_value}
+            )
+    assert identifying_value in str(excinfo.value)
+    engine.dispose()

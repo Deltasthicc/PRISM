@@ -276,6 +276,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | Z — Composed authorization dependency hardening (review/repair of Lane 5 PR #2) | Codex | **implemented and verified; integrated onto `main` by Claude Code from `codex/lane2-package3`@`0559348`** | 2026-09-04 | `backend/routes/authorization.py`, `backend/routes/learning.py`, `backend/tests/test_authorization_dependencies.py` (new), `backend/tests/test_api_integration_lane5.py`, `LANE2_INTEGRATION_GUIDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `LANE2_SYNC.md` |
 | AA — Measured indexes + governance CHECK constraints (Package 4) | Claude Code | **implemented and verified, built on Codex's abandoned draft (ran out of tokens mid-package) after independently re-benchmarking and fixing two real bugs in it — see Activity log** | 2026-09-04 | `backend/models/governance.py`, `backend/models/learning.py`, `backend/models/session.py`, `backend/models/submission.py`, `backend/migrations/versions/6564595b3466_add_measured_indexes_and_governance_.py` (new), `backend/migrations/versions/2baf7d4bd8a2_add_governance_tables.py`, `backend/tests/test_core_measured_indexes_and_constraints.py` (new), `backend/tests/test_core_database.py`, `backend/tests/test_core_migrations.py`, `LANE2_SYNC.md` |
 | AB — `export_subject_data()` point-in-time snapshot consistency (Package 5) | Claude Code | **implemented and verified; the "single transaction" version was tried first and demonstrably failed a concurrent-write test before landing on the real two-phase design — see Activity log** | 2026-09-04 | `backend/security/data_rights.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_data_rights_snapshot.py` (new), `LANE2_SYNC.md` |
+| AC — `hide_parameters`, `ensure_columns()` injection hardening, `--migration-only` status mode (Package 6) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/db/database.py`, `backend/scripts/database_status.py`, `backend/tests/test_core_database.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -4266,3 +4267,71 @@ FINAL GATES AND DELIVERY
 
   Claiming Package 6 (small hardening: `hide_parameters`, `ensure_columns()` full-tuple hardening,
   migration-only/no-counts status behavior) next.
+
+- 2026-09-04 — Claude Code — **Package AC: three small, independent hardening items, implemented
+  and verified.**
+
+  **1. `hide_parameters=True` on `db/database.py`'s engine.** A raised DBAPI error's default
+  SQLAlchemy formatting includes the failed statement's bound parameters -- fine for a stack trace
+  in local dev, but those parameters can be a `player_id`, an evidence detail, an uploaded excerpt,
+  or any other real subject data, and this is the one engine every request session
+  (`get_db()`/`SessionLocal`) is bound to. Evidence: a direct check that the real module engine has
+  the flag set, a real forced constraint violation on a fresh isolated engine (never the shared demo
+  `app.db`) proving the identifying value used in the failing statement is genuinely absent from the
+  raised exception's own string form, and a negative control proving the identical error *does* leak
+  the value on an otherwise-identical engine without the flag -- confirming the test isn't vacuous.
+
+  **2. `ensure_columns()` full-tuple injection hardening.** `table`, `name` and `type_and_default`
+  were all interpolated into raw SQL text with no validation -- every current call site
+  (`main.py`'s lifespan) passes hardcoded literals, so this was never reachable with
+  attacker-controlled input, but the raw interpolation is exactly the shape a SAST scanner flags
+  regardless of whether today's callers are safe. Per the reconciled review's explicit steer away
+  from a closed literal enum (which would also reject `test_core_database.py`'s synthetic `widgets`
+  table): `table`/`name` must match a plain SQL identifier
+  (`^[A-Za-z_][A-Za-z0-9_]*$`), and `type_and_default` must match one of this project's actual
+  SQLite column-definition shapes -- a bare type (`TEXT`/`INTEGER`/`REAL`/`BOOLEAN`/`BLOB`) or that
+  type with a literal `DEFAULT` (a number, a quoted string with no embedded quote, or
+  `TRUE`/`FALSE`/`NULL`) -- a shape check, not a value allowlist. Evidence: parametrized rejection
+  tests for SQL-injection-shaped `table`/`name`/`type_and_default` values (`; DROP TABLE ...`,
+  trailing `--`, unterminated quotes, subquery defaults, non-identifier characters); a negative
+  control proving every real shape this project's own call sites (and the `widgets` tests) actually
+  use still works; and a test proving one unsafe entry in a multi-column call blocks the *entire*
+  call before any `ALTER TABLE` runs, not just the bad column (no partial schema change left behind
+  an exception).
+
+  **3. `--migration-only` status mode (`scripts/database_status.py`).** `--check-migrations` (the
+  CI gate Lane 6's own plan wires this tool into) only needs the migration-head/missing-table
+  signal, but the default status computation always ran a `COUNT(*)` against every one of the 17
+  advertised tables to get it -- real, unconditional work a CI gate has no reason to force on a
+  large table just to answer a yes/no schema question. Per the reconciled review's own explicit
+  rejection of the `UNION ALL` alternative (documented directly in `get_table_row_counts`'s
+  docstring: fewer round trips, but still performs every exact count, so it doesn't address the
+  actual cost) -- split `get_table_row_counts` into a new, cheap `get_missing_tables` (one inspector
+  call, no counting) plus the existing full version, and added
+  `get_database_status(..., include_counts=True)` and a `--migration-only` CLI flag that calls the
+  cheap path instead. New `DatabaseStatus.counts_included` field says which happened, so `{}` reads
+  as "skipped," not "everything is empty." Evidence: `get_missing_tables` proven to agree exactly
+  with the full function's own missing-table list; a monkeypatch that makes `get_table_row_counts`
+  raise if called at all, proving counting is genuinely skipped under `include_counts=False` rather
+  than merely discarded after running; `--migration-only` combined with `--check-migrations` still
+  correctly fails closed on a stamped-but-partially-migrated database and still passes on a healthy
+  one, using only the cheap path; `format_human` renders an explicit "skipped (--migration-only)"
+  marker rather than a silently-empty counts block. `LANE2_INTEGRATION_GUIDE.md` updated to tell
+  Lane 6 to pair `--check-migrations` with `--migration-only` for CI specifically.
+
+  **Full-suite evidence:** SQLite **540/540** (500 baseline + 40 new); live PostgreSQL **539/540**
+  (the one failure is the same pre-existing `test_core_seeding.py`
+  `DATABASE_URL`-environment-coupling artifact noted in every package since Y, unrelated here).
+  `alembic current`/`alembic check` against live PostgreSQL: unaffected, exactly as expected -- this
+  package changes no schema. `flake8 --select=F` clean on every touched file.
+
+  **Explicitly not touched:** the remaining Tier-A candidate from the reconciled plan (explicit
+  connection-pool sizing: `pool_size`, `max_overflow`, `pool_recycle`, `pool_timeout`) was
+  deliberately split out of this package and stays untouched -- it needs real production numbers
+  (worker count, database connection allowance, maintenance reserve, topology) Lane 6 hasn't
+  supplied yet, per the reconciled plan's own instruction not to pick a number like
+  `pool_recycle=1800` and call it a universal safe default. `pool_pre_ping` (already present, kept)
+  is the one pool-related setting that needed no production numbers to be an unambiguous win.
+  `.github/**`; `backend/routes/**`.
+
+  Claiming Package 7 (Alembic/schema-contract) next.

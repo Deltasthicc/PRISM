@@ -28,9 +28,13 @@ of `DATABASE_URL` / `OIDC_ISSUER` / `OIDC_AUDIENCE` / `GEMINI_API_KEY` / `SEED_D
 (booleans only — it never prints a secret's value), and a row count for every Lane-2-owned table.
 Add `--json` for machine-readable output, or `--check-migrations` to get a non-zero exit code when
 your database isn't current (useful in a script or CI step: `... --check-migrations || echo "run
-alembic upgrade head first"`). It never accepts a player ID, a free-text filter, or anything else
-that could be pointed at one subject — see `backend/scripts/database_status.py`'s module docstring
-and `backend/tests/test_core_database_status.py` for the exact, tested privacy boundary. If your
+alembic upgrade head first"`). If you're wiring `--check-migrations` into CI (Lane 6), add
+`--migration-only` too: it skips every table's `COUNT(*)` and reports only the migration-head/
+missing-table signal `--check-migrations` actually needs — a CI gate has no reason to pay for
+counting every row of every table on each run just to answer a yes/no schema question. It never
+accepts a player ID, a free-text filter, or anything else that could be pointed at one subject —
+see `backend/scripts/database_status.py`'s module docstring and
+`backend/tests/test_core_database_status.py` for the exact, tested privacy boundary. If your
 "why isn't this working" question is "is my DB current" or "is my API key actually picked up," run
 this before opening a thread.
 

@@ -44,6 +44,7 @@ from scripts.database_status import (
     get_configured_flags,
     get_database_status,
     get_migration_status,
+    get_missing_tables,
     get_table_row_counts,
     status_to_dict,
 )
@@ -256,6 +257,7 @@ _ALLOWED_TOP_LEVEL_KEYS = {
     "tenant_scope",
     "migration",
     "table_row_counts",
+    "counts_included",
     "missing_tables",
     "configured",
 }
@@ -345,7 +347,7 @@ def test_status_accepts_no_player_or_free_text_argument_of_any_kind():
     import inspect
 
     parameters = inspect.signature(get_database_status).parameters
-    assert set(parameters) == {"db", "tables", "env"}
+    assert set(parameters) == {"db", "tables", "env", "include_counts"}
 
 
 # ---------------------------------------------------------------------------
@@ -426,4 +428,99 @@ def test_main_check_migrations_fails_on_a_partially_migrated_database_even_if_st
     monkeypatch.setattr("db.database.SessionLocal", lambda: partially_migrated_db)
     exit_code = status_module._main(["--check-migrations"])
     assert exit_code == 1
+    capsys.readouterr()
+
+
+# --- --migration-only / include_counts (Package 6) ---
+
+
+def test_get_missing_tables_matches_get_table_row_counts_without_counting(db):
+    """get_missing_tables() (the cheap half) must agree with what
+    get_table_row_counts() (the full, count-including function) reports as
+    missing -- proving the split didn't change the missing-table signal,
+    only whether counts also run."""
+    db.execute(text("DROP TABLE players"))
+    db.execute(text("DROP TABLE audit_events"))
+    db.commit()
+
+    _counts, missing_from_full = get_table_row_counts(db)
+    missing_only = get_missing_tables(db.get_bind())
+
+    assert missing_only == missing_from_full == sorted({"players", "audit_events"})
+
+
+def test_include_counts_false_never_calls_get_table_row_counts(monkeypatch, db):
+    """Proves counting is genuinely skipped, not merely ignored after
+    running -- a regression here would silently reintroduce the exact cost
+    --migration-only exists to avoid."""
+
+    def _fail_if_called(*args, **kwargs):  # pragma: no cover - only hit on regression
+        raise AssertionError("get_table_row_counts must not be called when include_counts=False")
+
+    monkeypatch.setattr(status_module, "get_table_row_counts", _fail_if_called)
+
+    status = get_database_status(db, include_counts=False)
+    assert status.counts_included is False
+    assert status.table_row_counts == {}
+    assert status.missing_tables == []
+
+
+def test_include_counts_false_still_reports_missing_tables(monkeypatch, partially_migrated_db):
+    def _fail_if_called(*args, **kwargs):  # pragma: no cover - only hit on regression
+        raise AssertionError("get_table_row_counts must not be called when include_counts=False")
+
+    monkeypatch.setattr(status_module, "get_table_row_counts", _fail_if_called)
+
+    status = get_database_status(partially_migrated_db, include_counts=False)
+    assert status.counts_included is False
+    assert status.table_row_counts == {}
+    assert status.missing_tables == sorted({"players", "audit_events"})
+
+
+def test_include_counts_true_is_still_the_default(db):
+    status = get_database_status(db)
+    assert status.counts_included is True
+    assert status.table_row_counts  # non-empty: real counts were computed
+
+
+def test_format_human_shows_skipped_marker_when_counts_were_not_included(db):
+    status = get_database_status(db, include_counts=False)
+    rendered = format_human(status)
+    assert "table_row_counts: skipped (--migration-only)" in rendered
+    assert "players:" not in rendered
+
+
+def test_main_migration_only_json_output_has_empty_counts_and_correct_missing(
+    monkeypatch, partially_migrated_db, capsys
+):
+    _set_alembic_version(partially_migrated_db, migration_head_revision())
+    monkeypatch.setattr("db.database.SessionLocal", lambda: partially_migrated_db)
+    exit_code = status_module._main(["--json", "--migration-only"])
+    assert exit_code == 0
+    parsed = json.loads(capsys.readouterr().out)
+    assert parsed["counts_included"] is False
+    assert parsed["table_row_counts"] == {}
+    assert parsed["missing_tables"] == sorted({"players", "audit_events"})
+
+
+def test_main_migration_only_combined_with_check_migrations_still_fails_closed(
+    monkeypatch, partially_migrated_db, capsys
+):
+    """--migration-only must not weaken --check-migrations: a database
+    stamped at head with tables still missing must still fail, using only
+    the cheap existence check."""
+    _set_alembic_version(partially_migrated_db, migration_head_revision())
+    monkeypatch.setattr("db.database.SessionLocal", lambda: partially_migrated_db)
+    exit_code = status_module._main(["--check-migrations", "--migration-only"])
+    assert exit_code == 1
+    capsys.readouterr()
+
+
+def test_main_migration_only_combined_with_check_migrations_passes_when_healthy(
+    monkeypatch, db, capsys
+):
+    _set_alembic_version(db, migration_head_revision())
+    monkeypatch.setattr("db.database.SessionLocal", lambda: db)
+    exit_code = status_module._main(["--check-migrations", "--migration-only"])
+    assert exit_code == 0
     capsys.readouterr()

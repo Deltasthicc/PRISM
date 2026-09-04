@@ -364,6 +364,51 @@ class OIDCVerifier:
             raw_claims=claims,
         )
 
+    def diagnose(self) -> dict[str, Any]:
+        """Best-effort discovery/JWKS connectivity check for operator
+        tooling (`scripts/lane2_doctor.py`) -- never raises, never mints,
+        verifies or persists an identity. `audience` is irrelevant here (it
+        only matters to `verify()`'s `jwt.decode(..., audience=...)`, never
+        to discovery or key-set fetching), so a diagnose-only verifier may
+        be constructed with a placeholder audience.
+
+        Returns booleans, a key count and a short error string only --
+        never the discovery document or JWKS content, which could
+        theoretically carry operator-identifying detail depending on the
+        provider (e.g. a `service_documentation` URL, custom claims-support
+        metadata). `error`, when set, is one of this module's own
+        `AuthenticationError`-style messages (already free of secrets -- it
+        names a URL and a reason, never a token/claim/DSN) or a bare
+        exception string from PyJWKClient's own HTTP layer, which for a
+        network-level failure (timeout, DNS, TLS) is also never
+        token/claim/DSN-shaped.
+        """
+        result: dict[str, Any] = {
+            "issuer": self._issuer,
+            "discovery_reachable": False,
+            "jwks_reachable": False,
+            "jwks_key_count": None,
+            "error": None,
+        }
+        try:
+            jwks_uri = self._discover_jwks_uri()
+            result["discovery_reachable"] = True
+        except AuthenticationError as exc:
+            result["error"] = str(exc)
+            return result
+
+        try:
+            jwk_set = PyJWKClient(jwks_uri, timeout=self._discovery_timeout_seconds).get_jwk_set()
+            result["jwks_reachable"] = True
+            result["jwks_key_count"] = len(jwk_set.keys)
+        except Exception as exc:  # noqa: BLE001 -- deliberately broad: any
+            # failure here (network, TLS, malformed JWKS JSON, PyJWT's own
+            # parsing) must still return a clean result dict, not propagate
+            # a raw exception type this diagnostic tool's caller doesn't
+            # expect. Message content is safe for the reason stated above.
+            result["error"] = str(exc)
+        return result
+
 
 def verifier_from_env() -> OIDCVerifier:
     """Build an OIDCVerifier from OIDC_ISSUER / OIDC_AUDIENCE env vars.

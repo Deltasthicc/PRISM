@@ -278,6 +278,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | AB — `export_subject_data()` point-in-time snapshot consistency (Package 5) | Claude Code | **implemented and verified; the "single transaction" version was tried first and demonstrably failed a concurrent-write test before landing on the real two-phase design — see Activity log** | 2026-09-04 | `backend/security/data_rights.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_data_rights_snapshot.py` (new), `LANE2_SYNC.md` |
 | AC — `hide_parameters`, `ensure_columns()` injection hardening, `--migration-only` status mode (Package 6) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/db/database.py`, `backend/scripts/database_status.py`, `backend/tests/test_core_database.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_SYNC.md` |
 | AD — Alembic 1.19.1 bump + live schema-contract test (Package 7) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/requirements.txt`, `backend/requirements.lock`, `backend/alembic.ini`, `backend/tests/test_core_schema_contract.py` (new), `LANE2_SYNC.md` |
+| AE — Privacy-safe `lane2_doctor` OIDC discovery/JWKS diagnostics (Package 8) | Claude Code | **implemented and verified, including a live run against the real local Keycloak container** | 2026-09-04 | `backend/security/identity.py`, `backend/scripts/lane2_doctor.py` (new), `backend/tests/test_core_lane2_doctor.py` (new), `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -4418,3 +4419,67 @@ FINAL GATES AND DELIVERY
   Alembic revision from this package itself.
 
   Claiming Package 8 (privacy-safe `lane2_doctor`) next.
+
+- 2026-09-04 — Claude Code — **Package AE: privacy-safe `lane2_doctor` OIDC discovery/JWKS
+  diagnostics, implemented and verified.**
+
+  **Scope, exactly as reconciled.** `scripts/database_status.py` (Package W-B/AC) already covers
+  schema/row-count/env-flag status with zero network calls. This package is the separate tool
+  Codex's plan named: optional real network checks, strict timeouts, nonzero exit codes, no
+  token/claim/DSN/secret output, diagnosing OIDC discovery/JWKS reachability -- never minting,
+  verifying or persisting an identity.
+
+  **`security/identity.py::OIDCVerifier.diagnose()` (new method)** is the actual primitive: reuses
+  the verifier's own `_discover_jwks_uri()` (the same issuer-match/safe-URL validation `verify()`
+  itself relies on) plus a real `PyJWKClient(...).get_jwk_set()` call, wrapped so *no* exception ever
+  escapes -- a network failure, a malformed discovery document, or invalid JWKS JSON all become a
+  clean `{discovery_reachable, jwks_reachable, jwks_key_count, error}` dict instead of a raised
+  exception a diagnostic caller wouldn't expect. `audience` is inert for this path (only `verify()`'s
+  `jwt.decode(..., audience=...)` ever uses it), documented explicitly so a diagnose-only verifier
+  can be built with a placeholder.
+
+  **`scripts/lane2_doctor.py` (new)** wraps that into the same CLI shape `database_status.py`
+  established: `--json`, human text default, nonzero exit on any unhealthy state (unconfigured,
+  discovery unreachable, or JWKS unreachable). `OIDC_ISSUER` not being set is reported as a fact
+  ("not configured"), not a crash -- matches `database_status.py`'s own "a fresh/partial database
+  must be reportable, not fatal" philosophy for the equivalent case here.
+
+  **New evidence -- `tests/test_core_lane2_doctor.py` (15 tests):**
+  - A real local mock OIDC HTTP server (same pattern as `test_core_identity.py`'s own
+    `_RotatingDiscoveryHandler`/`rotation_server`, not a stubbed client) proves discovery+JWKS
+    reachability end to end, including a genuinely valid RSA JWK -- an earlier version of this
+    fixture used a placeholder `n`/`e` pair and failed with PyJWT's own `"e must be >= 3 and < n"`,
+    a real math-validity check catching a fake key, not a bug in the test; fixed by generating a
+    real RSA keypair's JWK the same way the existing rotation test does.
+  - Discovery-unreachable (closed port), JWKS-endpoint-missing-while-discovery-ok, and
+    malformed-JWKS-JSON cases all proven to return a clean result dict rather than raise.
+  - A direct privacy check: the full serialized `diagnose()` result never contains
+    `Bearer `/`client_secret`/`access_token`/`id_token`/`refresh_token`/`password`-shaped text --
+    matches `database_status.py`'s own established `_FORBIDDEN_ANYWHERE` pattern.
+  - `diagnose_oidc()`'s signature pinned to exactly `{"env"}` (no subject/free-text parameter),
+    matching `get_database_status`'s own equivalent executable-documentation test.
+  - CLI: `--json` output and exit codes for the configured/unreachable/unconfigured cases.
+  - **Live, not just mocked:** `test_diagnose_against_real_local_keycloak` connects to the actual
+    local Keycloak container (`backend/keycloak/README.md`'s documented `prism` realm,
+    `http://localhost:8180/realms/prism`) -- ran genuinely (not skipped; the container was reachable)
+    and passed: discovery reachable, JWKS reachable, at least one real signing key reported. Skips
+    cleanly, not failed, if that container isn't running, matching every other live-service test in
+    this suite.
+  - Existing `tests/test_core_identity.py`/`test_core_identity_adversarial.py` (90 tests) re-run
+    unchanged and pass -- the new `diagnose()` method doesn't touch `verify()`'s own code path.
+
+  **Full-suite evidence:** SQLite **565/565** (550 baseline + 15 new); live PostgreSQL **564/565**
+  (the one failure is the same pre-existing `test_core_seeding.py`
+  `DATABASE_URL`-environment-coupling artifact noted since Package Y, unrelated here). `alembic
+  check` against live PostgreSQL: unaffected, exactly as expected -- no schema change. `flake8
+  --select=F` clean on every touched file.
+
+  **Explicitly not touched:** `.github/**`; `backend/routes/**`; `database_status.py` itself (no
+  overlap -- database and OIDC diagnostics stay two separate tools, not merged into one).
+
+  Claiming Package 9 (specify-only: three-role PostgreSQL privilege matrix, secure schema/search
+  path, TLS verification policy, pool/timeout budget -- documented, not implemented, per the
+  reconciled plan's own instruction not to implement infrastructure needing Lane 6's numbers) next.
+  That is the last package in the agreed 2-9 sequence; once it's filed, Lane 2's remaining agreed
+  backlog is fully closed and I'll report back for the batched merge to `main` and the redrafted
+  handoff messages.

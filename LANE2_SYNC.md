@@ -277,6 +277,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | AA — Measured indexes + governance CHECK constraints (Package 4) | Claude Code | **implemented and verified, built on Codex's abandoned draft (ran out of tokens mid-package) after independently re-benchmarking and fixing two real bugs in it — see Activity log** | 2026-09-04 | `backend/models/governance.py`, `backend/models/learning.py`, `backend/models/session.py`, `backend/models/submission.py`, `backend/migrations/versions/6564595b3466_add_measured_indexes_and_governance_.py` (new), `backend/migrations/versions/2baf7d4bd8a2_add_governance_tables.py`, `backend/tests/test_core_measured_indexes_and_constraints.py` (new), `backend/tests/test_core_database.py`, `backend/tests/test_core_migrations.py`, `LANE2_SYNC.md` |
 | AB — `export_subject_data()` point-in-time snapshot consistency (Package 5) | Claude Code | **implemented and verified; the "single transaction" version was tried first and demonstrably failed a concurrent-write test before landing on the real two-phase design — see Activity log** | 2026-09-04 | `backend/security/data_rights.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_data_rights_snapshot.py` (new), `LANE2_SYNC.md` |
 | AC — `hide_parameters`, `ensure_columns()` injection hardening, `--migration-only` status mode (Package 6) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/db/database.py`, `backend/scripts/database_status.py`, `backend/tests/test_core_database.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_SYNC.md` |
+| AD — Alembic 1.19.1 bump + live schema-contract test (Package 7) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/requirements.txt`, `backend/requirements.lock`, `backend/alembic.ini`, `backend/tests/test_core_schema_contract.py` (new), `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -4335,3 +4336,85 @@ FINAL GATES AND DELIVERY
   `.github/**`; `backend/routes/**`.
 
   Claiming Package 7 (Alembic/schema-contract) next.
+
+- 2026-09-04 — Claude Code — **Package AD: Alembic 1.19.1 bump + live schema-contract test,
+  implemented and verified.**
+
+  **Verified before touching anything, not trusted from the reconciliation discussion:**
+  `pip index versions alembic` confirmed `1.19.1` is real and current (also `1.19.0`, `1.18.x`,
+  etc. -- the "1.19.x" claim from the reconciled plan checks out). Then confirmed the actual
+  *reason* for this package directly, empirically, rather than assuming it: migrated a fresh SQLite
+  database to head under the new version, edited `models/governance.py`'s
+  `ck_role_targets_target_level_1_5` CHECK expression in memory only (`BETWEEN 1 AND 5` ->
+  `BETWEEN 1 AND 6`, same constraint name), and ran `alembic check` against the already-migrated
+  (old-expression) database -- **"No new upgrade operations detected"**, confirming Alembic 1.19.1
+  still only detects a named CHECK constraint's *presence*, not its expression, exactly as the
+  reconciled plan said (and its own autogenerate plugin for this is literally named
+  `checkconstraint_byname`). `pip-audit` found no advisory against 1.14.0 either -- this bump is
+  tooling hygiene and closing the detection gap below, not a vulnerability fix.
+
+  **`tests/test_core_schema_contract.py` (new, 10 tests)** is the live contract `alembic check`
+  cannot fully replace:
+  - Every named CHECK constraint's *actual live expression* (not read from `models/*.py`) contains
+    the expected literal bounds, for all 6 constraints (`role_targets` x2, `evidence_records` x2,
+    `source_versions`, `players`). PostgreSQL normalizes expression text
+    (`BETWEEN` -> `>= AND <=`, `IN (...)` -> `= ANY (ARRAY[...]::text[])` with explicit casts) --
+    the expected substrings for each dialect were captured directly from a real migrated database,
+    not guessed. A negative-control test proves this actually catches drift: the same
+    `BETWEEN 1 AND 6` mutation used in the verification step above is fed into the assertion helper
+    and correctly fails.
+  - A **full** foreign-key inventory across every FK-bearing table (12 tables, not a sample) --
+    exact `(constrained_column, referred_table, referred_column)` per FK, both dialects.
+  - A **full** named-index/unique-constraint inventory across every table with one (15 tables).
+    Found and worked around a real dialect asymmetry along the way: SQLite's inspector reports a
+    `UniqueConstraint`-backed object (`uq_player_topic`, `uq_identity_binding_subject`) only via
+    `get_unique_constraints()`, while PostgreSQL reports the same object via both that and
+    `get_indexes()` (an implicit unique index there) -- confirmed directly, not assumed, after the
+    first version of this test failed on SQLite. Separately, `guilds.name`
+    (`Column(unique=True)`, no explicit constraint name) has no name at all on SQLite
+    (`get_unique_constraints` returns `name: None`) while PostgreSQL auto-generates
+    `guilds_name_key` -- excluded from the shared name-keyed inventory with a comment explaining
+    why, and checked by column set instead in its own small dedicated test on both dialects.
+  - `audit_events`'s trigger *structure* (not behavior -- already covered by
+    `test_core_retention_job_postgres_integration.py::test_trigger_rejects_update_but_permits_delete`):
+    exactly one trigger, `audit_events_reject_update`, firing `BEFORE UPDATE`; the retired
+    `audit_events_reject_delete` (`4631f204d4ba`) confirmed absent. This is exactly the class of
+    drift `alembic check` cannot see at all, since Alembic's autogenerate coverage doesn't extend to
+    triggers.
+  - Grants deliberately not tested: no `GRANT` statement exists anywhere in this schema yet
+    (confirmed by grep across `models/*.py` and `migrations/versions/*.py`) -- the three-role
+    PostgreSQL privilege matrix is still Package 9's specify-only item, so there's nothing live to
+    contract-test.
+
+  **A second, unrelated deprecation surfaced by the bump, found and fixed:** the full-suite run
+  under 1.19.1 emitted a new `DeprecationWarning` -- `"No path_separator found in configuration;
+  falling back to legacy splitting ... Consider adding path_separator=os"` -- on every subprocess
+  Alembic invocation (dozens of times across the suite). Added `path_separator = os` to
+  `alembic.ini`, matching `version_path_separator`'s existing choice; confirmed fixed by re-running
+  under `-W error::DeprecationWarning` (would fail loudly if the warning still fired) and by the
+  warning count dropping from 66 to 4 (the remaining 4 are the pre-existing, unrelated Python 3.12
+  SQLite datetime-adapter warnings already noted in every package's evidence since Y).
+
+  **Process note, disclosed rather than glossed over:** while running the forward/backward/forward
+  Alembic cycle for extra rigor on this specific package, ran `alembic downgrade base` against the
+  shared local dev `prism` database directly instead of a disposable one (every other live-Postgres
+  verification this session correctly used a disposable, uniquely-named database) -- a mistake, not
+  a deliberate choice. Immediately ran `alembic upgrade head` to restore it, and confirmed via
+  `scripts.database_status` that every table was already empty both before and after (this session's
+  own live-Postgres tests all clean up their own disposable databases; nothing was ever seeded into
+  the shared `prism` database itself), so no data was actually lost -- but the shared database was
+  briefly at `base` (no tables) mid-session, and this should have used a disposable database like
+  every other destructive check.
+
+  **Full-suite evidence, freshly regenerated hash-locked environment (`requirements.lock`
+  regenerated via `pip-compile --generate-hashes`, verified installing with `--require-hashes` into
+  a fresh venv before running anything):** SQLite **550/550**; live PostgreSQL **549/550** (the one
+  failure is the same pre-existing `test_core_seeding.py` `DATABASE_URL`-environment-coupling
+  artifact noted since Package Y, unrelated here). `alembic current`/`alembic check` against the
+  (restored) live PostgreSQL: `6564595b3466 (head)`, clean. `flake8 --select=F` clean on the new
+  test file.
+
+  **Explicitly not touched:** `.github/**`; `backend/routes/**`; no model/schema change, so no new
+  Alembic revision from this package itself.
+
+  Claiming Package 8 (privacy-safe `lane2_doctor`) next.

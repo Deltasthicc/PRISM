@@ -17,7 +17,11 @@ fastapi==0.141.1
 starlette==1.6.0
 uvicorn==0.30.6
 sqlalchemy==2.0.35
-alembic==1.14.0
+# Bumped from 1.14.0 for current tooling hygiene (Package 7); does not by
+# itself detect CHECK-constraint expression drift -- see
+# tests/test_core_schema_contract.py for why a live schema-contract test
+# still exists alongside `alembic check`.
+alembic==1.19.1
 psycopg[binary]==3.2.3
 python-dotenv==1.2.3
 google-generativeai==0.8.3

@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import date, datetime, timezone
 from typing import Any
 
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, text
 from sqlalchemy.orm import Session
 
 from models.accuracy_history import AccuracyHistory
@@ -68,6 +68,11 @@ class DeletionConfirmationError(SubjectDataRightsError):
 
 class SubjectDataIntegrityError(SubjectDataRightsError):
     """Raised rather than deleting records that appear foreign-owned."""
+
+
+class SubjectExportSessionError(SubjectDataRightsError):
+    """Raised when export_subject_data() cannot establish a point-in-time
+    snapshot because the caller's session already has a transaction open."""
 
 
 def _required_text(value: str, field: str, maximum: int) -> str:
@@ -181,31 +186,121 @@ def export_subject_data(
     actor: str,
     reason: str,
 ) -> SubjectDataExport:
-    """Return one deterministic export and audit it in the same DB session."""
+    """Return one point-in-time export, then durably audit that it happened.
+
+    This is two transactions, not one snapshot-then-write in a single
+    transaction -- deliberately. Extending a snapshot transaction into a
+    write is exactly what SQLite's WAL mode (and PostgreSQL's REPEATABLE
+    READ) correctly refuse once any unrelated commit has landed since the
+    snapshot began ("database is locked" / `could not serialize access`, a
+    real conflict-detection mechanism, confirmed directly by first writing
+    the single-transaction version and watching a concurrent-write test
+    fail on it before splitting this in two). The audit write doesn't need
+    the export's snapshot -- it only needs to durably record that the
+    export happened, at the current moment, not the snapshot moment -- so
+    it runs in its own fresh transaction after the snapshot's read-only
+    phase commits (releasing the snapshot; there is nothing to lose, since
+    nothing was written yet).
+
+    Every read in the first phase shares one consistent snapshot of the
+    database, not a per-statement one. `db.query(...)` here issues one
+    SELECT per table; under PostgreSQL's default READ COMMITTED isolation,
+    each of those statements sees the database as of *its own* start, not
+    as of when this function began -- a row a concurrent transaction
+    commits between two of these SELECTs would appear in some of this
+    export's tables but not others, silently producing an internally
+    inconsistent "point in time" that never actually existed. Switching
+    this session's connection to REPEATABLE READ before the first statement
+    fixes that: every read for the rest of that transaction sees the same
+    snapshot PostgreSQL took at the first one.
+
+    SQLite has the same underlying problem for a different reason, and
+    needs its own fix, not "none" -- confirmed by writing the naive version
+    first and watching it fail a concurrent-write test before adding this.
+    SQLAlchemy's pysqlite dialect runs on the DBAPI's *legacy* transaction
+    control (`isolation_level=None`), under which pysqlite only auto-opens a
+    transaction before a write, never before a plain SELECT. Without an
+    explicit `BEGIN`, every SELECT below would run outside any real
+    transaction and see the latest committed state independently -- the
+    same class of bug as PostgreSQL's READ COMMITTED default, just from a
+    different mechanism, and `test_core_data_rights.py`'s existing SQLite
+    tests never exercised concurrent writers so never caught it. An
+    explicit `BEGIN` as the first statement (the same technique, for a
+    different purpose, `security/identity_bootstrap.py`'s `BEGIN IMMEDIATE`
+    already uses) makes pysqlite actually open a transaction, after which
+    this project's WAL journal mode gives that connection a stable read
+    snapshot for the rest of it, immune to concurrent commits, until this
+    function's own `db.commit()`/`db.rollback()` ends it. Plain `BEGIN`
+    (deferred), not `BEGIN IMMEDIATE` -- this is a read-only snapshot, not a
+    write lock, and does not need to block a concurrent writer the way
+    `identity_bootstrap.py`'s bootstrap serialization does.
+
+    Either way, the isolation level or transaction must be established
+    before any statement has run in the current transaction, so the caller
+    must supply a session with none already open -- the same requirement,
+    for the same reason, `security/identity_bootstrap.py`'s bootstrap flow
+    already enforces on its own session argument.
+
+    This does not change `delete_subject_data()`'s isolation level: that
+    function's own inline comment already explains why it deliberately
+    wants each DELETE to see the latest committed data as it runs (so a
+    row inserted mid-deletion still gets caught by the matching DELETE's
+    own `WHERE player_id = ...`), which is exactly what READ COMMITTED
+    already gives it. Snapshot consistency and deletion-completeness are
+    different, sometimes opposite, goals; this package only changes export.
+    """
+    if db.in_transaction():
+        raise SubjectExportSessionError(
+            "export_subject_data requires a fresh database session with no "
+            "transaction already in progress, so the snapshot isolation level "
+            "can be set before the first statement runs"
+        )
+    dialect = db.get_bind().dialect.name
+    if dialect == "postgresql":
+        db.connection(execution_options={"isolation_level": "REPEATABLE READ"})
+    elif dialect == "sqlite":
+        db.execute(text("BEGIN"))
+
     actor = _required_text(actor, "actor", 200)
     reason = _required_text(reason, "reason", 500)
     player = db.query(Player).filter(Player.player_id == player_id).first()
     if player is None:
+        db.rollback()  # release the snapshot transaction; nothing was written
         raise SubjectNotFoundError(f"Player not found: {player_id}")
 
-    try:
-        records = _subject_records(db, player)
-        record_counts = {name: len(rows) for name, rows in records.items()}
-        related_audit_events = (
-            db.query(AuditEvent)
-            .filter(
-                or_(
-                    AuditEvent.actor == player_id,
-                    and_(
-                        AuditEvent.entity_type == "player",
-                        AuditEvent.entity_id == player_id,
-                    ),
-                )
+    records = _subject_records(db, player)
+    record_counts = {name: len(rows) for name, rows in records.items()}
+    related_audit_events = (
+        db.query(AuditEvent)
+        .filter(
+            or_(
+                AuditEvent.actor == player_id,
+                and_(
+                    AuditEvent.entity_type == "player",
+                    AuditEvent.entity_id == player_id,
+                ),
             )
-            .order_by(AuditEvent.created_at, AuditEvent.audit_id)
-            .all()
         )
-        record_counts["audit_events"] = len(related_audit_events) + 1
+        .order_by(AuditEvent.created_at, AuditEvent.audit_id)
+        .all()
+    )
+    record_counts["audit_events"] = len(related_audit_events) + 1
+
+    # The snapshot's job ends here -- everything above this line is a pure
+    # read. Committing now (nothing to lose: no write has happened yet)
+    # releases the snapshot transaction before the audit-event write below,
+    # deliberately *not* extending it into a write. A write appended to the
+    # same transaction as a long-held snapshot is exactly what SQLite's WAL
+    # mode (and PostgreSQL's REPEATABLE READ) correctly refuse once any
+    # unrelated commit has landed since the snapshot began -- "database is
+    # locked" / `could not serialize access`, a real conflict-detection
+    # mechanism working as intended, not a bug to route around. The audit
+    # write doesn't need the export's snapshot; it only needs to durably
+    # record that the export happened, at the current, not the snapshot,
+    # moment.
+    db.commit()
+
+    try:
         event = record_audit_event(
             db,
             actor=actor,

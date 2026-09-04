@@ -275,6 +275,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | Y — SQLite foreign-key enforcement and transaction-semantics parity | Claude Code | **implemented and verified** | 2026-09-03 | `backend/db/database.py`, `backend/tests/test_core_sqlite_fk_transactions.py` (new), `backend/tests/test_core_repository_consumers.py`, `backend/tests/test_core_database_status.py`, `LANE2_SYNC.md` |
 | Z — Composed authorization dependency hardening (review/repair of Lane 5 PR #2) | Codex | **implemented and verified; integrated onto `main` by Claude Code from `codex/lane2-package3`@`0559348`** | 2026-09-04 | `backend/routes/authorization.py`, `backend/routes/learning.py`, `backend/tests/test_authorization_dependencies.py` (new), `backend/tests/test_api_integration_lane5.py`, `LANE2_INTEGRATION_GUIDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `LANE2_SYNC.md` |
 | AA — Measured indexes + governance CHECK constraints (Package 4) | Claude Code | **implemented and verified, built on Codex's abandoned draft (ran out of tokens mid-package) after independently re-benchmarking and fixing two real bugs in it — see Activity log** | 2026-09-04 | `backend/models/governance.py`, `backend/models/learning.py`, `backend/models/session.py`, `backend/models/submission.py`, `backend/migrations/versions/6564595b3466_add_measured_indexes_and_governance_.py` (new), `backend/migrations/versions/2baf7d4bd8a2_add_governance_tables.py`, `backend/tests/test_core_measured_indexes_and_constraints.py` (new), `backend/tests/test_core_database.py`, `backend/tests/test_core_migrations.py`, `LANE2_SYNC.md` |
+| AB — `export_subject_data()` point-in-time snapshot consistency (Package 5) | Claude Code | **implemented and verified; the "single transaction" version was tried first and demonstrably failed a concurrent-write test before landing on the real two-phase design — see Activity log** | 2026-09-04 | `backend/security/data_rights.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_data_rights_snapshot.py` (new), `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -4171,3 +4172,97 @@ FINAL GATES AND DELIVERY
   not deleted -- it made no commit, so there's nothing there to reconcile or lose.
 
   Claiming Package 5 (data-rights snapshot-consistency) next.
+
+- 2026-09-04 — Claude Code — **Package AB: `export_subject_data()` point-in-time snapshot
+  consistency, implemented and verified.**
+
+  **The gap, exactly as reconciled.** `security/data_rights.py::export_subject_data()` issues one
+  SELECT per table via `_subject_records()`. Under PostgreSQL's default READ COMMITTED isolation,
+  each statement sees the database as of its *own* start, not as of when the export began -- a row
+  a concurrent transaction commits between two of these SELECTs could appear in some of the export's
+  tables but not others, an internally inconsistent "point in time" that never actually existed.
+  `delete_subject_data()` was deliberately left alone: its own existing inline comment already
+  explains it *wants* each DELETE to see the latest committed data as it runs, so a row inserted
+  mid-deletion still gets caught by that DELETE's own `WHERE player_id = ...` -- snapshot consistency
+  and deletion-completeness are different, sometimes opposite, goals, matching the reconciled plan's
+  explicit instruction to design these separately.
+
+  **The fix took two attempts, and the first attempt's failure is part of the evidence, not
+  discarded.** Attempt 1: wrap the whole function (reads + the final audit-event write) in one
+  PostgreSQL REPEATABLE READ / SQLite explicit-`BEGIN` transaction. This is what "one transaction,
+  one snapshot" naturally suggests, and it does fix the read-side inconsistency -- but a concurrent
+  write test caught a *new* problem it introduces: on SQLite, once any concurrent commit has landed
+  since the snapshot began, an attempt to *also* write within that same long-held snapshot
+  transaction is correctly refused by SQLite's WAL mode with "database is locked" (real
+  conflict-detection working as intended, not a bug -- PostgreSQL's REPEATABLE READ has the
+  equivalent concept, `could not serialize access`, though it wouldn't have fired for this specific
+  case since the audit write touches an unrelated table, not a row the concurrent writer touched).
+  Extending the export's read-only snapshot into a write means *any* unrelated concurrent activity
+  during the export can now make the whole thing fail, a worse availability trade-off than the
+  original silent-inconsistency risk. Final design: two transactions. The read phase (REPEATABLE
+  READ / explicit `BEGIN`) runs to completion and commits -- releasing the snapshot, nothing lost
+  since nothing was written yet -- then the audit-event write runs in its own fresh transaction at
+  whatever the current state is, since it only needs to durably record that the export happened,
+  not to share the export's own snapshot.
+
+  **SQLite needed its own mechanism, not "no change needed."** Initially assumed SQLite's WAL mode
+  already gave `export_subject_data()`'s single Session a stable snapshot across its whole call for
+  free. Wrong, and caught by writing the naive version and watching a concurrent-write test fail on
+  it: SQLAlchemy's pysqlite dialect runs on the DBAPI's *legacy* transaction control
+  (`isolation_level=None`), under which pysqlite only auto-opens a transaction before a write, never
+  before a plain SELECT -- so without an explicit `BEGIN`, every SELECT in `_subject_records()` would
+  run outside any real transaction and see the latest committed state independently, the same class
+  of bug as PostgreSQL's default isolation, just from a different mechanism.
+  `test_core_data_rights.py`'s existing SQLite tests never exercised a concurrent writer so never
+  surfaced this. Fixed with an explicit `db.execute(text("BEGIN"))` as the first statement -- the
+  same technique, for a different purpose, `security/identity_bootstrap.py`'s `BEGIN IMMEDIATE`
+  already uses, but plain deferred `BEGIN` here since this is a read-only snapshot, not a write lock,
+  and does not need to block a concurrent writer the way the bootstrap serialization does.
+
+  **Session contract.** Both mechanisms can only be established before any statement has run in the
+  current transaction, so `export_subject_data()` now requires a fresh session with none already
+  open -- the same requirement, for the same reason, `identity_bootstrap.py`'s bootstrap flow already
+  enforces, and raises a new `SubjectExportSessionError` if violated. One existing test
+  (`test_export_rejects_unknown_subject_without_writing_audit`) did a read-only "before" count check
+  on the same session first; fixed with `db.rollback()`, matching
+  `test_core_identity_bootstrap.py::test_bootstrap_requires_a_fresh_session`'s own established use of
+  the identical pattern for the identical reason.
+
+  **New evidence -- `tests/test_core_data_rights_snapshot.py` (5 tests), genuine two-connection
+  races, not timing assumptions:** a monkeypatched `_subject_records` commits a new row from a
+  second, independent connection *between* `export_subject_data()`'s first statement and its
+  per-table queries, guaranteeing the row exists before any of those SELECTs run.
+  - SQLite: the concurrently-committed row is absent from the export, then confirmed present via a
+    fresh session afterward (proving it wasn't lost, only correctly excluded from the snapshot).
+    Required explicitly enabling WAL mode on the test's own ad hoc engines, since `db/database.py`
+    only applies it to its own module-level `engine` -- a plain `create_engine(...)` runs SQLite's
+    default rollback-journal mode, where the concurrent writer's own commit would otherwise block on
+    the reader ("database is locked" from the *other* side), an artifact of an unrepresentative test
+    engine, not of the real app.
+  - Live PostgreSQL (disposable database, real Alembic head): same result, plus a direct check that
+    `SHOW transaction_isolation` reports `repeatable read` *during* the read phase (checked from
+    inside the monkeypatch, since by the time the function returns, the read phase's transaction has
+    already committed and the audit-write phase is running under its own, separately-isolated,
+    default READ COMMITTED transaction).
+  - **Negative control, proving the race test is not vacuous:** the identical concurrent-write timing
+    run against a session that already had a prior statement executed first (so the isolation level
+    could never be set) *does* see the concurrently-committed row under PostgreSQL's default READ
+    COMMITTED -- confirming the test would have caught the original bug, not just exercised a code
+    path that never mattered.
+  - `test_export_requires_a_fresh_session_on_sqlite`: the new guard rejects a session with a prior
+    statement already run.
+  - Existing `test_core_data_rights.py` (11 tests): all pass unchanged after the one `db.rollback()`
+    fix above.
+
+  **Full-suite evidence:** SQLite **500/500**; live PostgreSQL **499/500** (the one failure is the
+  same pre-existing `test_core_seeding.py` `DATABASE_URL`-environment-coupling artifact noted in
+  Packages Y/AA, unrelated here). `alembic current`/`alembic check` against live PostgreSQL:
+  unaffected, exactly as expected -- this package adds no schema change.
+  `flake8 --select=F` clean on every touched file.
+
+  **Explicitly not touched:** `delete_subject_data()`'s isolation level (see above -- a deliberate
+  non-change, not an oversight); `.github/**`; `backend/routes/**` (no route calls either function
+  yet, so this package changes only the internal primitive's contract, nothing HTTP-facing).
+
+  Claiming Package 6 (small hardening: `hide_parameters`, `ensure_columns()` full-tuple hardening,
+  migration-only/no-counts status behavior) next.

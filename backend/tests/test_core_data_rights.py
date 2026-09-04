@@ -225,6 +225,12 @@ def test_export_is_complete_deterministic_json_and_audited(db, subject_graph):
 
 def test_export_rejects_unknown_subject_without_writing_audit(db, subject_graph):
     before = db.query(AuditEvent).count()
+    # export_subject_data() requires a session with no transaction already
+    # open (Package 5 -- it sets a snapshot isolation level before its first
+    # statement), so the read above must not leave one in progress; matches
+    # test_core_identity_bootstrap.py::test_bootstrap_requires_a_fresh_session's
+    # own use of rollback() for the identical reason.
+    db.rollback()
 
     with pytest.raises(SubjectNotFoundError):
         export_subject_data(

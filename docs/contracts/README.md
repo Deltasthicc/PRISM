@@ -20,7 +20,10 @@ changes to each one.
 
 A **scaffold** is a description of what the contract must eventually say, not a working interface
 yet — it is not permission to skip writing the real contract before another lane depends on it; see
-the "Change process" section inside each file. Lane 2's three files are no longer scaffolds: read
-them for what is actually implemented and independently verified today, and note precisely what
-each still marks as not implemented (route-level enforcement, multi-tenant isolation, production
-KMS/HSM key custody) rather than assuming "implemented" means "protects the running product."
+the "Change process" section inside each file. Lane 2's three files and Lane 3's
+`competency-evidence.md` are no longer scaffolds: read them for what is actually implemented and
+independently verified today, and note precisely what each still marks as not implemented
+(route-level enforcement, multi-tenant isolation, production KMS/HSM key custody for Lane 2;
+persistence, HTTP exposure of the lab, and the remaining evidence types for Lane 3) rather than
+assuming "implemented" means "protects the running product."
+

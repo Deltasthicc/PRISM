@@ -23,6 +23,15 @@ has actually been retrieved.
 |---|---|---|---|
 | 2026-08-29 | `python -m pytest` (backend) | 42 passed | See `SIH26101_MASTER_CHECKLIST.md` section 8 for the full log |
 | 2026-08-29 | `npm run lint` (frontend) | passed | |
+| 2026-09-01 | `python -m pytest` (backend) | 58 passed | Lane 3: versioned role targets + evidence-coverage priority (16 new tests) |
+| 2026-09-02 | `python -m pytest` (backend) | 70 passed | Lane 3: L1-L5 behavioural anchors, per-anchor provenance records (12 tests) |
+| 2026-09-02 | `python -m pytest` (backend) | 89 passed | Lane 3: bounded sampling-design lab, PS-08 (19 new tests) |
+| 2026-09-02 | `python -m pytest` (backend) | 103 passed | Lane 3: documented status-vocabulary compliance pass (14 new tests) |
+| 2026-09-02 | `python -m pytest` (backend) | 114 passed | Lane 3: PS-02 taxonomy coverage, 34 -> 55 competencies, all 33 named items mapped |
+| 2026-09-02 | `python -m pyflakes` (Lane 3 files) | clean | No unused imports or dead code in services/curricula.py, role_targets.py, behavioral_anchors.py, learning_engine.py, ps02_coverage.py, labs/**, tests/test_competency_*.py |
+| 2026-09-03 | `python -m pytest` (backend) | 136 passed | Lane 3: golden policy fixtures, 6 scenarios, exact-match + repeated-call determinism tests (22 new tests) |
+| 2026-09-03 | `python -m pyflakes` (Lane 3 files incl. fixtures generator) | clean | |
+| 2026-09-03 | Deliberate fixture corruption drill | 2 tests failed as expected, restored via generator, suite back to 136 passed | Manually verified the golden tests actually catch drift, not just pass trivially |
 | 2026-09-01 | `backend/.venv/Scripts/python.exe -m pytest -q` | 237 passed; 2 pytest-cache permission warnings | Lane 2 Packages A–N accepted; detailed command/drill trail in `LANE2_SYNC.md` |
 | 2026-09-01 | PostgreSQL 16 migration/startup drills | Alembic forward/backward, legacy adoption, partial-schema rejection and stale-revision startup refusal passed | Disposable/local Compose databases; head `cf4271f204a3` |
 | 2026-09-01 | Local Keycloak 26.7.2 OIDC/RBAC verification | identity verifier, binding, bootstrap and authorization negatives passed | Development issuer only; no browser route or government IdP claim |

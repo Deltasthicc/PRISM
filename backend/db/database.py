@@ -183,10 +183,16 @@ def get_db():
         db.close()
 
 
-_SAFE_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+# `\Z` (absolute end of string), not `$` (which also matches just before a
+# single trailing "\n") -- a trailing newline in either input is currently
+# harmless either way (nothing after it to inject; SQL tolerates trailing
+# whitespace), so this was never an exploitable bypass, only an imprecision
+# worth removing rather than reasoning about every call site's tolerance
+# for it as callers change.
+_SAFE_IDENTIFIER = re.compile(r"\A[A-Za-z_][A-Za-z0-9_]*\Z")
 _SAFE_COLUMN_TYPE_AND_DEFAULT = re.compile(
-    r"^(TEXT|INTEGER|REAL|BOOLEAN|BLOB)"
-    r"(\s+DEFAULT\s+(-?\d+(\.\d+)?|'[^']*'|TRUE|FALSE|NULL))?$"
+    r"\A(TEXT|INTEGER|REAL|BOOLEAN|BLOB)"
+    r"(\s+DEFAULT\s+(-?\d+(\.\d+)?|'[^']*'|TRUE|FALSE|NULL))?\Z"
 )
 
 

@@ -202,6 +202,19 @@ def export_subject_data(
     phase commits (releasing the snapshot; there is nothing to lose, since
     nothing was written yet).
 
+    The commit that ends the read phase has a second consequence beyond
+    releasing the snapshot: `SessionLocal` uses SQLAlchemy's default
+    `expire_on_commit=True`, so every ORM object this session has loaded is
+    expired by it. Every table read in `_subject_records()` is converted to
+    a plain dict immediately (via `_serialize_row()`), so that expiry is
+    harmless for them. `related_audit_events` below gets the identical
+    treatment for the identical reason -- it used to be serialized after
+    this commit, and a synthetic test simulating a concurrent deletion of
+    one of those exact rows in the gap between the commit and that
+    serialization reproduced a real `ObjectDeletedError` crash. Any future
+    read added to this function's snapshot phase must serialize before the
+    commit the same way, not after it.
+
     Every read in the first phase shares one consistent snapshot of the
     database, not a per-statement one. `db.query(...)` here issues one
     SELECT per table; under PostgreSQL's default READ COMMITTED isolation,
@@ -270,20 +283,39 @@ def export_subject_data(
 
     records = _subject_records(db, player)
     record_counts = {name: len(rows) for name, rows in records.items()}
-    related_audit_events = (
-        db.query(AuditEvent)
-        .filter(
-            or_(
-                AuditEvent.actor == player_id,
-                and_(
-                    AuditEvent.entity_type == "player",
-                    AuditEvent.entity_id == player_id,
-                ),
+    # Serialized to plain dicts immediately, in the same statement/pattern
+    # _subject_records() already uses for every other table -- not held as
+    # live ORM objects across the commit below. `SessionLocal` uses
+    # SQLAlchemy's default `expire_on_commit=True`, so db.commit() expires
+    # every object this session has loaded; touching an expired object's
+    # attributes afterward triggers a fresh SELECT by primary key, under the
+    # *new* (non-snapshot) transaction -- and raises `ObjectDeletedError` if
+    # that row is gone by then. Confirmed as a real, reproducible crash (not
+    # a theoretical concern) with a synthetic test simulating a concurrent
+    # deletion of one of these exact rows between this line and the
+    # `_serialize_row()` call these used to be read at, past the commit
+    # below. Currently dormant in production -- audit_events deletion is
+    # cited-policy-gated and no policy has a cited maximum yet -- but this
+    # export function must not depend on that staying true to avoid
+    # crashing, and must not silently re-read from outside its own snapshot
+    # either way.
+    related_audit_events = [
+        _serialize_row(audit_event)
+        for audit_event in (
+            db.query(AuditEvent)
+            .filter(
+                or_(
+                    AuditEvent.actor == player_id,
+                    and_(
+                        AuditEvent.entity_type == "player",
+                        AuditEvent.entity_id == player_id,
+                    ),
+                )
             )
+            .order_by(AuditEvent.created_at, AuditEvent.audit_id)
+            .all()
         )
-        .order_by(AuditEvent.created_at, AuditEvent.audit_id)
-        .all()
-    )
+    ]
     record_counts["audit_events"] = len(related_audit_events) + 1
 
     # The snapshot's job ends here -- everything above this line is a pure
@@ -314,9 +346,7 @@ def export_subject_data(
             },
             commit=False,
         )
-        records["audit_events"] = [
-            _serialize_row(audit_event) for audit_event in [*related_audit_events, event]
-        ]
+        records["audit_events"] = [*related_audit_events, _serialize_row(event)]
         result = SubjectDataExport(
             generated_at=datetime.now(timezone.utc),
             player_id=player_id,

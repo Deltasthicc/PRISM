@@ -280,6 +280,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | AD — Alembic 1.19.1 bump + live schema-contract test (Package 7) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/requirements.txt`, `backend/requirements.lock`, `backend/alembic.ini`, `backend/tests/test_core_schema_contract.py` (new), `LANE2_SYNC.md` |
 | AE — Privacy-safe `lane2_doctor` OIDC discovery/JWKS diagnostics (Package 8) | Claude Code | **implemented and verified, including a live run against the real local Keycloak container** | 2026-09-04 | `backend/security/identity.py`, `backend/scripts/lane2_doctor.py` (new), `backend/tests/test_core_lane2_doctor.py` (new), `LANE2_SYNC.md` |
 | AF — Production PostgreSQL hardening specification (Package 9) | Claude Code | **specify-only, as agreed — no implementation, no dev-drill; filed and reviewable** | 2026-09-04 | `docs/contracts/production-database-hardening.md` (new), `docs/contracts/README.md`, `LANE2_SYNC.md` |
+| AG — Fix `export_subject_data()` `ObjectDeletedError` on expired audit-event objects (self-caught, post-merge review) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/security/data_rights.py`, `backend/tests/test_core_data_rights_snapshot.py`, `LANE2_SYNC.md` |
 
 ## Backlog / next up
 
@@ -4531,3 +4532,59 @@ FINAL GATES AND DELIVERY
   batch-merge this branch to `main` (per Shashwat's "do it on our branch, update main later"
   correction — nine commits: Y, Z, AA, AB, AC, AD, AE, AF, this entry) and redraft the six cross-lane
   handoff messages against the real, fully finished state.
+
+- 2026-09-04 — Claude Code — **Package AG: real bug found in Package AB's own transaction split,
+  fixed and regression-tested, after Shashwat asked for a brutal self-review since Codex had run out
+  of tokens and couldn't do the requested independent review.**
+
+  **The bug.** `export_subject_data()`'s two-phase design (Package AB) queries `related_audit_events`
+  as live ORM objects during the snapshot read phase, then calls `db.commit()` to end that phase
+  before the audit-event write starts fresh. `SessionLocal` uses SQLAlchemy's default
+  `expire_on_commit=True`, so that commit expires every object the session has loaded --
+  `related_audit_events` included. The original code didn't serialize those rows until *after* the
+  commit (`_serialize_row(audit_event) for audit_event in [*related_audit_events, event]`, well
+  into the second phase). Touching an expired object's attributes triggers a fresh SELECT by primary
+  key under the new, post-snapshot transaction; if that exact row had been deleted by a concurrent
+  transaction in the gap, SQLAlchemy raises `ObjectDeletedError` instead of completing.
+
+  **Proven, not theorized.** Wrote a standalone script reproducing the exact race (seed a player +
+  one audit event, monkeypatch `record_audit_event` to delete that same audit event from a second
+  connection immediately before delegating to the real function) and got a real
+  `sqlalchemy.orm.exc.ObjectDeletedError` crash on the unfixed code, on both SQLite and live
+  PostgreSQL. Currently dormant in production -- nothing deletes `audit_events` today, since the
+  retention job's own policy has no cited maximum -- but the function must not depend on that
+  staying true, and Package 5/AB's whole point was proving the snapshot promise directly rather than
+  assuming it.
+
+  **The fix.** Serialize `related_audit_events` to plain dicts immediately after querying them,
+  before the intermediate commit -- the exact same pattern `_subject_records()` already uses for
+  every other table in this function. `event` (the newly-created audit row from phase two) was
+  already safe, since it's serialized before its own later commit, never touched after. Added a
+  paragraph to the function's docstring stating the rule explicitly for whoever adds the next read
+  to this function's snapshot phase: serialize before the commit, not after.
+
+  **Evidence.** Two new regression tests (`tests/test_core_data_rights_snapshot.py`, SQLite and live
+  PostgreSQL) reproduce the exact race and assert the export completes cleanly with the
+  already-deleted row still present in its output (correctly reflecting what the snapshot actually
+  saw, not silently dropping it). Verified the tests are not vacuous the same way every other test in
+  this file was: temporarily reverted the fix via `git stash`, re-ran just the new SQLite test,
+  confirmed it fails with the identical `ObjectDeletedError`, then restored the fix and confirmed
+  green again. Full suite: **567/567 SQLite** (565 + 2 new), live PostgreSQL run in progress/attached
+  separately. `flake8 --select=F` clean on both touched files. No schema change, so `alembic
+  current`/`check` are unaffected by construction.
+
+  **Also verified as part of this same review pass, independent of this bug:** confirmed the shared
+  dev PostgreSQL database (`prism`) is genuinely healthy right now -- `python -m
+  scripts.database_status --check-migrations` reports `current=6564595b3466 head=6564595b3466 (AT
+  HEAD)`, all 17 tables present, all counts 0 -- consistent with the accidental downgrade/restore
+  disclosed in Package AD's entry having left no residue. Re-read Package AA's migration idempotency
+  logic (`6564595b3466`) adversarially -- `downgrade()` unconditionally drops every index/constraint
+  without the same adopted-table guard `upgrade()` uses; concluded this is correct, not a gap:
+  `upgrade()` guarantees every one of these objects exists by the time it returns (either by
+  creating it or finding it already present), so `downgrade()` dropping all of them unconditionally
+  is always valid. Also tightened `db/database.py`'s two `ensure_columns()` regexes from `$` to `\Z`
+  -- `$` also matches just before a single trailing newline, which was never an exploitable bypass
+  here (a trailing newline is inert in this exact interpolation context, nothing after it to inject)
+  but was worth removing rather than reasoning about every call site's tolerance for it as callers
+  change. Confirmed via the existing `test_core_database.py` parametrized accept/reject tests
+  (47 tests) that the tightening changed no legitimate behavior.

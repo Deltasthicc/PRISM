@@ -128,6 +128,75 @@ def test_export_on_sqlite_does_not_see_a_row_committed_mid_export(monkeypatch, t
     writer_engine.dispose()
 
 
+def test_export_survives_a_concurrent_deletion_of_an_already_read_audit_event_on_sqlite(
+    monkeypatch, tmp_path
+):
+    """Regression test for a real, self-caught bug: `export_subject_data()`
+    used to hold `related_audit_events` as live ORM objects across its
+    intermediate `db.commit()` (the one that ends the snapshot read phase),
+    then serialize them afterward. `SessionLocal`'s default
+    `expire_on_commit=True` expires every loaded object on that commit, so
+    touching one of those objects' attributes afterward triggers a fresh
+    SELECT by primary key under the *new*, post-snapshot transaction -- and
+    raised a real, reproducible `sqlalchemy.orm.exc.ObjectDeletedError` if
+    that exact row had been deleted by a concurrent transaction in the gap.
+    Fixed by serializing `related_audit_events` to plain dicts immediately,
+    before the commit, the same way `_subject_records()` already does for
+    every other table. This test reproduces the exact race that crashed the
+    unfixed version -- it must now complete cleanly."""
+    db_path = tmp_path / "audit_expiry.db"
+    url = f"sqlite:///{db_path}"
+
+    def _enable_wal(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.close()
+
+    engine = create_engine(url, connect_args={"check_same_thread": False})
+    event.listens_for(engine, "connect")(_enable_wal)
+    Base.metadata.create_all(engine)
+    with engine.begin() as connection:
+        connection.execute(
+            text("INSERT INTO players (player_id, username, preferred_mode) VALUES ('p1', 'u', 'professional')")
+        )
+        connection.execute(
+            text(
+                "INSERT INTO audit_events (audit_id, actor, action, entity_type, entity_id, details, created_at) "
+                "VALUES ('pre-existing-audit-1', 'p1', 'test.setup', 'player', 'p1', '{}', :now)"
+            ),
+            {"now": datetime.now(timezone.utc).isoformat()},
+        )
+    db = sessionmaker(bind=engine)()
+
+    writer_engine = create_engine(url, connect_args={"check_same_thread": False})
+    event.listens_for(writer_engine, "connect")(_enable_wal)
+    real_record_audit_event = data_rights.record_audit_event
+
+    def _delete_the_preexisting_event_then_delegate(*args, **kwargs):
+        # Simulates a concurrent deletion (e.g. a future retention job run)
+        # landing in the gap between the snapshot phase's commit and this
+        # function's own use of the pre-fetched related_audit_events.
+        with writer_engine.begin() as connection:
+            connection.execute(
+                text("DELETE FROM audit_events WHERE audit_id = 'pre-existing-audit-1'")
+            )
+        writer_engine.dispose()
+        return real_record_audit_event(*args, **kwargs)
+
+    monkeypatch.setattr(data_rights, "record_audit_event", _delete_the_preexisting_event_then_delegate)
+
+    result = export_subject_data(db, "p1", actor="tester", reason="test")  # must not raise
+
+    exported_ids = {row["audit_id"] for row in result.records["audit_events"]}
+    assert "pre-existing-audit-1" in exported_ids, (
+        "the deleted row was already captured in the snapshot and must "
+        "still appear in the export -- deletion after the snapshot must "
+        "not silently drop it from a point-in-time export either"
+    )
+    db.close()
+    engine.dispose()
+
+
 # --- Live PostgreSQL: the dialect the fix actually changes behavior for ----
 
 
@@ -275,6 +344,53 @@ def test_export_on_postgresql_does_not_see_a_row_committed_mid_export(monkeypatc
         assert found is not None, "the concurrent row must have actually committed, not been lost"
         verify_engine.dispose()
         writer_engine.dispose()
+
+
+def test_export_survives_a_concurrent_deletion_of_an_already_read_audit_event_on_postgresql(
+    monkeypatch,
+):
+    """Live-PostgreSQL counterpart of the SQLite regression test above --
+    the underlying bug was in SQLAlchemy's Session-level `expire_on_commit`
+    behavior, not a dialect-specific one, but proven on both rather than
+    assumed to transfer."""
+    _skip_unless_postgres_reachable()
+    with _disposable_migrated_postgres_database() as database_url:
+        engine = create_engine(database_url)
+        with engine.connect() as connection:
+            connection.execute(
+                text("INSERT INTO players (player_id, username, preferred_mode) VALUES ('p1', 'u', 'professional')")
+            )
+            connection.execute(
+                text(
+                    "INSERT INTO audit_events (audit_id, actor, action, entity_type, entity_id, details, created_at) "
+                    "VALUES ('pre-existing-audit-1', 'p1', 'test.setup', 'player', 'p1', '{}', now())"
+                )
+            )
+            connection.commit()
+        db = sessionmaker(bind=engine)()
+
+        writer_engine = create_engine(database_url)
+        real_record_audit_event = data_rights.record_audit_event
+
+        def _delete_the_preexisting_event_then_delegate(*args, **kwargs):
+            with writer_engine.connect() as connection:
+                connection.execute(
+                    text("DELETE FROM audit_events WHERE audit_id = 'pre-existing-audit-1'")
+                )
+                connection.commit()
+            writer_engine.dispose()
+            return real_record_audit_event(*args, **kwargs)
+
+        monkeypatch.setattr(
+            data_rights, "record_audit_event", _delete_the_preexisting_event_then_delegate
+        )
+
+        result = export_subject_data(db, "p1", actor="tester", reason="test")  # must not raise
+
+        exported_ids = {row["audit_id"] for row in result.records["audit_events"]}
+        assert "pre-existing-audit-1" in exported_ids
+        db.close()
+        engine.dispose()
 
 
 def test_negative_control_default_isolation_would_have_seen_the_concurrent_row():

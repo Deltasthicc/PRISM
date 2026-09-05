@@ -210,9 +210,9 @@ const CompetencyGapView = ({
 
             {filteredDimensions.length === 0 && (
               <div className="p-8 text-center bg-white rounded-xl border border-[#c5c5d3]/30 text-[#757682] font-sans text-sm">
-                No competencies found matching "
+                No competencies found matching &qout;
                 {searchFilter || statusFilter}
-                ".
+                &quot;.
               </div>
             )}
 

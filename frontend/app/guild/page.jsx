@@ -181,7 +181,7 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
               <p className="font-mono text-[11px] leading-relaxed">
                 <strong className="text-[#00236f]">Objective:</strong> Implement{' '}
                 <code className="bg-[#e2e7ff] px-1 rounded text-[#00236f]">cluster_survey_districts(n_strata, adj_matrix)</code>{' '}
-                using Tarjan's Strongly Connected Components (SCC) in <strong className="text-[#00312c]">O(V + E)</strong> time to partition survey enumeration districts into independent census strata.
+                using Tarjan&apos;s Strongly Connected Components (SCC) in <strong className="text-[#00312c]">O(V + E)</strong> time to partition survey enumeration districts into independent census strata.
               </p>
             </div>
 

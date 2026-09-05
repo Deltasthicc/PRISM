@@ -21,7 +21,7 @@ on:
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
-      services:
+    services:
       postgres:
         image: postgres:16
         env:

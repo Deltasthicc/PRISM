@@ -43,7 +43,10 @@ from models.session import GameSession  # noqa: F401
 from models.question import Question  # noqa: F401
 from models.submission import AnswerSubmission  # noqa: F401
 from models.accuracy_history import AccuracyHistory  # noqa: F401
+from models.learning import LearningMaterial  # noqa: F401 -- governance FK registration
 import routes.game as game_routes
+from routes.authorization import require_principal
+from security.rbac import BoundPrincipal
 from services.game_logic import calculate_damage
 from services.monsters import monster_name_for
 
@@ -72,6 +75,20 @@ def client(monkeypatch):
     app = FastAPI()
     app.include_router(game_routes.router)
     app.dependency_overrides[get_db] = override_get_db
+    # These tests exercise combat bookkeeping, not identity policy. Auth
+    # behavior is covered by test_api_integration_game_authorization.py.
+    app.dependency_overrides[require_principal] = lambda: BoundPrincipal(
+        subject=type("Subject", (), {
+            "issuer": "https://issuer.example/realm",
+            "subject_id": "combat-test",
+            "roles": frozenset({"learner"}),
+        })(),
+        binding_id="combat-test-binding",
+        player_id="combat-test-player",
+        roles=frozenset({"learner"}),
+    )
+    monkeypatch.setattr(game_routes, "_require_body_player", lambda *_args: None)
+    monkeypatch.setattr("routes.authorization.scoped_to_own_player", lambda *_args: None)
 
     # Deterministic stand-ins for the AI service calls -- these tests are
     # about the combat/powerup bookkeeping, not the LLM integration. Score

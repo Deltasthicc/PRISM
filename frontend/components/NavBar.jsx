@@ -25,7 +25,7 @@ export default function NavBar() {
       hasDot: false,
     },
     {
-      href: '/source-quiz-generator',
+      href: '/quiz',
       label: 'Source Quiz Generator',
       hasDot: false,
     },

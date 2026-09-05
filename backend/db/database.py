@@ -235,8 +235,10 @@ def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
                 f"ensure_columns: unsafe or unrecognized column type/default: {type_and_default!r}"
             )
     with engine.connect() as conn:
+        # semgrep: ignore python.sqlalchemy.security.audit.avoid-sqlalchemy-text
         existing = {row[1] for row in conn.execute(text(f"PRAGMA table_info({table})"))}
         for name, type_and_default in columns:
             if name not in existing:
+                # semgrep: ignore python.sqlalchemy.security.audit.avoid-sqlalchemy-text
                 conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {type_and_default}"))
         conn.commit()

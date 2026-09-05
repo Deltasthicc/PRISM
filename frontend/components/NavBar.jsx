@@ -1,161 +1,155 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, Sword, ScrollText, Users, Trophy, BrainCircuit, HelpCircle, Volume2, VolumeX, GraduationCap, ShieldCheck } from 'lucide-react';
-import clsx from 'clsx';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useOnboardingStore } from '@/store/useOnboardingStore';
-import { useMusicStore } from '@/store/useMusicStore';
-import PixelSprite from './PixelSprite';
-import { heroOrDefault } from '@/lib/sprites/heroSprites';
+import { usePathname } from 'next/navigation';
+import { Search, User } from 'lucide-react';
 
-const LINKS = [
-  { href: '/academy', label: 'Academy', icon: GraduationCap },
-  { href: '/dungeon', label: 'Dungeon', icon: Sword },
-  { href: '/stats', label: 'Profile', icon: ScrollText },
-  { href: '/guild', label: 'Guild', icon: Users },
-  { href: '/leaderboard', label: 'Ranks', icon: Trophy },
-  { href: '/dashboard', label: 'AI Core', icon: BrainCircuit },
-  { href: '/admin', label: 'Admin', icon: ShieldCheck },
-];
-
-export default function NavBar() {
-  const [open, setOpen] = useState(false);
+export default function NavBar({ searchQuery, setSearchQuery }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const player = useAuthStore((s) => s.player);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const logout = useAuthStore((s) => s.logout);
-  const openOnboarding = useOnboardingStore((s) => s.openModal);
-  const musicEnabled = useMusicStore((s) => s.enabled);
-  const toggleMusic = useMusicStore((s) => s.toggle);
 
-  if (!isAuthenticated) return null;
-
-  async function handleLogout() {
-    await logout();
-    router.push('/login');
-  }
+  const navTabs = [
+    {
+      href: '/competency-and-gap-analysis',
+      label: 'Competency & Gap Analysis',
+      hasDot: true,
+    },
+    {
+      href: '/prerequisite-pathways',
+      label: 'Prerequisite Pathways',
+      hasDot: false,
+    },
+    {
+      href: '/source-quiz-generator',
+      label: 'Source Quiz Generator',
+      hasDot: false,
+    },
+    {
+      href: '/guild',
+      label: 'Adaptive Practice (DSA Quest)',
+      hasDot: false,
+    },
+    {
+      href: '/integration-registry',
+      label: 'Integration Registry',
+      hasDot: false,
+    },
+  ];
 
   return (
-    <nav className="bg-stone-dark border-b-4 border-black sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/academy" className="font-display text-arcane text-sm tracking-wider">
-          PRISM
+    <header className="fixed top-0 left-0 right-0 z-50 flex flex-col bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+
+      {/* =========================================
+          PRIMARY BRAND / SEARCH / USER BAR
+          ========================================= */}
+      <div className="h-16 sm:h-20 px-4 sm:px-8 flex items-center justify-between gap-4 border-b border-[#c5c5d3]/40">
+
+        {/* ================= BRAND ================= */}
+        <Link
+          href="/competency-and-gap-analysis"
+          className="flex items-center gap-3 shrink-0"
+        >
+          <img
+            alt="MoSPI Skill Intelligence Logo"
+            className="h-8 sm:h-9 w-auto object-contain cursor-pointer"
+            src="https://lh3.googleusercontent.com/aida/AEtjO1X2HmAWuTERiKBpSMjZTAJb93ncwDjSPHeHfuYT3E7GYJ7g4rwxI9weXopyodSrfcDM7-axk3a2BgAqFL6ddQObM93edN1b_Yb5KEfuY9YbqGIbJTqrguqs-pwBVV-e2W7_i_NEDbwdLxgwZkKb7MU7zaCvRS5OnpN0HW20u_dVUer0qf1eZLIOQD_rNcqbElu7ZK0mziERc6UkN8TSHLKYPahPkm4timPyoe-M3ZqnBP3A98grXD8z5l61"
+          />
+
+          <div className="flex flex-col">
+            <span className="text-base sm:text-lg font-bold text-[#00236f] leading-tight tracking-tight">
+              MoSPI Skill-Intelligence
+            </span>
+
+            <span className="font-mono text-[9px] sm:text-[10px] text-[#757682] uppercase tracking-wider">
+              MINISTRY OF STATISTICS &amp; PROGRAMME IMPLEMENTATION
+            </span>
+          </div>
         </Link>
 
-        <button
-          className="md:hidden text-parchment"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        {/* ================= SEARCH + USER ================= */}
+        <div className="flex items-center gap-4">
 
-        <div className="hidden md:flex items-center gap-4">
-          {LINKS.map((l) => (
-            <NavLink key={l.href} {...l} active={pathname.startsWith(l.href)} />
-          ))}
-        </div>
+          {/* Search */}
+          <div className="hidden md:flex items-center bg-[#f2f3ff] px-3.5 py-1.5 rounded-lg w-64 lg:w-80 border border-[#c5c5d3]/40">
 
-        <div className="hidden md:flex items-center gap-3">
-          <button
-            onClick={toggleMusic}
-            aria-label={musicEnabled ? 'Mute music' : 'Play music'}
-            title={musicEnabled ? 'Mute music' : 'Play music'}
-            className="text-parchment-dim hover:text-arcane"
-          >
-            {musicEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-          </button>
-          <button
-            onClick={openOnboarding}
-            aria-label="How to play"
-            title="How to play"
-            className="text-parchment-dim hover:text-arcane"
-          >
-            <HelpCircle size={20} />
-          </button>
-          <Link href="/stats" className="flex items-center gap-2 hover:opacity-80">
-            <PixelSprite
-              src={heroOrDefault(player?.hero_id).image}
-              grid={heroOrDefault(player?.hero_id).grid}
-              palette={heroOrDefault(player?.hero_id).palette}
-              size={28}
-              title={heroOrDefault(player?.hero_id).name}
-              className="border-2 border-black shrink-0"
+            <Search
+              size={18}
+              className="text-[#757682] mr-2 shrink-0"
             />
-            <span className="font-body text-parchment-dim text-sm">{player?.username}</span>
-          </Link>
-          <button
-            onClick={handleLogout}
-            className="font-display text-[9px] bg-blood text-parchment px-2 py-2 border-2 border-black"
+
+            <input
+              className="w-full bg-transparent border-none outline-none text-xs text-[#131b2e] placeholder:text-[#757682]"
+              placeholder="Search competencies, iGOT..."
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+
+          </div>
+
+          {/* ================= USER PROFILE ================= */}
+          <Link
+            href="/stats"
+            className="flex items-center gap-2.5 bg-[#f2f3ff]/80 px-3 py-1.5 rounded-lg border border-[#c5c5d3]/30 hover:bg-[#e2e7ff] hover:border-[#00236f]/30 transition-all cursor-pointer"
           >
-            LOGOUT
-          </button>
+
+            <div className="flex flex-col text-right hidden sm:block">
+              <span className="font-mono text-xs font-semibold text-[#131b2e] leading-tight">
+                rajesh.sharma
+              </span>
+            </div>
+
+            <div className="w-8 h-8 rounded-full bg-[#00236f] flex items-center justify-center text-white shadow-sm">
+              <User
+                size={18}
+                className="text-white"
+              />
+            </div>
+
+          </Link>
         </div>
       </div>
 
-      {open && (
-        <div className="md:hidden border-t-4 border-black bg-stone-dark px-4 py-3 flex flex-col gap-3">
-          <Link
-            href="/stats"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-2 py-1 hover:opacity-80"
-          >
-            <PixelSprite
-              src={heroOrDefault(player?.hero_id).image}
-              grid={heroOrDefault(player?.hero_id).grid}
-              palette={heroOrDefault(player?.hero_id).palette}
-              size={28}
-              title={heroOrDefault(player?.hero_id).name}
-              className="border-2 border-black shrink-0"
-            />
-            <span className="font-body text-parchment-dim text-sm">{player?.username}</span>
-          </Link>
-          {LINKS.map((l) => (
-            <NavLink key={l.href} {...l} active={pathname.startsWith(l.href)} onClick={() => setOpen(false)} />
-          ))}
-          <button
-            onClick={toggleMusic}
-            className="font-display text-[9px] flex items-center gap-2 px-2 py-2 text-parchment-dim"
-          >
-            {musicEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />} {musicEnabled ? 'MUTE MUSIC' : 'PLAY MUSIC'}
-          </button>
-          <button
-            onClick={() => {
-              openOnboarding();
-              setOpen(false);
-            }}
-            className="font-display text-[9px] flex items-center gap-2 px-2 py-2 text-parchment-dim"
-          >
-            <HelpCircle size={14} /> HOW TO PLAY
-          </button>
-          <button
-            onClick={handleLogout}
-            className="font-display text-[9px] bg-blood text-parchment px-3 py-2 border-2 border-black self-start mt-1"
-          >
-            LOGOUT
-          </button>
-        </div>
-      )}
-    </nav>
-  );
-}
+      {/* =========================================
+          NAVIGATION SUB-BAR
+          ========================================= */}
+      <nav className="h-11 px-4 sm:px-8 bg-white border-b border-[#c5c5d3]/20 flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar">
 
-function NavLink({ href, label, icon: Icon, active, onClick }) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={clsx(
-        'font-display text-[9px] flex items-center gap-2 px-2 py-2 border-2',
-        active ? 'border-arcane text-arcane' : 'border-transparent text-parchment-dim hover:text-parchment'
-      )}
-    >
-      <Icon size={14} />
-      {label}
-    </Link>
+        {navTabs.map((tab) => {
+          const isActive = pathname.startsWith(tab.href);
+
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={`
+                h-full
+                flex
+                items-center
+                gap-1.5
+                text-xs
+                sm:text-sm
+                whitespace-nowrap
+                transition-colors
+                border-b-2
+                font-medium
+                ${
+                  isActive
+                    ? 'border-[#00236f] text-[#00236f] font-semibold'
+                    : 'border-transparent text-[#444651] hover:text-[#00236f]'
+                }
+              `}
+            >
+              <span>{tab.label}</span>
+
+              {tab.hasDot && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#fe932c] inline-block" />
+              )}
+            </Link>
+          );
+        })}
+
+      </nav>
+    </header>
   );
 }

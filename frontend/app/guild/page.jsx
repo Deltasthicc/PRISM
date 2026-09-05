@@ -109,7 +109,6 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
       <div className="flex flex-col gap-3 mb-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#e2e7ff] p-3.5 rounded-xl border border-[#b6c4ff]/50">
           <div className="flex items-center gap-2.5">
-            <span className="material-symbols-outlined text-[#00236f] text-[22px]">sports_esports</span>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-base font-bold text-[#00236f]">NSO Sandbox Engine // DSA Quest</h1>

@@ -1,4 +1,5 @@
 import { Press_Start_2P, VT323 } from 'next/font/google';
+
 import './globals.css';
 import Providers from './providers';
 import NavBar from '@/components/NavBar';
@@ -9,6 +10,9 @@ import MainShell from '@/components/MainShell';
 // character/guild), which still use font-display/font-body. The professional
 // shell (this layout, NavBar, Academy, login/register, admin, stats,
 // dashboard) uses plain system fonts and never opts into these.
+import OnboardingModal from '@/components/OnboardingModal';
+import MusicPlayer from '@/components/MusicPlayer';
+import Footer from '@/components/Footer';
 
 const pressStart = Press_Start_2P({
   subsets: ['latin'],
@@ -26,25 +30,37 @@ const vt323 = VT323({
 
 export const metadata = {
   title: 'PRISM',
-  description: 'A cross-domain skill-intelligence platform with an adaptive practice RPG built in.',
+  description:
+    'A cross-domain skill-intelligence platform with an adaptive practice RPG built in.',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${pressStart.variable} ${vt323.variable}`}>
-      {/* suppressHydrationWarning: browser extensions (Grammarly, password
-          managers, etc.) inject their own attributes -- e.g.
-          data-new-gr-c-s-check-loaded, data-gr-ext-installed -- into <body>
-          before React hydrates. React then reports a mismatch between the
-          server-rendered HTML and what it finds in the DOM, but the
-          "mismatch" is the extension's own attribute, not anything this app
-          rendered differently. This only silences that one, one-level-deep
-          false positive on <body> itself; a real mismatch inside the page
-          content still reports normally. */}
+    <html
+      lang="en"
+      className={`${pressStart.variable} ${vt323.variable}`}
+    >
+      {/*
+        suppressHydrationWarning: browser extensions (Grammarly, password
+        managers, etc.) can inject attributes into <body> before React
+        hydrates, causing a hydration mismatch warning.
+      */}
+
       <body suppressHydrationWarning>
+        <div className="torch-flicker" aria-hidden="true" />
+
+        <MusicPlayer />
+
         <Providers>
           <NavBar />
-          <MainShell>{children}</MainShell>
+
+          <main className="max-w-6xl mx-auto px-4 py-6 pt-[180px]">
+            {children}
+          </main>
+
+          <OnboardingModal />
+
+          <Footer />
         </Providers>
       </body>
     </html>

@@ -21,6 +21,33 @@ export default function NavBar() {
   const logout = useAuthStore((s) => s.logout);
 
   if (!isAuthenticated) return null;
+  const navTabs = [
+    {
+      href: '/competency-and-gap-analysis',
+      label: 'Competency & Gap Analysis',
+      hasDot: true,
+    },
+    {
+      href: '/dungeon',
+      label: 'Prerequisite Pathways',
+      hasDot: false,
+    },
+    {
+      href: '/source-quiz-generator',
+      label: 'Source Quiz Generator',
+      hasDot: false,
+    },
+    {
+      href: '/guild',
+      label: 'Adaptive Practice (DSA Quest)',
+      hasDot: false,
+    },
+    {
+      href: '/integration-registry',
+      label: 'Integration Registry',
+      hasDot: false,
+    },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex flex-col bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">

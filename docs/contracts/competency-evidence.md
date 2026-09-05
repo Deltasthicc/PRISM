@@ -11,17 +11,18 @@ Contract version: **v1**
 
 Status: **v1 — the gap/pathway result shape, role-target selection, evidence-coverage semantics,
 determinism (golden fixtures, section 5.1) and the bounded lab's input/output are defined and
-test-covered. Persistence of evidence, HTTP exposure of the lab, three of the five evidence
-types, an `activity` layer and dated target history are NOT implemented.** Section 8 states the
-boundary exactly; section 9 lists what other
+test-covered, and all five evidence types are now read and reported separately (section 3).
+Persistence of evidence, HTTP exposure of the lab and of evidence resolution, scoring weights for
+three of the five evidence types, an `activity` layer and dated target history are NOT
+implemented.** Section 8 states the boundary exactly; section 9 lists what other
 lanes must do before the loop closes end to end.
 
 Everything here describes `backend/services/learning_engine.py`,
 `backend/services/role_targets.py`, `backend/services/behavioral_anchors.py`,
-`backend/services/curricula.py`, `backend/services/ps02_coverage.py` and
-`backend/labs/sampling_lab.py` as they actually behave, and is pinned by
-`backend/tests/test_competency_*.py` (136 backend tests passing on 2026-09-03). It is not a claim
-of MoSPI/CBC validation — see section 6.
+`backend/services/curricula.py`, `backend/services/ps02_coverage.py`,
+`backend/services/evidence_resolver.py` and `backend/labs/sampling_lab.py` as they actually
+behave, and is pinned by `backend/tests/test_competency_*.py` (111 Lane 3 tests, 656 backend tests
+passing overall on 2026-09-05). It is not a claim of MoSPI/CBC validation — see section 6.
 
 ## 1. Versioning
 
@@ -66,6 +67,27 @@ skipped for a competency it says nothing about. `matched_field` reports which fi
 target (`null` for the curriculum default), so a UI can explain the selection rather than assert
 it.
 
+### Two sources, one shape
+
+Targets resolve from either of two interchangeable sources, both returning the identical record
+(`target_level`, `source`, `assurance`, `framework_version`, `approved_by`, `matched_role`,
+`matched_field`):
+
+| Source | Where | Used when |
+|---|---|---|
+| Lane 2's `role_targets` table | `services/role_target_resolver.py`'s `resolve_role_targets(db, curriculum_slug, ...)` | a caller passes the result as `analyse_competencies(role_targets=...)` |
+| In-memory demonstration set | `services/role_targets.py` | no `role_targets` argument — keeps the engine pure and its golden fixtures exact |
+
+Both call the same `role_candidates()` helper, so the precedence policy has exactly one
+definition and the paths cannot drift. The database path adds a stored role-agnostic `"*"` row
+between "no role matched" and the curriculum default, and honours the validity window
+(`valid_from <= as_of < valid_to`) that Lane 2's `get_current_role_target` enforces — a lapsed or
+not-yet-effective target falls through rather than being applied.
+
+`assurance` is **derived, never stored**: `PROVISIONAL` while `approved_by` is null, and `None`
+once a reviewer has signed off — the fixed vocabulary has no term for "approved", so none is
+invented, and `approved_by` carries that fact instead.
+
 The experience-level ceiling still applies **on top of** the role target:
 `pathway_target = min(role_target, experience_cap(experience_level))`. Caps are
 beginner 3, intermediate 4, advanced 5, expert 5; an unrecognised level caps at 3.
@@ -80,15 +102,42 @@ The evidence vocabulary is Lane 2's `EVIDENCE_TYPES` (`backend/models/governance
 so no relabeling is needed when evidence moves into `EvidenceRecord` rows:
 `self_report`, `diagnostic`, `observed_practice`, `reviewer`, `provider_imported`.
 
-Lane 3 currently **produces only two**: `self_report` (from `self_ratings`) and
-`observed_practice` (from `measured_scores`, derived by Lane 5's route from `AccuracyHistory`).
+All five are now **read and reported separately**. `services/evidence_resolver.py`'s
+`resolve_evidence(db, player_id, competency_ids)` reads the latest `EvidenceRecord` row per
+`(competency, type)` through Lane 2's `get_latest_evidence`, and `analyse_competencies()` accepts
+the result as its optional `evidence` argument:
+
+```python
+{competency_id: {evidence_type: {"value": int | None, "recorded_at": str | None, "detail": str}}}
+```
+
+Each competency result then carries `evidence_records` — one entry per stored type, each with its
+own value, timestamp, detail and a `scored` flag — so a reviewer can take the evidence apart
+rather than receiving one collapsed number.
+
+**Only two types are scored.** `observed_practice` and `self_report` drive `observed_level` at the
+same 65/35 weights this policy version has always used:
 
 | Evidence present | `observed_level` | `evidence` text |
 |---|---|---|
-| both | `measured × 0.65 + self × 0.35` | `65% demonstrated performance + 35% self-assessment` |
+| both scored types | `measured × 0.65 + self × 0.35` | `65% demonstrated performance + 35% self-assessment` |
 | demonstrated only | `measured` | `demonstrated performance` |
 | self-report only | `self` | `self-assessment only; diagnostic evidence still required` |
-| neither | `0.0` | `no evidence yet` |
+| only unscored types | `0.0` | names the recorded types and says they are not scored under this policy version |
+| nothing | `0.0` | `no evidence yet` |
+
+`reviewer`, `diagnostic` and `provider_imported` are recorded, separated and displayed but
+**deliberately do not move the score**. `SIH26101_TEAM_ORCHESTRATION.md` section 5 asks Lane 3 to
+*separate* the five types, not to blend them, and no domain-reviewer-validated weights exist for
+these three — inventing weights would be exactly the fabricated psychometric precision
+`CLAUDE.md` invariant #4 forbids. `method.scored_evidence_types` and
+`method.recorded_unscored_evidence_types` state the split in every response. Adding weights later
+is a deliberate contract change under section 10, not a silent edit.
+
+A stored `EvidenceRecord` outranks the legacy `self_ratings`/`measured_scores` argument for the
+same competency and type: the row is auditable, the argument is a loose input. A row whose `value`
+is null (Lane 2 allows qualitative `reviewer` notes) counts as present-but-unrated and never
+overrides a real argument with a zero.
 
 The 65/35 blend is a transparent prototype policy, **not validated psychometrics**
 (`CODEX.md` architecture invariants). Self-ratings never raise a score above demonstrated
@@ -100,7 +149,13 @@ performance on their own.
 
 - `has_evidence: false` and `evidence_state: "NO EVIDENCE"`.
 - `priority` is forced to `"unassessed"` — it can never read `critical`/`high`/`medium` without
-  at least one evidence source behind it.
+  **scored** evidence behind it. The trigger is `has_scored_evidence`, not `has_evidence`: a
+  learner carrying only a qualitative reviewer note has evidence on file but nothing rateable, so
+  deriving a tier from the `0.0` placeholder would be precisely the unsupported low-ability
+  judgment this invariant forbids.
+- `evidence_state: "NO EVIDENCE"` stays reserved for genuinely nothing on file. A
+  recorded-but-unscored type *is* evidence and does not carry that label —
+  `has_scored_evidence: false` is what says the level is not yet derivable.
 - `observed_anchor` is `null` (nothing observed, so nothing to describe), while `target_anchor`
   still resolves — the target is known even when the learner's level is not.
 - `recommended_action` says a baseline diagnostic is needed, not that foundation remediation is.
@@ -283,14 +338,20 @@ is Lane 2/5 work.
 
 Stated plainly so no consumer or slide over-claims:
 
-- **Three of five evidence types are never produced.** `diagnostic`, `reviewer` and
-  `provider_imported` exist in the vocabulary only. Full separation needs Lane 2's
-  `EvidenceRecord` rows.
-- **Nothing is persisted by Lane 3.** Evidence, targets and lab attempts are computed in memory
-  and returned; storage is Lane 2's, exposure is Lane 5's.
+- **Three of five evidence types are read but not scored.** `diagnostic`, `reviewer` and
+  `provider_imported` are resolved, separated and displayed, and they raise `confidence`, but they
+  do not move `observed_level` — no validated weights exist, and inventing them is forbidden.
+  Section 3 states the split; adding weights is a section 10 contract change.
+- **Evidence resolution is not wired into any route.** `resolve_evidence()` is implemented and
+  tested, but `routes/learning_competency.py` does not call it, so the five types are unreachable
+  through the API today (section 9.5).
+- **Nothing is persisted by Lane 3.** Targets and lab attempts are computed in memory and
+  returned; writing `EvidenceRecord` rows is Lane 2's storage and Lane 5's route work.
 - **The lab has no HTTP route.** It is importable and tested, not reachable from the browser.
-- **The engine's role fields are not yet wired.** `routes/learning.py` still passes only
-  `experience_level`, so the four-field targeting is unreachable through the API (section 9.1).
+- **The engine's role fields are not yet wired.** `routes/learning_competency.py` still passes
+  only `experience_level`, so neither the four-field targeting nor the database-backed
+  `role_targets` table reaches the API (section 9.1). Both paths are implemented and tested on
+  the Lane 3 side.
 - **No `activity` layer.** FRAC is role → activity → competency; this contract and Lane 2's
   `RoleTarget` both jump role → competency (section 9.3).
 - **No dated target history.** No `valid_from`/`valid_to`; a target is simply "in effect now".
@@ -308,12 +369,46 @@ Filed per `SIH26101_TEAM_ORCHESTRATION.md` section 8 — Lane 3 does not edit an
 
 ### 9.1 Lane 5 — pass the profile fields through
 
-`routes/learning.py`'s `assess_competencies()` and `get_pathway()` call `analyse_competencies()`
-with `experience_level` only. Both should also pass `profile.job_role`, `profile.designation`,
-`profile.current_assignment` and `profile.department`. All four are optional keyword arguments
-defaulting to `""`, so the current call sites keep working unchanged — this is additive, not
-breaking. Until it lands, `SIH26101_WINNING_PLAYBOOK.md` section 2's prohibition still applies:
-do not describe the API as "role-aware", because through HTTP it is not yet.
+**File: `backend/routes/learning_competency.py`** (both `assess_competencies()` and
+`get_pathway()`, after the route split in PR #4).
+
+Both already load the `profile` row and then use only `profile.experience_level`. Every field
+needed is in that same object. Every argument below is optional and defaults to `""`, so this is
+additive — nothing breaks if it lands partially:
+
+```python
+result = analyse_competencies(
+    body.curriculum_slug,
+    body.self_ratings,
+    measured,
+    profile.experience_level if profile else "beginner",
+    job_role=profile.job_role if profile else "",
+    designation=profile.designation if profile else "",
+    current_assignment=profile.current_assignment if profile else "",
+    department=profile.department if profile else "",
+)
+```
+
+Prefer the database-backed targets where a session is already open — same shape, real
+`role_targets` rows, validity windows honoured:
+
+```python
+from services.role_target_resolver import resolve_role_targets
+
+role_targets = resolve_role_targets(
+    db, body.curriculum_slug,
+    job_role=profile.job_role if profile else "",
+    designation=profile.designation if profile else "",
+    current_assignment=profile.current_assignment if profile else "",
+    department=profile.department if profile else "",
+)
+result = analyse_competencies(..., role_targets=role_targets)
+```
+
+`resolve_role_targets()` raises `ValueError` for an unknown curriculum, the same as the engine, so
+the existing `except ValueError` handling covers it. Until this lands,
+`SIH26101_WINNING_PLAYBOOK.md` section 2's prohibition still applies: do not describe the API as
+"role-aware", because through HTTP it is not yet.
 
 ### 9.2 Lane 5 — expose and persist the lab
 
@@ -338,6 +433,34 @@ and that stored role fields do not affect targets. That is now false at the serv
 still at the HTTP layer until 9.1 lands). `SIH26101_WINNING_PLAYBOOK.md` section 8 also scripts
 "anchors derived from public role and training sources"; the accurate phrasing is that they follow
 FRAC's structure with team-authored wording, pending review.
+
+### 9.5 Lane 5 — call the evidence resolver
+
+**File: `backend/routes/learning_competency.py`** (`assess_competencies()` and `get_pathway()`).
+
+`routes/learning_common.py`'s `measured_scores()` builds one dict from `AccuracyHistory` and
+nothing else, so the four non-`observed_practice` evidence types never reach the engine even
+though they are now fully read and reported. After the route's existing authorization step:
+
+```python
+from services.evidence_resolver import resolve_evidence
+
+competency_ids = [c["id"] for c in get_curriculum(body.curriculum_slug)["competencies"]]
+evidence = resolve_evidence(db, player_id, competency_ids)
+result = analyse_competencies(..., evidence=evidence)
+```
+
+**One caution before persisting anything.** `EvidenceRecord.value` is an `Integer` with a database
+`CHECK (value BETWEEN 0 AND 5)`, while `measured_scores()` produces floats such as `3.25`. Writing
+computed accuracy into an evidence row would silently truncate it. Decide and document a rounding
+rule before storing — or keep `AccuracyHistory` as the live source and store only discrete
+evidence, such as the lab's `evidence_payload()`, which already emits an integer level.
+
+The argument is optional and defaults to `None`, so this is additive: the current call site keeps
+working untouched, and the change survives the route split in Lane 5's immediate package. The
+resolver deliberately does not authorize — per `data-authorization.md` section 4.1's security
+boundary, the route must verify the token, resolve an active local binding, require the relevant
+permission and enforce own-player scope *before* calling it.
 
 ## 10. Change process
 

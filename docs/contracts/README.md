@@ -12,7 +12,7 @@ changes to each one.
 | `identity-authorization.md` | Lane 2 | Lanes 1, 4, 5, 6 | Real, implemented interface — OIDC verification, RBAC and identity-binding primitives, live-verified; not yet wired into `routes/**` |
 | `encryption-key-ownership.md` | Lane 2 | Lanes 2, 5, 6 | Real, implemented, deliberately unwired versioned authenticated-encryption envelope — no current model uses it; not production KMS/HSM key custody |
 | `production-database-hardening.md` | Lane 2 | Lane 6, deployment/security owner | **Specify-only** — three-role PostgreSQL privilege matrix, `search_path` pinning, TLS verification policy, connection-pool budget formula; nothing in it is implemented or dev-drilled, pending real numbers/decisions from Lane 6 |
-| `competency-evidence.md` | Lane 3 | Lanes 1, 5, 6 | Scaffold |
+| `competency-evidence.md` | Lane 3 | Lanes 1, 5, 6 | **v1** — real, implemented interface: gap/pathway result shape, four-field role-target precedence, evidence-coverage and determinism semantics, bounded lab; persistence, HTTP exposure of the lab and three of five evidence types are explicitly not implemented |
 | `content-ai.md` | Lane 4 | Lanes 1, 5, 6 | Scaffold |
 | `openapi.json` | Lane 5 | Lanes 1, 2, 3, 4, 6 | Scaffold |
 | `provider-adapter.md` | Lane 5 | Lanes 1, 2, 3, 4, 6 | Scaffold |

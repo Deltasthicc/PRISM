@@ -111,33 +111,84 @@ def experience_cap(experience_level: str) -> int:
     return EXPERIENCE_TARGET_CAP.get(experience_level, 3)
 
 
-def resolve_role_target(
-    competency_id: str,
-    curriculum_default_target: float,
+def role_candidates(
     job_role: str = "",
     designation: str = "",
     current_assignment: str = "",
     department: str = "",
-) -> dict:
-    """Return {target_level, source, assurance, framework_version,
-    approved_by, matched_role, matched_field} for one competency.
+) -> list[tuple[str, str]]:
+    """Return `[(profile_field, normalized_role_key), ...]` in precedence order,
+    skipping blanks.
 
-    Precedence follows RESOLUTION_ORDER, then the curriculum's own
-    role-agnostic target_level -- mirroring the precedence a future RoleTarget
-    DB lookup would use with role="*" as the agnostic fallback row.
-    `matched_field` says which profile field produced the target, so the UI can
-    explain the selection instead of just asserting it.
+    This is the single definition of Lane 3's precedence policy. Both the
+    in-memory path below and the database-backed path in
+    services/role_target_resolver.py consume it, so the two can never drift
+    apart -- and Lane 2's `get_current_role_target` deliberately implements
+    none of it ("Role/designation/department precedence, aliases and the `\"*\"`
+    fallback are Lane 3 policy", docs/contracts/data-authorization.md 4.1).
     """
-    candidates = {
+    supplied = {
         "job_role": job_role,
         "designation": designation,
         "current_assignment": current_assignment,
         "department": department,
     }
+    ordered = []
     for field in RESOLUTION_ORDER:
-        key = (candidates[field] or "").strip().lower()
-        if not key:
-            continue
+        key = (supplied[field] or "").strip().lower()
+        if key:
+            ordered.append((field, key))
+    return ordered
+
+
+def assurance_for(approved_by: str | None) -> str | None:
+    """`PROVISIONAL` while nobody has signed a target off; `None` once someone
+    has.
+
+    SIH26101_MASTER_CHECKLIST.md 3.3 requires a team-authored target to be
+    labelled exactly `PROVISIONAL`, and the fixed vocabulary (`SIMULATED`,
+    `CATALOGUE`, `LIVE`, `PROVISIONAL`, `NO EVIDENCE`) offers no term for
+    "approved" -- so an approved target carries no assurance label rather than
+    an invented one, exactly as `evidence_state` stays null instead of
+    inventing a positive counterpart to `NO EVIDENCE`. `approved_by` itself
+    tells the consumer who signed it.
+    """
+    return PROVISIONAL if approved_by is None else None
+
+
+def curriculum_default_target(competency_id: str, curriculum_default: float) -> dict:
+    """The role-agnostic fallback record, used when no role key matches."""
+    return {
+        "target_level": float(curriculum_default),
+        "source": "curriculum-default",
+        "assurance": PROVISIONAL,
+        "framework_version": FRAMEWORK_VERSION,
+        "approved_by": None,
+        "matched_role": "*",
+        "matched_field": None,
+    }
+
+
+def resolve_role_target(
+    competency_id: str,
+    curriculum_default: float,
+    job_role: str = "",
+    designation: str = "",
+    current_assignment: str = "",
+    department: str = "",
+) -> dict:
+    """Resolve one competency's target from the in-memory demonstration set.
+
+    Return shape: {target_level, source, assurance, framework_version,
+    approved_by, matched_role, matched_field}. `matched_field` says which
+    profile field produced the target, so a UI can explain the selection
+    instead of just asserting it.
+
+    This is the no-database path, kept so the engine stays pure and its golden
+    fixtures stay exact. The database-backed equivalent lives in
+    services/role_target_resolver.py and returns the same shape.
+    """
+    for field, key in role_candidates(job_role, designation, current_assignment, department):
         override = ROLE_TARGET_OVERRIDES.get(key, {})
         if competency_id in override:
             return {
@@ -150,12 +201,4 @@ def resolve_role_target(
                 "matched_field": field,
             }
 
-    return {
-        "target_level": float(curriculum_default_target),
-        "source": "curriculum-default",
-        "assurance": PROVISIONAL,
-        "framework_version": FRAMEWORK_VERSION,
-        "approved_by": None,
-        "matched_role": "*",
-        "matched_field": None,
-    }
+    return curriculum_default_target(competency_id, curriculum_default)

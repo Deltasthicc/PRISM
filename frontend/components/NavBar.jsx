@@ -6,14 +6,6 @@ import { usePathname } from 'next/navigation';
 import { User, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 
-const NAV_TABS = [
-  { href: '/academy', label: 'Competency & Gap Analysis' },
-  { href: '/academy', label: 'Prerequisite Pathways' },
-  { href: '/academy', label: 'Source Quiz Generator' },
-  { href: '/guild', label: 'Adaptive Practice (DSA Quest)' },
-  { href: '/integration-registry', label: 'Integration Registry' },
-];
-
 export default function NavBar() {
   const pathname = usePathname();
   const player = useAuthStore((s) => s.player);
@@ -104,12 +96,12 @@ export default function NavBar() {
           NAVIGATION SUB-BAR
           ========================================= */}
       <nav className="h-11 px-4 sm:px-8 bg-white border-b border-[#c5c5d3]/20 flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar">
-        {NAV_TABS.map((tab, index) => {
+        {navTabs.map((tab, index) => {
           // Three tabs currently share the /academy destination (it's one
           // continuous flow, not three separate pages yet -- see AcademyHub)
           // -- only the first one lights up as "active" so all three don't
           // simultaneously highlight.
-          const isFirstWithThisHref = NAV_TABS.findIndex((t) => t.href === tab.href) === index;
+          const isFirstWithThisHref = navTabs.findIndex((t) => t.href === tab.href) === index;
           const isActive = isFirstWithThisHref && pathname.startsWith(tab.href);
 
           return (

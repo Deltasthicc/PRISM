@@ -168,6 +168,35 @@ def test_simulated_igot_never_claims_live_capability():
     assert adapter.request_enrolment("course-1", idempotency_key="request-1").data["accepted"] is False
 
 
+def test_simulated_igot_catalogue_is_deterministic_and_explicitly_empty():
+    adapter = SimulatedIGOTAdapter()
+
+    first = adapter.search_catalogue("sampling")
+    second = adapter.search_catalogue("sampling")
+
+    assert first == second
+    assert first.status == "SIMULATED"
+    assert first.data == {"query": "sampling", "items": [], "next_cursor": None}
+
+
+def test_simulated_igot_course_lookup_is_a_partial_negative_result():
+    result = SimulatedIGOTAdapter().get_course("unverified-course")
+
+    assert result.status == "SIMULATED"
+    assert result.data == {"provider_record_id": "unverified-course", "found": False}
+
+
+def test_simulated_igot_preserves_idempotency_key_on_repeated_enrolment_requests():
+    adapter = SimulatedIGOTAdapter()
+
+    first = adapter.request_enrolment("course-1", idempotency_key="request-1")
+    second = adapter.request_enrolment("course-1", idempotency_key="request-1")
+
+    assert first == second
+    assert first.idempotency_key == "request-1"
+    assert first.data == {"accepted": False, "reason": "simulation-only"}
+
+
 def test_route_auth_adapter_returns_401_for_missing_or_invalid_bearer(monkeypatch):
     def reject(_header):
         raise AuthenticationError("invalid")

@@ -2,42 +2,72 @@
   "openapi": "3.0.3",
   "info": {
     "title": "PRISM API",
-    "version": "0.2.0",
-    "description": "Versioned Lane 5 contract for protected assessment and aggregate analytics reads. Live provider access is not implied."
+    "version": "0.3.0",
+    "description": "Current versioned HTTP surface for the PRISM prototype. Provider integrations remain catalogue fallback or simulated; this contract does not claim live government connectivity."
   },
+  "servers": [{"url": "http://localhost:8000"}],
+  "tags": [
+    {"name": "Game"},
+    {"name": "AI"},
+    {"name": "Learning Profile"},
+    {"name": "Learning Competency"},
+    {"name": "Learning Content"},
+    {"name": "Learning Integrations"},
+    {"name": "Learning Analytics"}
+  ],
   "paths": {
-    "/learning/assessment/{player_id}/latest": {
-      "get": {
-        "operationId": "getLatestAssessment",
-        "security": [{"bearerAuth": []}],
-        "parameters": [
-          {"name": "player_id", "in": "path", "required": true, "schema": {"type": "string"}},
-          {"name": "curriculum_slug", "in": "query", "required": true, "schema": {"type": "string", "minLength": 2, "maxLength": 120}}
-        ],
-        "responses": {
-          "200": {"description": "Latest assessment or null when no assessment exists"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"}
-        }
-      }
-    },
-    "/learning/admin/overview": {
-      "get": {
-        "operationId": "getAdminOverview",
-        "security": [{"bearerAuth": []}],
-        "responses": {
-          "200": {"description": "Privacy-safe latest-distinct-learner aggregates"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"}
-        }
-      }
-    }
+    "/": {"get": {"operationId": "getRoot", "tags": ["System"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/health": {"get": {"operationId": "healthCheck", "tags": ["System"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/player/create": {"post": {"operationId": "createPlayer", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/player/{player_id}": {"get": {"operationId": "getPlayer", "tags": ["Game"], "parameters": [{"$ref": "#/components/parameters/PlayerId"}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "404": {"$ref": "#/components/responses/NotFound"}}}},
+    "/game/player/by-username/{username}": {"get": {"operationId": "getPlayerByUsername", "tags": ["Game"], "parameters": [{"name": "username", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "404": {"$ref": "#/components/responses/NotFound"}}}},
+    "/game/player/{player_id}/hero": {"post": {"operationId": "selectHero", "tags": ["Game"], "parameters": [{"$ref": "#/components/parameters/PlayerId"}], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/powerup/use": {"post": {"operationId": "usePowerup", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/dungeons": {"get": {"operationId": "listDungeons", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/dungeon/{dungeon_id}": {"get": {"operationId": "getDungeon", "tags": ["Game"], "parameters": [{"$ref": "#/components/parameters/DungeonId"}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "404": {"$ref": "#/components/responses/NotFound"}}}},
+    "/game/session/start": {"post": {"operationId": "startSession", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/room/enter": {"post": {"operationId": "enterRoom", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/answer/submit": {"post": {"operationId": "submitAnswer", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}, "429": {"$ref": "#/components/responses/TooManyRequests"}}}},
+    "/game/dungeon/{dungeon_id}/next-topic": {"get": {"operationId": "getNextTopic", "tags": ["Game"], "parameters": [{"$ref": "#/components/parameters/DungeonId"}], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/hint/use": {"post": {"operationId": "useHint", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/leaderboard": {"get": {"operationId": "getLeaderboard", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/leaderboard/guild": {"get": {"operationId": "getGuildLeaderboard", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/guild/create": {"post": {"operationId": "createGuild", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/guild/join": {"post": {"operationId": "joinGuild", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/guild/raid/join": {"post": {"operationId": "joinRaid", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/guild/raid/submit": {"post": {"operationId": "submitRaidAnswer", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/guild/raid/status": {"get": {"operationId": "getRaidStatus", "tags": ["Game"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/game/guild/{guild_id}": {"get": {"operationId": "getGuild", "tags": ["Game"], "parameters": [{"name": "guild_id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/ai/question/generate": {"post": {"operationId": "generateQuestion", "tags": ["AI"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/ai/answer/judge": {"post": {"operationId": "judgeAnswer", "tags": ["AI"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/ai/difficulty/next": {"post": {"operationId": "getNextDifficulty", "tags": ["AI"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/ai/graph/next-topic": {"post": {"operationId": "getNextGraphTopic", "tags": ["AI"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/ai/dashboard/{player_id}": {"get": {"operationId": "getAIDashboard", "tags": ["AI"], "parameters": [{"$ref": "#/components/parameters/PlayerId"}], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/learning/curricula": {"get": {"operationId": "listCurricula", "tags": ["Learning Competency"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/learning/integrations/status": {"get": {"operationId": "getIntegrationStatus", "tags": ["Learning Integrations"], "responses": {"200": {"$ref": "#/components/responses/Success"}}}},
+    "/learning/profile/{player_id}": {"get": {"operationId": "getProfile", "tags": ["Learning Profile"], "security": [{"bearerAuth": []}], "parameters": [{"$ref": "#/components/parameters/PlayerId"}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "401": {"$ref": "#/components/responses/Unauthorized"}, "403": {"$ref": "#/components/responses/Forbidden"}}}, "put": {"operationId": "upsertProfile", "tags": ["Learning Profile"], "security": [{"bearerAuth": []}], "parameters": [{"$ref": "#/components/parameters/PlayerId"}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "401": {"$ref": "#/components/responses/Unauthorized"}, "403": {"$ref": "#/components/responses/Forbidden"}}}},
+    "/learning/assessment/{player_id}": {"post": {"operationId": "createAssessment", "tags": ["Learning Competency"], "security": [{"bearerAuth": []}], "parameters": [{"$ref": "#/components/parameters/PlayerId"}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "401": {"$ref": "#/components/responses/Unauthorized"}, "403": {"$ref": "#/components/responses/Forbidden"}}}},
+    "/learning/assessment/{player_id}/latest": {"get": {"operationId": "getLatestAssessment", "tags": ["Learning Competency"], "security": [{"bearerAuth": []}], "parameters": [{"$ref": "#/components/parameters/PlayerId"}, {"$ref": "#/components/parameters/CurriculumSlug"}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "401": {"$ref": "#/components/responses/Unauthorized"}, "403": {"$ref": "#/components/responses/Forbidden"}}}},
+    "/learning/pathway/{player_id}": {"get": {"operationId": "getPathway", "tags": ["Learning Competency"], "security": [{"bearerAuth": []}], "parameters": [{"$ref": "#/components/parameters/PlayerId"}, {"$ref": "#/components/parameters/CurriculumSlug"}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "401": {"$ref": "#/components/responses/Unauthorized"}, "403": {"$ref": "#/components/responses/Forbidden"}}}},
+    "/learning/quiz/generate": {"post": {"operationId": "generateQuiz", "tags": ["Learning Content"], "security": [{"bearerAuth": []}], "requestBody": {"$ref": "#/components/requestBodies/QuizUpload"}, "responses": {"200": {"$ref": "#/components/responses/Success"}, "401": {"$ref": "#/components/responses/Unauthorized"}, "403": {"$ref": "#/components/responses/Forbidden"}}}},
+    "/learning/quiz/{player_id}": {"get": {"operationId": "listQuizzes", "tags": ["Learning Content"], "security": [{"bearerAuth": []}], "parameters": [{"$ref": "#/components/parameters/PlayerId"}, {"$ref": "#/components/parameters/Limit"}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "401": {"$ref": "#/components/responses/Unauthorized"}, "403": {"$ref": "#/components/responses/Forbidden"}}}},
+    "/learning/admin/overview": {"get": {"operationId": "getAdminOverview", "tags": ["Learning Analytics"], "security": [{"bearerAuth": []}], "responses": {"200": {"$ref": "#/components/responses/Success"}, "401": {"$ref": "#/components/responses/Unauthorized"}, "403": {"$ref": "#/components/responses/Forbidden"}}}}
   },
   "components": {
     "securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}},
+    "parameters": {
+      "PlayerId": {"name": "player_id", "in": "path", "required": true, "schema": {"type": "string"}},
+      "DungeonId": {"name": "dungeon_id", "in": "path", "required": true, "schema": {"type": "string"}},
+      "CurriculumSlug": {"name": "curriculum_slug", "in": "query", "required": true, "schema": {"type": "string", "minLength": 2, "maxLength": 120}},
+      "Limit": {"name": "limit", "in": "query", "required": false, "schema": {"type": "integer", "minimum": 1, "maximum": 50, "default": 10}}
+    },
+    "requestBodies": {"QuizUpload": {"required": true, "content": {"multipart/form-data": {"schema": {"type": "object", "required": ["player_id", "title", "file"], "properties": {"player_id": {"type": "string"}, "title": {"type": "string", "minLength": 2, "maxLength": 180}, "difficulty": {"type": "string", "enum": ["foundation", "intermediate", "advanced", "mixed"], "default": "mixed"}, "language": {"type": "string", "default": "English"}, "question_count": {"type": "integer", "minimum": 3, "maximum": 10, "default": 5}, "file": {"type": "string", "format": "binary"}}}}}}},
     "responses": {
+      "Success": {"description": "Successful response. The endpoint-specific JSON shape is defined by the running FastAPI schema."},
       "Unauthorized": {"description": "Missing or invalid bearer token"},
-      "Forbidden": {"description": "Verified principal lacks binding, permission or object scope"}
+      "Forbidden": {"description": "Verified principal lacks binding, permission or object scope"},
+      "NotFound": {"description": "Requested resource was not found"},
+      "TooManyRequests": {"description": "Request rate or game submission limit exceeded"}
     }
   }
 }

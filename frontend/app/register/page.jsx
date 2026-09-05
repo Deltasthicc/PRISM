@@ -1,9 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
+
+// See app/login/page.jsx for why this exists: the shared Render-hosted
+// Keycloak can take a few minutes to wake up from a cold start, and without
+// this the button just sits on "Creating..." looking stuck.
+const SLOW_LOGIN_HINT_MS = 8000;
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -12,12 +17,20 @@ export default function RegisterPage() {
   const clearError = useAuthStore((s) => s.clearError);
   const [username, setUsername] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [slowHint, setSlowHint] = useState(false);
+  const slowHintTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(slowHintTimer.current), []);
 
   async function handleSubmit(e) {
     e.preventDefault();
     clearError();
     setSubmitting(true);
+    setSlowHint(false);
+    slowHintTimer.current = setTimeout(() => setSlowHint(true), SLOW_LOGIN_HINT_MS);
     const ok = await register(username);
+    clearTimeout(slowHintTimer.current);
+    setSlowHint(false);
     setSubmitting(false);
     if (ok) router.push('/academy');
   }
@@ -45,6 +58,11 @@ export default function RegisterPage() {
           {error && (
             <p className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2">
               {error}
+            </p>
+          )}
+          {submitting && slowHint && (
+            <p className="font-sans text-sm text-[#00236f] bg-[#eef1fb] border border-[#c5d0f5] rounded-lg px-3 py-2">
+              Still working — the sign-in service can take a few minutes to wake up after being idle. No need to retry, this should finish on its own.
             </p>
           )}
           <button

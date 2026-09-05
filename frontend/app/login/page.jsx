@@ -1,9 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
+
+// The shared Render-hosted Keycloak spins down after periods of no traffic,
+// and a cold boot has been measured taking several minutes. Without this,
+// a cold-start login just sits on "Signing in..." with no explanation --
+// which reads as a broken/looping login rather than a slow one. This nudges
+// in only once the wait is already unusual for a warm instance.
+const SLOW_LOGIN_HINT_MS = 8000;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,12 +19,20 @@ export default function LoginPage() {
   const clearError = useAuthStore((s) => s.clearError);
   const [username, setUsername] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [slowHint, setSlowHint] = useState(false);
+  const slowHintTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(slowHintTimer.current), []);
 
   async function handleSubmit(e) {
     e.preventDefault();
     clearError();
     setSubmitting(true);
+    setSlowHint(false);
+    slowHintTimer.current = setTimeout(() => setSlowHint(true), SLOW_LOGIN_HINT_MS);
     const ok = await login(username);
+    clearTimeout(slowHintTimer.current);
+    setSlowHint(false);
     setSubmitting(false);
     if (ok) router.push('/academy');
   }
@@ -45,6 +60,11 @@ export default function LoginPage() {
           {error && (
             <p className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2">
               {error}
+            </p>
+          )}
+          {submitting && slowHint && (
+            <p className="font-sans text-sm text-[#00236f] bg-[#eef1fb] border border-[#c5d0f5] rounded-lg px-3 py-2">
+              Still working — the sign-in service can take a few minutes to wake up after being idle. No need to retry, this should finish on its own.
             </p>
           )}
           <button

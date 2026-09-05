@@ -1,0 +1,36 @@
+name: Render keep-alive
+
+# Render's free tier spins down prism-backend and prism-keycloak after
+# ~15 minutes of no inbound traffic. A cold Keycloak boot has been measured
+# taking 3-4+ minutes, which is what was surfacing as "Authentication
+# required" / a login that looks stuck in a loop on the deployed frontend --
+# the request was actually just waiting on a cold instance and the user-facing
+# flow gave no indication anything was happening.
+#
+# This workflow pings both services often enough that neither one is ever
+# idle long enough to spin down, so real user logins hit warm instances.
+# It is a free-tier workaround, not a permanent fix -- the durable fix is
+# upgrading prism-keycloak (and ideally prism-backend) to a paid Render plan
+# with no idle spin-down, which is a cost decision for the team, not this
+# workflow.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          curl --max-time 30 --retry 2 --retry-delay 5 -fsS \
+            https://prism-backend-2voe.onrender.com/health \
+            || echo "backend ping failed (likely still cold-starting from a longer-than-usual idle period)"
+
+      - name: Ping Keycloak discovery endpoint
+        run: |
+          curl --max-time 30 --retry 2 --retry-delay 5 -fsS \
+            https://prism-keycloak.onrender.com/realms/prism/.well-known/openid-configuration \
+            || echo "keycloak ping failed (likely still cold-starting from a longer-than-usual idle period)"

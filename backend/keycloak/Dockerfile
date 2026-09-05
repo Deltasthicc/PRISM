@@ -10,18 +10,34 @@ FROM quay.io/keycloak/keycloak:26.7.2
 
 COPY prism-realm-export.json /opt/keycloak/data/import/prism-realm-export.json
 
-# start-dev (not `start`) matches the existing local-dev precedent exactly:
-# an embedded, non-persistent database is fine here because the entire realm
-# is declaratively re-imported from the file above on every boot -- there is
-# no runtime state worth keeping across restarts/redeploys. KC_HOSTNAME must
-# match this service's real public hostname once deployed, or every issued
-# token's `iss` claim won't match what OIDC_ISSUER expects on the backend;
-# KC_PROXY_HEADERS tells Keycloak to trust the X-Forwarded-* headers a host
-# like Render terminates TLS and proxies through, so it reports itself as
-# https:// even though the container only ever speaks plain HTTP internally.
+# KC_HOSTNAME must match this service's real public hostname once deployed,
+# or every issued token's `iss` claim won't match what OIDC_ISSUER expects on
+# the backend; KC_PROXY_HEADERS tells Keycloak to trust the X-Forwarded-*
+# headers a host like Render terminates TLS and proxies through, so it
+# reports itself as https:// even though the container only ever speaks
+# plain HTTP internally.
 ENV KC_HOSTNAME=CHANGE_ME.onrender.com
 ENV KC_PROXY_HEADERS=xforwarded
 ENV KC_HTTP_ENABLED=true
+
+# health/metrics are BUILD-time options (they change which Quarkus features
+# get compiled in) -- must be set before `kc.sh build` below, not just at
+# runtime, or the build won't actually omit them.
+ENV KC_HEALTH_ENABLED=false
+ENV KC_METRICS_ENABLED=false
+
+# `start-dev` (the local-dev-compose default) re-runs Keycloak's "Quarkus
+# augmentation" build step from scratch on every single container boot --
+# fine on a laptop, but confirmed live on Render's free tier to take ~199s of
+# a ~289s total startup, which blew straight through Render's port-detection
+# timeout ("==> Timed Out", the container killed before it ever finished
+# booting) even though the memory tuning below worked and it wasn't OOM
+# -killed this time. Doing that same build once here, at image-build time --
+# not gated by any request timeout -- and starting with `--optimized`
+# instead removes that ~199s from every boot. `--import-realm` still applies
+# at actual container start (after this build), so the realm/test-user
+# import behavior is unchanged.
+RUN /opt/keycloak/bin/kc.sh build
 
 # Render's free web-service tier caps the container at 512Mi total -- left to
 # its own defaults, the JVM sizes its heap off the host's *visible* memory,
@@ -52,12 +68,8 @@ ENV KC_HTTP_ENABLED=true
 #     restarting in Render's dashboard), the actual fix is upgrading
 #     prism-keycloak's Render plan to its smallest paid tier for more RAM,
 #     not further JVM flag archaeology.
-# Disabling health/metrics removes two subsystems this deployment never
-# queries but otherwise reserves memory for regardless.
 ENV JAVA_OPTS_APPEND="-Xms32m -Xmx180m -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=180m -XX:ReservedCodeCacheSize=48m -Xss512k"
-ENV KC_HEALTH_ENABLED=false
-ENV KC_METRICS_ENABLED=false
 
 EXPOSE 8080
 
-CMD ["start-dev", "--import-realm"]
+CMD ["start", "--optimized", "--import-realm"]

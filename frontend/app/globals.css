@@ -19,15 +19,11 @@
 
 * {
   box-sizing: border-box;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
 }
 
 html, body {
   background-color: #fff;
   color: var(--color-parchment);
-  font-family: var(--font-vt323), monospace;
   font-size: 20px;
   line-height: 1.4;
   /* Real tileable cave rock-wall art (public/sprites/textures/cave_wall.png,
@@ -66,18 +62,21 @@ body::after {
    cave reads as lit by an actual unsteady flame instead of a static gradient.
    Separate fixed layer (not part of body's own background-image) so it can
    animate independently without fighting the rock-texture gradients. */
+/*
 .torch-flicker {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  /* Same layering approach as the vignette/scanline overlays above (z-9998/
+  Same layering approach as the vignette/scanline overlays above (z-9998/
      9999) -- just below them so it flickers under the always-on darkening,
-     not over it. */
+     not over it.
+
   z-index: 9997;
   background: radial-gradient(ellipse at 50% -10%, rgba(255, 107, 61, 0.16) 0%, transparent 52%);
   animation: torch-pulse 4s ease-in-out infinite;
 }
-
+*/
+/*
 @keyframes torch-pulse {
   0%, 100% { opacity: 0.65; }
   30% { opacity: 1; }
@@ -89,7 +88,7 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   .torch-flicker { animation: none; opacity: 0.75; }
 }
-
+*/
 /* Scanline / CRT atmosphere — subtle, fixed, never blocks interaction */
 /*
 body::before {
@@ -111,7 +110,6 @@ body::before {
   */
 
 h1, h2, h3, .font-display {
-  font-family: var(--font-press-start), cursive;
   letter-spacing: 0.5px;
 }
 
@@ -119,6 +117,7 @@ h1, h2, h3, .font-display {
    The speckle background-image reads as rough rock grain on the panel
    surface itself, so cards don't sit as flat solid-color rectangles against
    the textured cave backdrop. */
+/*
 .pixel-bevel {
   border: 4px solid #000;
   box-shadow:
@@ -137,7 +136,7 @@ h1, h2, h3, .font-display {
   box-shadow:
     inset 2px 2px 0 0 rgba(110, 231, 208, 0.15),
     4px 4px 0 0 #000;
-}
+}*/
 
 /* Custom scrollbar to stay in-theme */
 ::-webkit-scrollbar {
@@ -152,10 +151,11 @@ h1, h2, h3, .font-display {
   border: 2px solid #000;
 }
 
+/*
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
-}
+}*/

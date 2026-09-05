@@ -2,7 +2,6 @@ import { Press_Start_2P, VT323 } from 'next/font/google';
 import './globals.css';
 import Providers from './providers';
 import NavBar from '@/components/NavBar';
-import BatSwarm from '@/components/BatSwarm';
 import OnboardingModal from '@/components/OnboardingModal';
 import MusicPlayer from '@/components/MusicPlayer';
 
@@ -39,7 +38,6 @@ export default function RootLayout({ children }) {
           content still reports normally. */}
       <body suppressHydrationWarning>
         <div className="torch-flicker" aria-hidden="true" />
-        <BatSwarm />
         <MusicPlayer />
         <Providers>
           <NavBar />

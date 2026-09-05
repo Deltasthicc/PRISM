@@ -7,6 +7,7 @@ import { VectorBalanceCard } from '../../components/VectorBalanceCard';
 import { CompetencyVectorCard } from '../../components/CompetencyVectorCard';
 import { InferenceRationaleCard } from '../../components/InferenceRationaleCard';
 import { RecalibrateModal } from '../../components/RecalibrateModal';
+import { BarChart3, TrendingUp, Server, Gavel, Brain, Code } from 'lucide-react';
 
 const CompetencyGapView = ({
   officer,
@@ -46,7 +47,7 @@ const CompetencyGapView = ({
     <div className="flex flex-col w-full">
 
       {/* Top Sovereign Status Strip */}
-      <div className="flex items-center justify-between py-1.5 px-3 md:px-4 bg-[#f2f3ff] rounded-lg mb-4 border border-[#c5c5d3]/30 text-xs">
+      {/*<div className="flex items-center justify-between py-1.5 px-3 md:px-4 bg-[#f2f3ff] rounded-lg mb-4 border border-[#c5c5d3]/30 text-xs">
         <div className="flex items-center gap-2">
           <span className="inline-block w-2 h-2 rounded-full bg-[#904d00]"></span>
 
@@ -70,7 +71,7 @@ const CompetencyGapView = ({
             Attested by Cadre Cell (CSO-HQ)
           </span>
         </div>
-      </div>
+      </div> */}
 
       {/* Officer Profile & Benchmark Target Selector Header */}
       <div className="bg-[#ffffff] border border-[#c5c5d3]/30 rounded-xl p-3.5 md:p-4 mb-5 shadow-sm">
@@ -256,7 +257,7 @@ const EXAMPLE_DIMENSIONS = [
     officerLevel: 2,
     requiredLevel: 4,
     gapText: '-2 levels',
-    icon: 'poll',
+    icon: BarChart3,
     rationale: {
       model: 'NSO-XAI-v4.2',
       surveyHistory: { pct: 12, detail: '3 NSSO rounds on record' },
@@ -276,7 +277,7 @@ const EXAMPLE_DIMENSIONS = [
     officerLevel: 3,
     requiredLevel: 4,
     gapText: '-1 level',
-    icon: 'trending_up',
+    icon: TrendingUp,
     rationale: {
       model: 'NSO-XAI-v4.2',
       surveyHistory: { pct: 20, detail: '1 prior training cycle' },
@@ -296,7 +297,7 @@ const EXAMPLE_DIMENSIONS = [
     officerLevel: 1,
     requiredLevel: 3,
     gapText: '-2 levels',
-    icon: 'dns',
+    icon: Server,
     rationale: {
       model: 'NSO-XAI-v4.2',
       surveyHistory: { pct: 0, detail: 'no recorded exposure' },
@@ -316,7 +317,7 @@ const EXAMPLE_DIMENSIONS = [
     officerLevel: 4,
     requiredLevel: 4,
     gapText: 'on target',
-    icon: 'gavel',
+    icon: Gavel,
     rationale: {
       model: 'NSO-XAI-v4.2',
       surveyHistory: { pct: 24, detail: '4 prior training cycles' },
@@ -336,7 +337,7 @@ const EXAMPLE_DIMENSIONS = [
     officerLevel: 2,
     requiredLevel: 3,
     gapText: '-1 level',
-    icon: 'model_training',
+    icon: Brain,
     rationale: {
       model: 'NSO-XAI-v4.2',
       surveyHistory: { pct: 10, detail: '1 prior training cycle' },
@@ -356,7 +357,7 @@ const EXAMPLE_DIMENSIONS = [
     officerLevel: 3,
     requiredLevel: 3,
     gapText: 'on target',
-    icon: 'code',
+    icon: Code,
     rationale: {
       model: 'NSO-XAI-v4.2',
       surveyHistory: { pct: 0, detail: 'not applicable to this domain' },

@@ -36,7 +36,7 @@ export const CompetencyVectorCard = ({
         {/* Left: Icon & Text */}
         <div className="flex items-center gap-3.5 flex-1 min-w-0">
           <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 font-bold ${iconBg}`}>
-            <span className="material-symbols-outlined text-[20px]">{dimension.icon}</span>
+            <dimension.icon size={24} />
           </div>
           <div className="truncate">
             <h4 className="font-sans text-sm text-[#131b2e] font-bold truncate">

@@ -52,7 +52,17 @@ from security.identity import AuthenticationError, get_current_subject
 
 router = APIRouter(prefix="/auth", tags=["Local Dev Login"])
 
-_TOKEN_REQUEST_TIMEOUT_SECONDS = 5.0
+# Render's free tier fully spins the Keycloak service down after a period of
+# inactivity -- confirmed directly: a cold-start request measured at 335s
+# before responding. 5s (this constant's original value) meant every cold
+# -start login silently fell back to no-token mode instead of actually
+# waiting, which then made every /learning/* call 401 and looked like a
+# broken app rather than a slow-but-working one. 450s gives real margin
+# above the measured worst case. This does mean a genuinely cold login can
+# take several minutes -- upgrading prism-keycloak to a paid Render tier
+# (no spin-down) is the real fix for that UX cost; this change only fixes
+# the correctness bug of giving up before the service was actually reachable.
+_TOKEN_REQUEST_TIMEOUT_SECONDS = 450.0
 
 
 class DevLoginRequest(BaseModel):

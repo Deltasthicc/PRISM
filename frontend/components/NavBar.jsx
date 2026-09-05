@@ -15,7 +15,7 @@ export default function NavBar({ searchQuery, setSearchQuery }) {
       hasDot: true,
     },
     {
-      href: '/prerequisite-pathways',
+      href: '/dungeon',
       label: 'Prerequisite Pathways',
       hasDot: false,
     },

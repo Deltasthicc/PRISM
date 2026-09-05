@@ -18,6 +18,7 @@ from models.question import Question
 from models.submission import AnswerSubmission
 from models.accuracy_history import AccuracyHistory
 from models.guild import Guild
+from routes.authorization import require_own_player_dependency, require_permission_dependency
 from schemas.player import PlayerCreate
 from schemas.dungeon import (
     DungeonResponse, SessionStartRequest, SessionStartResponse,
@@ -36,6 +37,7 @@ from services.heroes import (
     HEROES, DEFAULT_HERO_ID, POWERUP_MAX_USES_PER_WINDOW, POWERUP_WINDOW_HOURS, hero_or_default,
 )
 from services.monsters import monster_name_for
+from security.rbac import AuthorizationError, BoundPrincipal, Permission, scoped_to_own_player
 
 router = APIRouter(prefix="/game", tags=["Game"])
 
@@ -52,6 +54,24 @@ RAID_BOSS_HP_PER_MEMBER = 270
 # boost changes the score post-judging (see submit_answer).
 JUDGE_CORRECT_THRESHOLD = float(os.getenv("JUDGE_CORRECT_THRESHOLD", "0.65"))
 JUDGE_PARTIAL_THRESHOLD = float(os.getenv("JUDGE_PARTIAL_THRESHOLD", "0.30"))
+
+
+def _require_body_player(principal: BoundPrincipal, player_id: str) -> None:
+    try:
+        scoped_to_own_player(principal, player_id)
+    except AuthorizationError as exc:
+        raise HTTPException(status_code=403, detail="Access denied") from exc
+
+
+def _require_guild_member(principal: BoundPrincipal, guild: Guild, db: Session) -> None:
+    if principal.player_id is None:
+        raise HTTPException(status_code=403, detail="Access denied")
+    member = db.query(Player).filter(
+        Player.player_id == principal.player_id,
+        Player.guild_id == guild.guild_id,
+    ).first()
+    if member is None:
+        raise HTTPException(status_code=403, detail="Access denied")
 
 
 def _verdict_from_score(score: float) -> str:
@@ -152,7 +172,13 @@ def _serialize_player(player: Player, histories: list[AccuracyHistory]) -> dict:
 
 
 @router.get("/player/{player_id}")
-async def get_player(player_id: str, db: Session = Depends(get_db)):
+async def get_player(
+    player_id: str,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_own_player_dependency(Permission.PLAYER_SELF_READ)
+    ),
+):
     """Fetch a player's stats and per-topic accuracy history."""
     player = db.query(Player).filter(Player.player_id == player_id).first()
     if not player:
@@ -174,7 +200,14 @@ async def get_player_by_username(username: str, db: Session = Depends(get_db)):
 # ─── Character selection ───
 
 @router.post("/player/{player_id}/hero")
-async def select_hero(player_id: str, body: dict, db: Session = Depends(get_db)):
+async def select_hero(
+    player_id: str,
+    body: dict,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_own_player_dependency(Permission.PLAYER_SELF_WRITE)
+    ),
+):
     hero_id = body.get("hero_id")
     if hero_id not in HEROES:
         raise HTTPException(status_code=422, detail=f"Unknown hero: {hero_id!r}")
@@ -189,7 +222,13 @@ async def select_hero(player_id: str, body: dict, db: Session = Depends(get_db))
 # ─── Powerups ───
 
 @router.post("/powerup/use")
-async def use_powerup(body: dict, db: Session = Depends(get_db)):
+async def use_powerup(
+    body: dict,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """
     Apply the player's chosen hero's powerup, subject to a rolling
     POWERUP_MAX_USES_PER_WINDOW-per-POWERUP_WINDOW_HOURS cooldown persisted on
@@ -210,6 +249,7 @@ async def use_powerup(body: dict, db: Session = Depends(get_db)):
     frontend to apply to its own client-tracked HP.
     """
     player_id = body.get("player_id")
+    _require_body_player(principal, player_id)
     question_id = body.get("question_id")
     player = db.query(Player).filter(Player.player_id == player_id).first()
     if not player:
@@ -280,7 +320,12 @@ async def use_powerup(body: dict, db: Session = Depends(get_db)):
 # ─── Dungeon & Session ───
 
 @router.get("/dungeons")
-async def list_dungeons(db: Session = Depends(get_db)):
+async def list_dungeons(
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PLAYER_SELF_READ)
+    ),
+):
     """List all available dungeons — needed for dungeon selection screen."""
     dungeons = db.query(Dungeon).all()
     return [
@@ -293,7 +338,13 @@ async def list_dungeons(db: Session = Depends(get_db)):
 
 
 @router.get("/dungeon/{dungeon_id}", response_model=DungeonResponse)
-async def get_dungeon(dungeon_id: str, db: Session = Depends(get_db)):
+async def get_dungeon(
+    dungeon_id: str,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PLAYER_SELF_READ)
+    ),
+):
     """Return a dungeon and its rooms."""
     dungeon = db.query(Dungeon).filter(Dungeon.dungeon_id == dungeon_id).first()
     if not dungeon:
@@ -302,8 +353,15 @@ async def get_dungeon(dungeon_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/session/start", response_model=SessionStartResponse)
-async def start_session(body: SessionStartRequest, db: Session = Depends(get_db)):
+async def start_session(
+    body: SessionStartRequest,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Start a dungeon run: seed missing accuracy rows, bump streak, open the first room."""
+    _require_body_player(principal, body.player_id)
     player = db.query(Player).filter(Player.player_id == body.player_id).first()
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -348,11 +406,18 @@ async def start_session(body: SessionStartRequest, db: Session = Depends(get_db)
 # ─── Room Entry ───
 
 @router.post("/room/enter", response_model=RoomEnterResponse)
-async def enter_room(body: RoomEnterRequest, db: Session = Depends(get_db)):
+async def enter_room(
+    body: RoomEnterRequest,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Enter a room, pick a difficulty, and generate its question via AI."""
     session = db.query(GameSession).filter(GameSession.session_id == body.session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
+    _require_body_player(principal, session.player_id)
     room = db.query(Room).filter(Room.room_id == body.room_id).first()
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -429,14 +494,33 @@ async def enter_room(body: RoomEnterRequest, db: Session = Depends(get_db)):
 # ─── Answer Submission (CRITICAL PATH) ───
 
 @router.post("/answer/submit", response_model=AnswerSubmitResponse)
-async def submit_answer(body: AnswerSubmitRequest, db: Session = Depends(get_db)):
+async def submit_answer(
+    body: AnswerSubmitRequest,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Judge the answer, award XP/damage, and update accuracy history + room/dungeon progress."""
+    _require_body_player(principal, body.player_id)
     player = db.query(Player).filter(Player.player_id == body.player_id).first()
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")
     question = db.query(Question).filter(Question.question_id == body.question_id).first()
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
+
+    active_session = db.query(GameSession).filter(
+        GameSession.player_id == body.player_id,
+        GameSession.status == "active",
+    ).first()
+    if not active_session:
+        raise HTTPException(status_code=403, detail="Access denied")
+    active_room = db.query(Room).filter(
+        Room.room_id == active_session.current_room_id,
+    ).first()
+    if not active_room or active_room.topic != question.topic:
+        raise HTTPException(status_code=403, detail="Access denied")
 
     # Each generated question is meant to be answered exactly once. Without this
     # guard, a retried/double-clicked request replays XP, damage, and room-clear
@@ -659,8 +743,16 @@ def _is_room_unlocked_for_player(
 # ─── Next Topic Routing (Knowledge Graph AI) ───
 
 @router.get("/dungeon/{dungeon_id}/next-topic")
-async def get_next_topic_for_player(dungeon_id: str, player_id: str, db: Session = Depends(get_db)):
+async def get_next_topic_for_player(
+    dungeon_id: str,
+    player_id: str,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Use the knowledge graph AI to recommend the next room/topic for a player."""
+    _require_body_player(principal, player_id)
     player = db.query(Player).filter(Player.player_id == player_id).first()
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -699,9 +791,17 @@ async def get_next_topic_for_player(dungeon_id: str, player_id: str, db: Session
 # ─── Hint System ───
 
 @router.post("/hint/use")
-async def use_hint(body: dict, db: Session = Depends(get_db)):
+async def use_hint(
+    body: dict,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Spend one hint token to reveal a question's hint."""
-    player = db.query(Player).filter(Player.player_id == body.get("player_id")).first()
+    player_id = body.get("player_id")
+    _require_body_player(principal, player_id)
+    player = db.query(Player).filter(Player.player_id == player_id).first()
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")
     if player.hint_tokens <= 0:
@@ -721,6 +821,9 @@ async def get_leaderboard(
     limit: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PLAYER_SELF_READ)
+    ),
 ):
     """Rank players by total XP."""
     players = db.query(Player).order_by(Player.total_xp.desc()).offset(offset).limit(limit).all()
@@ -731,7 +834,13 @@ async def get_leaderboard(
 
 
 @router.get("/leaderboard/guild")
-async def get_guild_leaderboard(limit: int = Query(10, ge=1, le=100), db: Session = Depends(get_db)):
+async def get_guild_leaderboard(
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PLAYER_SELF_READ)
+    ),
+):
     """Guild leaderboard — ranked by combined member XP."""
     from sqlalchemy import func
     results = (
@@ -756,8 +865,15 @@ async def get_guild_leaderboard(limit: int = Query(10, ge=1, le=100), db: Sessio
 # ─── Guild ───
 
 @router.post("/guild/create", response_model=GuildResponse)
-async def create_guild(body: GuildCreate, db: Session = Depends(get_db)):
+async def create_guild(
+    body: GuildCreate,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Create a guild and make the creator its first member."""
+    _require_body_player(principal, body.creator_player_id)
     player = db.query(Player).filter(Player.player_id == body.creator_player_id).first()
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -774,8 +890,15 @@ async def create_guild(body: GuildCreate, db: Session = Depends(get_db)):
                          raid_active=False)
 
 @router.post("/guild/join")
-async def join_guild(body: GuildJoinRequest, db: Session = Depends(get_db)):
+async def join_guild(
+    body: GuildJoinRequest,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Add a player to an existing guild."""
+    _require_body_player(principal, body.player_id)
     player = db.query(Player).filter(Player.player_id == body.player_id).first()
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -787,8 +910,15 @@ async def join_guild(body: GuildJoinRequest, db: Session = Depends(get_db)):
     return {"message": "Joined guild", "guild_id": guild.guild_id}
 
 @router.post("/guild/raid/join")
-async def join_raid(body: RaidJoinRequest, db: Session = Depends(get_db)):
+async def join_raid(
+    body: RaidJoinRequest,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Join (or start) the guild's raid and assign the player their weakest topic."""
+    _require_body_player(principal, body.player_id)
     guild = db.query(Guild).filter(Guild.guild_id == body.guild_id).first()
     if not guild:
         raise HTTPException(status_code=404, detail="Guild not found")
@@ -827,13 +957,21 @@ async def join_raid(body: RaidJoinRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/guild/raid/submit")
-async def submit_raid_answer(body: dict, db: Session = Depends(get_db)):
+async def submit_raid_answer(
+    body: dict,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Submit an answer during a guild raid. Tracks combined damage to raid boss."""
     guild_id = body.get("guild_id")
     player_id = body.get("player_id")
     question_id = body.get("question_id")
     player_answer = body.get("player_answer", "")
     response_time_ms = body.get("response_time_ms", 0)
+
+    _require_body_player(principal, player_id)
 
     guild = db.query(Guild).filter(Guild.guild_id == guild_id).first()
     if not guild or not guild.raid_active:
@@ -883,11 +1021,18 @@ async def submit_raid_answer(body: dict, db: Session = Depends(get_db)):
 
 
 @router.get("/guild/raid/status")
-async def get_raid_status(guild_id: str, db: Session = Depends(get_db)):
+async def get_raid_status(
+    guild_id: str,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PLAYER_SELF_READ)
+    ),
+):
     """Get current raid state for a guild."""
     guild = db.query(Guild).filter(Guild.guild_id == guild_id).first()
     if not guild:
         raise HTTPException(status_code=404, detail="Guild not found")
+    _require_guild_member(principal, guild, db)
     members = db.query(Player).filter(Player.guild_id == guild_id).all()
     return {
         "guild_id": guild.guild_id,
@@ -901,11 +1046,18 @@ async def get_raid_status(guild_id: str, db: Session = Depends(get_db)):
 
 
 @router.get("/guild/{guild_id}", response_model=GuildResponse)
-async def get_guild(guild_id: str, db: Session = Depends(get_db)):
+async def get_guild(
+    guild_id: str,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PLAYER_SELF_READ)
+    ),
+):
     """Fetch a guild and its members."""
     guild = db.query(Guild).filter(Guild.guild_id == guild_id).first()
     if not guild:
         raise HTTPException(status_code=404, detail="Guild not found")
+    _require_guild_member(principal, guild, db)
     members = db.query(Player).filter(Player.guild_id == guild_id).all()
     return GuildResponse(guild_id=guild.guild_id, name=guild.name,
                          members=[{"player_id": m.player_id, "username": m.username} for m in members],

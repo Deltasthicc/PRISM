@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { RadarChart } from '../components/RadarChart';
-import { VectorBalanceCard } from '../components/VectorBalanceCard';
-import { CompetencyVectorCard } from '../components/CompetencyVectorCard';
-import { InferenceRationaleCard } from '../components/InferenceRationaleCard';
-import { RecalibrateModal } from '../components/RecalibrateModal';
+import { RadarChart } from '@/components/RadarChart';
+import { VectorBalanceCard } from '@/components/VectorBalanceCard';
+import { CompetencyVectorCard } from '@/components/CompetencyVectorCard';
+import { InferenceRationaleCard } from '@/components/InferenceRationaleCard';
+import { RecalibrateModal } from '@/components/RecalibrateModal';
 
-export const CompetencyGapView = ({
+const CompetencyGapView = ({
   officer,
   dimensions,
   benchmarks,
@@ -160,7 +160,7 @@ export const CompetencyGapView = ({
             ))}
             {filteredDimensions.length === 0 && (
               <div className="p-8 text-center bg-white rounded-xl border border-[#c5c5d3]/30 text-[#757682] font-sans text-sm">
-                No competencies found matching "{searchFilter || statusFilter}".
+                No competencies found matching &quot;{searchFilter || statusFilter}&quot;.
               </div>
             )}
           </div>
@@ -184,3 +184,169 @@ export const CompetencyGapView = ({
     </div>
   );
 };
+
+// TODO(Navya): CompetencyGapView above has no real data source yet -- there
+// is no backend contract today for "officer / dimensions / benchmarks /
+// rationale" (the closest real data is game.getPlayer()'s topic_accuracies,
+// see the preserved app/stats/old.jsx). This page needs *some* default
+// export or Next.js's App Router refuses to build the route at all -- the
+// values below are placeholder example content only, clearly marked as
+// such, not a claim about any real officer or assessment. Replace this
+// whole function with real fetched data once that contract exists.
+const EXAMPLE_DIMENSIONS = [
+  {
+    id: 'nsso',
+    name: 'NSSO Survey Design',
+    subtitle: 'Sampling frames & questionnaire construction',
+    category: 'Statistics',
+    status: 'critical',
+    officerLevel: 2,
+    requiredLevel: 4,
+    gapText: '-2 levels',
+    icon: 'poll',
+    rationale: {
+      model: 'NSO-XAI-v4.2',
+      surveyHistory: { pct: 12, detail: '3 NSSO rounds on record' },
+      proctoredQuiz: { pct: 18, detail: '2 of 5 items correct' },
+      dsaPractice: { pct: 0, detail: 'not applicable to this domain' },
+      selfAppraisal: { pct: -6, detail: 'self-rating overstates measured performance', warning: true },
+      description: 'Example rationale text -- not a real assessment.',
+      evidence: ['EXAMPLE-EVID-1', 'EXAMPLE-EVID-2'],
+    },
+  },
+  {
+    id: 'econo',
+    name: 'Economic Indicator Analysis',
+    subtitle: 'CPI, IIP and national-accounts interpretation',
+    category: 'Statistics',
+    status: 'moderate',
+    officerLevel: 3,
+    requiredLevel: 4,
+    gapText: '-1 level',
+    icon: 'trending_up',
+    rationale: {
+      model: 'NSO-XAI-v4.2',
+      surveyHistory: { pct: 20, detail: '1 prior training cycle' },
+      proctoredQuiz: { pct: 22, detail: '4 of 6 items correct' },
+      dsaPractice: { pct: 0, detail: 'not applicable to this domain' },
+      selfAppraisal: { pct: 5, detail: 'self-rating consistent with measured performance', warning: false },
+      description: 'Example rationale text -- not a real assessment.',
+      evidence: ['EXAMPLE-EVID-3'],
+    },
+  },
+  {
+    id: 'pyspark',
+    name: 'Distributed Data Processing',
+    subtitle: 'PySpark pipelines for large administrative datasets',
+    category: 'Data Engineering',
+    status: 'critical',
+    officerLevel: 1,
+    requiredLevel: 3,
+    gapText: '-2 levels',
+    icon: 'dns',
+    rationale: {
+      model: 'NSO-XAI-v4.2',
+      surveyHistory: { pct: 0, detail: 'no recorded exposure' },
+      proctoredQuiz: { pct: 8, detail: '1 of 6 items correct' },
+      dsaPractice: { pct: 4, detail: 'minimal related practice logged' },
+      selfAppraisal: { pct: -10, detail: 'self-rating overstates measured performance', warning: true },
+      description: 'Example rationale text -- not a real assessment.',
+      evidence: ['EXAMPLE-EVID-4'],
+    },
+  },
+  {
+    id: 'ethics',
+    name: 'Data Ethics & Governance',
+    subtitle: 'Privacy, consent and disclosure-control practice',
+    category: 'Governance',
+    status: 'on-track',
+    officerLevel: 4,
+    requiredLevel: 4,
+    gapText: 'on target',
+    icon: 'gavel',
+    rationale: {
+      model: 'NSO-XAI-v4.2',
+      surveyHistory: { pct: 24, detail: '4 prior training cycles' },
+      proctoredQuiz: { pct: 26, detail: '5 of 6 items correct' },
+      dsaPractice: { pct: 0, detail: 'not applicable to this domain' },
+      selfAppraisal: { pct: 2, detail: 'self-rating consistent with measured performance', warning: false },
+      description: 'Example rationale text -- not a real assessment.',
+      evidence: ['EXAMPLE-EVID-5'],
+    },
+  },
+  {
+    id: 'dml',
+    name: 'Data & ML Fundamentals',
+    subtitle: 'Statistical learning applied to survey microdata',
+    category: 'Data Engineering',
+    status: 'moderate',
+    officerLevel: 2,
+    requiredLevel: 3,
+    gapText: '-1 level',
+    icon: 'model_training',
+    rationale: {
+      model: 'NSO-XAI-v4.2',
+      surveyHistory: { pct: 10, detail: '1 prior training cycle' },
+      proctoredQuiz: { pct: 16, detail: '3 of 6 items correct' },
+      dsaPractice: { pct: 6, detail: 'light related practice logged' },
+      selfAppraisal: { pct: -2, detail: 'self-rating roughly consistent with measured performance', warning: false },
+      description: 'Example rationale text -- not a real assessment.',
+      evidence: ['EXAMPLE-EVID-6'],
+    },
+  },
+  {
+    id: 'dsa',
+    name: 'Data Structures & Algorithms',
+    subtitle: 'Core engineering fundamentals (Quest-mode practice)',
+    category: 'Engineering',
+    status: 'on-track',
+    officerLevel: 3,
+    requiredLevel: 3,
+    gapText: 'on target',
+    icon: 'code',
+    rationale: {
+      model: 'NSO-XAI-v4.2',
+      surveyHistory: { pct: 0, detail: 'not applicable to this domain' },
+      proctoredQuiz: { pct: 14, detail: '4 of 6 items correct' },
+      dsaPractice: { pct: 22, detail: 'active Quest-mode practice history' },
+      selfAppraisal: { pct: 1, detail: 'self-rating consistent with measured performance', warning: false },
+      description: 'Example rationale text -- not a real assessment.',
+      evidence: ['EXAMPLE-EVID-7'],
+    },
+  },
+];
+
+const EXAMPLE_BENCHMARKS = [
+  { id: 'entry', title: 'Entry Officer Benchmark', band: 'L2-L3' },
+  { id: 'senior', title: 'Senior Officer Benchmark', band: 'L3-L4' },
+];
+
+const EXAMPLE_OFFICER = {
+  username: 'Example Officer',
+  cadre: 'ISS (Example)',
+  officerCode: 'EXAMPLE-0000',
+  designation: 'Example Designation',
+  division: 'Example Division',
+};
+
+export default function StatsPage() {
+  const [selectedBenchmarkId, setSelectedBenchmarkId] = useState(EXAMPLE_BENCHMARKS[0].id);
+  const [searchFilter, setSearchFilter] = useState('');
+
+  return (
+    <CompetencyGapView
+      officer={EXAMPLE_OFFICER}
+      dimensions={EXAMPLE_DIMENSIONS}
+      benchmarks={EXAMPLE_BENCHMARKS}
+      selectedBenchmarkId={selectedBenchmarkId}
+      onBenchmarkChange={setSelectedBenchmarkId}
+      searchFilter={searchFilter}
+      onViewLearningPathway={(dimensionId) => {
+        console.warn('[stats] onViewLearningPathway is a placeholder -- no route wired yet:', dimensionId);
+      }}
+      onRecalibrateLevel={(dimensionId, level) => {
+        console.warn('[stats] onRecalibrateLevel is a placeholder -- nothing persisted yet:', dimensionId, level);
+      }}
+    />
+  );
+}

@@ -215,10 +215,14 @@ async function startDungeonSession(requestedDungeonId) {
 // Best-effort only: obtains a real verified bearer token from
 // routes/dev_auth.py, a local-dev-only bridge (see that file's docstring and
 // .env.example's ENABLE_DEV_LOGIN). If the backend hasn't enabled it, or a
-// local Keycloak isn't running, this fails silently -- /game/* and /ai/* work
-// either way, and /learning/* correctly keeps 401ing until the real browser
-// OIDC/PKCE flow exists (README.md, SIH26101_MASTER_CHECKLIST.md 5.1). Never
-// let this block or fail the demo login itself.
+// local Keycloak isn't running, this fails silently -- but as of Lane 5's
+// game-route auth pass, almost every /game/* endpoint now 401s without a
+// token too (only player/create and player/by-username stay open), and
+// /ai_real.py has no auth at all yet either way. /learning/* correctly keeps
+// 401ing until the real browser OIDC/PKCE flow exists (README.md,
+// SIH26101_MASTER_CHECKLIST.md 5.1). Never let this block or fail the demo
+// login itself -- but be aware local Keycloak is now required for nearly
+// the entire demo to function, not just the professional/Academy side.
 async function tryDevLogin(playerId) {
   try {
     const { access_token: accessToken } = await request('/auth/dev-login', {

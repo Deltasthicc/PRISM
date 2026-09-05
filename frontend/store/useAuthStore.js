@@ -19,14 +19,28 @@ export const useAuthStore = create(
           const { player } = await auth.me();
           set({ player, isAuthenticated: true, loading: false, error: null });
         } catch (e) {
-          // Only treat an actual 401/403 as "not logged in." A dropped request
-          // or backend hiccup (error.code === 0, or any 5xx) is refetched from
-          // fetchMe()'s next call — it must not eject an already-authenticated
-          // player out of an in-progress fight and back to /login.
-          const isAuthError = e.code === 401 || e.code === 403;
-          if (isAuthError || isInitialLoad) {
+          // Only treat an actual 401/403 as "not logged in" -- and only when
+          // a real bearer token was sent and rejected (e.hadToken). A 401
+          // with NO token attached means dev-login itself never completed
+          // (Keycloak unreachable/misconfigured -- see client.js's
+          // tryDevLogin), which is an infra availability problem, not proof
+          // this player isn't who they say they are. Treating that as a hard
+          // logout would bounce an already-registered demo player back to
+          // /login on every single page load for as long as the identity
+          // service stays down. A dropped request or backend hiccup
+          // (error.code === 0, or any 5xx) is refetched from fetchMe()'s next
+          // call either way.
+          const isRealAuthRejection = (e.code === 401 || e.code === 403) && e.hadToken;
+          if (isRealAuthRejection) {
+            set({ player: null, isAuthenticated: false, loading: false });
+          } else if (isInitialLoad) {
+            // No prior local identity to fall back on (fresh tab, nothing in
+            // localStorage) -- there's genuinely nothing to show, so this
+            // does need to land on /login.
             set({ player: null, isAuthenticated: false, loading: false });
           } else {
+            // Keep whatever identity we already had locally; just couldn't
+            // refresh it this time.
             set({ loading: false });
           }
         }

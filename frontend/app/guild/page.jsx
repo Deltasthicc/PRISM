@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Play } from 'lucide-react';
+import { Play, RotateCcw, Cloud, Download, Terminal, CircleHelp, Database, CircleCheck, PartyPopper } from 'lucide-react';
 
 export default function AdaptivePracticeDsaQuest({ onNavigate }) {
   const [selectedLang, setSelectedLang] = useState('Python 3.11 (Pyodide)');
@@ -152,7 +152,7 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
             {/* Editor Header */}
             <div className="bg-[#f2f3ff] px-4 py-2.5 border-b border-[#c5c5d3]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#00236f] text-[18px]">terminal</span>
+                <Terminal size={16} className="text-[#00236f]" />
                 <span className="font-mono text-xs font-bold text-[#00236f]">solution.py</span>
                 <span className="text-[#c5c5d3]">•</span>
                 <span className="font-mono text-[11px] text-[#757682]">WASM Sandbox Isolation</span>
@@ -178,7 +178,7 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
 
             {/* Problem Objective Capsule */}
             <div className="bg-[#f8f9ff] px-4 py-2 border-b border-[#c5c5d3]/20 text-xs text-[#444651] flex items-start gap-2">
-              <span className="material-symbols-outlined text-[#00236f] text-[16px] shrink-0 mt-0.5">help</span>
+              <CircleHelp size={16} className="text-[#00236f]" />
               <p className="font-mono text-[11px] leading-relaxed">
                 <strong className="text-[#00236f]">Objective:</strong> Implement{' '}
                 <code className="bg-[#e2e7ff] px-1 rounded text-[#00236f]">cluster_survey_districts(n_strata, adj_matrix)</code>{' '}
@@ -200,7 +200,7 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
             {/* Controls Toolbar */}
             <div className="p-3 bg-[#f2f3ff] border-t border-[#c5c5d3]/30 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-xs font-mono text-[#757682]">
-                <span className="material-symbols-outlined text-[16px] text-[#00312c]">memory</span>
+                <Database size={16} />
                 <span>Heap: {testResult.memory} • Cycles: {testResult.kops} kOps</span>
               </div>
 
@@ -232,7 +232,7 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
           <div className="bg-white rounded-xl p-4 shadow-sm border border-[#c5c5d3]/30">
             <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#eaedff]">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#00312c] text-[20px]">task_alt</span>
+                <CircleCheck size={16} className="text-[#00312c]" />
                 <h4 className="text-xs font-bold text-[#00312c] uppercase font-mono tracking-wider">
                   Test Results: All {testResult.suites} Suites Passed
                 </h4>
@@ -261,7 +261,7 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
             {bossHp === 0 && (
               <div className="bg-[#ffdcc3]/60 border border-[#ffb77d] p-3 rounded-lg flex items-center justify-between gap-2 text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#904d00] text-[20px]">emoji_events</span>
+                  <PartyPopper size={16} className="text-[#904d00]" />
                   <span className="font-mono text-[#904d00] font-bold">
                     Battle Reward Unlocked: +50 XP Conferred to Officer Rajesh Sharma!
                   </span>
@@ -357,7 +357,7 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
           {/* Verifiable Activity Feed (Append-only audit log) */}
           <div className="bg-white rounded-xl p-4 shadow-sm border border-[#c5c5d3]/30">
             <div className="flex items-center gap-2 mb-2 pb-1 border-b border-[#eaedff]">
-              <span className="material-symbols-outlined text-[#00236f] text-[18px]">history</span>
+              <RotateCcw size={16} className="text-[#00236f]" />
               <h4 className="text-xs font-bold text-[#00236f] uppercase font-mono tracking-wider">
                 Verifiable Activity Feed
               </h4>
@@ -381,33 +381,44 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
           </div>
 
           {/* Evidence Reliability Index */}
-          <div className="bg-[#f2f3ff] rounded-xl p-4 border border-[#c5c5d3]/40">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-[#00236f] uppercase font-mono tracking-wider">
-                Evidence Reliability Index
-              </span>
-              <span className="font-mono text-xs font-bold text-[#00312c]">98.6%</span>
-            </div>
-            <p className="text-xs text-[#444651] mb-3">
-              Zero external injection • Client-side WASM execution verified against deterministic test fixtures.
-            </p>
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={handleSyncToProfile}
-                className="w-full bg-[#00236f] hover:bg-[#1e3a8a] text-white py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[16px]">sync</span>
-                <span>Sync to Local Competency Profile</span>
-              </button>
-              <button
-                onClick={handleExportJson}
-                className="w-full bg-white hover:bg-[#e2e7ff] text-[#131b2e] border border-[#c5c5d3]/40 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[16px]">download</span>
-                <span>Export JSON Telemetry</span>
-              </button>
-            </div>
-          </div>
+          {/* Evidence Reliability Index */}
+
+<div className="bg-[#f2f3ff] rounded-xl p-4 border border-[#c5c5d3]/40">
+
+  <div className="flex items-center justify-between mb-2">
+    <span className="text-xs font-bold text-[#00236f] uppercase font-mono tracking-wider">
+      Evidence Reliability Index
+    </span>
+
+    <span className="font-mono text-xs font-bold text-[#00312c]">
+      98.6%
+    </span>
+  </div>
+
+  <p className="text-xs text-[#444651] mb-3">
+    Zero external injection • Client-side WASM execution verified against deterministic test fixtures.
+  </p>
+
+  <div className="flex flex-col gap-2">
+
+    <button
+      onClick={handleSyncToProfile}
+      className="w-full bg-[#00236f] hover:bg-[#1e3a8a] text-white py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+    >
+      <Cloud size={16} />
+      <span>Sync to Local Competency Profile</span>
+    </button>
+
+    <button
+      onClick={handleExportJson}
+      className="w-full bg-white hover:bg-[#e2e7ff] text-[#131b2e] border border-[#c5c5d3]/40 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+    >
+      <Download size={16} />
+      <span>Export JSON Telemetry</span>
+    </button>
+
+  </div>
+</div>
         </div>
       </div>
     </div>

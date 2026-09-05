@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { SquareCheckBig, Bolt, Lock, Check, Route, Play, Swords } from 'lucide-react';
 
-export default function PrerequisitePathways({ onNavigate, onOpenModal }) {
+export default function PrerequisitePathways({ onNavigate = () => {}, onOpenModal = () => {} } = {}) {
   const [activeCourseNode, setActiveCourseNode] = useState(2);
   const [inFlightProgress, setInFlightProgress] = useState(64);
   const [courseToast, setCourseToast] = useState('');

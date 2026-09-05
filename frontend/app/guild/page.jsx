@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Play, RotateCcw, Cloud, Download, Terminal, CircleHelp, Database, CircleCheck, PartyPopper } from 'lucide-react';
 
-export default function AdaptivePracticeDsaQuest({ onNavigate }) {
+export default function AdaptivePracticeDsaQuest({ onNavigate = () => {} } = {}) {
   const [selectedLang, setSelectedLang] = useState('Python 3.11 (Pyodide)');
   const [isRunning, setIsRunning] = useState(false);
   const [bossHp, setBossHp] = useState(210);

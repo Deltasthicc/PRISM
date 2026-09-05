@@ -1,8 +1,9 @@
-"""Lane 3 (Competency & Learning Intelligence) — reserved for the bounded CPI/sampling/
-data-quality lab described in SIH26101_TEAM_ORCHESTRATION.md section 5 (Lane 3 immediate package)
-and docs/SIH26101_PROBLEM_STATEMENT.md PS-08.
+"""Bounded, deterministic learning labs (PS-08).
 
-Empty scaffold, no lab logic exists yet. Any lab added here must have deterministic expected
-output and resource bounds, and must never execute arbitrary learner-supplied code on the API
-host (see CODEX.md "Architecture invariants").
+Every lab in this package is parameter-driven: the learner submits numeric
+answers to a fixed scenario and the backend recomputes the expected result
+from a documented formula. No lab accepts, compiles or executes
+learner-supplied code -- SIH26101_MASTER_CHECKLIST.md section 4.4 ("Do not
+execute arbitrary learner code on the API host") and SIH26101_WINNING_PLAYBOOK.md
+section 10 ("Do not add a generic unrestricted code runner").
 """

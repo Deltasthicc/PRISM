@@ -49,8 +49,9 @@ export default function AdminPage() {
             <h2 className="font-display text-[10px] text-blood">NOT PRODUCTION-SECURE</h2>
             <p className="font-body text-parchment-dim mt-2">
               {data.privacy_note} Anyone with a logged-in session can currently reach this page — there is
-              no RBAC/OIDC boundary yet. See <span className="text-parchment">docs/SIH26101_FEASIBILITY_AND_ROADMAP.md</span>{' '}
-              section 11 for the identity work required before a real administrator role can gate this route.
+              no RBAC/OIDC boundary yet. The identity/RBAC primitives this route needs already exist
+              (see <span className="text-parchment">docs/contracts/identity-authorization.md</span>{' '}
+              section 6, &ldquo;Route handoff and present limitations&rdquo;) but are not yet attached here.
             </p>
           </div>
         </div>

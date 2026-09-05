@@ -1,9 +1,21 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import PixelSprite from './PixelSprite';
 import { BAT_FRAMES, BAT_PALETTE } from '@/lib/sprites/batSprite';
+
+// Quest mode's own routes only -- the professional workspace (Academy,
+// dashboard, admin, profile, login/register, the landing page) must not be
+// gamified, per the team's own recorded "Quest is optional, not the base
+// product" decision. A flying bat swarm over an official-statistics
+// competency form is exactly the kind of thing that decision rules out.
+const QUEST_ROUTE_PREFIXES = ['/dungeon', '/combat', '/boss', '/character', '/guild', '/leaderboard'];
+
+function isQuestRoute(pathname) {
+  return QUEST_ROUTE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}
 
 // A real swarm, not the occasional lone bat -- lots of these on screen
 // constantly. Each one is just a cached 10-11KB PNG + a motion.div, so even
@@ -33,23 +45,36 @@ function FlappingBat() {
 
 /**
  * Ambient cave atmosphere: bats occasionally swoop across the screen.
- * Mounted once in app/layout.jsx so it's present on every page. Capped at
- * MAX_CONCURRENT_BATS on screen at once.
+ * Mounted once in app/layout.jsx so it's mountable on every page, but only
+ * actually renders anything on Quest mode's own routes (see
+ * QUEST_ROUTE_PREFIXES above) -- the professional workspace stays
+ * non-gamified. Capped at MAX_CONCURRENT_BATS on screen at once.
  *
  * Deliberately does NOT gate on prefers-reduced-motion: that media feature
  * was found to be permanently ON in this environment (and reportedly the
  * dev's own browser too), which made the whole feature bail out on mount
  * and never spawn a single bat -- no matter how long you waited. This is
  * decorative-only ambiance for an explicitly-requested demo aesthetic, not
- * essential motion, so it always runs. The vignette/scanline CSS elsewhere
- * still honors reduced-motion for real UI transitions.
+ * essential motion, so it always runs on Quest routes. The vignette/scanline
+ * CSS elsewhere still honors reduced-motion for real UI transitions.
  */
 export default function BatSwarm() {
+  const pathname = usePathname();
+  const questRoute = isQuestRoute(pathname);
   const [bats, setBats] = useState([]);
   const timeoutRef = useRef(null);
   const countRef = useRef(0);
 
   useEffect(() => {
+    if (!questRoute) {
+      // Leaving (or never entering) a Quest route: stop spawning and clear
+      // anything already in flight, so a bat can't linger mid-animation
+      // into a professional page after a navigation.
+      setBats([]);
+      countRef.current = 0;
+      return undefined;
+    }
+
     function spawnOne() {
       if (countRef.current < MAX_CONCURRENT_BATS) {
         countRef.current += 1;
@@ -81,12 +106,14 @@ export default function BatSwarm() {
     }, FIRST_SPAWN_MS);
     timeoutRef.current = firstTimeout;
     return () => clearTimeout(timeoutRef.current);
-  }, []);
+  }, [questRoute]);
 
   function removeBat(id) {
     countRef.current = Math.max(0, countRef.current - 1);
     setBats((current) => current.filter((bat) => bat.id !== id));
   }
+
+  if (!questRoute) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-40" aria-hidden="true">

@@ -43,7 +43,47 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 
 ## Current verified baseline
 
-- FastAPI + SQLAlchemy + SQLite backend; 42 backend tests passed in the last verification.
+- FastAPI + SQLAlchemy backend; PostgreSQL/Alembic is the migration-managed target, SQLite remains
+  a documented local zero-setup demo profile only. As of Package W (2026-09-03), `pytest -q`
+  reports **442 passed with PostgreSQL stopped and 6 opt-in tests skipped**, and **448 passed with
+  the local `docker-compose.dev.yml` PostgreSQL healthy**. Package W's deterministic read facade,
+  privacy-safe status command and cross-lane integration guide are on `main`; the final
+  legacy-column count repair at `8d0d1de` awaits Claude's immutable review. Both counts are correct,
+  they are not a discrepancy; re-run before repeating either, it changes often. `pytest --cov=db
+  --cov=models --cov=schemas --cov=security --cov=scripts` (requires `pytest-cov`, now in
+  `requirements-dev.txt`) reports 94% line coverage across Lane 2-owned code, up from 84% before
+  this pass — `db/database.py` went from 74% to 100%, and every file that was previously at 0%
+  (`db/seed.py`, `schemas/accuracy.py`, `schemas/learning.py`, `schemas/question.py`) now has
+  direct tests. Prior
+  snapshots in this file's history (267, 299, 337, 339, 341/345, 347) were each taken mid-edit or
+  before a subsequent fix, so treat any count here as a snapshot to re-verify, not a citation.
+  `.github/workflows/ci.yml` exists, but no run
+  against this branch is evidenced (`gh run list --branch <this-branch>` returns nothing as of this
+  writing) — do not claim a green CI run without checking.
+- Package P/S (atomic PostgreSQL row-claiming for the retention job, closing both Codex's Package R
+  adversarial findings and a live-PostgreSQL concurrency defect Codex reproduced) and Package T (an
+  independent audit fixing a stale pre-delete snapshot in `delete_subject_data()`'s reported counts
+  and a non-injective `audit_actor` encoding) are **Codex-accepted** on independent cold immutable
+  review (2026-09-01), including Codex's own reproduction of the four-worker drill. Package U (a
+  second independent external audit's four DB-hardening claims, individually re-derived) rejected
+  three of the four claims — RLS and legacy-ETL because there is no identified real source dataset,
+  continuity requirement, approved field/identity mapping, conflict policy, reconciliation contract
+  or acceptance owner (tenancy is irrelevant to whether that migration could exist); evidence
+  self-hashing by the same writer role provides no tamper-evidence — and implemented the fourth in
+  scoped form: a PostgreSQL trigger on `audit_events`. Codex's cold audit then found that trigger's
+  unconditional `DELETE` rejection broke `scripts/retention_job.py`, whose only registered category
+  is `audit_events` — the retention job would be unable to ever delete it once a maximum retention
+  is cited. Package V's follow-up migration (`4631f204d4ba`) retired only the `DELETE` rejection,
+  keeping the `UPDATE` rejection (named precisely: an UPDATE-only trigger is not "append-only"); the
+  genuine append-only guarantee remains an application-layer property, never a database one. Codex's
+  review of Package V **accepted its production migration/retention behavior outright** and raised
+  two bounded test/evidence-hardening findings — a disposable-database cleanup gap (a failure
+  between `CREATE DATABASE` and the fixture's `yield` used to leak the database) and a concurrency
+  regression that only synchronized workers at thread-pool submission, not at genuinely overlapping
+  candidate selection — both closed in a follow-up commit that also added a deterministic negative
+  control proving the forced-overlap methodology is meaningful (an equivalent unlocked-select flow
+  fails the same contract when forced to overlap the same way). Awaiting Codex's narrow re-review of
+  exactly those four items. Full evidence and reasoning in `LANE2_SYNC.md`.
 - Next.js frontend; lint passed in the last verification.
 - Four backend curricula/34 competencies exist, but do not cover the full supplied competency list and have no MoSPI/CBC/NSSTA approval.
 - DSA Quest works in the browser; non-DSA backend dungeons are blocked by frontend routing/filter assumptions.
@@ -51,7 +91,23 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 - Current 65% demonstrated/35% self-report blend is a transparent prototype policy, not psychometrics.
 - Bounded TXT/MD/PDF/DOCX ingestion and normalized source-span validation exist. Real retrieval RAG, PPTX/video ingestion, virtual assistant and review workflow do not.
 - Recommendations are internal practice/catalogue fallback. Authenticated iGOT interfaces exist in public engineering documentation, but this repository has no approved endpoint contract, credentials or sandbox; no NSSTA API is verified.
-- Real authentication, RBAC, SSO, tenancy, PostgreSQL/Alembic, CI, frontend tests, observability and production authorization are absent.
+- Lane 2 has implemented and reciprocally reviewed/accepted (live Keycloak + PostgreSQL, both
+  agents cross-reviewing) OIDC bearer-token verification with real JWKS key-rotation handling, RBAC
+  and identity-binding primitives, a controlled one-time first-admin bootstrap, PostgreSQL backup/
+  restore, and a deliberately unwired versioned authenticated-encryption envelope
+  (`security/encryption.py`). A bounded/validated retention-enforcement job is also implemented,
+  including atomic `FOR UPDATE SKIP LOCKED` row-claiming for concurrent PostgreSQL `--apply` runs
+  (live-drilled with 4 real concurrent workers after Codex reproduced a real race in the pre-fix
+  version), and passes its own adversarial acceptance contract. Its final cleanup/forced-contention
+  hardening at `ac5a2e7` passed Codex's narrow immutable re-review with no remaining correctness
+  finding. See
+  `docs/contracts/identity-authorization.md`, `docs/contracts/data-authorization.md` and
+  `docs/contracts/encryption-key-ownership.md`. **None of this is wired into `backend/routes/**`
+  yet** — every existing route remains an unauthenticated demo interface, and the product must not
+  be described as protected until Lane 5 composes token verification, binding and permission checks
+  into route code; no model currently uses the encryption envelope either. SSO (a real government
+  IdP), multi-tenant isolation beyond one-database-per-deployment, production KMS/HSM key custody,
+  frontend tests, observability and production authorization remain absent.
 
 Reinspect and re-run evidence before repeating these claims. Update README/checklist in the same change when reality changes.
 

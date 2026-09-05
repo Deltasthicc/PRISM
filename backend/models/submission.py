@@ -3,7 +3,7 @@ AnswerSubmission SQLAlchemy model — records every answer a player submits.
 """
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, Index
 from sqlalchemy.orm import relationship
 from db.database import Base
 
@@ -14,6 +14,7 @@ def generate_uuid():
 
 class AnswerSubmission(Base):
     __tablename__ = "submissions"
+    __table_args__ = (Index("ix_submissions_player_id", "player_id"),)
 
     submission_id = Column(String, primary_key=True, default=generate_uuid)
     player_id = Column(String, ForeignKey("players.player_id"), nullable=False)

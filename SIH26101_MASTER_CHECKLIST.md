@@ -1,12 +1,30 @@
 # SIH26101 master checklist
 
-Last evidence review: 29 August 2026
+Last evidence review: 3 September 2026
 
-Repository baseline: commit `429df46` on `main`
+Historical repository baseline: commit `429df46` on `main`
+
+Current Lane 2 evidence base is integrated on `main` through Package W-C commit `8d0d1de`.
+Packages A–V are accepted as recorded in `LANE2_SYNC.md`; W-A is independently accepted, Claude's
+W-B handbook/operator work passed Codex review after two real schema-drift defects were found, and
+the final narrow W-C legacy-column count repair awaits Claude's immutable review.
+Package P/S (retention enforcement, including atomic PostgreSQL row-claiming for concurrent
+`--apply`) and Package T (a full independent security/data audit) are **ACCEPTED by Codex** on
+independent cold immutable review, including Codex's own reproduction of the four-worker
+concurrency drill and the data-rights/audit-actor fixes. Package U's original database trigger
+(rejecting both `UPDATE` and `DELETE` on `audit_events`) was found by that same Codex review to
+conflict with the accepted retention job -- Package V's follow-up migration (retiring only the
+`DELETE` rejection) fixed this, and Codex's review of Package V **accepted its production
+migration/retention behavior outright**, raising two bounded test/evidence-hardening findings (a
+disposable-database cleanup gap and a concurrency test needing genuinely forced overlap plus a
+negative control) that are closed and independently accepted after Codex's narrow immutable
+re-review of `ac5a2e7`. See `LANE2_SYNC.md` for the full audit trail.
 
 Requirement source: `docs/SIH26101_PROBLEM_STATEMENT.md` (`PS-01`…`PS-18`)
 
-Companion documents: `SIH26101_WINNING_PLAYBOOK.md` and `SIH26101_TEAM_ORCHESTRATION.md`
+Companion documents: `SIH26101_WINNING_PLAYBOOK.md` and `SIH26101_TEAM_ORCHESTRATION.md`.
+`LANE2_INTEGRATION_GUIDE.md` is the current per-lane database/repository usage and two-way handoff
+contract. `LANE2_HANDOFF_FOR_OTHER_LANES.md` catalogs dated issues raised after live testing.
 
 This is the single execution ledger for the project. It separates what the repository proves, what an official source proves, and what is still a proposal. A checked item means its acceptance evidence exists; it does not mean that an AI suggested it.
 
@@ -22,11 +40,11 @@ This is the single execution ledger for the project. It separates what the repos
 
 | Area | Current state | Evidence |
 |---|---|---|
-| Backend | FastAPI/SQLAlchemy modular prototype; SQLite; startup table creation plus manual column patching | **VERIFIED** |
-| Automated tests | 42/42 backend tests passed on 29 Aug 2026; frontend lint passed | **VERIFIED** |
+| Backend | FastAPI/SQLAlchemy; SQLite zero-setup demo plus PostgreSQL 16/Alembic profile with migration-gated PostgreSQL startup | **VERIFIED** |
+| Automated tests | Package W-C full gates on 3 Sep 2026: **442 passed, 6 skipped** with PostgreSQL stopped; **448 passed** with local Compose PostgreSQL healthy. Live status reported Alembic `640603a37f2f (head)`, all 17 allowlisted tables present, and no model/schema drift. Earlier counts remain historical, not overwritten; remote CI is still not claimed | **VERIFIED** |
 | Curricula | Four curricula and 34 competencies are seeded and usable through backend APIs | **VERIFIED** |
 | Quest UI | DSA is playable; the other three domains are not currently reachable end-to-end through the browser | **VERIFIED** |
-| Default landing / professional theme | Root `/` and `Providers` already route an authenticated learner to `/academy`, not `/dungeon` -- Quest is not the startup route. But `AcademyHub.jsx` (the default landing) still imports the same `Pixel*` kit as Quest mode (`PixelPanel`, `PixelButton`, `PixelBadge`, `PixelInput`, `arcane`/`stone` variants, chunky pixel borders, the display pixel font) -- there is no visually distinct plain/professional theme yet, only separate routing | **VERIFIED** |
+| Default landing / professional theme | Root `/` links authenticated learners to `/academy`, and successful login/registration now route there; `Providers` only bootstraps auth and does not navigate. Quest is no longer the startup route. `BatSwarm` is confined to Quest routes, but `AcademyHub.jsx` still imports the same `Pixel*` kit and the global layout still supplies pixel fonts, music/onboarding and the torch overlay -- there is not yet a distinct professional theme | **VERIFIED** |
 | Competency targeting | Target cap is selected only from `experience_level`; designation, department, job role, assignment, qualifications and career goal are stored but do not affect targets | **VERIFIED** |
 | Assessment formula | 65% demonstrated performance + 35% self-rating when both exist; this is a transparent prototype policy, not validated psychometrics | **VERIFIED** |
 | Quiz grounding | TXT/MD/PDF/DOCX extraction is bounded; generated excerpts are matched after whitespace/case normalization, not as literal byte-for-byte substrings | **VERIFIED** |
@@ -34,13 +52,14 @@ This is the single execution ledger for the project. It separates what the repos
 | Retrieval | Whole extracted text is supplied to generation; chunking, embeddings, retrieval and a vector store are not present | **VERIFIED** |
 | Recommendations | Internal practice plus links to provider catalogues; no real enrolment, completion, or catalogue sync | **VERIFIED** |
 | iGOT boundary | Authenticated iGOT/KB-iGOT interfaces exist publicly in integration documentation, but this project has no approved endpoint contract, credentials, or sandbox | **OFFICIAL + VERIFIED** |
-| Identity/security | Username-based demo identity; no real authentication, RBAC, tenant isolation, audit trail, rate limiting, or secrets platform | **VERIFIED** |
+| Identity/security | Product routes remain username/player-ID demo interfaces and are not protected. Lane 2 implements local OIDC JWT verification, issuer/sub binding, fixed RBAC/bootstrap, deployment-database tenant guards and audited security/data-rights primitives; browser SSO, row-level organization tenancy, route enforcement, approved production IdP, rate limits and secrets operations remain open | **VERIFIED** |
 | Admin metrics | Aggregate-only response, but repeated historical assessments inflate `learner_count` for a gap | **VERIFIED** |
 | Dashboard coverage | No provider-derived learning hours, training-effectiveness measurement, emerging-skill analysis or validated predictive analytics | **VERIFIED** |
 | Guild/leaderboard | Guild backend exists; frontend lacks raid question/submit flow. UI says weekly while backend rank is lifetime XP | **VERIFIED** |
-| Delivery | No CI workflow, frontend tests, migration framework, production deployment definition, observability stack, or repository licence | **VERIFIED** |
+| Delivery | CI workflow and Alembic migration framework exist; no fresh remote-CI result is claimed here. Frontend tests, production deployment definition, observability stack and repository licence remain absent/unverified | **VERIFIED** |
 
-The frontend production build was not independently completed in the current restricted environment. Existing `.next` output is not release evidence. A clean CI build remains mandatory.
+A clean local frontend production build completed independently on 3 September 2026 (14 routes),
+but this is not remote-CI or deployment evidence. A clean CI build remains mandatory.
 
 ## 2. Decisions and corrections from the pasted 174 KB planning source
 
@@ -48,7 +67,8 @@ The frontend production build was not independently completed in the current res
 - [x] **Do not call the proposed labels “official FRAC levels.”** FRAC officially connects roles, activities and competencies. CBC now publishes the Karmayogi Competency Model (KCM) and says it is integrated with iGOT. The labels “Basic Awareness” through “National Expert” were not verified in the cited official material. **OFFICIAL**
 - [x] **Treat Role Readiness Index as an internal product metric only.** Any formula and weighting must display its version, inputs and provisional status until an authorized domain owner validates it. **DECISION**
 - [x] **Do not invent iGOT course IDs, URLs, completion records, NSSTA schedules, API success, or government approval.** A simulator must be visibly labelled `SIMULATED`; a live adapter must prove authenticated partner connectivity. **DECISION**
-- [x] **Reject “JWT already exists.”** It does not exist in this repository. **VERIFIED**
+- [x] **Reject the baseline claim “JWT already exists.”** It did not exist at `429df46`; Package I
+  subsequently added and live-tested local OIDC JWT verification. **VERIFIED**
 - [x] **Reject “all four domains work end-to-end.”** Only backend coverage is cross-domain today; browser Quest routing is DSA-only. **VERIFIED**
 - [x] **Reject the pasted 28/100 score and fixed judging weights as official.** They may be private prioritization aids only. **DECISION**
 - [x] **Keep the useful additions:** item-review lifecycle, grounded RAG evaluation, bilingual path, one statistics lab, adapter/simulator boundary, privacy/security gates, and contract-first team ownership. **DECISION**
@@ -153,23 +173,55 @@ Do these before adding new “AI” features.
 
 ### 5.1 Identity, privacy and authorization
 
-- [ ] Integrate a real OIDC identity provider; use secure session handling and key rotation.
-- [ ] Implement server-side RBAC for learner, trainer, content reviewer, department admin, organization admin and auditor.
+- [x] Implement and live-test a local standards-based OIDC resource-server verifier against
+  Keycloak, including issuer/audience/signature/time validation and fail-closed JWKS behavior.
+  This is development evidence, not an approved production/government IdP. **VERIFIED**
+- [ ] Integrate the approved production identity provider, browser Authorization Code + PKCE
+  session/logout flow, and accountable key-rotation/outage operations. **BLOCKED-EXTERNAL/SHARED**
+- [x] Implement the Lane 2 server-side matrix recognizing learner, trainer, content reviewer,
+  department admin, organization admin and auditor; add issuer/sub identity binding, first-admin
+  bootstrap, learner-own-record scope and deployment-tenant guards. Trainer/cohort and department
+  object scope remain absent/fail-closed until authoritative relationships exist. **VERIFIED**
+- [ ] Attach the Lane 2 identity/RBAC boundary to every protected product route with 401/403 and
+  negative API tests; this is Lane 5-owned integration work.
 - [ ] Add organization/tenant scope to every personal/content/evidence query and negative authorization tests.
-- [ ] Create data inventory, lawful-purpose record, notice/consent where applicable, minimization rules, retention schedule, correction/export/deletion workflow and processor register.
+- [x] Create the current subject-data inventory plus transactional internal export/deletion
+  primitives, retention classification/policy guard and audited execution boundary. **VERIFIED**
+- [ ] Approve lawful purpose, notice/consent where applicable, minimization, retention durations,
+  correction/subject-rights HTTP workflow and processor register; automate expiry only after the
+  accountable privacy/legal owner approves the policy. **BLOCKED-EXTERNAL/SHARED**
 - [ ] Never expose model prompts, API keys, tokens or learner PII in client code, logs, analytics or screenshots.
-- [ ] Record append-only audit events for privileged reads/writes, role changes, content approval, model decisions and exports.
+- [x] Implement a bounded, versioned AES-256-GCM envelope/key-rotation primitive and explicit
+  adoption contract for a future reviewed sensitive field. No current model uses it. **VERIFIED**
+- [ ] Configure production TLS/storage/backup encryption and approved KMS/HSM custody, access,
+  rotation, recovery and compromise procedures. **BLOCKED-EXTERNAL/OPERATIONAL**
+- [x] Provide an append-only audit model/write path and atomic events for identity bootstrap,
+  binding lifecycle and internal export/deletion operations. The append-only guarantee itself is
+  an application-layer property (`security.data_rights`/`RETENTION_CLASSIFICATION` never delete
+  `audit_events` on a subject request), never a database one. On PostgreSQL, `audit_events` is
+  additionally protected against in-place mutation by a database-level trigger rejecting `UPDATE`
+  only -- named precisely as that, not "append-only", because `DELETE` is intentionally still
+  possible through `scripts/retention_job.py` under a cited maximum (Package V, migration
+  `4631f204d4ba`, corrected a real defect where Package U's original trigger rejected `DELETE` too
+  and would have made the retention job unusable for its only registered category). This is a
+  bug-catching safety net for the app's own connection role, not a security boundary against
+  someone holding those same credentials, who can disable it. **VERIFIED**
+- [ ] Integrate audited privileged route reads/writes, IdP role reconciliation, content approval
+  and model decisions across their owning lanes.
 - [ ] Track the staged DPDP commencement accurately: the Gazette notifications phase most Data Fiduciary duties in on 14 May 2027 (with Rule 4 on 14 November 2026). Build to the final Rules now, but do not call every duty legally operative on 29 August 2026.
 - [ ] Obtain legal review of the operating entity and transitional IT Act section 43A/SPDI applicability before processing real personnel data. **BLOCKED-EXTERNAL**
 
 ### 5.2 Persistence and API contracts
 
-- [ ] Replace SQLite/startup schema patching with PostgreSQL and Alembic migrations; keep SQLite only as a documented local-demo profile.
+- [x] Add PostgreSQL and Alembic migrations with migration-gated PostgreSQL startup while retaining
+  SQLite as the documented zero-setup local-demo profile. **VERIFIED**
 - [ ] Add uniqueness, foreign keys, tenant keys, version fields and indexes based on measured queries.
 - [ ] Publish versioned OpenAPI and typed frontend client; add schema compatibility checks in CI.
 - [ ] Add pagination, idempotency and consistent error envelopes.
 - [ ] Queue document processing and AI work outside request threads; expose job state and cancellation.
-- [ ] Complete backup/restore and migration rollback drills.
+- [x] Complete local PostgreSQL backup/restore plus forward/backward migration drills, including
+  adversarial restore-copy cleanup and concurrent temporary-path evidence. This does not imply a
+  scheduled, encrypted, offsite production DR capability. **VERIFIED**
 
 ### 5.3 Security, accessibility and reliability
 
@@ -221,5 +273,23 @@ Passing P0 makes a credible hackathon prototype. Passing P1 makes a strong demon
 | 2026-08-29 | frontend lint | passed | Repository audit |
 | 2026-08-29 | route/config/client inspection | three non-DSA Quest paths blocked in browser | Repository audit |
 | 2026-08-29 | 174 KB pasted planning source reconciled with repository and primary sources | useful proposals retained; unsupported claims removed | Research pass |
+| 2026-09-01 | `backend/.venv/Scripts/python.exe -m pytest -q` | 237 passed; 2 pytest-cache permission warnings | Lane 2 Packages A–N closure |
+| 2026-09-01 | PostgreSQL 16 Alembic forward/backward/startup drills | baseline and follow-up migrations, stale-revision refusal and empty/head startup verified | Lane 2 + reciprocal review |
+| 2026-09-01 | Local Keycloak 26.7.2 OIDC verification and RBAC/bootstrap negatives | verifier/binding/policy foundation accepted; product routes explicitly still unprotected | Lane 2 + reciprocal review |
+| 2026-09-01 | Concurrent PostgreSQL backup/restore and adversarial regression contract | accepted; no container temp residue in recorded live drill | Lane 2 + reciprocal review |
+| 2026-09-01 | Full backend gate after immutable Package P and reviewed Package Q | 272 passed; 2 pytest-cache permission warnings; Package P review findings remain open | Lane 2 closure pass |
+| 2026-09-01 | Live PostgreSQL 4-worker concurrency drill (pre-fix, Codex-run) | `deleted_sets=[set(), set(), {'1','2','3'}, set()]`; 3 of 11 expired rows deleted, 8 abandoned; 2 young rows correctly untouched | Confirmed real defect: unlocked candidate SELECT, reproduced by Codex; not overwritten by the fix below |
+| 2026-09-01 | Full backend gate after Package P/S (atomic PostgreSQL row-claiming fix) | 339 passed; 2 pytest-cache permission warnings; 0 failures | Claude Code, live-tested, awaiting Codex final review |
+| 2026-09-01 | Live PostgreSQL 4-worker concurrency drill (post-fix, same scenario) | 11 expired + 2 young rows; per-worker deletions pairwise-disjoint; union = all 11 expired IDs; deleted-count sum = 11; durable audit deleted-count sum = 11; young rows untouched; clean `0/0` final rerun, zero misleading audit events | Claude Code; exact opposite result to the pre-fix row above under the identical scenario |
+| 2026-09-01 | Full independent Lane 2 audit (security/rbac.py, security/data_rights.py, security/identity_bootstrap.py, models/identity.py, security/audit.py, migrations re-read fresh) plus full backend gate | 341 passed, 0 failures; exact warning count/type varies by run (2 SQLite datetime-adapter deprecations on this run; Codex separately observed 4, including 2 `.pytest_cache` warnings, on a concurrent run — both accurate for their own run, not a code discrepancy) | Claude Code (Codex ran out of session credits mid-review); fixed `delete_subject_data()`'s stale pre-delete-snapshot `deleted_counts` (now real DELETE rowcounts, live-verified against PostgreSQL) and `BoundPrincipal.audit_actor`'s non-injective `\|`-joined encoding (now canonical JSON, matching the identical fix already applied to `identity_bootstrap.py`) |
+| 2026-09-01 | Second external-audit review + live PostgreSQL `audit_events` append-only trigger drill | 3 of 4 claimed gaps (RLS, full audit triggers w/ actor context, evidence SHA-256 self-hashing, legacy ETL) rejected with technical reasoning in `LANE2_SYNC.md`; 1 correctly-scoped item implemented and live-verified: normal insert succeeds, direct UPDATE/DELETE against `audit_events` rejected by the database with the exact expected message, row survives unmodified, owner-role `DISABLE TRIGGER`/`ENABLE TRIGGER` bypass-and-restore confirmed genuine, downgrade/upgrade both clean; 341 passed | Claude Code; migration `036de46dd515`, SQLite-side no-op confirmed via the existing migration-chain regression suite |
+| 2026-09-01 | Codex cold immutable audit of Packages S/T/U at `1f0c576` | S and T ACCEPTED (independent re-drill and rowcount/encoding checks passed); U's migration mechanics verified but its INTEGRATION verdict REJECTED: a synthetic 30-day maximum + the accepted retention job reached the DELETE path and failed with `ProgrammingError`/`RaiseException: ... DELETE is not permitted`, `ROW_REMAINS=1` — audit_events is the retention job's only registered category, so U's unconditional DELETE rejection made the job permanently unusable for it | Codex; full audit and Package V handoff spec in `LANE2_SYNC.md` (~line 2420) |
+| 2026-09-02 | Package V fix + full backend gate + live PostgreSQL integration contract | New migration `4631f204d4ba` retires only the DELETE rejection (UPDATE stays rejected, named precisely as not "append-only"); a new committed opt-in integration test file proved at the real head: UPDATE rejected/DELETE permitted, a synthetic maximum can delete `audit_events` through the retention job, the exact 4-worker/11-expired/2-young drill is still exact against the real trigger-protected table, and downgrade/upgrade across the new revision is clean — all 4 passed in 6.71s, disposable database confirmed dropped after; full gate 341 passed with PostgreSQL stopped (proving the opt-in file skips, not fails, without Docker), 345 passed with it running; `alembic check` clean at head; `git diff --check` clean | Claude Code; every prior "database-enforced append-only" claim in this file, `README.md`, `CLAUDE.md`, `CODEX.md` and `SIH26101_TEAM_ORCHESTRATION.md` corrected to the real UPDATE-only boundary; awaiting Codex review |
+| 2026-09-02 | Codex immutable review of Package V at `847c0a8` | 4/4 integration tests passed (5.87s); Codex independently reproduced the original Package U P1 failure closing correctly at head (`DELETED_COUNT=1`, `AUDIT_DELETED_COUNT=1`); full gate 345 passed, 4 warnings, 0 failures (99.14s); `alembic check` clean; no leaked `sih_pkgv_%` databases. **Production migration/retention behavior ACCEPTED outright.** Two bounded P2 findings raised (not blocking): the 4-worker regression only synchronized at thread-pool submission (a serial run would also pass, so it did not itself prove the row-claim race stays closed) and the disposable-database fixture leaked on a pre-yield failure; several current-status doc claims were also stale versus corrected paragraphs elsewhere in the same files, and the ETL rationale still cited "no tenant model" in places instead of the accepted no-real-source-dataset reasoning | Codex; full review and exact closure assignment in `LANE2_SYNC.md` |
+| 2026-09-02 | Package V hardening pass closing both Codex P2 findings | Cleanup: `_disposable_postgres_database()` wraps create/migrate/yield in unconditional `try/finally`; new deterministic regression injects a post-create/pre-yield failure and confirms via direct `pg_database` query that the generated database does not survive. Forced overlap: a test-only `_BarrierSyncSession` (zero production-file changes) blocks all 4 workers at a shared barrier immediately after their `FOR UPDATE SKIP LOCKED` candidate select returns, while row locks are still held; a new negative control runs an equivalent unlocked-select flow under the identical barrier and deterministically fails the same contract (only 3 of 11 rows ever deleted, exact IDs asserted) — a separate uncommitted sanity script confirmed the same broken logic passes when run serially (no forced overlap), proving the barrier does real synchronization work, not decoration. Final-rerun audit-absence now explicitly queried, not inferred. All 6 tests pass in 8.65s; full gate 341 passed/6 skipped with PostgreSQL stopped, 347 passed with it running; `alembic current` → `4631f204d4ba (head)`; `alembic check` clean; `git diff --check` clean; no leaked databases | Claude Code; every stale current-status claim and the ETL rationale corrected across `README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, this file; awaiting Codex's narrow re-review of forced-contention validity, pre-yield cleanup, final-rerun audit-event absence, and current-doc consistency |
+| 2026-09-02 | Codex final narrow immutable review of Package V hardening at `ac5a2e7` | Scope verified: one PostgreSQL integration-test file plus truth/evidence docs; no production retention/migration change. Five consecutive real-PostgreSQL focused runs passed (**30/30 checks** across 5 × 6 tests); fresh full gate **347 passed, 4 warnings, 0 failures in 52.88s**; no `sih_pkgv_%` database remained; Alembic at `4631f204d4ba (head)` with no new operations; compile-all/diff checks passed; a fresh real Keycloak learner token verified through `OIDCVerifier`. Forced overlap, unlocked negative control, pre-yield cleanup and explicit final-rerun audit absence are all valid. **Package V and O-C ACCEPTED; no remaining local Lane 2 correctness finding.** | Codex; no claim of remote CI, protected product routes, organization-row tenancy, approved production IdP, KMS/DR, compliance or whole-product production readiness |
+| 2026-09-02 | `main` merged into lane-2; two-mode data scaffold (`players.preferred_mode`) implemented; Lane 2 coverage-hardening pass | Merge: one conflict (stale local branch ref, not real content), resolved by fast-forwarding first; 351 passed post-merge, no leftover conflict markers. Scaffold: migration `640603a37f2f` adds `players.preferred_mode` (default `"professional"`) with a `CHECK` constraint applied via Alembic batch mode (works on SQLite and PostgreSQL alike, unlike the trigger-precedent dialect gate, since an added column is part of SQLAlchemy's comparable metadata); live-verified on real PostgreSQL (constraint rejects an invalid INSERT, downgrade/re-upgrade clean, `alembic check` clean) and on a real Alembic-migrated SQLite file (constraint genuinely enforced there too, not just documented). One real bug caught pre-commit: the model needed `server_default=`, not just `default=`, or `alembic check` reported a spurious drift. Coverage: installed `pytest-cov` (now in `requirements-dev.txt`); Lane 2-owned code 84% → 94%; `db/database.py` 74% → 100%; `db/seed.py`, `schemas/accuracy.py`, `schemas/learning.py`, `schemas/question.py` 0% → 100%/78%. Full gate: **402 passed** with PostgreSQL stopped (6 skipped), **408 passed** with it running; `alembic check` clean at head `640603a37f2f`; `git diff --check` clean | Claude Code; new files `backend/models/enums.py`, `backend/migrations/versions/640603a37f2f_add_players_preferred_mode.py`, `backend/tests/test_core_learning_mode.py`, `backend/tests/test_core_schemas.py`, `backend/tests/test_core_learning_schemas.py`, `backend/tests/test_core_seed.py`; `docs/contracts/data-authorization.md` section 8 (new); full detail in `LANE2_SYNC.md` |
+
+| 2026-09-03 | Package W cross-lane usability and reciprocal review | W-A deterministic repository facade accepted by Claude at `3a75b28`; the suggested role/competency isolation regression closed at `be9e338`. W-B added the privacy-safe status command and per-lane integration guide. Codex reproduced and drove closure of fresh/missing-table and legacy-column schema crashes; W-C `8d0d1de` uses table-level `COUNT(*)` and adds an adversarial legacy-schema contract. Full gates: **442 passed, 6 skipped** with PostgreSQL stopped; **448 passed** with local PostgreSQL healthy. Live status and Alembic both reported `640603a37f2f (head)`, zero missing tables and no new operations. W-C awaits Claude's final immutable review; no protected-route, hosted-DB, organization-tenancy or production claim is made | Codex + Claude Code; full review trail in `LANE2_SYNC.md`, consumer instructions in `LANE2_INTEGRATION_GUIDE.md` |
 
 Append future entries; never overwrite failed evidence with a later success.

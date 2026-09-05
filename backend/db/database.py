@@ -2,22 +2,101 @@
 Database configuration and session management.
 """
 import os
+import re
+import sqlite3
+from pathlib import Path
+
+from alembic.config import Config
+from alembic.runtime.migration import MigrationContext
+from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, event, text
+from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
-_is_sqlite = "sqlite" in DATABASE_URL
+
+
+def normalize_database_url(database_url: str) -> str:
+    """Select psycopg 3 for conventional and legacy PostgreSQL URLs."""
+    if database_url.startswith("postgresql://"):
+        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    if database_url.startswith("postgres://"):
+        return database_url.replace("postgres://", "postgresql+psycopg://", 1)
+    return database_url
+
+
+SQLALCHEMY_DATABASE_URL = normalize_database_url(DATABASE_URL)
+_database_backend = make_url(SQLALCHEMY_DATABASE_URL).get_backend_name()
+_is_sqlite = _database_backend == "sqlite"
+_is_postgresql = _database_backend == "postgresql"
 
 engine = create_engine(
-    DATABASE_URL,
+    SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread": False} if _is_sqlite else {},
     echo=False,
+    pool_pre_ping=_is_postgresql,
+    # A raised DBAPI error's default SQLAlchemy formatting includes the
+    # failed statement's bound parameters -- fine for a stack trace in local
+    # dev, but those parameters can be player_id, evidence detail, an
+    # uploaded excerpt, or any other real subject data, and this exact
+    # engine is what every request session (get_db(), SessionLocal) is
+    # bound to. hide_parameters replaces them with "[SQL parameters
+    # hidden due to hide_parameters=True]" in that formatted error, so a
+    # logged/reported exception can never itself become a data leak. Package
+    # 6 (Codex's plan item 5, split from the pool-tuning candidates below it
+    # since this one needs no production numbers to be an unambiguous win).
+    hide_parameters=True,
 )
 
+
+@event.listens_for(Engine, "connect")
+def _enforce_sqlite_foreign_keys(dbapi_connection, connection_record):
+    """Enable real foreign-key enforcement on every SQLite connection in
+    this process, not just this module's own `engine`.
+
+    SQLite ships FK enforcement OFF by default (per-connection, not
+    per-database), so every `ForeignKey()` column in `models/*.py` has been
+    silently unenforced -- an orphan INSERT or a parent DELETE that leaves
+    children dangling both succeeded silently instead of raising, unlike
+    PostgreSQL. Registered at the `Engine` *class* level (SQLAlchemy's own
+    documented pattern for this exact gap) rather than on `engine`
+    specifically, so it also covers the ~20 test files that build their own
+    ad hoc `create_engine("sqlite:///:memory:")` -- fixing those call sites
+    individually would be easy to miss one of, and was; this closes the
+    whole class at once. `isinstance` guards it to real `sqlite3`
+    connections only, so it no-ops on `psycopg` (PostgreSQL enforces FKs
+    unconditionally and needs no pragma).
+
+    Deliberately NOT paired with setting the underlying `sqlite3.Connection`
+    object's `autocommit` attribute to `False` (Python 3.12+'s PEP
+    249-standard transaction control). SQLAlchemy's pysqlite dialect
+    already manages transaction boundaries itself against the *legacy*
+    autocommit mode (`isolation_level=None`, the driver default this engine
+    still uses) by emitting its own `BEGIN` only when ORM activity needs
+    one. `security/identity_bootstrap.py::_acquire_bootstrap_lock()` relies
+    on that: it issues a raw `db.execute(text("BEGIN IMMEDIATE"))` as the
+    *first* statement of a guaranteed-fresh session specifically so that
+    literal statement is what opens the transaction and grabs SQLite's
+    write lock immediately. Switching the driver into standard PEP 249
+    autocommit-off would make the driver itself start an implicit
+    transaction first, and a `BEGIN` issued into an already-open
+    transaction raises `sqlite3.OperationalError: cannot start a
+    transaction within a transaction` -- silently breaking the one-admin
+    bootstrap serialization guarantee. See
+    `test_core_sqlite_fk_transactions.py::test_bootstrap_begin_immediate_still_serializes_under_fk_enforcement`
+    for the regression test that would catch exactly that.
+    """
+    if isinstance(dbapi_connection, sqlite3.Connection):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
+
 if _is_sqlite:
+
     @event.listens_for(engine, "connect")
     def _set_sqlite_pragmas(dbapi_connection, connection_record):
         # WAL lets readers and the writer proceed concurrently instead of
@@ -35,6 +114,65 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+_BACKEND_DIRECTORY = Path(__file__).resolve().parents[1]
+
+
+def is_sqlite_database() -> bool:
+    """Return whether the configured application database is SQLite."""
+    return _is_sqlite
+
+
+_TRUE_VALUES = {"1", "true", "yes", "on"}
+
+
+def should_seed_demo_data(*, database_backend: str | None = None) -> bool:
+    """Whether startup should seed synthetic demo data (a demo player, all
+    curricula/dungeons).
+
+    `SEED_DEMO_DATA` wins either way when set. Left unset, this defaults to
+    True on the SQLite zero-setup demo profile (the README's "Run it locally"
+    promise depends on this) and False on PostgreSQL: a migration-managed
+    database implies something closer to a shared or persistent environment,
+    where silently injecting a fake player and curriculum content is not a
+    safe default. See docs/contracts/data-authorization.md and LANE2_SYNC.md
+    for why this boundary exists -- it is not yet a real controlled-pilot
+    seeding policy, just an explicit off switch for anything other than the
+    local SQLite demo.
+    """
+    override = os.getenv("SEED_DEMO_DATA")
+    if override is not None:
+        return override.strip().lower() in _TRUE_VALUES
+    return (database_backend or _database_backend) == "sqlite"
+
+
+def migration_head_revision() -> str:
+    """Return the repository's single Alembic head revision."""
+    config = Config(str(_BACKEND_DIRECTORY / "alembic.ini"))
+    config.set_main_option("script_location", str(_BACKEND_DIRECTORY / "migrations"))
+    heads = ScriptDirectory.from_config(config).get_heads()
+    if len(heads) != 1:
+        raise RuntimeError(f"Expected one Alembic head, found {len(heads)}: {heads}")
+    return heads[0]
+
+
+def database_revision(bind: Engine = engine) -> str | None:
+    """Read the database's current Alembic revision, or None if unversioned."""
+    with bind.connect() as connection:
+        return MigrationContext.configure(connection).get_current_revision()
+
+
+def require_database_at_migration_head(bind: Engine = engine) -> None:
+    """Refuse startup when a migration-managed database is not current."""
+    expected = migration_head_revision()
+    current = database_revision(bind)
+    if current != expected:
+        current_label = current or "unversioned"
+        raise RuntimeError(
+            "Database schema is not at the required Alembic revision "
+            f"(current={current_label}, required={expected}). "
+            "Run `python -m alembic upgrade head` before starting the API."
+        )
+
 
 def get_db():
     """FastAPI dependency that yields a DB session and auto-closes it."""
@@ -43,6 +181,19 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# `\Z` (absolute end of string), not `$` (which also matches just before a
+# single trailing "\n") -- a trailing newline in either input is currently
+# harmless either way (nothing after it to inject; SQL tolerates trailing
+# whitespace), so this was never an exploitable bypass, only an imprecision
+# worth removing rather than reasoning about every call site's tolerance
+# for it as callers change.
+_SAFE_IDENTIFIER = re.compile(r"\A[A-Za-z_][A-Za-z0-9_]*\Z")
+_SAFE_COLUMN_TYPE_AND_DEFAULT = re.compile(
+    r"\A(TEXT|INTEGER|REAL|BOOLEAN|BLOB)"
+    r"(\s+DEFAULT\s+(-?\d+(\.\d+)?|'[^']*'|TRUE|FALSE|NULL))?\Z"
+)
 
 
 def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
@@ -55,9 +206,34 @@ def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
     app.db) needs this, or every query touching the new column raises
     "no such column" against pre-existing rows. Call once at startup, after
     create_all().
+
+    `table`, `name` and `type_and_default` are all interpolated into raw SQL
+    text below -- SQLite has no bind-parameter placeholder for an identifier
+    or a column-definition clause, only for a value. Every current call site
+    (main.py's lifespan) passes hardcoded literals, so this was never
+    reachable with attacker-controlled input, but the raw interpolation is
+    exactly the shape a SAST scanner flags regardless of whether a given
+    caller happens to be safe today. `table`/`name` must match a plain SQL
+    identifier; `type_and_default` must match one of this project's actual
+    SQLite column-definition shapes (a bare type, or that type with a
+    literal DEFAULT -- a number, a quoted string with no embedded quote, or
+    TRUE/FALSE/NULL) rather than an arbitrary string. This is deliberately a
+    shape check, not a literal enum of exact strings used today (which would
+    also reject `tests/test_core_database.py`'s synthetic `widgets` table),
+    per the reconciled review: a closed mapping of exact legacy operations
+    would be more restrictive than this call actually needs to stay safe.
     """
-    if "sqlite" not in DATABASE_URL:
+    if not _is_sqlite:
         return
+    if not _SAFE_IDENTIFIER.match(table):
+        raise ValueError(f"ensure_columns: unsafe table identifier: {table!r}")
+    for name, type_and_default in columns:
+        if not _SAFE_IDENTIFIER.match(name):
+            raise ValueError(f"ensure_columns: unsafe column identifier: {name!r}")
+        if not _SAFE_COLUMN_TYPE_AND_DEFAULT.match(type_and_default):
+            raise ValueError(
+                f"ensure_columns: unsafe or unrecognized column type/default: {type_and_default!r}"
+            )
     with engine.connect() as conn:
         existing = {row[1] for row in conn.execute(text(f"PRAGMA table_info({table})"))}
         for name, type_and_default in columns:

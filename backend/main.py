@@ -9,10 +9,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from db.database import engine, Base, ensure_columns
+from db.database import (
+    Base,
+    engine,
+    ensure_columns,
+    is_sqlite_database,
+    require_database_at_migration_head,
+    should_seed_demo_data,
+)
 
 # Import all models so tables are registered with Base.metadata
 from models.player import Player
+from models.enums import DEFAULT_LEARNING_MODE
 from models.accuracy_history import AccuracyHistory
 from models.question import Question
 from models.submission import AnswerSubmission
@@ -20,16 +28,26 @@ from models.guild import Guild
 from models.dungeon import Dungeon, Room
 from models.session import GameSession
 from models.learning import LearnerProfile, CompetencyAssessment, LearningMaterial, GeneratedQuiz
+from models.governance import RoleTarget, EvidenceRecord, SourceVersion, AuditEvent
+from models.identity import IdentityBinding
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Create all tables on startup, seed demo data."""
-    Base.metadata.create_all(bind=engine)
-    print("Database tables created.")
+    """Prepare the configured schema and seed synthetic demo data."""
+    if is_sqlite_database():
+        Base.metadata.create_all(bind=engine)
+        print("SQLite database tables created or verified.")
+    else:
+        # PostgreSQL is migration-managed: silently creating model tables here
+        # would hide a missed deploy step and leave alembic_version lying about
+        # the real schema. Fail with an actionable message instead.
+        require_database_at_migration_head()
+        print("Database migration revision verified.")
 
-    # Phase 2/3 columns added to an existing players table after the demo DB
-    # was first created -- create_all() above never alters existing tables.
+    # SQLite compatibility columns added after an existing demo DB was first
+    # created -- create_all() never alters existing tables. This helper is a
+    # deliberate no-op on migration-managed PostgreSQL.
     ensure_columns("players", [
         ("hero_id", "TEXT"),
         ("pending_xp_multiplier", "REAL DEFAULT 1.0"),
@@ -37,6 +55,7 @@ async def lifespan(app: FastAPI):
         ("pending_force_correct", "BOOLEAN DEFAULT 0"),
         ("powerup_window_start", "TEXT"),
         ("powerup_uses_this_window", "INTEGER DEFAULT 0"),
+        ("preferred_mode", f"TEXT DEFAULT '{DEFAULT_LEARNING_MODE}'"),
     ])
     ensure_columns("accuracy_history", [
         ("mastered", "BOOLEAN DEFAULT 0"),
@@ -52,9 +71,20 @@ async def lifespan(app: FastAPI):
     # Auto-seed the demo DSA dungeon, then materialize every other curriculum
     # in services/curricula.py as its own dungeon (see db/seed.py's
     # seed_curricula_dungeons for why DSA keeps its own legacy seeding path).
-    from db.seed import seed_database, seed_curricula_dungeons
-    seed_database()
-    seed_curricula_dungeons()
+    # Gated by SEED_DEMO_DATA (see db/database.py::should_seed_demo_data) --
+    # on by default for the SQLite demo, off by default for PostgreSQL, so a
+    # migration-managed database doesn't silently receive a synthetic player
+    # and curriculum content unless that's explicitly asked for.
+    if should_seed_demo_data():
+        from db.seed import seed_database, seed_curricula_dungeons
+        seed_database()
+        seed_curricula_dungeons()
+        print("Seeded synthetic demo data (SEED_DEMO_DATA resolved to true).")
+    else:
+        print(
+            "Skipped synthetic demo data seeding (SEED_DEMO_DATA resolved to false) -- "
+            "see docs/contracts/data-authorization.md."
+        )
 
     yield
 

@@ -1,14 +1,34 @@
 """Deterministic, explainable competency-gap and pathway calculation."""
 
+from services.behavioral_anchors import DEFAULT_SOURCE, DEFAULT_STATUS, get_anchor
 from services.curricula import get_curriculum
 from services.learning_catalog import recommend_courses
+from services.role_targets import FRAMEWORK_VERSION, experience_cap, resolve_role_target
 
+# Versions the 65/35 blend itself (CLAUDE.md architectural invariant #4: "the
+# 65/35 blend ... remain versioned prototype policies until validated").
+# Distinct from role_targets.FRAMEWORK_VERSION, which versions target
+# selection -- these are two independently-changeable policies.
+ASSESSMENT_POLICY_VERSION = "prototype-v1"
 
-EXPERIENCE_TARGET_CAP = {
-    "beginner": 3,
-    "intermediate": 4,
-    "advanced": 5,
-    "expert": 5,
+# The one documented status term that applies to a Lane 3 competency result
+# (CODEX.md architectural invariants: use SIMULATED, CATALOGUE, LIVE,
+# PROVISIONAL and NO EVIDENCE "precisely"; SIH26101_TEAM_ORCHESTRATION.md
+# section 5 has Lane 1 render exactly these). The vocabulary defines no
+# positive counterpart, so evidence_state is this string or None -- the
+# present case is described by evidence_sources instead of an invented term.
+NO_EVIDENCE = "NO EVIDENCE"
+
+# Qualitative uncertainty band -- SIH26101_MASTER_CHECKLIST.md section 4.1:
+# "Display evidence coverage and uncertainty." Deliberately qualitative: a
+# numeric confidence interval would imply psychometric validation this policy
+# does not have (CLAUDE.md invariant #4). "high" is intentionally unreachable
+# until a validated instrument exists -- do not add it without one.
+CONFIDENCE_BY_COVERAGE = {
+    (): "none",
+    ("self_report",): "low",
+    ("observed_practice",): "moderate",
+    ("observed_practice", "self_report"): "moderate",
 }
 
 
@@ -31,6 +51,10 @@ def analyse_competencies(
     self_ratings: dict[str, float],
     measured_scores: dict[str, float],
     experience_level: str = "beginner",
+    job_role: str = "",
+    designation: str = "",
+    current_assignment: str = "",
+    department: str = "",
 ) -> dict:
     curriculum = get_curriculum(curriculum_slug)
     if not curriculum:
@@ -41,12 +65,21 @@ def analyse_competencies(
     if unknown:
         raise ValueError(f"Ratings contain competencies outside this curriculum: {', '.join(unknown)}")
 
-    target_cap = EXPERIENCE_TARGET_CAP.get(experience_level, 3)
+    target_cap = experience_cap(experience_level)
     competency_results = []
     for item in curriculum["competencies"]:
         competency_id = item["id"]
         self_score = self_ratings.get(competency_id)
         measured = measured_scores.get(competency_id)
+
+        # evidence_sources uses Lane 2's EVIDENCE_TYPES vocabulary
+        # (backend/models/governance.py: self_report, observed_practice, ...)
+        # so a future switch to real EvidenceRecord rows needs no relabeling.
+        evidence_sources = []
+        if measured is not None:
+            evidence_sources.append("observed_practice")
+        if self_score is not None:
+            evidence_sources.append("self_report")
 
         if measured is not None and self_score is not None:
             observed = measured * 0.65 + self_score * 0.35
@@ -61,10 +94,25 @@ def analyse_competencies(
             observed = 0.0
             evidence = "no evidence yet"
 
-        role_target = float(item.get("target_level", 3))
+        role_target_info = resolve_role_target(
+            competency_id,
+            item.get("target_level", 3),
+            job_role,
+            designation,
+            current_assignment,
+            department,
+        )
+        role_target = role_target_info["target_level"]
         pathway_target = min(role_target, float(target_cap))
         gap = max(0.0, pathway_target - observed)
-        if gap >= 2.5:
+        has_evidence = bool(evidence_sources)
+        if not has_evidence:
+            # Zero evidence must never be indistinguishable from a
+            # demonstrated low score (CLAUDE.md architectural invariant #3):
+            # "unassessed" overrides the gap-derived tier below even though
+            # the gap number itself is unchanged and still drives sort order.
+            priority = "unassessed"
+        elif gap >= 2.5:
             priority = "critical"
         elif gap >= 1.5:
             priority = "high"
@@ -81,10 +129,20 @@ def analyse_competencies(
                 "prerequisites": item.get("prerequisites", []),
                 "observed_level": round(observed, 2),
                 "observed_label": _level_label(observed),
+                "observed_anchor": get_anchor(competency_id, observed),
+                "target_anchor": get_anchor(competency_id, pathway_target),
                 "pathway_target": pathway_target,
                 "role_target": role_target,
+                "role_target_source": role_target_info["source"],
+                "role_target_assurance": role_target_info["assurance"],
+                "matched_role": role_target_info["matched_role"],
+                "matched_field": role_target_info["matched_field"],
                 "gap": round(gap, 2),
                 "priority": priority,
+                "has_evidence": has_evidence,
+                "evidence_sources": evidence_sources,
+                "evidence_state": None if has_evidence else NO_EVIDENCE,
+                "confidence": CONFIDENCE_BY_COVERAGE[tuple(evidence_sources)],
                 "evidence": evidence,
             }
         )
@@ -112,7 +170,9 @@ def analyse_competencies(
                     "step": len(pathway) + 1,
                     **item,
                     "recommended_action": (
-                        "Complete a diagnostic and foundation module"
+                        "Complete a diagnostic to establish a baseline -- no evidence recorded yet"
+                        if item["priority"] == "unassessed"
+                        else "Complete a diagnostic and foundation module"
                         if item["observed_level"] < 1
                         else "Complete targeted learning, then re-assess with applied questions"
                     ),
@@ -126,11 +186,23 @@ def analyse_competencies(
         "curriculum_name": curriculum["name"],
         "domain": curriculum["domain"],
         "experience_level": experience_level,
+        "job_role": job_role,
+        "designation": designation,
+        "current_assignment": current_assignment,
+        "department": department,
         "method": {
             "scale": "0-5 proficiency",
             "demonstrated_weight": 0.65,
             "self_assessment_weight": 0.35,
             "note": "Self-ratings never override demonstrated performance; missing evidence is surfaced explicitly.",
+            "policy_version": ASSESSMENT_POLICY_VERSION,
+            "role_target_framework_version": FRAMEWORK_VERSION,
+            # Per-anchor source/status live inside each observed_anchor/
+            # target_anchor record; these two are just the module-wide
+            # starting defaults, for a consumer that wants one summary value
+            # without inspecting every anchor individually.
+            "behavioral_anchor_default_source": DEFAULT_SOURCE,
+            "behavioral_anchor_default_status": DEFAULT_STATUS,
         },
         "competencies": competency_results,
         "skill_gaps": skill_gaps,

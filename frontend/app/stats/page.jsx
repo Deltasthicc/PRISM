@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { RadarChart } from '@/components/RadarChart';
-import { VectorBalanceCard } from '@/components/VectorBalanceCard';
-import { CompetencyVectorCard } from '@/components/CompetencyVectorCard';
-import { InferenceRationaleCard } from '@/components/InferenceRationaleCard';
-import { RecalibrateModal } from '@/components/RecalibrateModal';
+
+import { RadarChart } from '../../components/RadarChart';
+import { VectorBalanceCard } from '../../components/VectorBalanceCard';
+import { CompetencyVectorCard } from '../../components/CompetencyVectorCard';
+import { InferenceRationaleCard } from '../../components/InferenceRationaleCard';
+import { RecalibrateModal } from '../../components/RecalibrateModal';
 
 const CompetencyGapView = ({
   officer,
@@ -208,7 +209,9 @@ const CompetencyGapView = ({
 
             {filteredDimensions.length === 0 && (
               <div className="p-8 text-center bg-white rounded-xl border border-[#c5c5d3]/30 text-[#757682] font-sans text-sm">
-                No competencies found matching &quot;{searchFilter || statusFilter}&quot;.
+                No competencies found matching "
+                {searchFilter || statusFilter}
+                ".
               </div>
             )}
 

@@ -25,7 +25,7 @@
 }
 
 html, body {
-  background-color: var(--color-void);
+  background-color: #fff;
   color: var(--color-parchment);
   font-family: var(--font-vt323), monospace;
   font-size: 20px;
@@ -34,6 +34,7 @@ html, body {
      ChatGPT-generated) underneath a torch-lit patch and edge-darkening spot,
      both still plain CSS gradients since they're per-viewport, not tileable
      texture detail. */
+     /*
   background-image:
     radial-gradient(circle at 88% 12%, rgba(0, 0, 0, 0.35) 0%, transparent 3%),
     radial-gradient(ellipse at 50% -20%, rgba(255, 107, 61, 0.06) 0%, transparent 55%),
@@ -41,11 +42,12 @@ html, body {
   background-repeat: no-repeat, no-repeat, repeat;
   background-size: auto, auto, 220px 220px;
   background-attachment: fixed;
+  */
 }
-
 /* Vignette -- darkens the viewport edges so the lit area reads as a torch-lit
    pocket of a much larger, darker cave. Fixed + pointer-events:none, same
    pattern as the scanline overlay below. */
+  /*
 body::after {
   content: '';
   position: fixed;
@@ -58,6 +60,7 @@ body::after {
     rgba(0, 0, 0, 0.72) 100%
   );
 }
+  */
 
 /* Torch-flicker -- a slow, irregular pulse on the overhead ember glow so the
    cave reads as lit by an actual unsteady flame instead of a static gradient.
@@ -88,6 +91,7 @@ body::after {
 }
 
 /* Scanline / CRT atmosphere — subtle, fixed, never blocks interaction */
+/*
 body::before {
   content: '';
   position: fixed;
@@ -104,6 +108,7 @@ body::before {
   mix-blend-mode: multiply;
   opacity: 0.35;
 }
+  */
 
 h1, h2, h3, .font-display {
   font-family: var(--font-press-start), cursive;

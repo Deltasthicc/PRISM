@@ -2,6 +2,7 @@
 AI client — calls the Gemini-backed /ai/ endpoints (routes/ai_real.py).
 """
 import os
+from typing import Any
 import httpx
 from dotenv import load_dotenv
 
@@ -62,5 +63,113 @@ async def call_next_topic(player_id: str, accuracy_history: dict) -> dict:
     resp = await _get_client().post(f"{AI_SERVICE_URL}/ai/graph/next-topic", json={
         "player_id": player_id, "accuracy_history": accuracy_history,
     }, timeout=10.0)
+    resp.raise_for_status()
+    return resp.json()
+
+
+# ─── Lane 4 New Assistant, Retrieval, Review & Evaluation Client Calls ───────
+
+async def call_assistant_query(
+    query: str,
+    tenant_id: str = "default",
+    user_id: str = "anonymous",
+    roles: list[str] | None = None,
+    source_id: str | None = None,
+    top_k: int = 3,
+) -> dict[str, Any]:
+    """Call the Learner Assistant endpoint."""
+    resp = await _get_client().post(
+        f"{AI_SERVICE_URL}/ai/assistant/query",
+        json={
+            "query": query,
+            "tenant_id": tenant_id,
+            "user_id": user_id,
+            "roles": roles or ["learner"],
+            "source_id": source_id,
+            "top_k": top_k,
+        },
+        timeout=30.0,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+async def call_retrieval_search(
+    query: str,
+    tenant_id: str = "default",
+    user_id: str = "anonymous",
+    roles: list[str] | None = None,
+    source_id: str | None = None,
+    top_k: int = 3,
+    threshold: float = 0.20,
+) -> dict[str, Any]:
+    """Call the access-filtered retrieval search endpoint."""
+    resp = await _get_client().post(
+        f"{AI_SERVICE_URL}/ai/retrieval/search",
+        json={
+            "query": query,
+            "tenant_id": tenant_id,
+            "user_id": user_id,
+            "roles": roles or ["learner"],
+            "source_id": source_id,
+            "top_k": top_k,
+            "threshold": threshold,
+        },
+        timeout=15.0,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+async def call_retrieval_index(
+    filename: str,
+    text: str,
+    source_id: str | None = None,
+    tenant_id: str = "default",
+    allowed_roles: list[str] | None = None,
+) -> dict[str, Any]:
+    """Call the document indexing endpoint."""
+    resp = await _get_client().post(
+        f"{AI_SERVICE_URL}/ai/retrieval/index",
+        json={
+            "filename": filename,
+            "text": text,
+            "source_id": source_id,
+            "tenant_id": tenant_id,
+            "allowed_roles": allowed_roles or ["learner", "trainer", "admin"],
+        },
+        timeout=20.0,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+async def call_quiz_review(
+    item: dict[str, Any],
+    target_state: str,
+    reviewer_id: str | None = None,
+    notes: str | None = None,
+) -> dict[str, Any]:
+    """Call the item review transition endpoint."""
+    resp = await _get_client().post(
+        f"{AI_SERVICE_URL}/ai/quiz/review",
+        json={
+            "item": item,
+            "target_state": target_state,
+            "reviewer_id": reviewer_id,
+            "notes": notes,
+        },
+        timeout=10.0,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+async def call_evaluation_report() -> dict[str, Any]:
+    """Call the gold-set evaluation report endpoint."""
+    resp = await _get_client().get(
+        f"{AI_SERVICE_URL}/ai/evaluation/report",
+        timeout=30.0,
+    )
     resp.raise_for_status()
     return resp.json()

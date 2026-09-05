@@ -21,6 +21,12 @@ export const CompetencyVectorCard = ({
     iconBg = 'bg-[#ffdcc3] text-[#904d00]';
     barColor = 'bg-[#fe932c]';
     badgeClasses = 'bg-[#ffdcc3] text-[#904d00] font-bold border border-[#ffb77d]';
+  } else if (status === 'unassessed') {
+    // Deliberately distinct from "matched"/on-target navy -- no evidence
+    // recorded yet is not the same claim as "meets the target level".
+    iconBg = 'bg-[#eaedff] text-[#757682]';
+    barColor = 'bg-[#c5c5d3]';
+    badgeClasses = 'bg-[#f2f3ff] text-[#757682] font-semibold border border-[#c5c5d3]/60';
   }
 
   return (

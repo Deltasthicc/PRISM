@@ -149,6 +149,16 @@ app.include_router(game_router)
 app.include_router(ai_router)
 app.include_router(learning_router)
 
+# Local-dev-only bridge from the demo username login to a real verified
+# Keycloak bearer token (routes/dev_auth.py). Omitted from the router
+# entirely -- not just permission-gated -- unless explicitly opted into, so
+# it never appears in OpenAPI or is routable in any deployment that hasn't
+# set this flag on purpose.
+if os.getenv("ENABLE_DEV_LOGIN", "").strip().lower() in {"1", "true", "yes", "on"}:
+    from routes.dev_auth import router as dev_auth_router
+
+    app.include_router(dev_auth_router)
+
 
 @app.get("/health")
 async def health_check():

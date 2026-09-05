@@ -12,6 +12,11 @@ let live = {
   sessionId: null,
   dungeon: null,
   combat: null,
+  // A real, verified Keycloak bearer token -- see routes/dev_auth.py.
+  // Absent whenever ENABLE_DEV_LOGIN isn't set on the backend (the default),
+  // in which case /learning/* calls correctly 401 until the real browser
+  // OIDC/PKCE flow exists (README.md, SIH26101_MASTER_CHECKLIST.md 5.1).
+  authToken: null,
 };
 
 function hydrateLiveState() {
@@ -30,7 +35,7 @@ function persistLiveState() {
 }
 
 function clearLiveState() {
-  live = { playerId: null, sessionId: null, dungeon: null, combat: null };
+  live = { playerId: null, sessionId: null, dungeon: null, combat: null, authToken: null };
   if (typeof window !== 'undefined') window.localStorage.removeItem(SESSION_KEY);
 }
 
@@ -55,7 +60,11 @@ async function request(path, { method = 'GET', body, headers } = {}) {
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       method,
-      headers: { 'Content-Type': 'application/json', ...headers },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(live.authToken ? { Authorization: `Bearer ${live.authToken}` } : {}),
+        ...headers,
+      },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch (cause) {
@@ -203,12 +212,48 @@ async function startDungeonSession(requestedDungeonId) {
   });
 }
 
+// Best-effort only: obtains a real verified bearer token from
+// routes/dev_auth.py, a local-dev-only bridge (see that file's docstring and
+// .env.example's ENABLE_DEV_LOGIN). If the backend hasn't enabled it, or a
+// local Keycloak isn't running, this fails silently -- /game/* and /ai/* work
+// either way, and /learning/* correctly keeps 401ing until the real browser
+// OIDC/PKCE flow exists (README.md, SIH26101_MASTER_CHECKLIST.md 5.1). Never
+// let this block or fail the demo login itself.
+async function tryDevLogin(playerId) {
+  try {
+    const { access_token: accessToken } = await request('/auth/dev-login', {
+      method: 'POST',
+      body: { player_id: playerId },
+    });
+    live.authToken = accessToken;
+    persistLiveState();
+  } catch (e) {
+    live.authToken = null;
+    if (typeof window !== 'undefined') {
+      console.warn(
+        '[auth] Continuing without a /learning/* bearer token -- local dev login unavailable:',
+        e.message
+      );
+    }
+  }
+}
+
 export const auth = {
   register: (username) =>
-    request('/game/player/create', { method: 'POST', body: { username } }).then(rememberPlayer),
+    request('/game/player/create', { method: 'POST', body: { username } })
+      .then(rememberPlayer)
+      .then(async (result) => {
+        await tryDevLogin(result.player.player_id);
+        return result;
+      }),
 
   login: (username) =>
-    request(`/game/player/by-username/${encodeURIComponent(username)}`).then(rememberPlayer),
+    request(`/game/player/by-username/${encodeURIComponent(username)}`)
+      .then(rememberPlayer)
+      .then(async (result) => {
+        await tryDevLogin(result.player.player_id);
+        return result;
+      }),
 
   logout: async () => {
     clearLiveState();

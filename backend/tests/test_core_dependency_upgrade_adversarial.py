@@ -34,9 +34,27 @@ from models.question import Question  # noqa: F401 -- relationship target
 from models.session import GameSession  # noqa: F401 -- relationship target
 from models.submission import AnswerSubmission  # noqa: F401 -- relationship target
 import routes.learning as learning_routes
+from routes.authorization import require_principal
+from security.rbac import BoundPrincipal
 from services.content_ingestion import MAX_UPLOAD_BYTES
 
 PLAYER_ID = "dep-upgrade-test-player"
+
+
+class _Subject:
+    """Minimal stand-in for the verified-subject shape `BoundPrincipal` expects.
+
+    This is a Lane-2 dependency-contract test, not an authentication test --
+    it exists to prove the upgraded multipart/ASGI stack still parses uploads
+    correctly, so it bypasses `require_principal`'s real OIDC verification
+    with a synthetic already-authenticated learner rather than asserting
+    anything about identity verification itself (that's covered elsewhere,
+    e.g. `test_authorization_dependencies.py`).
+    """
+
+    issuer = "https://issuer.example.test/realm"
+    subject_id = "dep-upgrade-test-subject"
+    roles = frozenset({"learner"})
 
 
 @pytest.fixture
@@ -56,9 +74,17 @@ def client(monkeypatch):
         finally:
             db.close()
 
+    principal = BoundPrincipal(
+        subject=_Subject(),
+        binding_id="dep-upgrade-test-binding",
+        player_id=PLAYER_ID,
+        roles=frozenset({"learner"}),
+    )
+
     app = FastAPI()
     app.include_router(learning_routes.router)
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[require_principal] = lambda: principal
 
     # No live Gemini/API-key call -- this is about multipart/ASGI parsing,
     # not quiz-generation quality. Real generate_quiz() already has its own

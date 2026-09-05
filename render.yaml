@@ -1,0 +1,91 @@
+# Render Blueprint for PRISM's shared backend + shared local-standards OIDC
+# provider. Deploy: push this file to `main`, then in the Render dashboard
+# choose "New > Blueprint" and point it at this repo/branch.
+#
+# What this does NOT cover: the frontend (still runs per-laptop via `npm run
+# dev`, pointed at the deployed backend's URL through NEXT_PUBLIC_API_URL)
+# and the database (Neon is provisioned separately -- Render can't create a
+# Neon project for you; paste its connection string in as DATABASE_URL
+# below). Neither Keycloak here nor the backend is a government-approved
+# production system -- see SIH26101_MASTER_CHECKLIST.md 5.1.
+#
+# Every `sync: false` env var below has no value in this file on purpose --
+# Render will prompt for it once during blueprint creation and store it as a
+# secret from then on; it is never committed to the repo.
+
+services:
+  # ── Shared FastAPI backend ──────────────────────────────────────────────
+  - type: web
+    name: prism-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: >-
+      python -m alembic upgrade head &&
+      uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # Neon's connection string, e.g.
+      # postgresql://user:password@ep-xxxx.neon.tech/prism?sslmode=require
+      - key: DATABASE_URL
+        sync: false
+      # Must exactly equal the deployed Keycloak service's public issuer URL:
+      # https://<prism-keycloak's real Render hostname>/realms/prism
+      - key: OIDC_ISSUER
+        sync: false
+      - key: OIDC_AUDIENCE
+        value: prism-backend-dev
+      # Every teammate's local frontend origin, comma-separated -- everyone
+      # still runs `npm run dev` on their own laptop, just pointed at this
+      # shared backend instead of localhost:8000. Add each new contributor's
+      # port here if it's ever not the Next.js default.
+      - key: FRONTEND_ORIGINS
+        value: http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        value: gemini-flash-lite-latest
+      - key: SEED_DEMO_DATA
+        value: "false"
+      # Bridges the demo username login to a real Keycloak token for
+      # everyone automatically -- see routes/dev_auth.py's docstring. This is
+      # still not the real browser OIDC/PKCE flow (README.md,
+      # SIH26101_MASTER_CHECKLIST.md 5.1); it's what makes a *shared*
+      # deployment usable today without that flow existing yet.
+      - key: ENABLE_DEV_LOGIN
+        value: "true"
+      # Must equal https://<prism-keycloak's real hostname>/realms/prism/protocol/openid-connect/token
+      - key: KEYCLOAK_DEV_TOKEN_URL
+        sync: false
+      - key: KEYCLOAK_DEV_CLIENT_ID
+        value: prism-backend-dev
+      - key: KEYCLOAK_DEV_CLIENT_SECRET
+        sync: false
+      - key: KEYCLOAK_DEV_USERNAME
+        value: demo-learner
+      - key: KEYCLOAK_DEV_PASSWORD
+        sync: false
+
+  # ── Shared local-standards OIDC provider (Keycloak) ─────────────────────
+  - type: web
+    name: prism-keycloak
+    runtime: docker
+    plan: free
+    rootDir: backend/keycloak
+    dockerfilePath: ./Dockerfile
+    envVars:
+      # Matches docker-compose.dev.yml's already-correct names (KEYCLOAK_ADMIN/
+      # KEYCLOAK_ADMIN_PASSWORD are deprecated -- confirmed by this image's own
+      # boot log, "KC-SERVICES0110").
+      - key: KC_BOOTSTRAP_ADMIN_USERNAME
+        sync: false
+      - key: KC_BOOTSTRAP_ADMIN_PASSWORD
+        sync: false
+      # Render assigns this at creation time (usually
+      # prism-keycloak-<random>.onrender.com, or exactly prism-keycloak.onrender.com
+      # if that name is free) -- the Dockerfile's placeholder value must be
+      # overridden here with whatever Render actually assigns, or every
+      # issued token's `iss` claim will be wrong and OIDC_ISSUER above will
+      # never match it.
+      - key: KC_HOSTNAME
+        sync: false

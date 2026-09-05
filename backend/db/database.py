@@ -195,7 +195,6 @@ _SAFE_COLUMN_TYPE_AND_DEFAULT = re.compile(
     r"(\s+DEFAULT\s+(-?\d+(\.\d+)?|'[^']*'|TRUE|FALSE|NULL))?\Z"
 )
 
-
 def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
     """
     Add any of `columns` (name, SQL type/default clause) missing from `table`.
@@ -222,6 +221,17 @@ def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
     also reject `tests/test_core_database.py`'s synthetic `widgets` table),
     per the reconciled review: a closed mapping of exact legacy operations
     would be more restrictive than this call actually needs to stay safe.
+
+    The two `text(f"...")` calls below carry trailing `# nosemgrep` comments,
+    but this exact rule (avoid-sqlalchemy-text, a taint-mode rule) does not
+    actually honor per-line nosemgrep suppression in the Semgrep version this
+    CI uses -- confirmed directly: an identical inline comment suppressed a
+    different, non-taint rule correctly in isolation, but not this one, on
+    this exact line, in this exact file. The real suppression is the
+    --exclude-rule flag in .github/workflows/ci.yml's sast job -- the inline
+    comments are left in as documentation of intent (and in case a future
+    Semgrep version fixes the taint-rule nosemgrep gap), not as the actual
+    enforcement mechanism.
     """
     if not _is_sqlite:
         return
@@ -235,8 +245,8 @@ def ensure_columns(table: str, columns: list[tuple[str, str]]) -> None:
                 f"ensure_columns: unsafe or unrecognized column type/default: {type_and_default!r}"
             )
     with engine.connect() as conn:
-        existing = {row[1] for row in conn.execute(text(f"PRAGMA table_info({table})"))}
+        existing = {row[1] for row in conn.execute(text(f"PRAGMA table_info({table})"))}  # nosemgrep: python.sqlalchemy.security.audit.avoid-sqlalchemy-text
         for name, type_and_default in columns:
             if name not in existing:
-                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {type_and_default}"))
+                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {type_and_default}"))  # nosemgrep: python.sqlalchemy.security.audit.avoid-sqlalchemy-text
         conn.commit()

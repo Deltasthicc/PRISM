@@ -88,5 +88,5 @@ RUN /opt/keycloak/bin/kc.sh build
 ENV JAVA_OPTS_APPEND="-Xms32m -Xmx180m -XX:MetaspaceSize=64m -XX:MaxMetaspaceSize=180m -XX:ReservedCodeCacheSize=48m -Xss512k"
 
 EXPOSE 8080
-
+USER 1000
 CMD ["start", "--optimized", "--import-realm"]

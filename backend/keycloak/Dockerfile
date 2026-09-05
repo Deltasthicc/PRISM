@@ -22,9 +22,26 @@ ENV KC_HTTP_ENABLED=true
 
 # health/metrics are BUILD-time options (they change which Quarkus features
 # get compiled in) -- must be set before `kc.sh build` below, not just at
-# runtime, or the build won't actually omit them.
+# runtime, or the build won't actually reflect them. (KC_CACHE below is NOT
+# build-time -- `kc.sh build`'s own output confirms it: "kc.cache ... will be
+# ignored during build time" -- it only needs to exist as a runtime env var,
+# which ENV still guarantees regardless of where it's declared relative to
+# the build step; kept alongside the other Keycloak env vars for
+# readability, not because ordering matters here.)
 ENV KC_HEALTH_ENABLED=false
 ENV KC_METRICS_ENABLED=false
+# Render only ever runs one instance of this service (WEB_CONCURRENCY=1) --
+# there is no second node to ever cluster with. Left on Keycloak's default
+# clustered ("ispn") cache, it still starts a JGroups TCP transport and
+# spends minutes retrying peer discovery against itself over Render's
+# networking before giving up and continuing anyway -- confirmed directly in
+# a real deploy log: ~2m20s of `JGRP000006: ... failed accepting connection
+# from peer ... cookie ... does not match own cookie` repeating every ~5s,
+# directly inflating that boot to started in 339.701s. `local` is the
+# correct, documented Keycloak option for exactly this shape of deployment
+# (single node, no clustering ever intended) and skips JGroups/Infinispan
+# clustering setup entirely.
+ENV KC_CACHE=local
 
 # `start-dev` (the local-dev-compose default) re-runs Keycloak's "Quarkus
 # augmentation" build step from scratch on every single container boot --

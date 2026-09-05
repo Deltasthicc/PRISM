@@ -3,6 +3,12 @@
 Defends against prompt injection within user queries and uploaded documents,
 sanitizes untrusted inputs, wraps retrieved content in data frames, and
 prevents instruction leakage.
+
+NOTE ON LIMITATIONS:
+Regex-based heuristic pattern matching is one layer of defense in depth. It
+does not mathematically guarantee 100% detection of all possible adversarial
+jailbreaks or zero-day obfuscations. It is paired with XML CDATA data-framing,
+strict system prompt constraints, and pre-retrieval access boundary enforcement.
 """
 from __future__ import annotations
 
@@ -11,24 +17,37 @@ from typing import Any
 
 # Known prompt injection / instruction override patterns (case-insensitive)
 _INJECTION_PATTERNS = [
-    re.compile(r"ignore\s+(all\s+)?(previous|prior|above)\s+instructions?", re.IGNORECASE),
-    re.compile(r"disregard\s+(all\s+)?(previous|prior|above)\s+instructions?", re.IGNORECASE),
+    # Direct instruction overrides
+    re.compile(r"ignore\s+(all\s+)?(previous|prior|above|earlier|past)\s+(instructions?|directions?|rules?|prompts?)", re.IGNORECASE),
+    re.compile(r"disregard\s+(all\s+)?(previous|prior|above|earlier|past)\s+(instructions?|directions?|rules?|guidance|policies)", re.IGNORECASE),
+    re.compile(r"forget\s+(all\s+)?(previous|prior|above|earlier|past|your)\s+(instructions?|directions?|rules?|guidance|training|prompts?)", re.IGNORECASE),
+    re.compile(r"set\s+aside\s+(all\s+)?(previous|prior|earlier|existing)\s+(instructions?|guidance|rules?|policies)", re.IGNORECASE),
+    re.compile(r"drop\s+(all\s+)?(previous|prior|earlier)\s+(instructions?|rules?|constraints?)", re.IGNORECASE),
+    re.compile(r"discard\s+(all\s+)?(previous|prior|earlier)\s+(instructions?|rules?|guidelines?)", re.IGNORECASE),
+    
+    # System override and mode hijacking
     re.compile(r"system\s+override", re.IGNORECASE),
     re.compile(r"you\s+are\s+now\s+(a|an|in)\b", re.IGNORECASE),
-    re.compile(r"bypass\s+all\s+(guardrails|filters|rules)", re.IGNORECASE),
+    re.compile(r"bypass\s+all\s+(guardrails|filters|rules|checks)", re.IGNORECASE),
     re.compile(r"developer\s+mode\s+(enabled|on)", re.IGNORECASE),
-    re.compile(r"output\s+the\s+(system\s+prompt|secret\s+key|api\s+key|credentials?)", re.IGNORECASE),
+    re.compile(r"disable\s+(all\s+)?(safety|security|content)\s+(filters|checks|guardrails|restrictions?)", re.IGNORECASE),
+    re.compile(r"override\s+(all\s+)?(system|security|safety)\s+(rules|controls|policies|guardrails)", re.IGNORECASE),
+    
+    # Exfiltration of confidential prompt / credentials
+    re.compile(r"(output|print|reveal|show|display|leak)\s+(the\s+|your\s+|all\s+)?(system\s+prompt|hidden\s+prompt|secret\s+key|api\s+key|credentials?|internal\s+instructions?|secret\s+instructions?)", re.IGNORECASE),
     re.compile(r"jailbreak", re.IGNORECASE),
     re.compile(r"do\s+anything\s+now", re.IGNORECASE),
     re.compile(r"DAN\s+mode", re.IGNORECASE),
-    re.compile(r"act\s+as\s+an\s+unrestricted", re.IGNORECASE),
+    re.compile(r"act\s+as\s+an?\s+(unrestricted|unfiltered|jailbroken|evil)", re.IGNORECASE),
+    re.compile(r"pretend\s+(to\s+be|that\s+you\s+are)\s+an?\s+(unrestricted|unfiltered)", re.IGNORECASE),
+    re.compile(r"from\s+now\s+on\s*,\s*(you\s+are|act\s+as|behave\s+as)", re.IGNORECASE),
 ]
 
 _CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]")
 
 
 def detect_prompt_injection(text: str) -> tuple[bool, str | None]:
-    """Scan text for common adversarial prompt injection patterns.
+    """Scan text for adversarial prompt injection and override patterns.
 
     Returns:
         (is_injection, matched_pattern_description)
@@ -65,7 +84,7 @@ def format_evidence_block(chunks: list[dict[str, Any]]) -> str:
     instructions.
     """
     if not chunks:
-        return "<retrieved_evidence count=\"0\" />"
+        return '<retrieved_evidence count="0" />'
 
     formatted_blocks = ["<retrieved_evidence>"]
     for i, c in enumerate(chunks, start=1):

@@ -6,6 +6,7 @@ producing structured grading verdicts, scores, feedback, and grader versioning.
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import re
 from dataclasses import dataclass
@@ -126,7 +127,8 @@ async def grade_student_answer(
 
     # Semantic grading via Gemini
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(os.getenv("LLM_MODEL", "gemini-flash-lite-latest"))
+    model_name = os.getenv("LLM_MODEL", "gemini-flash-lite-latest")
+    model = genai.GenerativeModel(model_name)
 
     prompt = f"""You are a strict, fair, and objective educational grader evaluating student free-text responses.
 Evaluate semantic meaning, conceptual accuracy, and completeness, not just exact wording.
@@ -143,15 +145,31 @@ Respond in valid JSON only with this schema:
   "feedback": "Concise, constructive feedback explaining why the answer was scored this way"
 }}"""
 
+    # 1. Call Gemini Provider
     try:
         response = await asyncio.wait_for(
             asyncio.to_thread(model.generate_content, prompt), timeout=20.0
         )
-        text = response.text or ""
-        match = re.search(r"```(?:json)?\s*(.*?)\s*```", text, re.DOTALL)
-        if match:
-            text = match.group(1)
-        data = json.loads(text.strip())
+        raw_text = response.text or ""
+    except Exception as exc:
+        score, verdict, feedback = _word_overlap_grade(clean_learner, clean_expected)
+        damage_map = {"correct": 2.0, "partial": 1.0, "incorrect": 0.0}
+        return GradingResult(
+            learner_answer=clean_learner,
+            expected_answer=clean_expected,
+            score=score,
+            verdict=verdict,
+            damage_multiplier=damage_map[verdict],
+            feedback=f"{feedback} (Graded via fallback due to provider failure: {type(exc).__name__})",
+            evidence_quote=evidence_quote,
+            grader_version=f"fallback-provider-error:{type(exc).__name__}",
+        )
+
+    # 2. Parse Model JSON Response
+    try:
+        match = re.search(r"```(?:json)?\s*(.*?)\s*```", raw_text, re.DOTALL)
+        json_str = match.group(1) if match else raw_text
+        data = json.loads(json_str.strip())
 
         score = float(data.get("score", 0.0))
         verdict = str(data.get("verdict", "incorrect")).lower()
@@ -167,7 +185,7 @@ Respond in valid JSON only with this schema:
             damage_multiplier=damage_map[verdict],
             feedback=data.get("feedback", "Evaluated via semantic model."),
             evidence_quote=evidence_quote,
-            grader_version=os.getenv("LLM_MODEL", "gemini-flash-lite-latest"),
+            grader_version=model_name,
         )
     except Exception as exc:
         score, verdict, feedback = _word_overlap_grade(clean_learner, clean_expected)
@@ -178,7 +196,7 @@ Respond in valid JSON only with this schema:
             score=score,
             verdict=verdict,
             damage_multiplier=damage_map[verdict],
-            feedback=f"{feedback} (Graded using fallback due to provider: {type(exc).__name__})",
+            feedback=f"{feedback} (Graded via fallback due to invalid model response: {type(exc).__name__})",
             evidence_quote=evidence_quote,
-            grader_version="deterministic-overlap-fallback",
+            grader_version=f"fallback-invalid-model-response:{type(exc).__name__}",
         )

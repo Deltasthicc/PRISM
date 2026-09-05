@@ -1,6 +1,7 @@
 """
 Real AI endpoints — powered by Gemini for question generation and answer judging,
 plus Lane 4 RAG retrieval, Learner Assistant, quiz review, and evaluation benchmarks.
+Authenticated and authorized via Lane 2 RBAC dependencies.
 """
 import asyncio
 import json
@@ -12,7 +13,8 @@ from typing import Any
 
 import google.generativeai as genai
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 from ai.assistant import default_assistant
 from ai.evaluation import run_gold_set_evaluation
@@ -20,6 +22,25 @@ from ai.ingestion import ingest_document
 from ai.provenance import AccessContext, ItemReviewState, QuizQuestionItem, SourceLocator
 from ai.quiz_engine import QuizReviewWorkflow
 from ai.retrieval import create_citations_from_retrieved_chunks, default_chunk_store
+from db.database import get_db
+from models.accuracy_history import AccuracyHistory
+from models.player import Player
+from models.question import Question
+from models.submission import AnswerSubmission
+from routes.authorization import (
+    require_deployment_tenant_dependency,
+    require_own_player_dependency,
+    require_permission_dependency,
+    require_principal,
+)
+from security.rbac import (
+    AuthorizationError,
+    BoundPrincipal,
+    Permission,
+    permissions_for,
+    scoped_to_own_player,
+)
+from services.knowledge_graph import TOPIC_GRAPH, get_next_topic, get_weak_topics
 
 load_dotenv()
 
@@ -44,39 +65,26 @@ DAMAGE_RANGE_BY_DIFFICULTY = {
 
 def _parse_json_from_response(text: str) -> dict:
     """Extract JSON from Gemini response, handling markdown fences."""
-    # Try to find JSON in code fences
     match = re.search(r"```(?:json)?\s*\n?(.*?)\n?```", text, re.DOTALL)
     if match:
         text = match.group(1)
-    # Try direct parse
     return json.loads(text.strip())
 
 
 async def _call_gemini_with_retry(prompt: str, max_retries: int = 3) -> str:
-    """Call Gemini with exponential backoff on rate-limit (429) errors.
-
-    The Gemini SDK call itself is synchronous/blocking; running it directly
-    inside an async route handler would freeze the whole event loop (every
-    other in-flight request) for the duration of the call and any retry
-    backoff. `asyncio.to_thread` runs it on a worker thread instead.
-    """
+    """Call Gemini with exponential backoff on rate-limit (429) errors."""
     for attempt in range(max_retries):
         try:
             response = await asyncio.to_thread(model.generate_content, prompt)
             return response.text
         except Exception as e:
             error_str = str(e)
-            # A per-day quota (the free tier's usual cap) cannot recover
-            # within a 15-45s retry loop -- fail immediately instead of
-            # burning that time on retries that cannot succeed.
             is_daily_quota = "PerDay" in error_str
             is_rate_limit = not is_daily_quota and ("429" in error_str or "ResourceExhausted" in error_str)
             if is_rate_limit and attempt < max_retries - 1:
-                wait_time = (attempt + 1) * 15  # 15s, 30s backoff
-                print(f"[AI] Rate limited (attempt {attempt + 1}), waiting {wait_time}s...")
+                wait_time = (attempt + 1) * 15
                 await asyncio.sleep(wait_time)
             else:
-                print(f"[AI] Gemini call failed (attempt {attempt + 1}): {type(e).__name__}: {error_str[:200]}")
                 if attempt < max_retries - 1:
                     await asyncio.sleep(2)
                 else:
@@ -84,8 +92,20 @@ async def _call_gemini_with_retry(prompt: str, max_retries: int = 3) -> str:
 
 
 @router.post("/question/generate")
-async def generate_question(body: dict):
+async def generate_question(
+    body: dict,
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Generate a unique question using Gemini."""
+    player_id = body.get("player_id")
+    if player_id:
+        try:
+            scoped_to_own_player(principal, player_id)
+        except AuthorizationError as exc:
+            raise HTTPException(status_code=403, detail="Access denied") from exc
+
     topic = body.get("topic", "arrays")
     difficulty = body.get("difficulty", "medium")
     domain = body.get("domain", DEFAULT_DOMAIN)
@@ -147,7 +167,12 @@ Respond in JSON only, no preamble:
 
 
 @router.post("/answer/judge")
-async def judge_answer(body: dict):
+async def judge_answer(
+    body: dict,
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Judge a player's answer using Gemini for semantic evaluation."""
     player_answer = body.get("player_answer", "").strip()
     expected_answer = body.get("expected_answer", "").strip()
@@ -183,7 +208,6 @@ Respond in JSON only:
         score = float(data.get("score", 0.0))
         feedback = data.get("feedback", "")
 
-        # Map verdict to damage multiplier
         damage_map = {"correct": 2.0, "partial": 1.0, "incorrect": 0.0}
         damage_multiplier = damage_map.get(verdict, 0.0)
 
@@ -214,8 +238,20 @@ Respond in JSON only:
 
 
 @router.post("/difficulty/next")
-async def next_difficulty(body: dict):
+async def next_difficulty(
+    body: dict,
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Determine next difficulty using RL epsilon-greedy bandit."""
+    player_id = body.get("player_id")
+    if player_id:
+        try:
+            scoped_to_own_player(principal, player_id)
+        except AuthorizationError as exc:
+            raise HTTPException(status_code=403, detail="Access denied") from exc
+
     accuracy_history = body.get("accuracy_history", {})
     topic = body.get("topic", "")
 
@@ -223,7 +259,6 @@ async def next_difficulty(body: dict):
     hard_threshold = float(os.getenv("RL_HARD_THRESHOLD", "0.80"))
     medium_threshold = float(os.getenv("RL_MEDIUM_THRESHOLD", "0.50"))
 
-    # Epsilon-greedy exploration
     if random.random() < epsilon:
         difficulty = random.choice(["easy", "medium", "hard"])
     else:
@@ -239,9 +274,19 @@ async def next_difficulty(body: dict):
 
 
 @router.post("/graph/next-topic")
-async def next_topic(body: dict):
+async def next_topic(
+    body: dict,
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
     """Route to weakest unlocked topic using knowledge graph."""
-    from services.knowledge_graph import get_next_topic, get_weak_topics
+    player_id = body.get("player_id")
+    if player_id:
+        try:
+            scoped_to_own_player(principal, player_id)
+        except AuthorizationError as exc:
+            raise HTTPException(status_code=403, detail="Access denied") from exc
 
     accuracy_history = body.get("accuracy_history", {})
     next_t = get_next_topic(accuracy_history)
@@ -251,80 +296,80 @@ async def next_topic(body: dict):
 
 
 @router.get("/dashboard/{player_id}")
-async def dashboard(player_id: str):
+async def dashboard(
+    player_id: str,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_own_player_dependency(Permission.PROFILE_SELF_READ)
+    ),
+):
     """Return ML dashboard data for a player."""
-    from db.database import SessionLocal
-    from models.accuracy_history import AccuracyHistory
-    from models.question import Question
-    from models.submission import AnswerSubmission
-    from services.knowledge_graph import TOPIC_GRAPH
+    player = db.query(Player).filter(Player.player_id == player_id).first()
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
 
-    db = SessionLocal()
-    try:
-        histories = db.query(AccuracyHistory).filter(
-            AccuracyHistory.player_id == player_id
-        ).all()
+    histories = db.query(AccuracyHistory).filter(
+        AccuracyHistory.player_id == player_id
+    ).all()
 
-        topic_accuracies = {h.topic: h.recent_accuracy for h in histories}
+    topic_accuracies = {h.topic: h.recent_accuracy for h in histories}
 
-        # Last 20 submissions with topic names
-        submissions = db.query(AnswerSubmission, Question).join(
-            Question, AnswerSubmission.question_id == Question.question_id
-        ).filter(
-            AnswerSubmission.player_id == player_id
-        ).order_by(AnswerSubmission.submitted_at.desc()).limit(20).all()
+    submissions = db.query(AnswerSubmission, Question).join(
+        Question, AnswerSubmission.question_id == Question.question_id
+    ).filter(
+        AnswerSubmission.player_id == player_id
+    ).order_by(AnswerSubmission.submitted_at.desc()).limit(20).all()
 
-        score_history = [
-            {"score": s.score, "verdict": s.verdict, "topic": q.topic,
-             "difficulty": q.difficulty, "response_time_ms": s.response_time_ms,
-             "submitted_at": s.submitted_at.isoformat() if s.submitted_at else None,
-             "question": q.question_text, "player_answer": s.player_answer}
-            for s, q in submissions
-        ]
+    score_history = [
+        {"score": s.score, "verdict": s.verdict, "topic": q.topic,
+         "difficulty": q.difficulty, "response_time_ms": s.response_time_ms,
+         "submitted_at": s.submitted_at.isoformat() if s.submitted_at else None,
+         "question": q.question_text, "player_answer": s.player_answer}
+        for s, q in submissions
+    ]
 
-        # Difficulty history — recent difficulties served
-        difficulty_history = [
-            {"topic": q.topic, "difficulty": q.difficulty}
-            for s, q in submissions
-        ]
+    difficulty_history = [
+        {"topic": q.topic, "difficulty": q.difficulty}
+        for s, q in submissions
+    ]
 
-        # Graph state — locked/unlocked/mastered per topic
-        graph_state = {}
-        for topic, prereqs in TOPIC_GRAPH.items():
-            acc = topic_accuracies.get(topic, 0)
-            if acc >= 0.9:
-                graph_state[topic] = "mastered"
-            elif not prereqs:
-                # Root topics are always unlocked
-                graph_state[topic] = "unlocked"
-            elif all(topic_accuracies.get(p, 0) > 0.65 for p in prereqs):
-                graph_state[topic] = "unlocked"
-            else:
-                graph_state[topic] = "locked"
+    graph_state = {}
+    for topic, prereqs in TOPIC_GRAPH.items():
+        acc = topic_accuracies.get(topic, 0)
+        if acc >= 0.9:
+            graph_state[topic] = "mastered"
+        elif not prereqs:
+            graph_state[topic] = "unlocked"
+        elif all(topic_accuracies.get(p, 0) > 0.65 for p in prereqs):
+            graph_state[topic] = "unlocked"
+        else:
+            graph_state[topic] = "locked"
 
-        return {
-            "player_id": player_id,
-            "topic_accuracies": topic_accuracies,
-            "score_history": score_history,
-            "difficulty_history": difficulty_history,
-            "graph_state": graph_state,
-        }
-    finally:
-        db.close()
+    return {
+        "player_id": player_id,
+        "topic_accuracies": topic_accuracies,
+        "score_history": score_history,
+        "difficulty_history": difficulty_history,
+        "graph_state": graph_state,
+    }
 
 
-# ─── Lane 4 New RAG, Assistant, Review, and Evaluation Endpoints ─────────────
+# ─── Lane 4 Authenticated RAG, Assistant, Review, and Evaluation ─────────────
 
 @router.post("/assistant/query")
-async def assistant_query(body: dict):
+async def assistant_query(
+    body: dict,
+    principal: BoundPrincipal = Depends(require_principal),
+):
     """Answer a learner query using access-filtered, cited retrieval."""
     query = body.get("query", "")
     if not query:
         raise HTTPException(status_code=422, detail="Query string is required.")
 
-    tenant_id = body.get("tenant_id", "default")
-    user_id = body.get("user_id", "anonymous")
-    roles = tuple(body.get("roles", ["learner"]))
+    # CRITICAL: Derive tenant_id, user_id, and roles from authenticated principal
+    tenant_id = principal.tenant_scope
+    user_id = principal.player_id or principal.subject.subject_id
+    roles = tuple(principal.roles)
     source_id = body.get("source_id")
     top_k = int(body.get("top_k", 3))
 
@@ -339,15 +384,19 @@ async def assistant_query(body: dict):
 
 
 @router.post("/retrieval/search")
-async def retrieval_search(body: dict):
+async def retrieval_search(
+    body: dict,
+    principal: BoundPrincipal = Depends(require_principal),
+):
     """Execute access-filtered chunk retrieval with relevance scoring."""
     query = body.get("query", "")
     if not query:
         raise HTTPException(status_code=422, detail="Query string is required.")
 
-    tenant_id = body.get("tenant_id", "default")
-    user_id = body.get("user_id", "anonymous")
-    roles = tuple(body.get("roles", ["learner"]))
+    # CRITICAL: Derive tenant_id, user_id, and roles from authenticated principal
+    tenant_id = principal.tenant_scope
+    user_id = principal.player_id or principal.subject.subject_id
+    roles = tuple(principal.roles)
     source_id = body.get("source_id")
     top_k = int(body.get("top_k", 3))
     threshold = float(body.get("threshold", 0.20))
@@ -372,7 +421,12 @@ async def retrieval_search(body: dict):
 
 
 @router.post("/retrieval/index")
-async def retrieval_index(body: dict):
+async def retrieval_index(
+    body: dict,
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.CONTENT_DRAFT_CREATE)
+    ),
+):
     """Ingest and index a document payload into the in-memory retrieval store."""
     filename = body.get("filename", "document.txt")
     raw_text = body.get("text", "")
@@ -380,8 +434,9 @@ async def retrieval_index(body: dict):
         raise HTTPException(status_code=422, detail="Document text is required.")
 
     source_id = body.get("source_id")
-    tenant_id = body.get("tenant_id", "default")
-    allowed_roles = body.get("allowed_roles", ["learner", "trainer", "admin"])
+    # CRITICAL: Derive tenant_id from authenticated principal
+    tenant_id = principal.tenant_scope
+    allowed_roles = body.get("allowed_roles") or ["learner", "trainer", "admin"]
 
     source_ver, chunks, _ = ingest_document(
         filename=filename,
@@ -403,7 +458,10 @@ async def retrieval_index(body: dict):
 
 
 @router.post("/quiz/review")
-async def quiz_review_item(body: dict):
+async def quiz_review_item(
+    body: dict,
+    principal: BoundPrincipal = Depends(require_principal),
+):
     """Transition an assessment item through the review lifecycle state machine."""
     item_dict = body.get("item")
     if not item_dict:
@@ -418,7 +476,29 @@ async def quiz_review_item(body: dict):
             detail=f"Invalid target review state: '{target_state_str}'. Must be one of: {[s.value for s in ItemReviewState]}",
         )
 
-    reviewer_id = body.get("reviewer_id")
+    # Permission check based on target lifecycle state
+    user_perms = permissions_for(principal)
+    if target_state in {
+        ItemReviewState.APPROVED,
+        ItemReviewState.EXPERT_REVIEW,
+        ItemReviewState.PILOT,
+        ItemReviewState.PUBLISHED,
+        ItemReviewState.RETIRED,
+    }:
+        if (
+            Permission.CONTENT_REVIEW not in user_perms
+            and Permission.CONTENT_APPROVE not in user_perms
+        ):
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif target_state in {ItemReviewState.AUTO_CHECKED, ItemReviewState.DRAFT}:
+        if (
+            Permission.CONTENT_DRAFT_CREATE not in user_perms
+            and Permission.CONTENT_REVIEW not in user_perms
+        ):
+            raise HTTPException(status_code=403, detail="Access denied")
+
+    # CRITICAL: Derive reviewer identity from authenticated principal
+    reviewer_id = principal.audit_actor
     notes = body.get("notes")
 
     # Reconstruct item object
@@ -464,7 +544,18 @@ async def quiz_review_item(body: dict):
 
 
 @router.get("/evaluation/report")
-async def evaluation_report():
+async def evaluation_report(
+    principal: BoundPrincipal = Depends(require_principal),
+):
     """Run deterministic gold-set benchmark evaluation and return report."""
+    user_perms = permissions_for(principal)
+    allowed_perms = {
+        Permission.ORGANIZATION_ANALYTICS_READ,
+        Permission.AUDIT_READ,
+        Permission.CONTENT_REVIEW,
+    }
+    if not (user_perms & allowed_perms):
+        raise HTTPException(status_code=403, detail="Access denied")
+
     report = await run_gold_set_evaluation()
     return report.to_dict()

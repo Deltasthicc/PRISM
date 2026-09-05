@@ -17,6 +17,7 @@ from pathlib import Path
 import pytest
 from sqlalchemy import create_engine, inspect, text
 
+import db.database as database
 from db.database import should_seed_demo_data
 
 
@@ -24,12 +25,10 @@ BACKEND_DIRECTORY = Path(__file__).resolve().parents[1]
 
 
 # --- should_seed_demo_data() ---
-
-
 def test_defaults_to_true_on_the_sqlite_test_process(monkeypatch):
     monkeypatch.delenv("SEED_DEMO_DATA", raising=False)
+    monkeypatch.setattr(database, "_database_backend", "sqlite")
     assert should_seed_demo_data() is True
-
 
 def test_defaults_to_false_for_postgresql_without_needing_a_server(monkeypatch):
     monkeypatch.delenv("SEED_DEMO_DATA", raising=False)

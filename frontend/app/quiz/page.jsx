@@ -1,6 +1,21 @@
 'use client';
 import React, { useState } from 'react';
-import { FileText, SquareLibrary } from 'lucide-react';
+import {
+  FileText,
+  ArrowRight,
+  Check,
+  Flag,
+  Cloud,
+  FileSearch,
+  CheckCircle,
+  BadgeCheck,
+  ExternalLink,
+  ShieldCheck,
+  RefreshCw,
+  ReceiptText,
+  Gamepad2,
+  Brain,
+} from 'lucide-react';
 
 
 export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
@@ -122,48 +137,10 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
   return (
     <div className="flex flex-col w-full">
       {/* Algorithmic Provenance Suite Top Banner */}
-      <div className="flex flex-col gap-3 mb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#e2e7ff] p-3.5 rounded-xl border border-[#b6c4ff]/50">
-          <div className="flex items-center gap-2.5">
-            <SquareLibrary size={30} />
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-[#00236f]">Algorithmic Provenance Suite</h1>
-                <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#00236f] text-white font-bold">
-                  NSO-REV2.4.9
-                </span>
-              </div>
-              <p className="text-xs text-[#444651]">
-                Diagnostic generation bounded strictly to verified ministry circulars, data manuals, and statistical gazettes. Zero speculative generation.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="font-mono text-xs px-2.5 py-1 rounded bg-white text-[#00312c] font-semibold border border-[#c5c5d3]/30 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#00312c]"></span> Grounding Lock: Active (100% Citation Matched)
-            </span>
-            <button
-              onClick={handleResynthesize}
-              disabled={isResynthesizing}
-              className="bg-[#00236f] hover:bg-[#1e3a8a] text-white px-3 py-1 rounded text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              <span className={`material-symbols-outlined text-[16px] ${isResynthesizing ? 'animate-spin' : ''}`}>
-                sync
-              </span>
-              <span>{isResynthesizing ? 'Re-indexing...' : 'Re-Synthesize'}</span>
-            </button>
-          </div>
-        </div>
-
-        {quizToast && (
-          <div className="px-4 py-2.5 bg-[#dce1ff] text-[#00164e] rounded-lg text-xs font-mono flex items-center gap-2 border border-[#b6c4ff] shadow-sm animate-in fade-in duration-200">
-            <span className="material-symbols-outlined text-[18px] text-[#00236f]">verified</span>
-            <span>{quizToast}</span>
-          </div>
-        )}
+      
 
         {/* Ingested Document Anchor Card */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-[#c5c5d3]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-[#c5c5d3]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[#ffdcc3] text-[#2f1500] flex items-center justify-center font-bold shrink-0">
               <FileText size={20} />
@@ -191,10 +168,9 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
               onClick={() => onOpenModal('pdf_viewer')}
               className="bg-[#f2f3ff] hover:bg-[#e2e7ff] text-[#00236f] px-3 py-1 rounded text-xs font-semibold transition-colors flex items-center gap-1 border border-[#c5c5d3]/30 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[16px]">pageview</span> View Source Bounding Boxes
+              <FileSearch size={16} /> View Source Bounding Boxes
             </button>
           </div>
-        </div>
       </div>
 
       {/* Main Grid: Quiz Diagnostic Flow (8 cols) + Real-time Competency Evaluation (4 cols) */}
@@ -258,7 +234,7 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
                         </span>
                         {hasSubmitted && opt.isCorrect && (
                           <span className="inline-flex items-center gap-1 font-mono text-[11px] text-[#00312c] font-bold mt-1">
-                            <span className="material-symbols-outlined text-[14px]">check_circle</span> Grounded Correct Answer (Cosine: {opt.overlap})
+                            <CheckCircle size={14} /> Grounded Correct Answer (Cosine: {opt.overlap})
                           </span>
                         )}
                       </div>
@@ -272,7 +248,7 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
             <div className="bg-[#f2f3ff] rounded-xl p-4 border border-[#c5c5d3]/40 mb-5">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[#00236f] text-[18px]">verified</span>
+                  <BadgeCheck size={18} className="text-[#00236f]" />
                   <span className="font-mono text-xs font-bold text-[#00236f]">
                     Grounded Source Anchor: {currentQ.citation.anchor}
                   </span>
@@ -293,7 +269,7 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
                   className="text-[#00236f] font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
                 >
                   <span>Open PDF viewer at page {currentQ.citation.page}</span>
-                  <span className="material-symbols-outlined text-[14px]">launch</span>
+                  <ExternalLink size={14} />
                 </button>
               </div>
             </div>
@@ -314,7 +290,7 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
                   }}
                   className="px-3 py-1.5 rounded text-xs font-semibold text-[#904d00] hover:bg-[#ffdcc3]/30 transition-colors flex items-center gap-1 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[15px]">flag</span> Flag for Human Supervisor
+                  <Flag size={16} /> Flag for Human Supervisor
                 </button>
               </div>
 
@@ -325,14 +301,14 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
                     className="bg-[#00236f] hover:bg-[#1e3a8a] text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>Next Question</span>
-                    <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    <ArrowRight size={16} />
                   </button>
                 ) : (
                   <button
                     onClick={handleSubmit}
                     className="bg-[#00236f] hover:bg-[#1e3a8a] text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
                   >
-                    <span className="material-symbols-outlined text-[16px]">check</span>
+                    <Check size={16} />
                     <span>Submit Diagnostic &amp; Commit Evidence</span>
                   </button>
                 )}
@@ -344,7 +320,7 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-white rounded-xl p-4 shadow-sm border border-[#c5c5d3]/30">
               <div className="flex items-center gap-2 text-[#00236f] font-bold text-xs mb-1">
-                <span className="material-symbols-outlined text-[18px]">verified_user</span>
+                <ShieldCheck size={18} />
                 <span>Zero-Hallucination Protocol</span>
               </div>
               <p className="text-xs text-[#444651]">
@@ -353,7 +329,7 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
             </div>
             <div className="bg-white rounded-xl p-4 shadow-sm border border-[#c5c5d3]/30">
               <div className="flex items-center gap-2 text-[#00312c] font-bold text-xs mb-1">
-                <span className="material-symbols-outlined text-[18px]">sync_alt</span>
+                <RefreshCw size={18} />
                 <span>iGOT Dual-Sync Ready</span>
               </div>
               <p className="text-xs text-[#444651]">
@@ -428,7 +404,7 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
           {/* Continuous Evaluation Ledger Card */}
           <div className="bg-[#f2f3ff] rounded-xl p-4 border border-[#c5c5d3]/40">
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined text-[#00236f] text-[18px]">receipt_long</span>
+              <ReceiptText size={18} className="text-[#00236f]" />
               <h4 className="text-xs font-bold text-[#00236f] uppercase font-mono tracking-wider">
                 Continuous Evaluation Ledger
               </h4>
@@ -456,14 +432,14 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
               className="w-full bg-white hover:bg-[#e2e7ff] text-[#00236f] border border-[#c5c5d3]/40 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
             >
               <span>Practice in DSA Quest</span>
-              <span className="material-symbols-outlined text-[16px]">sports_esports</span>
+              <Gamepad2 size={16} />
             </button>
           </div>
 
           {/* Supervisor Feedback Banner */}
           <div className="bg-white rounded-xl p-4 shadow-sm border border-[#c5c5d3]/30">
             <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-[#131b2e]">
-              <span className="material-symbols-outlined text-[#904d00] text-[18px]">psychology</span>
+              <Brain size={18} className="text-[#904d00]" />
               <span>Cadre Cell Continuous Loop</span>
             </div>
             <p className="text-xs text-[#757682]">

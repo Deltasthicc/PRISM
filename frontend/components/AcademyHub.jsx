@@ -7,10 +7,10 @@ import { BookOpen, BrainCircuit, FileQuestion, ShieldCheck } from 'lucide-react'
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { game, learning } from '@/lib/api/client';
 import { useAuthStore } from '@/store/useAuthStore';
-import PixelBadge from '@/components/ui/PixelBadge';
-import PixelButton from '@/components/ui/PixelButton';
-import PixelInput from '@/components/ui/PixelInput';
-import PixelPanel from '@/components/ui/PixelPanel';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import Panel from '@/components/ui/Panel';
 
 const EMPTY_PROFILE = {
   designation: '',
@@ -26,11 +26,10 @@ const EMPTY_PROFILE = {
   target_domains: [],
 };
 
-const PRIORITY_TONE = { critical: 'blood', high: 'ember', medium: 'gold', maintain: 'arcane' };
+const PRIORITY_TONE = { critical: 'danger', high: 'warning', medium: 'accent', maintain: 'success' };
 const LINK_BUTTON_CLASS = [
-  'inline-block font-display text-xs px-4 py-3 border-4 border-black shadow-pixel-sm',
-  'transition-transform active:translate-y-1 active:shadow-none',
-  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-arcane',
+  'inline-flex items-center font-sans text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors',
+  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00236f]',
 ].join(' ');
 
 export default function AcademyHub() {
@@ -68,13 +67,13 @@ export default function AcademyHub() {
   );
 
   if (!ready || isLoading) {
-    return <p className="font-body text-parchment-dim text-center mt-10">Preparing your academy…</p>;
+    return <p className="font-sans text-sm text-[#757682] text-center mt-10">Preparing your academy…</p>;
   }
   if (isError || !data) {
     return (
       <div className="flex flex-col items-center gap-3 mt-10" role="alert">
-        <p className="font-body text-blood">The academy could not be loaded.</p>
-        <PixelButton variant="ghost" onClick={() => refetch()}>RETRY</PixelButton>
+        <p className="font-sans text-sm text-[#b3261e]">The academy could not be loaded.</p>
+        <Button variant="ghost" onClick={() => refetch()}>Retry</Button>
       </div>
     );
   }
@@ -143,9 +142,9 @@ export default function AcademyHub() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <PixelBadge tone="arcane">SKILL INTELLIGENCE BETA</PixelBadge>
-        <h1 className="font-display text-base text-parchment mt-3">LEARNING ACADEMY</h1>
-        <p className="font-body text-xl text-parchment-dim mt-2 max-w-4xl">
+        <Badge tone="accent">Skill Intelligence Beta</Badge>
+        <h1 className="font-sans text-xl font-bold text-[#00236f] mt-3">Learning Academy</h1>
+        <p className="font-sans text-sm text-[#757682] mt-2 max-w-4xl">
           Build a role-aware competency profile, diagnose gaps, follow an explainable learning path,
           practise through adaptive quests, and generate source-grounded quizzes from your own material.
         </p>
@@ -157,19 +156,23 @@ export default function AcademyHub() {
         <Capability icon={ShieldCheck} title="Honest integrations" body={`iGOT mode: ${data.integrations.igot.mode}. No fake enrolment or progress sync.`} />
       </div>
 
-      {error && <div className="border-4 border-blood bg-blood/10 p-3 font-body text-blood" role="alert">{error}</div>}
+      {error && (
+        <div className="border border-[#f5c6c2] bg-[#fce8e6] rounded-lg p-3 font-sans text-sm text-[#b3261e]" role="alert">
+          {error}
+        </div>
+      )}
 
-      <PixelPanel variant="arcane">
-        <h2 className="font-display text-xs text-arcane mb-4">1. YOUR COMPETENCY PROFILE</h2>
+      <Panel variant="accent">
+        <h2 className="font-sans text-base font-bold text-[#00236f] mb-4">1. Your competency profile</h2>
         <form onSubmit={saveProfile} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <PixelInput id="designation" label="DESIGNATION" value={profile.designation || ''} onChange={(event) => setProfile({ ...profile, designation: event.target.value })} placeholder="Statistical Officer" />
-          <PixelInput id="department" label="DEPARTMENT / ORGANISATION" value={profile.department || ''} onChange={(event) => setProfile({ ...profile, department: event.target.value })} placeholder="MoSPI / State department / University" />
-          <PixelInput id="job-role" label="JOB ROLE" value={profile.job_role || ''} onChange={(event) => setProfile({ ...profile, job_role: event.target.value })} placeholder="Survey design and data quality" />
-          <PixelInput id="years-experience" label="YEARS OF EXPERIENCE" type="number" min="0" max="60" value={profile.years_experience ?? 0} onChange={(event) => setProfile({ ...profile, years_experience: event.target.value })} />
-          <PixelInput id="current-assignment" label="CURRENT ASSIGNMENT" textarea rows="3" value={profile.current_assignment || ''} onChange={(event) => setProfile({ ...profile, current_assignment: event.target.value })} placeholder="Responsibilities, datasets, programmes, or decisions you currently support" />
-          <PixelInput
+          <Input id="designation" label="Designation" value={profile.designation || ''} onChange={(event) => setProfile({ ...profile, designation: event.target.value })} placeholder="Statistical Officer" />
+          <Input id="department" label="Department / Organisation" value={profile.department || ''} onChange={(event) => setProfile({ ...profile, department: event.target.value })} placeholder="MoSPI / State department / University" />
+          <Input id="job-role" label="Job role" value={profile.job_role || ''} onChange={(event) => setProfile({ ...profile, job_role: event.target.value })} placeholder="Survey design and data quality" />
+          <Input id="years-experience" label="Years of experience" type="number" min="0" max="60" value={profile.years_experience ?? 0} onChange={(event) => setProfile({ ...profile, years_experience: event.target.value })} />
+          <Input id="current-assignment" label="Current assignment" textarea rows="3" value={profile.current_assignment || ''} onChange={(event) => setProfile({ ...profile, current_assignment: event.target.value })} placeholder="Responsibilities, datasets, programmes, or decisions you currently support" />
+          <Input
             id="previous-trainings"
-            label="PREVIOUS TRAINING (COMMA-SEPARATED)"
+            label="Previous training (comma-separated)"
             textarea
             rows="3"
             value={(profile.previous_trainings || []).join(', ')}
@@ -179,126 +182,126 @@ export default function AcademyHub() {
             })}
             placeholder="Survey sampling, Python foundations, data visualisation"
           />
-          <label className="flex flex-col gap-2">
-            <span className="font-display text-[10px] text-arcane">CURRENT EXPERIENCE LEVEL</span>
-            <select value={profile.experience_level} onChange={(event) => setProfile({ ...profile, experience_level: event.target.value })} className="bg-void text-parchment font-body text-lg px-3 py-2 border-4 border-black focus:border-arcane">
+          <label className="flex flex-col gap-1.5">
+            <span className="font-sans text-xs font-semibold text-[#444651]">Current experience level</span>
+            <select value={profile.experience_level} onChange={(event) => setProfile({ ...profile, experience_level: event.target.value })} className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f]">
               <option value="beginner">Beginner</option>
               <option value="intermediate">Intermediate</option>
               <option value="advanced">Advanced</option>
               <option value="expert">Expert</option>
             </select>
           </label>
-          <PixelInput id="preferred-language" label="PREFERRED LANGUAGE" value={profile.preferred_language || 'English'} onChange={(event) => setProfile({ ...profile, preferred_language: event.target.value })} placeholder="English" />
-          <PixelInput id="qualifications" label="EDUCATIONAL QUALIFICATIONS" textarea rows="3" value={profile.educational_qualifications || ''} onChange={(event) => setProfile({ ...profile, educational_qualifications: event.target.value })} placeholder="Degrees, certifications, or equivalent experience" />
-          <PixelInput id="career-goal" label="LEARNING / CAREER GOAL" textarea rows="3" value={profile.career_goal || ''} onChange={(event) => setProfile({ ...profile, career_goal: event.target.value })} placeholder="What should this pathway help you do?" />
+          <Input id="preferred-language" label="Preferred language" value={profile.preferred_language || 'English'} onChange={(event) => setProfile({ ...profile, preferred_language: event.target.value })} placeholder="English" />
+          <Input id="qualifications" label="Educational qualifications" textarea rows="3" value={profile.educational_qualifications || ''} onChange={(event) => setProfile({ ...profile, educational_qualifications: event.target.value })} placeholder="Degrees, certifications, or equivalent experience" />
+          <Input id="career-goal" label="Learning / career goal" textarea rows="3" value={profile.career_goal || ''} onChange={(event) => setProfile({ ...profile, career_goal: event.target.value })} placeholder="What should this pathway help you do?" />
           <div className="md:col-span-2">
-            <PixelButton type="submit" variant="arcane" disabled={working === 'profile'}>
-              {working === 'profile' ? 'SAVING…' : profile.profile_id ? 'UPDATE PROFILE' : 'CREATE PROFILE'}
-            </PixelButton>
+            <Button type="submit" disabled={working === 'profile'}>
+              {working === 'profile' ? 'Saving…' : profile.profile_id ? 'Update profile' : 'Create profile'}
+            </Button>
           </div>
         </form>
-      </PixelPanel>
+      </Panel>
 
       <section aria-labelledby="paths-heading">
-        <h2 id="paths-heading" className="font-display text-xs text-gold mb-4">2. CHOOSE A LEARNING PATH</h2>
+        <h2 id="paths-heading" className="font-sans text-base font-bold text-[#00236f] mb-4">2. Choose a learning path</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {data.curricula.map((curriculum) => {
             const dungeon = dungeonBySlug[curriculum.slug];
             const active = curriculum.slug === selectedSlug;
             return (
-              <PixelPanel key={curriculum.slug} variant={active ? 'arcane' : 'default'}>
+              <Panel key={curriculum.slug} variant={active ? 'accent' : 'default'}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="font-display text-[11px] text-parchment">{curriculum.name}</h3>
-                    <p className="font-body text-parchment-dim mt-2">{curriculum.description}</p>
+                    <h3 className="font-sans text-sm font-semibold text-[#131b2e]">{curriculum.name}</h3>
+                    <p className="font-sans text-sm text-[#757682] mt-2">{curriculum.description}</p>
                   </div>
-                  <PixelBadge tone={curriculum.source.includes('demo') ? 'ember' : 'stone'}>{curriculum.source}</PixelBadge>
+                  <Badge tone={curriculum.source.includes('demo') ? 'warning' : 'default'}>{curriculum.source}</Badge>
                 </div>
                 <div className="flex gap-2 flex-wrap mt-3">
-                  <PixelBadge tone="gold">{curriculum.level_band}</PixelBadge>
-                  <PixelBadge tone="arcane">{curriculum.competency_count} competencies</PixelBadge>
+                  <Badge tone="accent">{curriculum.level_band}</Badge>
+                  <Badge tone="default">{curriculum.competency_count} competencies</Badge>
                 </div>
-                <p className="font-body text-sm text-parchment-dim mt-3">For: {curriculum.audience}</p>
+                <p className="font-sans text-sm text-[#757682] mt-3">For: {curriculum.audience}</p>
                 <div className="flex flex-wrap gap-2 mt-4">
-                  <PixelButton variant={active ? 'arcane' : 'ghost'} onClick={() => { setSelectedSlug(curriculum.slug); setAssessment(null); setRatings({}); }}>
-                    {active ? 'SELECTED' : 'ASSESS THIS PATH'}
-                  </PixelButton>
+                  <Button variant={active ? 'primary' : 'ghost'} onClick={() => { setSelectedSlug(curriculum.slug); setAssessment(null); setRatings({}); }}>
+                    {active ? 'Selected' : 'Assess this path'}
+                  </Button>
                   {dungeon && (
                     <Link
                       href={`/dungeon/${dungeon.dungeon_id}`}
-                      className={`${LINK_BUTTON_CLASS} bg-gold text-void hover:bg-gold/90`}
+                      className={`${LINK_BUTTON_CLASS} bg-[#fe932c] text-white hover:bg-[#e57e1a]`}
                     >
-                      START QUEST
+                      Start quest
                     </Link>
                   )}
                 </div>
-              </PixelPanel>
+              </Panel>
             );
           })}
         </div>
       </section>
 
       {selected && (
-        <PixelPanel>
-          <h2 className="font-display text-xs text-gold mb-2">3. QUICK COMPETENCY DIAGNOSTIC</h2>
-          <p className="font-body text-parchment-dim mb-5">
+        <Panel>
+          <h2 className="font-sans text-base font-bold text-[#00236f] mb-2">3. Quick competency diagnostic</h2>
+          <p className="font-sans text-sm text-[#757682] mb-5">
             Rate your current proficiency from 0 (no evidence) to 5 (expert). Quest performance is weighted more heavily when available.
           </p>
           <div className="flex flex-col gap-4">
             {selected.competencies.map((competency) => (
-              <label key={competency.id} className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-3 border-b-2 border-black pb-4">
+              <label key={competency.id} className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-3 border-b border-[#c5c5d3]/40 pb-4">
                 <span>
-                  <span className="font-display text-[10px] text-parchment">{competency.label}</span>
-                  <span className="font-body text-sm text-parchment-dim block mt-1">{competency.description}</span>
+                  <span className="font-sans text-sm font-semibold text-[#131b2e]">{competency.label}</span>
+                  <span className="font-sans text-sm text-[#757682] block mt-1">{competency.description}</span>
                 </span>
                 <span className="flex items-center gap-3">
-                  <input type="range" min="0" max="5" step="0.5" value={ratings[competency.id] ?? 0} onChange={(event) => setRatings({ ...ratings, [competency.id]: Number(event.target.value) })} className="w-full accent-teal-300" />
-                  <output className="font-display text-xs text-gold w-8">{ratings[competency.id] ?? 0}</output>
+                  <input type="range" min="0" max="5" step="0.5" value={ratings[competency.id] ?? 0} onChange={(event) => setRatings({ ...ratings, [competency.id]: Number(event.target.value) })} className="w-full accent-[#00236f]" />
+                  <output className="font-sans text-sm font-semibold text-[#00236f] w-8">{ratings[competency.id] ?? 0}</output>
                 </span>
               </label>
             ))}
           </div>
-          <PixelButton className="mt-5" variant="arcane" onClick={runAssessment} disabled={working === 'assessment'}>
-            {working === 'assessment' ? 'ANALYSING…' : 'IDENTIFY MY GAPS'}
-          </PixelButton>
-        </PixelPanel>
+          <Button className="mt-5" onClick={runAssessment} disabled={working === 'assessment'}>
+            {working === 'assessment' ? 'Analysing…' : 'Identify my gaps'}
+          </Button>
+        </Panel>
       )}
 
       {assessment && <AssessmentResults assessment={assessment} dungeon={dungeonBySlug[selectedSlug]} />}
 
-      <PixelPanel variant="arcane">
+      <Panel variant="accent">
         <div className="flex items-center gap-2 mb-2">
-          <FileQuestion className="text-arcane" aria-hidden="true" />
-          <h2 className="font-display text-xs text-arcane">4. CREATE A GROUNDED QUIZ</h2>
+          <FileQuestion className="text-[#00236f]" size={18} aria-hidden="true" />
+          <h2 className="font-sans text-base font-bold text-[#00236f]">4. Create a grounded quiz</h2>
         </div>
-        <p className="font-body text-parchment-dim mb-4">
+        <p className="font-sans text-sm text-[#757682] mb-4">
           Upload up to 5 MB in TXT, Markdown, PDF, or DOCX. Every generated answer includes a source excerpt; ungrounded model output is rejected.
           Without a configured model key, the deterministic fallback retains source wording and uses an English question template.
         </p>
         <form onSubmit={createQuiz} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <PixelInput id="quiz-title" name="title" label="QUIZ TITLE" required defaultValue="My learning material quiz" />
-          <PixelInput id="quiz-language" name="language" label="OUTPUT LANGUAGE" required defaultValue={profile.preferred_language || 'English'} />
-          <label className="flex flex-col gap-2">
-            <span className="font-display text-[10px] text-arcane">DIFFICULTY</span>
-            <select name="difficulty" defaultValue="mixed" className="bg-void text-parchment font-body text-lg px-3 py-2 border-4 border-black focus:border-arcane">
+          <Input id="quiz-title" name="title" label="Quiz title" required defaultValue="My learning material quiz" />
+          <Input id="quiz-language" name="language" label="Output language" required defaultValue={profile.preferred_language || 'English'} />
+          <label className="flex flex-col gap-1.5">
+            <span className="font-sans text-xs font-semibold text-[#444651]">Difficulty</span>
+            <select name="difficulty" defaultValue="mixed" className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f]">
               <option value="foundation">Foundation</option>
               <option value="intermediate">Intermediate</option>
               <option value="advanced">Advanced</option>
               <option value="mixed">Mixed</option>
             </select>
           </label>
-          <PixelInput id="question-count" name="question_count" label="QUESTIONS (3-10)" type="number" min="3" max="10" defaultValue="5" />
-          <label className="md:col-span-2 flex flex-col gap-2">
-            <span className="font-display text-[10px] text-arcane">LEARNING MATERIAL</span>
-            <input name="learning_file" type="file" required accept=".txt,.md,.pdf,.docx" className="bg-void text-parchment font-body text-base px-3 py-3 border-4 border-black file:bg-arcane file:text-void file:border-0 file:px-3 file:py-2" />
+          <Input id="question-count" name="question_count" label="Questions (3-10)" type="number" min="3" max="10" defaultValue="5" />
+          <label className="md:col-span-2 flex flex-col gap-1.5">
+            <span className="font-sans text-xs font-semibold text-[#444651]">Learning material</span>
+            <input name="learning_file" type="file" required accept=".txt,.md,.pdf,.docx" className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 file:bg-[#00236f] file:text-white file:border-0 file:rounded-md file:px-3 file:py-1.5 file:mr-3" />
           </label>
           <div className="md:col-span-2">
-            <PixelButton type="submit" variant="gold" disabled={working === 'quiz'}>
-              {working === 'quiz' ? 'GENERATING & VALIDATING…' : 'GENERATE QUIZ'}
-            </PixelButton>
+            <Button type="submit" variant="accent" disabled={working === 'quiz'}>
+              {working === 'quiz' ? 'Generating & validating…' : 'Generate quiz'}
+            </Button>
           </div>
         </form>
-      </PixelPanel>
+      </Panel>
 
       {quiz && <QuizPreview quiz={quiz} />}
     </div>
@@ -307,40 +310,40 @@ export default function AcademyHub() {
 
 function Capability({ icon: Icon, title, body }) {
   return (
-    <PixelPanel>
-      <Icon className="text-arcane mb-2" aria-hidden="true" />
-      <h2 className="font-display text-[10px] text-parchment">{title.toUpperCase()}</h2>
-      <p className="font-body text-base text-parchment-dim mt-2">{body}</p>
-    </PixelPanel>
+    <Panel>
+      <Icon className="text-[#00236f] mb-2" size={20} aria-hidden="true" />
+      <h2 className="font-sans text-sm font-semibold text-[#131b2e]">{title}</h2>
+      <p className="font-sans text-sm text-[#757682] mt-2">{body}</p>
+    </Panel>
   );
 }
 
 function AssessmentResults({ assessment, dungeon }) {
   return (
-    <PixelPanel variant="arcane">
-      <h2 className="font-display text-xs text-arcane">YOUR PERSONALISED PATHWAY</h2>
-      <p className="font-body text-parchment-dim mt-2">{assessment.method.note}</p>
+    <Panel variant="accent">
+      <h2 className="font-sans text-base font-bold text-[#00236f]">Your personalised pathway</h2>
+      <p className="font-sans text-sm text-[#757682] mt-2">{assessment.method.note}</p>
       {assessment.pathway.length === 0 ? (
-        <p className="font-body text-gold mt-4">No material gap was detected at your current pathway target. Use applied diagnostics to verify mastery.</p>
+        <p className="font-sans text-sm text-[#904d00] mt-4">No material gap was detected at your current pathway target. Use applied diagnostics to verify mastery.</p>
       ) : (
         <ol className="flex flex-col gap-3 mt-4">
           {assessment.pathway.map((step) => (
-            <li key={step.competency_id} className="border-2 border-black bg-stone-dark p-3">
+            <li key={step.competency_id} className="border border-[#c5c5d3]/40 rounded-lg bg-[#f2f3ff] p-3">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-display text-[10px] text-parchment">{step.step}. {step.label}</span>
-                <PixelBadge tone={PRIORITY_TONE[step.priority] || 'stone'}>{step.priority}</PixelBadge>
-                <PixelBadge tone="gold">gap {step.gap.toFixed(1)}</PixelBadge>
+                <span className="font-sans text-sm font-semibold text-[#131b2e]">{step.step}. {step.label}</span>
+                <Badge tone={PRIORITY_TONE[step.priority] || 'default'}>{step.priority}</Badge>
+                <Badge tone="accent">gap {step.gap.toFixed(1)}</Badge>
               </div>
-              <p className="font-body text-sm text-parchment-dim mt-2">
+              <p className="font-sans text-sm text-[#757682] mt-2">
                 Observed {step.observed_level.toFixed(1)}/5 via {step.evidence}; pathway target {step.pathway_target.toFixed(1)}/5.
               </p>
-              <p className="font-body text-parchment mt-1">{step.recommended_action}</p>
+              <p className="font-sans text-sm text-[#131b2e] mt-1">{step.recommended_action}</p>
             </li>
           ))}
         </ol>
       )}
 
-      <h3 className="font-display text-[10px] text-gold mt-6">RECOMMENDED LEARNING</h3>
+      <h3 className="font-sans text-sm font-bold text-[#00236f] mt-6">Recommended learning</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
         {assessment.courses.map((course) => {
           const external = course.url.startsWith('http');
@@ -348,50 +351,50 @@ function AssessmentResults({ assessment, dungeon }) {
             ? `/dungeon/${dungeon.dungeon_id}`
             : course.url;
           return (
-            <div key={course.course_id} className="border-2 border-black bg-stone-dark p-3">
+            <div key={course.course_id} className="border border-[#c5c5d3]/40 rounded-lg bg-[#f2f3ff] p-3">
               <div className="flex gap-2 flex-wrap">
-                <PixelBadge tone={course.provider_type === 'internal-practice' ? 'arcane' : 'gold'}>{course.provider}</PixelBadge>
-                <PixelBadge tone="stone">score {course.relevance_score.toFixed(1)}</PixelBadge>
+                <Badge tone={course.provider_type === 'internal-practice' ? 'accent' : 'warning'}>{course.provider}</Badge>
+                <Badge tone="default">score {course.relevance_score.toFixed(1)}</Badge>
               </div>
-              <p className="font-display text-[9px] text-parchment mt-3">{course.title}</p>
-              <p className="font-body text-sm text-parchment-dim mt-2">{course.verification_note}</p>
+              <p className="font-sans text-sm font-semibold text-[#131b2e] mt-3">{course.title}</p>
+              <p className="font-sans text-sm text-[#757682] mt-2">{course.verification_note}</p>
               {external ? (
-                <a href={href} target="_blank" rel="noreferrer" className="font-body text-arcane underline mt-2 inline-block">Open authoritative catalog ↗</a>
+                <a href={href} target="_blank" rel="noreferrer" className="font-sans text-sm text-[#00236f] hover:underline mt-2 inline-block">Open authoritative catalog ↗</a>
               ) : (
-                <Link href={href} className="font-body text-arcane underline mt-2 inline-block">Start adaptive practice →</Link>
+                <Link href={href} className="font-sans text-sm text-[#00236f] hover:underline mt-2 inline-block">Start adaptive practice →</Link>
               )}
             </div>
           );
         })}
       </div>
-    </PixelPanel>
+    </Panel>
   );
 }
 
 function QuizPreview({ quiz }) {
   return (
-    <PixelPanel>
+    <Panel>
       <div className="flex flex-wrap items-center gap-2">
-        <h2 className="font-display text-xs text-gold">{quiz.title}</h2>
-        <PixelBadge tone="arcane">{quiz.generation_mode}</PixelBadge>
-        <PixelBadge tone="stone">{quiz.language}</PixelBadge>
+        <h2 className="font-sans text-base font-bold text-[#00236f]">{quiz.title}</h2>
+        <Badge tone="accent">{quiz.generation_mode}</Badge>
+        <Badge tone="default">{quiz.language}</Badge>
       </div>
       <ol className="flex flex-col gap-5 mt-5">
         {quiz.questions.map((question, questionIndex) => (
-          <li key={`${question.question}-${questionIndex}`} className="border-2 border-black bg-stone-dark p-4">
-            <p className="font-display text-[10px] text-parchment">{questionIndex + 1}. {question.question}</p>
-            <ol className="font-body text-base text-parchment-dim mt-3 grid gap-1">
+          <li key={`${question.question}-${questionIndex}`} className="border border-[#c5c5d3]/40 rounded-lg bg-[#f2f3ff] p-4">
+            <p className="font-sans text-sm font-semibold text-[#131b2e]">{questionIndex + 1}. {question.question}</p>
+            <ol className="font-sans text-sm text-[#444651] mt-3 grid gap-1">
               {question.options.map((option, optionIndex) => (
-                <li key={option} className={optionIndex === question.answer_index ? 'text-arcane' : ''}>
+                <li key={option} className={optionIndex === question.answer_index ? 'text-[#00236f] font-medium' : ''}>
                   {String.fromCharCode(65 + optionIndex)}. {option}{optionIndex === question.answer_index ? ' ✓' : ''}
                 </li>
               ))}
             </ol>
-            <p className="font-body text-parchment mt-3">{question.explanation}</p>
-            <blockquote className="font-body text-sm text-parchment-dim border-l-4 border-gold pl-3 mt-2">Source: {question.source_excerpt}</blockquote>
+            <p className="font-sans text-sm text-[#131b2e] mt-3">{question.explanation}</p>
+            <blockquote className="font-sans text-sm text-[#757682] border-l-4 border-[#fe932c] pl-3 mt-2">Source: {question.source_excerpt}</blockquote>
           </li>
         ))}
       </ol>
-    </PixelPanel>
+    </Panel>
   );
 }

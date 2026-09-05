@@ -81,6 +81,12 @@ async function request(path, { method = 'GET', body, headers } = {}) {
       : data?.detail;
     const error = new Error(data?.error || detail || `Request failed (${response.status})`);
     error.code = data?.code ?? response.status;
+    // Distinguishes "we never had a token to send" (a dev-login/Keycloak
+    // availability problem -- see tryDevLogin) from "we sent a real token
+    // and it was rejected" (an actual auth failure). fetchMe() needs this
+    // to avoid treating an infra hiccup as a hard logout that bounces an
+    // already-registered demo player back to /login on every page load.
+    error.hadToken = Boolean(live.authToken);
     throw error;
   }
   return data;
@@ -231,16 +237,28 @@ async function tryDevLogin(playerId) {
     });
     live.authToken = accessToken;
     persistLiveState();
+    return null;
   } catch (e) {
     live.authToken = null;
     if (typeof window !== 'undefined') {
       console.warn(
-        '[auth] Continuing without a /learning/* bearer token -- local dev login unavailable:',
+        '[auth] Continuing without a bearer token -- dev login unavailable:',
         e.message
       );
     }
+    // Returned (not thrown) so callers can decide what to do with a missing
+    // token -- e.g. surface a clear, honest message instead of letting the
+    // next protected call's raw "Authentication required" 401 reach the
+    // user, who typed nothing but a plain username and has no idea what
+    // "authentication" even means at this stage of the product.
+    return e;
   }
 }
+
+const SIGN_IN_UNAVAILABLE_MESSAGE =
+  "Your username was recognized, but the sign-in service isn't responding right now, " +
+  'so your profile could not be loaded. This is a backend configuration issue, not a ' +
+  'problem with your username -- try again in a moment.';
 
 export const auth = {
   register: (username) =>
@@ -260,10 +278,23 @@ export const auth = {
   login: (username) =>
     request(`/game/player/by-username/${encodeURIComponent(username)}`).then(
       async ({ player_id: playerId }) => {
-        await tryDevLogin(playerId);
+        const devLoginError = await tryDevLogin(playerId);
         live.playerId = playerId;
         persistLiveState();
-        return { player: await currentPlayer() };
+        try {
+          return { player: await currentPlayer() };
+        } catch (e) {
+          // A 401 here almost always means dev-login itself failed above
+          // (no token to prove who you are) -- surface that honestly rather
+          // than the backend's generic "Authentication required", which
+          // reads like a rejection of the username itself.
+          if (e.code === 401 && devLoginError) {
+            const clearError = new Error(SIGN_IN_UNAVAILABLE_MESSAGE);
+            clearError.code = e.code;
+            throw clearError;
+          }
+          throw e;
+        }
       }
     ),
 
@@ -449,6 +480,12 @@ async function requestMultipart(path, formData) {
       : data?.detail;
     const error = new Error(data?.error || detail || `Request failed (${response.status})`);
     error.code = data?.code ?? response.status;
+    // Distinguishes "we never had a token to send" (a dev-login/Keycloak
+    // availability problem -- see tryDevLogin) from "we sent a real token
+    // and it was rejected" (an actual auth failure). fetchMe() needs this
+    // to avoid treating an infra hiccup as a hard logout that bounces an
+    // already-registered demo player back to /login on every page load.
+    error.hadToken = Boolean(live.authToken);
     throw error;
   }
   return data;

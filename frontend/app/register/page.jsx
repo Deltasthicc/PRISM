@@ -1,14 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
-
-// See app/login/page.jsx for why this exists: the shared Render-hosted
-// Keycloak can take a few minutes to wake up from a cold start, and without
-// this the button just sits on "Creating..." looking stuck.
-const SLOW_LOGIN_HINT_MS = 8000;
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,30 +12,32 @@ export default function RegisterPage() {
   const clearError = useAuthStore((s) => s.clearError);
   const [username, setUsername] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [slowHint, setSlowHint] = useState(false);
-  const slowHintTimer = useRef(null);
-
-  useEffect(() => () => clearTimeout(slowHintTimer.current), []);
 
   async function handleSubmit(e) {
     e.preventDefault();
     clearError();
     setSubmitting(true);
-    setSlowHint(false);
-    slowHintTimer.current = setTimeout(() => setSlowHint(true), SLOW_LOGIN_HINT_MS);
     const ok = await register(username);
-    clearTimeout(slowHintTimer.current);
-    setSlowHint(false);
     setSubmitting(false);
     if (ok) router.push('/academy');
   }
 
   return (
-    <div className="flex justify-center pt-16">
+    <div className="flex flex-col items-center pt-16 gap-6">
+      <div className="flex flex-col items-center gap-2">
+        <div className="h-11 w-11 rounded-xl bg-[#00236f] text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          P
+        </div>
+        <span className="font-sans text-xl font-bold text-[#00236f] tracking-tight">PRISM</span>
+        <span className="font-mono text-[11px] text-[#757682] uppercase tracking-wider text-center">
+          Personalized Readiness Intelligence &amp; Skill Mapping
+        </span>
+      </div>
+
       <div className="w-full max-w-sm bg-white border border-[#c5c5d3]/40 rounded-xl shadow-sm p-6">
         <h1 className="font-sans text-lg font-bold text-[#00236f] mb-1 text-center">Create an account</h1>
         <p className="font-sans text-sm text-[#757682] mb-6 text-center">
-          Username only for now — no password yet.
+          Choose a username — no password needed for this demo.
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1.5">
@@ -58,11 +55,6 @@ export default function RegisterPage() {
           {error && (
             <p className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2">
               {error}
-            </p>
-          )}
-          {submitting && slowHint && (
-            <p className="font-sans text-sm text-[#00236f] bg-[#eef1fb] border border-[#c5d0f5] rounded-lg px-3 py-2">
-              Still working — the sign-in service can take a few minutes to wake up after being idle. No need to retry, this should finish on its own.
             </p>
           )}
           <button

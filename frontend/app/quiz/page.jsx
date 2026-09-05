@@ -283,7 +283,7 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
               </div>
 
               <blockquote className="text-xs text-[#131b2e] italic border-l-2 border-[#00236f] pl-3 py-1 bg-white/80 rounded-r my-2 font-mono">
-                "{currentQ.citation.quote}"
+                &quot;{currentQ.citation.quote}&quot;
               </blockquote>
 
               <div className="flex items-center justify-between text-[11px] font-mono text-[#757682] pt-1">
@@ -467,7 +467,7 @@ export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
               <span>Cadre Cell Continuous Loop</span>
             </div>
             <p className="text-xs text-[#757682]">
-              Quiz answers reinforce the probabilistic Bayesian belief network updating the officer's competency profile without requiring subjective self-appraisal submissions.
+              Quiz answers reinforce the probabilistic Bayesian belief network updating the officer&apos;s competency profile without requiring subjective self-appraisal submissions.
             </p>
           </div>
         </div>

@@ -1,110 +1,259 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useAuthStore } from '@/store/useAuthStore';
-import { game } from '@/lib/api/client';
-import { STAT_MAP, TOPIC_LABELS } from '@/lib/statMap';
-import { heroOrDefault } from '@/lib/sprites/heroSprites';
-import PixelPanel from '@/components/ui/PixelPanel';
-import PixelBadge from '@/components/ui/PixelBadge';
-import PixelButton from '@/components/ui/PixelButton';
-import PixelSprite from '@/components/PixelSprite';
-import XPBar from '@/components/XPBar';
+import { learning } from '@/lib/api/client';
+import { RadarChart } from '@/components/RadarChart';
+import { VectorBalanceCard } from '@/components/VectorBalanceCard';
+import { CompetencyVectorCard } from '@/components/CompetencyVectorCard';
+import { InferenceRationaleCard } from '@/components/InferenceRationaleCard';
+import Panel from '@/components/ui/Panel';
+import { BarChart3, Code, Gavel, Sparkles } from 'lucide-react';
 
-export default function StatSheetPage() {
+// This page shows a gap analysis backed entirely by
+// backend/services/learning_engine.py::analyse_competencies() (fetched via
+// the idempotent GET /learning/pathway, not the assessment-creating POST) --
+// every number here is real player data. An earlier version of this page
+// used a hardcoded fictional 6-competency "MoSPI officer" mockup with no
+// backend behind it; see git history (navya_hu branch) if that visual
+// reference is ever needed again.
+const CURRICULUM_ICON = {
+  'dsa-fundamentals': Code,
+  'official-statistics': BarChart3,
+  'public-policy': Gavel,
+  'digital-literacy': Sparkles,
+};
+
+const PRIORITY_STATUS = {
+  critical: 'critical',
+  high: 'moderate',
+  medium: 'moderate',
+  maintain: 'matched',
+  unassessed: 'unassessed',
+};
+
+function toDimension(item, curriculum) {
+  const requiredLevel = Math.max(1, Math.round(item.pathway_target ?? item.role_target ?? 3));
+  const officerLevel = Math.round(item.observed_level ?? 0);
+  const gapText =
+    item.priority === 'unassessed'
+      ? 'not yet assessed'
+      : item.gap <= 0.05
+        ? 'on target'
+        : `-${item.gap.toFixed(1)} levels`;
+
+  return {
+    id: item.competency_id,
+    name: item.label,
+    subtitle: item.description,
+    category: curriculum.name,
+    status: PRIORITY_STATUS[item.priority] || 'moderate',
+    officerLevel,
+    requiredLevel,
+    gapText,
+    icon: CURRICULUM_ICON[curriculum.slug] || Sparkles,
+    rationale: {
+      observedLevel: item.observed_level ?? 0,
+      observedLabel: item.observed_label || 'not yet evidenced',
+      pathwayTarget: item.pathway_target ?? item.role_target ?? requiredLevel,
+      matchedRole: item.matched_role,
+      gap: item.gap ?? 0,
+      priority: item.priority,
+      confidence: item.confidence || 'none',
+      evidenceSources: item.evidence_sources || [],
+      evidenceRecords: (item.evidence_records || []).map((r) => ({
+        evidenceType: r.evidence_type,
+        value: r.value,
+        detail: r.detail,
+      })),
+      evidenceNote: item.evidence,
+      recommendedAction: item.recommended_action,
+    },
+  };
+}
+
+export default function StatsPage() {
   const { ready } = useRequireAuth();
+  const router = useRouter();
   const player = useAuthStore((s) => s.player);
+  const [selectedSlug, setSelectedSlug] = useState(null);
+  const [selectedDimId, setSelectedDimId] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['player', player?.player_id],
-    queryFn: () => game.getPlayer(player.player_id),
+  const { data: profileData } = useQuery({
+    queryKey: ['learning-profile', player?.player_id],
+    queryFn: () => learning.getProfile(player.player_id),
     enabled: ready && !!player,
+  });
+
+  const { data: curriculaData } = useQuery({
+    queryKey: ['curricula'],
+    queryFn: () => learning.getCurricula(),
+    enabled: ready && !!player,
+  });
+
+  const profile = profileData?.profile;
+  const curricula = curriculaData?.curricula || [];
+  const targetSlugs = profile?.target_domains?.length ? profile.target_domains : curricula.map((c) => c.slug);
+  const activeSlug = selectedSlug || targetSlugs[0] || curricula[0]?.slug;
+  const activeCurriculum = curricula.find((c) => c.slug === activeSlug);
+
+  const {
+    data: pathwayData,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ['pathway', player?.player_id, activeSlug],
+    queryFn: () => learning.getPathway(player.player_id, activeSlug),
+    enabled: ready && !!player && !!activeSlug,
   });
 
   if (!ready || !player) return null;
 
-  const accuracies = data?.topic_accuracies || {};
-  const history = data?.accuracy_history || [];
-  // Totals aren't tracked as their own backend field -- they're just a sum
-  // over the same per-topic attempts/correct rows the topic breakdown below
-  // already renders, so no separate endpoint or schema change was needed.
-  const totalAttempts = history.reduce((sum, h) => sum + (h.attempts || 0), 0);
-  const totalCorrect = history.reduce((sum, h) => sum + (h.correct || 0), 0);
-  const hero = heroOrDefault(player.hero_id);
+  const gapItems = pathwayData?.pathway?.length ? pathwayData.pathway : pathwayData?.competencies || [];
+  const dimensions = activeCurriculum
+    ? [...gapItems].sort((a, b) => (b.gap ?? 0) - (a.gap ?? 0)).map((item) => toDimension(item, activeCurriculum))
+    : [];
+  const filteredDimensions = statusFilter === 'all' ? dimensions : dimensions.filter((d) => d.status === statusFilter);
+  const radarDimensions = dimensions.slice(0, 8);
+  const activeDimId = selectedDimId && dimensions.some((d) => d.id === selectedDimId) ? selectedDimId : dimensions[0]?.id;
+  const selectedDimension = dimensions.find((d) => d.id === activeDimId);
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col gap-5">
-      <PixelPanel variant="arcane">
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <PixelSprite src={hero.image} grid={hero.grid} palette={hero.palette} size={88} title={hero.name} />
-          <div className="flex-1">
-            <h1 className="font-display text-sm text-parchment">{player.username}</h1>
-            <p className="font-body text-arcane text-base mt-0.5">
-              {hero.name} <span className="text-parchment-dim">— {hero.powerupName}</span>
-            </p>
-            <p className="font-body text-parchment-dim text-sm mt-1">{hero.powerupDescription}</p>
-            <div className="flex gap-2 mt-2 flex-wrap">
-              <PixelBadge tone="gold">🔥 {player.streak_days} day streak</PixelBadge>
-              <PixelBadge tone="arcane">{player.hint_tokens} hints left</PixelBadge>
-              <PixelBadge tone={hero.gender === 'male' ? 'arcane' : 'gold'}>{hero.gender}</PixelBadge>
+    <div className="max-w-5xl mx-auto flex flex-col gap-5">
+      <Panel>
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-[#00236f] text-white flex items-center justify-center font-bold text-base shrink-0 shadow-sm">
+              {player.username.slice(0, 2).toUpperCase()}
+            </div>
+            <div className="flex flex-col">
+              <h2 className="font-sans text-base text-[#00236f] font-bold">{player.username}</h2>
+              <span className="font-sans text-xs text-[#444651] mt-0.5">
+                {profile?.designation || 'Designation not set'} · {profile?.department || 'Department not set'}
+                {' — '}
+                <button
+                  type="button"
+                  onClick={() => router.push('/academy')}
+                  className="text-[#00236f] underline cursor-pointer"
+                >
+                  complete your profile
+                </button>
+              </span>
             </div>
           </div>
-          <div className="w-full md:w-60">
-            <XPBar level={player.level} totalXp={player.total_xp} />
-          </div>
-        </div>
-      </PixelPanel>
 
-      <PixelPanel>
-        <h2 className="font-display text-xs text-gold mb-4">PROGRESS</h2>
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="border-2 border-black p-3 bg-stone-dark">
-            <div className="font-display text-lg text-arcane">{totalCorrect}</div>
-            <div className="font-body text-sm text-parchment-dim mt-1">questions solved</div>
-          </div>
-          <div className="border-2 border-black p-3 bg-stone-dark">
-            <div className="font-display text-lg text-parchment">{totalAttempts}</div>
-            <div className="font-body text-sm text-parchment-dim mt-1">questions attempted</div>
-          </div>
-          <div className="border-2 border-black p-3 bg-stone-dark">
-            <div className="font-display text-lg text-gold">{player.streak_days}</div>
-            <div className="font-body text-sm text-parchment-dim mt-1">day streak</div>
-          </div>
+          {curricula.length > 0 && (
+            <div className="flex items-center gap-2 bg-[#f2f3ff] px-3 py-1.5 rounded-lg border border-[#c5c5d3]/30">
+              <span className="font-mono text-xs text-[#757682]">Curriculum:</span>
+              <select
+                value={activeSlug || ''}
+                onChange={(e) => {
+                  setSelectedSlug(e.target.value);
+                  setSelectedDimId(null);
+                }}
+                className="bg-transparent text-[#00236f] font-mono text-xs font-semibold outline-none cursor-pointer pr-1"
+              >
+                {curricula.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
-      </PixelPanel>
+      </Panel>
 
-      <PixelPanel>
-        <h2 className="font-display text-xs text-gold mb-4">CHARACTER STATS</h2>
-        {isLoading ? (
-          <p className="font-body text-parchment-dim">Reading your accuracy history…</p>
-        ) : isError ? (
-          <div className="flex flex-col items-center gap-3">
-            <p className="font-body text-blood">Could not load your stats.</p>
-            <PixelButton variant="ghost" onClick={() => refetch()}>RETRY</PixelButton>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(STAT_MAP).map(([topic, { stat, flavor }]) => {
-              const acc = accuracies[topic] ?? 0;
-              return (
-                <div key={topic} className="border-2 border-black p-3 bg-stone-dark">
-                  <div className="flex justify-between items-baseline">
-                    <span className="font-display text-[10px] text-parchment">{stat.toUpperCase()}</span>
-                    <span className="font-body text-lg text-gold">{Math.round(acc * 100)}</span>
-                  </div>
-                  <p className="font-body text-sm text-parchment-dim mt-1">
-                    {TOPIC_LABELS[topic]} — {flavor}
+      {isLoading ? (
+        <Panel>
+          <p className="font-sans text-sm text-[#757682]">Loading your competency data…</p>
+        </Panel>
+      ) : isError ? (
+        <Panel className="text-center">
+          <p className="font-sans text-sm text-[#b3261e] mb-3">Could not load your competency data.</p>
+          <button type="button" onClick={() => refetch()} className="text-sm text-[#00236f] underline cursor-pointer">
+            Retry
+          </button>
+        </Panel>
+      ) : dimensions.length === 0 ? (
+        <Panel className="text-center">
+          <p className="font-sans text-sm text-[#444651]">
+            No tracked competencies yet for {activeCurriculum?.name || 'this curriculum'}. Complete a self-assessment
+            in{' '}
+            <button
+              type="button"
+              onClick={() => router.push('/academy')}
+              className="text-[#00236f] underline cursor-pointer"
+            >
+              Academy
+            </button>{' '}
+            to see your gap analysis here.
+          </p>
+        </Panel>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div className="lg:col-span-5 flex flex-col gap-4">
+              {radarDimensions.length >= 3 ? (
+                <RadarChart
+                  dimensions={radarDimensions}
+                  selectedDimensionId={activeDimId}
+                  onSelectDimension={setSelectedDimId}
+                />
+              ) : (
+                <Panel>
+                  <p className="font-sans text-sm text-[#757682]">
+                    Track at least 3 competencies in this curriculum to see a radar view.
                   </p>
-                  <div className="h-2 w-full bg-black border-2 border-black mt-2">
-                    <div className="h-full bg-gold" style={{ width: `${Math.round(acc * 100)}%` }} />
-                  </div>
+                </Panel>
+              )}
+              <VectorBalanceCard dimensions={dimensions} selectedFilter={statusFilter} onFilterChange={setStatusFilter} />
+            </div>
+
+            <div className="lg:col-span-7 flex flex-col gap-3">
+              <div className="flex items-center justify-between px-1">
+                <div>
+                  <span className="font-mono text-[10px] text-[#757682] uppercase font-bold tracking-wider">
+                    {activeCurriculum?.name}
+                  </span>
+                  <h2 className="font-sans text-base text-[#131b2e] font-bold">
+                    {filteredDimensions.length} tracked {filteredDimensions.length === 1 ? 'competency' : 'competencies'}
+                  </h2>
                 </div>
-              );
-            })}
+                {statusFilter !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('all')}
+                    className="text-xs font-mono text-[#00236f] hover:underline cursor-pointer"
+                  >
+                    Clear filter
+                  </button>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                {filteredDimensions.map((dim) => (
+                  <CompetencyVectorCard
+                    key={dim.id}
+                    dimension={dim}
+                    isSelected={activeDimId === dim.id}
+                    onSelect={() => setSelectedDimId(dim.id)}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-        )}
-      </PixelPanel>
+
+          {selectedDimension && (
+            <InferenceRationaleCard dimension={selectedDimension} onViewLearningPathway={() => router.push('/academy')} />
+          )}
+        </>
+      )}
     </div>
   );
 }

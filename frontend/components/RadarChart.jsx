@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 
+// Generic N-gon radar -- any real curriculum can have a different number of
+// tracked competencies (dsa-fundamentals has 11, official-statistics has
+// 20+), so this computes its axes from whatever `dimensions` it's given
+// instead of assuming a fixed set of 6. Callers should cap `dimensions` to a
+// readable count (e.g. the top 6-8 by gap) before passing them in --
+// crowding more than ~8 labels around the circle stops being legible.
 export const RadarChart = ({
   dimensions,
   selectedDimensionId,
@@ -7,57 +13,48 @@ export const RadarChart = ({
 }) => {
   const [hoveredId, setHoveredId] = useState(null);
 
-  // SVG center and radius configuration
   const cx = 170;
   const cy = 170;
   const maxR = 120;
-  const maxLevel = 5;
+  const maxLevel = 5; // real backend proficiency scale is 0-5 (method.scale)
+  const axisCount = dimensions.length;
 
-  // Compute 6 vertex positions
-  const axisOrder = ['nsso', 'econo', 'pyspark', 'ethics', 'dml', 'dsa'];
-  const orderedDimensions = axisOrder
-    .map(id => dimensions.find(d => d.id === id))
-    .filter(Boolean);
-
-  // Helper to get coordinates for a given level (0-5) at index (0-5)
   const getPoint = (level, index) => {
-    const angleRad = (Math.PI / 3) * index - Math.PI / 2; // Start from top (-90 deg)
+    const angleRad = ((2 * Math.PI) / axisCount) * index - Math.PI / 2;
     const r = (level / maxLevel) * maxR;
-    const x = cx + r * Math.cos(angleRad);
-    const y = cy + r * Math.sin(angleRad);
-    return { x, y };
+    return { x: cx + r * Math.cos(angleRad), y: cy + r * Math.sin(angleRad) };
   };
 
-  // Concentric polygon points for grid rings 1..4
-  const gridRings = [1, 2, 3, 4, 5].map(lvl => {
-    const pts = [0, 1, 2, 3, 4, 5].map(idx => {
+  const getLabelPoint = (index) => {
+    const angleRad = ((2 * Math.PI) / axisCount) * index - Math.PI / 2;
+    const r = maxR + 26;
+    return { x: cx + r * Math.cos(angleRad), y: cy + r * Math.sin(angleRad) };
+  };
+
+  const labelAnchor = (index) => {
+    const angleRad = ((2 * Math.PI) / axisCount) * index - Math.PI / 2;
+    const cos = Math.cos(angleRad);
+    if (cos > 0.3) return 'start';
+    if (cos < -0.3) return 'end';
+    return 'middle';
+  };
+
+  const gridRings = [1, 2, 3, 4, 5].map((lvl) =>
+    Array.from({ length: axisCount }, (_, idx) => {
       const p = getPoint(lvl, idx);
       return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
-    });
-    return pts.join(' ');
-  });
+    }).join(' ')
+  );
 
-  // Target Benchmark Polygon Points
-  const targetPoints = orderedDimensions.map((d, idx) => {
-    const p = getPoint(d.requiredLevel, idx);
-    return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
-  }).join(' ');
+  const targetPoints = dimensions
+    .map((d, idx) => getPoint(d.requiredLevel, idx))
+    .map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`)
+    .join(' ');
 
-  // Officer Level Polygon Points
-  const officerPoints = orderedDimensions.map((d, idx) => {
-    const p = getPoint(d.officerLevel, idx);
-    return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
-  }).join(' ');
-
-  // Label coordinates and offsets
-  const labelConfigs = [
-    { id: 'nsso', text: 'NSSO Sampling', x: 170, y: 36, anchor: 'middle', alignY: 'baseline' },
-    { id: 'econo', text: 'Econometrics', x: 282, y: 108, anchor: 'start', alignY: 'middle' },
-    { id: 'pyspark', text: 'PySpark / SQL', x: 282, y: 235, anchor: 'start', alignY: 'middle' },
-    { id: 'ethics', text: 'Sovereign Cloud', x: 170, y: 306, anchor: 'middle', alignY: 'hanging' },
-    { id: 'dml', text: 'Dist. ML', x: 58, y: 235, anchor: 'end', alignY: 'middle' },
-    { id: 'dsa', text: 'DSA Core', x: 58, y: 108, anchor: 'end', alignY: 'middle' },
-  ];
+  const observedPoints = dimensions
+    .map((d, idx) => getPoint(d.officerLevel, idx))
+    .map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`)
+    .join(' ');
 
   return (
     <div className="bg-[#ffffff] rounded-xl p-4 md:p-6 shadow-sm border border-[#c5c5d3]/30">
@@ -71,55 +68,24 @@ export const RadarChart = ({
           </h3>
         </div>
         <span className="font-mono text-xs px-2 py-0.5 rounded bg-[#f2f3ff] text-[#444651] font-medium border border-[#c5c5d3]/30">
-          6 Dimensions
+          {axisCount} {axisCount === 1 ? 'Dimension' : 'Dimensions'}
         </span>
       </div>
 
-      {/* Radar Canvas SVG */}
       <div className="relative w-full flex items-center justify-center py-2">
-        <svg
-          className="w-full max-w-[340px] aspect-square overflow-visible"
-          viewBox="0 0 340 340"
-        >
-          {/* Hexagonal Background Grid Rings */}
-          <polygon
-            points={gridRings[4]}
-            fill="none"
-            className="text-[#c5c5d3]/40"
-            stroke="currentColor"
-            strokeWidth="1"
-          />
-          <polygon
-            points={gridRings[3]}
-            fill="none"
-            className="text-[#c5c5d3]/30"
-            stroke="currentColor"
-            strokeWidth="1"
-          />
-          <polygon
-            points={gridRings[2]}
-            fill="none"
-            className="text-[#c5c5d3]/20"
-            stroke="currentColor"
-            strokeWidth="1"
-          />
-          <polygon
-            points={gridRings[1]}
-            fill="none"
-            className="text-[#c5c5d3]/15"
-            stroke="currentColor"
-            strokeWidth="1"
-          />
-          <polygon
-            points={gridRings[0]}
-            fill="none"
-            className="text-[#c5c5d3]/10"
-            stroke="currentColor"
-            strokeWidth="1"
-          />
+        <svg className="w-full max-w-[340px] aspect-square overflow-visible" viewBox="0 0 340 340">
+          {gridRings.map((ring, idx) => (
+            <polygon
+              key={`ring-${idx}`}
+              points={ring}
+              fill="none"
+              className={`text-[#c5c5d3]/${[10, 15, 20, 30, 40][idx]}`}
+              stroke="currentColor"
+              strokeWidth="1"
+            />
+          ))}
 
-          {/* Radial Spokes / Axes */}
-          {[0, 1, 2, 3, 4, 5].map(idx => {
+          {Array.from({ length: axisCount }, (_, idx) => {
             const edge = getPoint(5, idx);
             return (
               <line
@@ -136,7 +102,6 @@ export const RadarChart = ({
             );
           })}
 
-          {/* Target Benchmark Area (Orange Dashed) */}
           <polygon
             points={targetPoints}
             fill="#ffdcc3"
@@ -147,9 +112,8 @@ export const RadarChart = ({
             className="transition-all duration-300"
           />
 
-          {/* Officer Verified Area (Navy Blue Solid) */}
           <polygon
-            points={officerPoints}
+            points={observedPoints}
             fill="#dce1ff"
             fillOpacity="0.6"
             stroke="#00236f"
@@ -157,8 +121,7 @@ export const RadarChart = ({
             className="transition-all duration-300"
           />
 
-          {/* Target Vertex Circles */}
-          {orderedDimensions.map((d, idx) => {
+          {dimensions.map((d, idx) => {
             const p = getPoint(d.requiredLevel, idx);
             return (
               <circle
@@ -172,14 +135,13 @@ export const RadarChart = ({
             );
           })}
 
-          {/* Officer Vertex Circles */}
-          {orderedDimensions.map((d, idx) => {
+          {dimensions.map((d, idx) => {
             const p = getPoint(d.officerLevel, idx);
             const isSelected = selectedDimensionId === d.id;
             const isHovered = hoveredId === d.id;
             return (
               <g
-                key={`officer-pt-${d.id}`}
+                key={`observed-pt-${d.id}`}
                 className="cursor-pointer"
                 onClick={() => onSelectDimension(d.id)}
                 onMouseEnter={() => setHoveredId(d.id)}
@@ -188,7 +150,7 @@ export const RadarChart = ({
                 <circle
                   cx={p.x}
                   cy={p.y}
-                  r={isSelected || isHovered ? "6.5" : "4"}
+                  r={isSelected || isHovered ? '6.5' : '4'}
                   className="fill-[#00236f] transition-all duration-200"
                 />
                 {(isSelected || isHovered) && (
@@ -206,50 +168,41 @@ export const RadarChart = ({
             );
           })}
 
-          {/* Dimension Text Labels */}
-          {labelConfigs.map((cfg) => {
-            const d = dimensions.find(dim => dim.id === cfg.id);
-            const isSelected = selectedDimensionId === cfg.id;
-            const isHovered = hoveredId === cfg.id;
-            const isMatched = d?.status === 'matched';
-            
+          {dimensions.map((d, idx) => {
+            const p = getLabelPoint(idx);
+            const anchor = labelAnchor(idx);
+            const isSelected = selectedDimensionId === d.id;
+            const isHovered = hoveredId === d.id;
             return (
               <text
-                key={`label-${cfg.id}`}
-                x={cfg.x}
-                y={cfg.y}
-                textAnchor={cfg.anchor}
+                key={`label-${d.id}`}
+                x={p.x}
+                y={p.y}
+                textAnchor={anchor}
                 className={`font-mono transition-all duration-200 cursor-pointer select-none ${
                   isSelected || isHovered
-                    ? 'fill-[#00236f] font-bold text-[11px] underline'
-                    : isMatched
-                    ? 'fill-[#00236f] font-bold text-[11px]'
-                    : 'fill-[#131b2e] font-semibold text-[10px]'
+                    ? 'fill-[#00236f] font-bold text-[10px] underline'
+                    : 'fill-[#131b2e] font-semibold text-[9px]'
                 }`}
-                onClick={() => onSelectDimension(cfg.id)}
-                onMouseEnter={() => setHoveredId(cfg.id)}
+                onClick={() => onSelectDimension(d.id)}
+                onMouseEnter={() => setHoveredId(d.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
-                {cfg.text}
+                {d.name.length > 18 ? `${d.name.slice(0, 17)}…` : d.name}
               </text>
             );
           })}
         </svg>
       </div>
 
-      {/* Legend */}
       <div className="flex items-center justify-center gap-6 pt-3 border-t border-[#eaedff]">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-sm bg-[#00236f] inline-block shadow-sm"></span>
-          <span className="font-sans text-xs text-[#131b2e] font-medium">
-            Verified Level (Officer)
-          </span>
+          <span className="font-sans text-xs text-[#131b2e] font-medium">Observed level</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-sm bg-[#fe932c] inline-block shadow-sm"></span>
-          <span className="font-sans text-xs text-[#444651] font-medium">
-            Cadre Target Benchmark
-          </span>
+          <span className="font-sans text-xs text-[#444651] font-medium">Pathway target</span>
         </div>
       </div>
     </div>

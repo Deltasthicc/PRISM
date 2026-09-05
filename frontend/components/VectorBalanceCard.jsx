@@ -8,6 +8,7 @@ export const VectorBalanceCard = ({
   const matchedCount = dimensions.filter(d => d.status === 'matched').length;
   const moderateCount = dimensions.filter(d => d.status === 'moderate').length;
   const criticalCount = dimensions.filter(d => d.status === 'critical').length;
+  const unassessedCount = dimensions.filter(d => d.status === 'unassessed').length;
 
   // Calculate total gap levels: sum of (officerLevel - requiredLevel)
   const totalGap = dimensions.reduce((acc, d) => acc + (d.officerLevel - d.requiredLevel), 0);
@@ -42,8 +43,8 @@ export const VectorBalanceCard = ({
         ></div>
       </div>
 
-      {/* 3 Status Filter Tiles */}
-      <div className="grid grid-cols-3 gap-2 text-center">
+      {/* Status Filter Tiles */}
+      <div className="grid grid-cols-4 gap-2 text-center">
         <button
           onClick={() => onFilterChange(selectedFilter === 'matched' ? 'all' : 'matched')}
           className={`py-2 px-2 rounded-lg border transition-all cursor-pointer shadow-sm ${
@@ -89,6 +90,22 @@ export const VectorBalanceCard = ({
           </span>
           <span className="font-mono text-[10px] text-[#ba1a1a] uppercase font-bold tracking-wider">
             Critical
+          </span>
+        </button>
+
+        <button
+          onClick={() => onFilterChange(selectedFilter === 'unassessed' ? 'all' : 'unassessed')}
+          className={`py-2 px-2 rounded-lg border transition-all cursor-pointer shadow-sm ${
+            selectedFilter === 'unassessed'
+              ? 'bg-[#eaedff] border-[#757682] ring-2 ring-[#757682]/30'
+              : 'bg-[#f2f3ff] border-[#c5c5d3]/40 hover:bg-[#eaedff]'
+          }`}
+        >
+          <span className="font-sans font-bold text-base text-[#757682] block">
+            {unassessedCount}
+          </span>
+          <span className="font-mono text-[10px] text-[#757682] uppercase font-bold tracking-wider">
+            Unassessed
           </span>
         </button>
       </div>

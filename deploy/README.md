@@ -71,6 +71,14 @@ shared backend URL instead of `localhost:8000`.
    gets migrated to head automatically on every deploy, the same guarantee
    `db/database.py::require_database_at_migration_head` already enforces for local PostgreSQL.
 
+**A note on `prism-keycloak`'s memory:** Keycloak is a real JVM app, and Render's free tier caps
+the container at 512Mi. `backend/keycloak/Dockerfile` tunes the JVM to fit -- verified directly
+against the exact same 512Mi limit locally -- but it still sits around 90% of that limit at rest.
+That's normal, not a sign something's wrong. If it ever shows up flaky under real concurrent
+teammate logins (visible as the service restarting on its own in Render's dashboard), the fix is
+upgrading `prism-keycloak`'s plan to Render's smallest paid tier for more RAM, not more JVM flags --
+see the Dockerfile's own comment for the full story of what was tried.
+
 ### 3. Point your own frontend at the shared backend
 
 In your own `frontend/.env.local` (per-laptop, not committed):

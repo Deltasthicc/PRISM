@@ -71,3 +71,10 @@ jobs:
 
       - name: Validate docs/contracts/openapi.json is well-formed JSON
         run: python -c "import json; json.load(open('docs/contracts/openapi.json', encoding='utf-8'))"
+  security-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for hardcoded secrets
+        uses: gitleaks/gitleaks-action@v2

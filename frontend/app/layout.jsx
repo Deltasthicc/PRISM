@@ -41,7 +41,7 @@ export default function RootLayout({ children }) {
         <MusicPlayer />
         <Providers>
           <NavBar />
-          <main className="max-w-6xl mx-auto px-4 py-6">{children}</main>
+          <main className="max-w-6xl mx-auto px-4 py-6 pt-[180px]">{children}</main>
           <OnboardingModal />
         </Providers>
       </body>

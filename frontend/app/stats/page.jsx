@@ -1,110 +1,240 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { useRequireAuth } from '@/lib/useRequireAuth';
-import { useAuthStore } from '@/store/useAuthStore';
-import { game } from '@/lib/api/client';
-import { STAT_MAP, TOPIC_LABELS } from '@/lib/statMap';
-import { heroOrDefault } from '@/lib/sprites/heroSprites';
-import PixelPanel from '@/components/ui/PixelPanel';
-import PixelBadge from '@/components/ui/PixelBadge';
-import PixelButton from '@/components/ui/PixelButton';
-import PixelSprite from '@/components/PixelSprite';
-import XPBar from '@/components/XPBar';
+import React, { useState } from 'react';
 
-export default function StatSheetPage() {
-  const { ready } = useRequireAuth();
-  const player = useAuthStore((s) => s.player);
+import { RadarChart } from '../../components/RadarChart';
+import { VectorBalanceCard } from '../../components/VectorBalanceCard';
+import { CompetencyVectorCard } from '../../components/CompetencyVectorCard';
+import { InferenceRationaleCard } from '../../components/InferenceRationaleCard';
+import { RecalibrateModal } from '../../components/RecalibrateModal';
+import { BarChart3, TrendingUp, Server, Gavel, Brain, Code } from 'lucide-react';
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['player', player?.player_id],
-    queryFn: () => game.getPlayer(player.player_id),
-    enabled: ready && !!player,
+const CompetencyGapView = ({
+  officer,
+  dimensions,
+  benchmarks,
+  selectedBenchmarkId,
+  onBenchmarkChange,
+  onViewLearningPathway,
+  onRecalibrateLevel,
+  searchFilter,
+}) => {
+  const [selectedDimId, setSelectedDimId] = useState('dml');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [isRecalibrateOpen, setIsRecalibrateOpen] = useState(false);
+
+  const currentBenchmark =
+    benchmarks.find((b) => b.id === selectedBenchmarkId) || benchmarks[0];
+
+  const selectedDimension =
+    dimensions.find((d) => d.id === selectedDimId) || dimensions[0];
+
+  // Filter dimensions according to status filter and search query
+  const filteredDimensions = dimensions.filter((d) => {
+    const matchesStatus =
+      statusFilter === 'all' || d.status === statusFilter;
+
+    const matchesSearch =
+      !searchFilter ||
+      d.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      d.subtitle.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      d.category.toLowerCase().includes(searchFilter.toLowerCase());
+
+    return matchesStatus && matchesSearch;
   });
 
-  if (!ready || !player) return null;
-
-  const accuracies = data?.topic_accuracies || {};
-  const history = data?.accuracy_history || [];
-  // Totals aren't tracked as their own backend field -- they're just a sum
-  // over the same per-topic attempts/correct rows the topic breakdown below
-  // already renders, so no separate endpoint or schema change was needed.
-  const totalAttempts = history.reduce((sum, h) => sum + (h.attempts || 0), 0);
-  const totalCorrect = history.reduce((sum, h) => sum + (h.correct || 0), 0);
-  const hero = heroOrDefault(player.hero_id);
-
   return (
-    <div className="max-w-3xl mx-auto flex flex-col gap-5">
-      <PixelPanel variant="arcane">
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <PixelSprite src={hero.image} grid={hero.grid} palette={hero.palette} size={88} title={hero.name} />
-          <div className="flex-1">
-            <h1 className="font-display text-sm text-parchment">{player.username}</h1>
-            <p className="font-body text-arcane text-base mt-0.5">
-              {hero.name} <span className="text-parchment-dim">— {hero.powerupName}</span>
-            </p>
-            <p className="font-body text-parchment-dim text-sm mt-1">{hero.powerupDescription}</p>
-            <div className="flex gap-2 mt-2 flex-wrap">
-              <PixelBadge tone="gold">🔥 {player.streak_days} day streak</PixelBadge>
-              <PixelBadge tone="arcane">{player.hint_tokens} hints left</PixelBadge>
-              <PixelBadge tone={hero.gender === 'male' ? 'arcane' : 'gold'}>{hero.gender}</PixelBadge>
+    <div className="flex flex-col w-full">
+
+      {/* Top Sovereign Status Strip */}
+      {/*<div className="flex items-center justify-between py-1.5 px-3 md:px-4 bg-[#f2f3ff] rounded-lg mb-4 border border-[#c5c5d3]/30 text-xs">
+        <div className="flex items-center gap-2">
+          <span className="inline-block w-2 h-2 rounded-full bg-[#904d00]"></span>
+
+          <span className="font-mono text-xs text-[#444651] font-medium">
+            INFERENCE ENGINE: NSO-XAI-v4.2
+          </span>
+
+          <span className="text-[#c5c5d3] text-xs">•</span>
+
+          <span className="font-mono text-[10px] uppercase text-[#757682] font-semibold">
+            Calibration: NSSO-PLFS 2023-24
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5 text-xs text-[#444651]">
+          <span className="material-symbols-outlined text-[#757682] text-[16px]">
+            verified
+          </span>
+
+          <span className="font-mono text-xs">
+            Attested by Cadre Cell (CSO-HQ)
+          </span>
+        </div>
+      </div> */}
+
+      {/* Officer Profile & Benchmark Target Selector Header */}
+      <div className="bg-[#ffffff] border border-[#c5c5d3]/30 rounded-xl p-3.5 md:p-4 mb-5 shadow-sm">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-[#00236f] text-white flex items-center justify-center font-bold text-base shrink-0 shadow-sm">
+              RS
+            </div>
+
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 flex-wrap">
+
+                <h2 className="font-sans text-base text-[#00236f] font-bold">
+                  {officer.username}
+                </h2>
+
+                <span className="px-2 py-0.5 rounded bg-[#dce1ff] text-[#00164e] font-mono text-xs font-semibold border border-[#b6c4ff]">
+                  {officer.cadre}
+                </span>
+
+                <span className="font-mono text-xs text-[#757682]">
+                  {officer.officerCode}
+                </span>
+
+              </div>
+
+              <span className="font-sans text-xs text-[#444651] mt-0.5">
+                {officer.designation} · {officer.division}
+              </span>
             </div>
           </div>
-          <div className="w-full md:w-60">
-            <XPBar level={player.level} totalXp={player.total_xp} />
+
+          <div className="flex items-center gap-3 flex-wrap">
+
+            <div className="flex items-center gap-2 bg-[#f2f3ff] px-3 py-1.5 rounded-lg border border-[#c5c5d3]/30">
+              <span className="font-mono text-xs text-[#757682]">
+                Target:
+              </span>
+
+              <select
+                value={selectedBenchmarkId}
+                onChange={(e) => onBenchmarkChange(e.target.value)}
+                className="bg-transparent text-[#00236f] font-mono text-xs font-semibold outline-none cursor-pointer pr-1"
+              >
+                {benchmarks.map((b) => (
+                  <option
+                    key={b.id}
+                    value={b.id}
+                    className="text-[#131b2e]"
+                  >
+                    {b.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              onClick={() => setIsRecalibrateOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#ffdcc3] text-[#904d00] font-mono text-xs font-bold border border-[#ffb77d] hover:bg-[#fe932c] hover:text-white transition-colors shadow-sm cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                tune
+              </span>
+
+              <span>Recalibrate</span>
+            </button>
+
           </div>
         </div>
-      </PixelPanel>
+      </div>
 
-      <PixelPanel>
-        <h2 className="font-display text-xs text-gold mb-4">PROGRESS</h2>
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="border-2 border-black p-3 bg-stone-dark">
-            <div className="font-display text-lg text-arcane">{totalCorrect}</div>
-            <div className="font-body text-sm text-parchment-dim mt-1">questions solved</div>
+      {/* Primary Content Grid: Radar Vector Projection + Domain Gap Vectors */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5 items-start">
+
+        {/* Left Column: Vector Projection Radar & Benchmark Breakdown */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+
+          <RadarChart
+            dimensions={dimensions}
+            selectedDimensionId={selectedDimId}
+            onSelectDimension={setSelectedDimId}
+          />
+
+          <VectorBalanceCard
+            dimensions={dimensions}
+            selectedFilter={statusFilter}
+            onFilterChange={setStatusFilter}
+          />
+
+        </div>
+
+        {/* Right Column: Streamlined Domain Gap Vector Cards */}
+        <div className="lg:col-span-7 flex flex-col gap-3">
+
+          <div className="flex items-center justify-between px-1">
+
+            <div>
+              <span className="font-mono text-[10px] text-[#757682] uppercase font-bold tracking-wider">
+                Target Competency Vectors
+              </span>
+
+              <h2 className="font-sans text-base text-[#131b2e] font-bold">
+                {dimensions.length} Evaluated Dimensions
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-2">
+
+              <span className="font-mono text-xs text-[#757682]">
+                Target: {currentBenchmark.band}
+              </span>
+
+              {statusFilter !== 'all' && (
+                <button
+                  onClick={() => setStatusFilter('all')}
+                  className="text-xs font-mono text-[#00236f] hover:underline cursor-pointer"
+                >
+                  Clear filter
+                </button>
+              )}
+
+            </div>
           </div>
-          <div className="border-2 border-black p-3 bg-stone-dark">
-            <div className="font-display text-lg text-parchment">{totalAttempts}</div>
-            <div className="font-body text-sm text-parchment-dim mt-1">questions attempted</div>
-          </div>
-          <div className="border-2 border-black p-3 bg-stone-dark">
-            <div className="font-display text-lg text-gold">{player.streak_days}</div>
-            <div className="font-body text-sm text-parchment-dim mt-1">day streak</div>
+
+          <div className="flex flex-col gap-2.5">
+
+            {filteredDimensions.map((dim) => (
+              <CompetencyVectorCard
+                key={dim.id}
+                dimension={dim}
+                isSelected={selectedDimId === dim.id}
+                onSelect={() => setSelectedDimId(dim.id)}
+              />
+            ))}
+
+            {filteredDimensions.length === 0 && (
+              <div className="p-8 text-center bg-white rounded-xl border border-[#c5c5d3]/30 text-[#757682] font-sans text-sm">
+                No competencies found matching "
+                {searchFilter || statusFilter}
+                ".
+              </div>
+            )}
+
           </div>
         </div>
-      </PixelPanel>
+      </div>
 
-      <PixelPanel>
-        <h2 className="font-display text-xs text-gold mb-4">CHARACTER STATS</h2>
-        {isLoading ? (
-          <p className="font-body text-parchment-dim">Reading your accuracy history…</p>
-        ) : isError ? (
-          <div className="flex flex-col items-center gap-3">
-            <p className="font-body text-blood">Could not load your stats.</p>
-            <PixelButton variant="ghost" onClick={() => refetch()}>RETRY</PixelButton>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(STAT_MAP).map(([topic, { stat, flavor }]) => {
-              const acc = accuracies[topic] ?? 0;
-              return (
-                <div key={topic} className="border-2 border-black p-3 bg-stone-dark">
-                  <div className="flex justify-between items-baseline">
-                    <span className="font-display text-[10px] text-parchment">{stat.toUpperCase()}</span>
-                    <span className="font-body text-lg text-gold">{Math.round(acc * 100)}</span>
-                  </div>
-                  <p className="font-body text-sm text-parchment-dim mt-1">
-                    {TOPIC_LABELS[topic]} — {flavor}
-                  </p>
-                  <div className="h-2 w-full bg-black border-2 border-black mt-2">
-                    <div className="h-full bg-gold" style={{ width: `${Math.round(acc * 100)}%` }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </PixelPanel>
+      {/* Bottom Section: Algorithmic Evidence & Model Rationale Card */}
+      <InferenceRationaleCard
+        dimension={selectedDimension}
+        onViewLearningPathway={onViewLearningPathway}
+      />
+
+      {/* Recalibrate Modal */}
+      <RecalibrateModal
+        isOpen={isRecalibrateOpen}
+        onClose={() => setIsRecalibrateOpen(false)}
+        dimensions={dimensions}
+        currentBenchmark={currentBenchmark}
+        onApplyRecalibration={onRecalibrateLevel}
+      />
+
     </div>
   );
 }

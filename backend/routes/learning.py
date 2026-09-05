@@ -1,6 +1,7 @@
 """Compatibility aggregator for the split learning route modules."""
 
 from fastapi import APIRouter
+from services.quiz_generator import generate_quiz
 
 from routes.learning_analytics import admin_overview, router as analytics_router
 from routes.learning_competency import (
@@ -28,6 +29,7 @@ __all__ = [
     "get_integration_status",
     "get_pathway",
     "get_profile",
+    "generate_quiz",
     "latest_assessment",
     "list_curricula",
     "list_quizzes",

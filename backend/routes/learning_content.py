@@ -12,9 +12,22 @@ from routes.learning_common import player_or_404
 from schemas.learning import QuizResponse
 from security.rbac import BoundPrincipal, Permission, scoped_to_own_player
 from services.content_ingestion import ContentExtractionError, MAX_UPLOAD_BYTES, extract_text
-from services.quiz_generator import generate_quiz
+from services.quiz_generator import generate_quiz as _service_generate_quiz
 
 router = APIRouter(prefix="/learning", tags=["Learning Content"])
+
+
+async def _generate_quiz(text, question_count, difficulty, language):
+    """Resolve the quiz generator through the compatibility route module.
+
+    Legacy dependency-security tests monkeypatch ``routes.learning.generate_quiz``
+    to isolate multipart parsing. Looking up that seam at call time preserves
+    those tests while keeping quiz behavior owned by this content module.
+    """
+    from routes import learning as compatibility_routes
+
+    generator = getattr(compatibility_routes, "generate_quiz", _service_generate_quiz)
+    return await generator(text, question_count, difficulty, language)
 
 
 @router.post("/quiz/generate", response_model=QuizResponse)
@@ -38,7 +51,9 @@ async def create_quiz(
     content = await file.read(MAX_UPLOAD_BYTES + 1)
     try:
         text = extract_text(file.filename or "upload", content)
-        questions, generation_mode = await generate_quiz(text, question_count, difficulty, language)
+        questions, generation_mode = await _generate_quiz(
+            text, question_count, difficulty, language
+        )
     except (ContentExtractionError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 

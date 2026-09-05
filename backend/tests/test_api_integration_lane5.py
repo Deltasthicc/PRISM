@@ -12,16 +12,24 @@ from db.database import Base, get_db
 from models.accuracy_history import AccuracyHistory  # noqa: F401 -- mapper registration
 from models.dungeon import Dungeon, Room  # noqa: F401 -- mapper/FK registration
 from models.guild import Guild  # noqa: F401 -- mapper/FK registration
-from models.learning import CompetencyAssessment
+from models.governance import EvidenceRecord, RoleTarget
+from models.learning import CompetencyAssessment, LearnerProfile
 from models.player import Player
 from models.question import Question  # noqa: F401 -- mapper/FK registration
 from models.session import GameSession  # noqa: F401 -- mapper registration
 from models.submission import AnswerSubmission  # noqa: F401 -- mapper registration
-from routes.learning import admin_overview, latest_assessment, router as learning_router
+from routes.learning import (
+    admin_overview,
+    assess_competencies,
+    get_pathway,
+    latest_assessment,
+    router as learning_router,
+)
 from routes.authorization import require_permission_dependency, require_principal
 from security.identity import AuthenticationError
 from security.rbac import BoundPrincipal, Permission
-from integrations.provider import SimulatedIGOTAdapter
+from integrations.provider import ProviderResult, SimulatedIGOTAdapter
+from schemas.learning import CompetencyAssessmentRequest
 
 
 class Subject:
@@ -116,6 +124,77 @@ def test_latest_assessment_returns_latest_stream():
     assert result["assessment"]["self_ratings"] == {"new": 4}
 
 
+def test_assessment_route_uses_profile_role_target(db=None):
+    db = db or make_db()
+    player = Player(username="role-target-route")
+    db.add(player)
+    db.flush()
+    db.add(LearnerProfile(player_id=player.player_id, job_role="statistical officer"))
+    db.add(RoleTarget(
+        role="statistical officer",
+        competency_id="os_official_statistics",
+        target_level=5,
+        source="route-test",
+        valid_from=datetime(2026, 1, 1, tzinfo=timezone.utc),
+    ))
+    db.commit()
+
+    result = __import__("asyncio").run(
+        assess_competencies(
+            player.player_id,
+            CompetencyAssessmentRequest(
+                curriculum_slug="official-statistics",
+                self_ratings={},
+            ),
+            db,
+            make_principal(player.player_id),
+        )
+    )
+
+    row = next(item for item in result["competencies"] if item["competency_id"] == "os_official_statistics")
+    assert row["role_target"] == 5.0
+    assert row["matched_field"] == "job_role"
+    assert row["role_target_source"] == "route-test"
+
+
+def test_pathway_route_uses_separated_evidence(db=None):
+    db = db or make_db()
+    player = Player(username="evidence-route")
+    db.add(player)
+    db.flush()
+    db.add(LearnerProfile(player_id=player.player_id, job_role="statistical officer"))
+    db.add(EvidenceRecord(
+        player_id=player.player_id,
+        competency_id="os_official_statistics",
+        evidence_type="reviewer",
+        value=None,
+        detail="Reviewer observed strong source validation.",
+        recorded_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
+    ))
+    db.add(CompetencyAssessment(
+        assessment_id="evidence-route-assessment",
+        player_id=player.player_id,
+        curriculum_slug="official-statistics",
+        self_ratings={},
+        created_at=datetime(2026, 2, 1, tzinfo=timezone.utc),
+    ))
+    db.commit()
+
+    result = __import__("asyncio").run(
+        get_pathway(
+            player.player_id,
+            "official-statistics",
+            db,
+            make_principal(player.player_id),
+        )
+    )
+
+    row = next(item for item in result["competencies"] if item["competency_id"] == "os_official_statistics")
+    assert row["evidence_sources"] == ["reviewer"]
+    assert row["evidence_records"][0]["detail"] == "Reviewer observed strong source validation."
+    assert row["priority"] == "unassessed"
+
+
 def test_latest_assessment_route_uses_composed_own_player_scope():
     db = make_db()
     player = Player(username="route-scope-learner")
@@ -195,6 +274,41 @@ def test_simulated_igot_preserves_idempotency_key_on_repeated_enrolment_requests
     assert first == second
     assert first.idempotency_key == "request-1"
     assert first.data == {"accepted": False, "reason": "simulation-only"}
+
+
+@pytest.mark.parametrize(
+    ("status", "data"),
+    [
+        ("OK", {"items": [], "next_cursor": "cursor-2"}),
+        ("TIMEOUT", {"retryable": True}),
+        ("UNAUTHORIZED", {"retryable": False}),
+        ("RATE_LIMITED", {"retryable": True, "retry_after_seconds": 30}),
+        ("UPSTREAM_ERROR", {"retryable": True}),
+        ("PARTIAL", {"items": [{"provider_record_id": "course-1"}], "missing": ["title"]}),
+    ],
+)
+def test_provider_result_contract_preserves_explicit_outcomes(status, data):
+    result = ProviderResult(status=status, data=data, idempotency_key="request-1")
+
+    assert result.status == status
+    assert result.data == data
+    assert result.idempotency_key == "request-1"
+
+
+def test_provider_failure_outcomes_do_not_look_like_live_records():
+    failures = [
+        ProviderResult("TIMEOUT", {"retryable": True}),
+        ProviderResult("UNAUTHORIZED", {"retryable": False}),
+        ProviderResult("RATE_LIMITED", {"retryable": True}),
+        ProviderResult("UPSTREAM_ERROR", {"retryable": True}),
+        ProviderResult("PARTIAL", {"items": [], "missing": ["course_id"]}),
+    ]
+
+    for result in failures:
+        assert result.status != "LIVE"
+        assert "course_id" not in result.data
+        assert "enrolment_id" not in result.data
+        assert "completion_id" not in result.data
 
 
 def test_route_auth_adapter_returns_401_for_missing_or_invalid_bearer(monkeypatch):

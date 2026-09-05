@@ -11,7 +11,7 @@ local development:
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 import config  # noqa: F401  -- load environment configuration before routes
 from routes.ai import router as ai_router
@@ -34,6 +34,14 @@ app = FastAPI(title="PRISM AI Services", version="1.0.0", lifespan=lifespan)
 # origin, is a combination browsers reject outright anyway.
 # TODO INTEGRATION: Lock down allowed_origins to the main backend's server
 # URL when deploying. Currently open for local development.
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    return response
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],

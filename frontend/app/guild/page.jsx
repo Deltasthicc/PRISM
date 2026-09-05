@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Play, RotateCcw, Cloud, Download, Terminal, CircleHelp, Database, CircleCheck, PartyPopper } from 'lucide-react';
 
-export default function AdaptivePracticeDsaQuest({ onNavigate }) {
+export default function AdaptivePracticeDsaQuest({ onNavigate = () => {} } = {}) {
   const [selectedLang, setSelectedLang] = useState('Python 3.11 (Pyodide)');
   const [isRunning, setIsRunning] = useState(false);
   const [bossHp, setBossHp] = useState(210);
@@ -181,7 +181,7 @@ export default function AdaptivePracticeDsaQuest({ onNavigate }) {
               <p className="font-mono text-[11px] leading-relaxed">
                 <strong className="text-[#00236f]">Objective:</strong> Implement{' '}
                 <code className="bg-[#e2e7ff] px-1 rounded text-[#00236f]">cluster_survey_districts(n_strata, adj_matrix)</code>{' '}
-                using Tarjan's Strongly Connected Components (SCC) in <strong className="text-[#00312c]">O(V + E)</strong> time to partition survey enumeration districts into independent census strata.
+                using Tarjan&apos;s Strongly Connected Components (SCC) in <strong className="text-[#00312c]">O(V + E)</strong> time to partition survey enumeration districts into independent census strata.
               </p>
             </div>
 

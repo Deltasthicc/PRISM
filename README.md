@@ -10,9 +10,9 @@
 ![Frontend](https://img.shields.io/badge/frontend-Next.js%2015%20%2F%20React%2019-000000?logo=nextdotjs&logoColor=white)
 ![Database](https://img.shields.io/badge/database-PostgreSQL%20(Neon)-4169E1?logo=postgresql&logoColor=white)
 ![Languages](https://img.shields.io/badge/UI-English%20%2F%20हिंदी-orange)
-![Tests](https://img.shields.io/badge/backend%20tests-852-brightgreen)
+![Tests](https://img.shields.io/badge/backend%20tests-935-brightgreen)
 
-[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
+[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
 </div>
 
@@ -21,8 +21,6 @@
 ## 📖 What PRISM actually does
 
 Government officers (MoSPI-style: statistical officers, analysts, policy staff) need a way to know exactly *which* skills they're missing, *why*, and *what to do about it* — without a vague "take this course" recommendation. PRISM is a **deterministic, explainable competency-gap engine**: it blends a learner's self-assessment with demonstrated performance (quiz results, exercises) at a fixed **65% demonstrated / 35% self-assessed** weighting, maps the result against a curated, government-source-cited competency catalog, and generates a personalized learning pathway with a plain-language rationale for every gap it identifies.
-
-Alongside the professional assessment workspace, there's an optional **Quest Mode** — a gamified layer (XP, levels, a boss-fight metaphor for hard topics, a leaderboard) that a learner explicitly opts into from a NavBar toggle. It's off by default; the demo's primary path is the professional workspace, and Quest Mode is there for whoever wants a more playful way to practice, not the default experience.
 
 **Four curricula, ~57 competencies**, each traceable to an actual government or standards document (see [`backend/services/competency_docs.py`](backend/services/competency_docs.py) and [`curricula.py`](backend/services/curricula.py)):
 - DSA Fundamentals
@@ -86,6 +84,34 @@ flowchart LR
 
 There's also a **separate, standalone second FastAPI app** at repo root (`services/`, distinct from `backend/services/`) — an optional AI microservice reachable via `AI_SERVICE_URL`. By default the backend runs self-contained and never needs it.
 
+## 🧩 Quizzes
+
+There are two genuinely separate, working quiz mechanisms — not one quiz reused everywhere:
+
+1. **Baseline competency quiz** ([`backend/routes/competency_quiz.py`](backend/routes/competency_quiz.py)) — a fixed bank of source-cited multiple-choice questions per topic (see [`frontend/lib/competencyTopics.js`](frontend/lib/competencyTopics.js) for the topic list), served during onboarding right after profile setup. Every question traces back to a real, hash-verified government document via [`backend/services/competency_docs.py`](backend/services/competency_docs.py) and the hand-transcribed UPSC question bank in [`hand_authored_questions.py`](backend/services/hand_authored_questions.py).
+2. **Grounded quiz generation** ([`learning_content.py`](backend/routes/learning_content.py), via [`quiz_generator.py`](backend/services/quiz_generator.py)) — upload your own `.txt`/`.md`/`.pdf`/`.docx` material from the Academy page and get back a fresh MCQ set with an exact source citation for every answer, with a local fallback generator when no Gemini key is configured.
+
+```mermaid
+sequenceDiagram
+    participant U as Officer
+    participant FE as Frontend
+    participant BE as Backend
+
+    U->>FE: Sign in (any email/password, demo mode)
+    FE->>BE: POST /game/login or /game/register
+    BE-->>FE: Real player record
+    U->>FE: Complete profile (CreateProfilePage)
+    FE->>BE: POST /learning/profile
+    U->>FE: Take baseline quiz (CompetencyQuizPage)
+    FE->>BE: GET /learning/competency-quiz/questions?topic_id=...
+    BE-->>FE: Source-cited MCQs
+    U->>FE: Submit answers
+    FE->>BE: POST /learning/competency-quiz/submit
+    BE-->>FE: Score + redirect to /stats
+    FE->>BE: GET /learning/pathway/{player_id}
+    BE-->>FE: Real gap analysis, no hardcoded data
+```
+
 ## ✅ What's real, and what's a mockup
 
 Being honest about this line is the point of this section — the frontend has a real split between pages backed by the actual engine and pages that are still visual placeholders for the demo narrative.
@@ -114,6 +140,26 @@ The same competency-radar page, switched live from the navbar with no reload:
 | `Skill Vector Divergence`, `11 tracked competencies`, `not yet assessed` | `स्किल वेक्टर विचलन`, `11 ट्रैक की गई दक्षताएं`, `अभी तक मूल्यांकन नहीं` |
 | Curriculum picker: `DSA Fundamentals` | पाठ्यक्रम चयनकर्ता: `DSA मूल बातें` |
 | Footer: `© 2024 Ministry of Statistics and Programme Implementation (MoSPI)` | फुटर: `© 2024 सांख्यिकी और कार्यक्रम कार्यान्वयन मंत्रालय (MoSPI)` |
+
+## 🎙️ Voice AI pipeline
+
+A fully local, authenticated voice interface to the learning assistant — no audio ever leaves the machine, and nothing is written to disk ([`backend/ai/voice/`](backend/ai/voice/), [`routes/ai_voice.py`](backend/routes/ai_voice.py)):
+
+```mermaid
+flowchart LR
+    MIC["Microphone\nPCM16 @ 16kHz"] -- "WebSocket /ai/voice/stream\n(authenticated)" --> VAD["Silero VAD\n(bundled ONNX, via faster-whisper)"]
+    VAD -- "speech segment" --> STT["faster-whisper tiny.en\n(local STT)"]
+    STT -- "transcript" --> RAG["LearnerAssistant\n(existing RAG: retrieval, citations,\naccess filtering, abstention)"]
+    RAG -- "grounded response" --> TTS["Piper TTS\n(local, sentence-streamed)"]
+    TTS -- "synthesized audio" --> SPK["Speaker"]
+
+    style MIC fill:#fff4e5,stroke:#904d00
+    style SPK fill:#fff4e5,stroke:#904d00
+```
+
+- Server-derived identity only — `tenant_id`, `user_id`, `player_id`, and `roles` sent by the client are rejected outright; the same tenant/role-scoped RAG filtering and prompt-injection detection used by the text-based assistant applies here too.
+- Cooperative cancellation and barge-in: a learner can interrupt mid-response.
+- **Local-only for now** — the Piper voice model isn't committed to the repo (`.gitignore`'d, configured via `PIPER_MODEL_PATH`/`PIPER_CONFIG_PATH`), so this isn't part of the hosted Render demo; it runs when you bring your own model file locally.
 
 ## 🚀 Running it locally
 
@@ -153,6 +199,7 @@ Then open `http://localhost:3000`.
 | `competency_quiz.py` | `/learning/competency-quiz` | Source-cited competency baseline quiz |
 | `dev_auth.py` | `/auth` | Local-dev bridge: demo login → real Keycloak token (not a backdoor, not the real OIDC flow) |
 | `ai_real.py` | `/ai` | Gemini-backed AI endpoints |
+| `ai_voice.py` | `/ai/voice` | Authenticated WebSocket voice pipeline (`/ai/voice/stream`) — see [Voice AI pipeline](#-voice-ai-pipeline) |
 
 `learning.py` aggregates the `learning_*` routers into one `APIRouter` for a single import point. Full OpenAPI contract: [`docs/contracts/openapi.json`](docs/contracts/openapi.json).
 
@@ -164,13 +211,14 @@ Then open `http://localhost:3000`.
 | Database | PostgreSQL (Neon, serverless) |
 | Auth | Keycloak (OIDC), demo-bypassable per above |
 | AI | Gemini (`gemini-flash-lite-latest`) |
+| Voice | faster-whisper 1.2.1 (STT), piper-tts 1.8.0 (TTS), Silero VAD (bundled ONNX) — all local |
 | Frontend | Next.js 15, React 19, Zustand, TanStack Query, Recharts, React Flow, Framer Motion, Tailwind CSS |
 | Deployment | Render (Blueprint: backend + Keycloak), Neon (DB) |
 | CI | GitHub Actions — see below |
 
 ## 🧪 Tests & CI
 
-- **852 backend tests** (pytest), run against a real `postgres:16` service container in CI.
+- **935 backend tests** (913 passed, 22 skipped locally; pytest), run against a real `postgres:16` service container in CI.
 - **No frontend test suite** exists yet — `frontend/package.json` only defines `dev`/`build`/`start`/`lint`.
 - [`ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`:
   - `backend-tests` — `pip-audit` + full pytest suite against Postgres
@@ -190,6 +238,8 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 
 - `DISABLE_AUTH=true` in the deployed demo means there is no real identity check on any request — see [Auth model](#-auth-model-read-this-before-you-judge-the-security).
 - `/dungeon`, `/quiz`, and `/integration-registry` are visual mockups with no backend behind them; `/guild` has a real backend endpoint waiting but no UI wired to it yet.
+- The optional gamified practice layer (Quest Mode: `/character`, `/boss/[dungeonId]`, `/guild`, `/leaderboard`) is off by default and intentionally not part of the front-page pitch for now — see the [real-vs-mockup table](#-whats-real-and-whats-a-mockup) if you need the detail.
+- The voice pipeline is local-only — the Piper TTS model isn't committed, so it isn't part of the hosted Render demo.
 - The real browser OIDC/PKCE login flow (as opposed to the demo bypass and the dev-login bridge) is not yet implemented.
 - No frontend automated test suite.
 - Render's free tier means cold starts and tight memory headroom on Keycloak — not a production-scale deployment.
@@ -198,12 +248,13 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 
 ```
 backend/
-  routes/        FastAPI routers (game, learning/*, auth, ai)
+  routes/        FastAPI routers (game, learning/*, auth, ai, ai_voice)
   services/      Domain logic — curricula, gap engine, quiz generation, catalogues
+  ai/voice/      Local voice pipeline (VAD, STT, TTS, session management)
   models/        SQLAlchemy models (players, learning, governance, dungeon, guild, ...)
   security/      Real OIDC identity + RBAC (untouched by the demo bypass)
   migrations/    Alembic migrations
-  tests/         852 pytest tests
+  tests/         935 pytest tests
 
 frontend/
   app/           Next.js App Router pages (see the real-vs-mockup table above)

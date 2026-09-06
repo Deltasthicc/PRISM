@@ -44,6 +44,22 @@ export const TRANSLATIONS = {
       haveAccount: 'Already have an account?',
       signIn: 'Sign in',
     },
+    landing: {
+      badge: 'Skill Intelligence Platform',
+      description:
+        'Your stats are a mirror of what you actually know. Across Official Statistics, Public Policy, Digital Literacy, and DSA, practice routes straight at your weakest competencies — so studying finally has a feedback loop.',
+      ctaAuthenticated: 'Go to the Academy',
+      ctaGuest: 'Sign in to get started',
+      pillarGapTitle: 'Explainable gap analysis',
+      pillarGapBody:
+        'Demonstrated practice evidence blended with self-assessment — every score shows exactly where it came from.',
+      pillarQuizTitle: 'Multiple working quizzes',
+      pillarQuizBody:
+        'A source-cited baseline quiz at signup, plus generate a fresh quiz from any material you upload — every question traces back to a real document.',
+      pillarGroundedTitle: 'Grounded quiz generation',
+      pillarGroundedBody:
+        'Upload your own material and get back questions with an exact source citation for every answer.',
+    },
     academy: {
       betaBadge: 'Skill Intelligence Beta',
       heading: 'Learning Academy',
@@ -282,6 +298,22 @@ export const TRANSLATIONS = {
       submitting: 'बनाया जा रहा है…',
       haveAccount: 'पहले से खाता है?',
       signIn: 'साइन इन करें',
+    },
+    landing: {
+      badge: 'स्किल इंटेलिजेंस प्लेटफ़ॉर्म',
+      description:
+        'आपके आँकड़े इस बात का आईना हैं कि आप वास्तव में क्या जानते हैं। आधिकारिक सांख्यिकी, सार्वजनिक नीति, डिजिटल साक्षरता, और DSA में, अभ्यास सीधे आपकी सबसे कमज़ोर योग्यताओं पर केंद्रित होता है — जिससे पढ़ाई को आख़िरकार एक फीडबैक लूप मिलता है।',
+      ctaAuthenticated: 'अकादमी में जाएं',
+      ctaGuest: 'शुरू करने के लिए साइन इन करें',
+      pillarGapTitle: 'स्पष्ट कमी विश्लेषण',
+      pillarGapBody:
+        'प्रदर्शित अभ्यास प्रमाण को स्व-मूल्यांकन के साथ जोड़ा गया — हर स्कोर बताता है कि वह कहाँ से आया।',
+      pillarQuizTitle: 'कई काम करने वाली प्रश्नोत्तरी',
+      pillarQuizBody:
+        'साइनअप पर एक स्रोत-आधारित आधारभूत प्रश्नोत्तरी, साथ ही आपके द्वारा अपलोड की गई किसी भी सामग्री से नई प्रश्नोत्तरी तैयार करें — हर प्रश्न एक वास्तविक दस्तावेज़ से जुड़ा है।',
+      pillarGroundedTitle: 'स्रोत-आधारित प्रश्नोत्तरी निर्माण',
+      pillarGroundedBody:
+        'अपनी सामग्री अपलोड करें और हर उत्तर के लिए सटीक स्रोत उद्धरण के साथ प्रश्न प्राप्त करें।',
     },
     academy: {
       betaBadge: 'स्किल इंटेलिजेंस बीटा',

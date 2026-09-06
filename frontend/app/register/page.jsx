@@ -1,50 +1,50 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
-
-// See app/login/page.jsx for why this exists: the shared Render-hosted
-// Keycloak can take a few minutes to wake up from a cold start, and without
-// this the button just sits on "Creating..." looking stuck.
-const SLOW_LOGIN_HINT_MS = 8000;
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function RegisterPage() {
   const router = useRouter();
   const register = useAuthStore((s) => s.register);
   const error = useAuthStore((s) => s.error);
   const clearError = useAuthStore((s) => s.clearError);
+  const { t } = useLanguage();
   const [username, setUsername] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [slowHint, setSlowHint] = useState(false);
-  const slowHintTimer = useRef(null);
-
-  useEffect(() => () => clearTimeout(slowHintTimer.current), []);
 
   async function handleSubmit(e) {
     e.preventDefault();
     clearError();
     setSubmitting(true);
-    setSlowHint(false);
-    slowHintTimer.current = setTimeout(() => setSlowHint(true), SLOW_LOGIN_HINT_MS);
     const ok = await register(username);
-    clearTimeout(slowHintTimer.current);
-    setSlowHint(false);
     setSubmitting(false);
     if (ok) router.push('/academy');
   }
 
   return (
-    <div className="flex justify-center pt-16">
+    <div className="flex flex-col items-center pt-16 gap-6">
+      <LanguageSwitcher className="self-end mr-4 sm:mr-0" />
+
+      <div className="flex flex-col items-center gap-2">
+        <div className="h-11 w-11 rounded-xl bg-[#00236f] text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          P
+        </div>
+        <span className="font-sans text-xl font-bold text-[#00236f] tracking-tight">{t('brand.name')}</span>
+        <span className="font-mono text-[11px] text-[#757682] uppercase tracking-wider text-center">
+          {t('brand.tagline')}
+        </span>
+      </div>
+
       <div className="w-full max-w-sm bg-white border border-[#c5c5d3]/40 rounded-xl shadow-sm p-6">
-        <h1 className="font-sans text-lg font-bold text-[#00236f] mb-1 text-center">Create an account</h1>
-        <p className="font-sans text-sm text-[#757682] mb-6 text-center">
-          Username only for now — no password yet.
-        </p>
+        <h1 className="font-sans text-lg font-bold text-[#00236f] mb-1 text-center">{t('register.heading')}</h1>
+        <p className="font-sans text-sm text-[#757682] mb-6 text-center">{t('register.subtitle')}</p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1.5">
-            <span className="font-sans text-xs font-semibold text-[#444651]">Username</span>
+            <span className="font-sans text-xs font-semibold text-[#444651]">{t('register.usernameLabel')}</span>
             <input
               id="username"
               value={username}
@@ -60,23 +60,18 @@ export default function RegisterPage() {
               {error}
             </p>
           )}
-          {submitting && slowHint && (
-            <p className="font-sans text-sm text-[#00236f] bg-[#eef1fb] border border-[#c5d0f5] rounded-lg px-3 py-2">
-              Still working — the sign-in service can take a few minutes to wake up after being idle. No need to retry, this should finish on its own.
-            </p>
-          )}
           <button
             type="submit"
             disabled={submitting}
             className="mt-2 font-sans text-sm font-semibold px-4 py-2.5 rounded-lg bg-[#00236f] text-white hover:bg-[#001a54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {submitting ? 'Creating…' : 'Create account'}
+            {submitting ? t('register.submitting') : t('register.submit')}
           </button>
         </form>
         <p className="font-sans text-sm text-[#757682] text-center mt-5">
-          Already have an account?{' '}
+          {t('register.haveAccount')}{' '}
           <Link href="/login" className="text-[#00236f] font-medium hover:underline">
-            Sign in
+            {t('register.signIn')}
           </Link>
         </p>
       </div>

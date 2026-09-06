@@ -14,6 +14,7 @@ verified-subject/binding boundary; dependency adapters never reconstruct it
 or accept role, player, or tenant authority from request data.
 """
 
+import os
 from collections.abc import Callable
 
 from fastapi import Depends, Header, HTTPException
@@ -22,6 +23,7 @@ from sqlalchemy.orm import Session
 from db.database import get_db
 from security.identity import AuthenticationError, get_current_subject
 from security.rbac import (
+    ROLE_NAMES,
     AuthorizationError,
     BoundPrincipal,
     Permission,
@@ -35,6 +37,38 @@ from security.rbac import (
 _AUTHENTICATION_REQUIRED = "Authentication required"
 _ACCESS_DENIED = "Access denied"
 
+# DEMO MODE ONLY. Real bearer-token verification (security/identity.py,
+# security/rbac.py) is fully intact and untouched below -- this is a single,
+# clearly-labeled short-circuit in front of it, not a rewrite of it. The
+# hackathon demo needs a username-only login with no real identity behind
+# it, and the shared Keycloak deployment's cold-start latency was making
+# that login unreliable. Setting DISABLE_AUTH unconditionally grants a
+# principal every application role/permission and skips the own-player
+# ownership check below -- there is no real identity distinguishing one
+# caller from another while this is set. Never set this for a deployment
+# handling real user data; unset it (the default) to restore full OIDC
+# verification with zero code changes.
+_DEMO_AUTH_DISABLED = os.environ.get("DISABLE_AUTH", "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+
+
+def _demo_principal() -> BoundPrincipal:
+    class _DemoSubject:
+        subject_id = "demo"
+        issuer = "demo"
+        roles: frozenset[str] = frozenset(ROLE_NAMES)
+
+    return BoundPrincipal(
+        subject=_DemoSubject(),
+        binding_id="demo",
+        player_id=None,
+        roles=frozenset(ROLE_NAMES),
+    )
+
 
 def _raise_forbidden(exc: AuthorizationError) -> None:
     """Translate policy detail into one stable, non-sensitive HTTP envelope."""
@@ -46,6 +80,8 @@ def require_principal(
     db: Session = Depends(get_db),
 ) -> BoundPrincipal:
     """Resolve a verified, locally bound principal or return a safe HTTP error."""
+    if _DEMO_AUTH_DISABLED:
+        return _demo_principal()
     try:
         subject = get_current_subject(authorization)
         principal = resolve_bound_principal(db, subject)
@@ -111,6 +147,8 @@ def require_own_player_dependency(
         player_id: str,
         principal: BoundPrincipal = Depends(permission_dependency),
     ) -> BoundPrincipal:
+        if _DEMO_AUTH_DISABLED:
+            return principal
         try:
             scoped_to_own_player(principal, player_id)
         except AuthorizationError as exc:

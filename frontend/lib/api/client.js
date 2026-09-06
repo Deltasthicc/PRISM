@@ -12,11 +12,6 @@ let live = {
   sessionId: null,
   dungeon: null,
   combat: null,
-  // A real, verified Keycloak bearer token -- see routes/dev_auth.py.
-  // Absent whenever ENABLE_DEV_LOGIN isn't set on the backend (the default),
-  // in which case /learning/* calls correctly 401 until the real browser
-  // OIDC/PKCE flow exists (README.md, SIH26101_MASTER_CHECKLIST.md 5.1).
-  authToken: null,
 };
 
 function hydrateLiveState() {
@@ -35,7 +30,7 @@ function persistLiveState() {
 }
 
 function clearLiveState() {
-  live = { playerId: null, sessionId: null, dungeon: null, combat: null, authToken: null };
+  live = { playerId: null, sessionId: null, dungeon: null, combat: null };
   if (typeof window !== 'undefined') window.localStorage.removeItem(SESSION_KEY);
 }
 
@@ -62,7 +57,6 @@ async function request(path, { method = 'GET', body, headers } = {}) {
       method,
       headers: {
         'Content-Type': 'application/json',
-        ...(live.authToken ? { Authorization: `Bearer ${live.authToken}` } : {}),
         ...headers,
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -81,12 +75,6 @@ async function request(path, { method = 'GET', body, headers } = {}) {
       : data?.detail;
     const error = new Error(data?.error || detail || `Request failed (${response.status})`);
     error.code = data?.code ?? response.status;
-    // Distinguishes "we never had a token to send" (a dev-login/Keycloak
-    // availability problem -- see tryDevLogin) from "we sent a real token
-    // and it was rejected" (an actual auth failure). fetchMe() needs this
-    // to avoid treating an infra hiccup as a hard logout that bounces an
-    // already-registered demo player back to /login on every page load.
-    error.hadToken = Boolean(live.authToken);
     throw error;
   }
   return data;
@@ -218,83 +206,25 @@ async function startDungeonSession(requestedDungeonId) {
   });
 }
 
-// Best-effort only: obtains a real verified bearer token from
-// routes/dev_auth.py, a local-dev-only bridge (see that file's docstring and
-// .env.example's ENABLE_DEV_LOGIN). If the backend hasn't enabled it, or a
-// local Keycloak isn't running, this fails silently -- but as of Lane 5's
-// game-route auth pass, almost every /game/* endpoint now 401s without a
-// token too (only player/create and player/by-username stay open), and
-// /ai_real.py has no auth at all yet either way. /learning/* correctly keeps
-// 401ing until the real browser OIDC/PKCE flow exists (README.md,
-// SIH26101_MASTER_CHECKLIST.md 5.1). Never let this block or fail the demo
-// login itself -- but be aware local Keycloak is now required for nearly
-// the entire demo to function, not just the professional/Academy side.
-async function tryDevLogin(playerId) {
-  try {
-    const { access_token: accessToken } = await request('/auth/dev-login', {
-      method: 'POST',
-      body: { player_id: playerId },
-    });
-    live.authToken = accessToken;
-    persistLiveState();
-    return null;
-  } catch (e) {
-    live.authToken = null;
-    if (typeof window !== 'undefined') {
-      console.warn(
-        '[auth] Continuing without a bearer token -- dev login unavailable:',
-        e.message
-      );
-    }
-    // Returned (not thrown) so callers can decide what to do with a missing
-    // token -- e.g. surface a clear, honest message instead of letting the
-    // next protected call's raw "Authentication required" 401 reach the
-    // user, who typed nothing but a plain username and has no idea what
-    // "authentication" even means at this stage of the product.
-    return e;
-  }
-}
-
-const SIGN_IN_UNAVAILABLE_MESSAGE =
-  "Your username was recognized, but the sign-in service isn't responding right now, " +
-  'so your profile could not be loaded. This is a backend configuration issue, not a ' +
-  'problem with your username -- try again in a moment.';
-
+// Demo mode: the backend's DISABLE_AUTH flag (backend/routes/authorization.py)
+// grants every request full access regardless of any bearer token, so login
+// here is just "does this username exist" -- no token to mint, no Keycloak
+// round trip, nothing to wait on. This intentionally does not attach or
+// track an Authorization header at all; re-enabling real auth later means
+// restoring a token-minting step here, not just flipping DISABLE_AUTH off.
 export const auth = {
   register: (username) =>
-    request('/game/player/create', { method: 'POST', body: { username } })
-      .then(rememberPlayer)
-      .then(async (result) => {
-        await tryDevLogin(result.player.player_id);
-        return result;
-      }),
+    request('/game/player/create', { method: 'POST', body: { username } }).then(rememberPlayer),
 
-  // /game/player/by-username/{username} deliberately returns only
-  // {player_id, username} (see routes/game.py) -- it's the unauthenticated
-  // bootstrap step, not a source of profile data. Mint a real token via
-  // dev-login, then fetch the actual profile through the properly
-  // authenticated GET /player/{player_id} (currentPlayer()), which only the
-  // now-bound identity can read.
+  // /game/player/by-username/{username} returns only {player_id, username}
+  // (see routes/game.py) -- fetch the actual profile through
+  // GET /player/{player_id} (currentPlayer()) right after.
   login: (username) =>
     request(`/game/player/by-username/${encodeURIComponent(username)}`).then(
       async ({ player_id: playerId }) => {
-        const devLoginError = await tryDevLogin(playerId);
         live.playerId = playerId;
         persistLiveState();
-        try {
-          return { player: await currentPlayer() };
-        } catch (e) {
-          // A 401 here almost always means dev-login itself failed above
-          // (no token to prove who you are) -- surface that honestly rather
-          // than the backend's generic "Authentication required", which
-          // reads like a rejection of the username itself.
-          if (e.code === 401 && devLoginError) {
-            const clearError = new Error(SIGN_IN_UNAVAILABLE_MESSAGE);
-            clearError.code = e.code;
-            throw clearError;
-          }
-          throw e;
-        }
+        return { player: await currentPlayer() };
       }
     ),
 
@@ -480,12 +410,6 @@ async function requestMultipart(path, formData) {
       : data?.detail;
     const error = new Error(data?.error || detail || `Request failed (${response.status})`);
     error.code = data?.code ?? response.status;
-    // Distinguishes "we never had a token to send" (a dev-login/Keycloak
-    // availability problem -- see tryDevLogin) from "we sent a real token
-    // and it was rejected" (an actual auth failure). fetchMe() needs this
-    // to avoid treating an infra hiccup as a hard logout that bounces an
-    // already-registered demo player back to /login on every page load.
-    error.hadToken = Boolean(live.authToken);
     throw error;
   }
   return data;

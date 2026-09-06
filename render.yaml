@@ -59,6 +59,14 @@ services:
         value: gemini-flash-lite-latest
       - key: SEED_DEMO_DATA
         value: "false"
+      # DEMO MODE: bypasses real bearer-token verification entirely (see
+      # backend/routes/authorization.py's _DEMO_AUTH_DISABLED) so a username
+      # alone is enough to act as that player -- no Keycloak round trip, no
+      # cold-start wait. This grants every request full access; there is no
+      # real identity behind any call while this is set. Unset (or "false")
+      # to restore full OIDC/Keycloak verification with zero code changes.
+      - key: DISABLE_AUTH
+        value: "true"
       # Bridges the demo username login to a real Keycloak token for
       # everyone automatically -- see routes/dev_auth.py's docstring. This is
       # still not the real browser OIDC/PKCE flow (README.md,

@@ -13,13 +13,11 @@ This module is the other side of that same honesty: instead of silently
 having zero content for a real, hash-verified, highly relevant source, a
 human (not a model) read the actual page images, transcribed the real
 printed question text verbatim into data/hand_authored_questions.json, and
-authored one well-formed MCQ per transcribed question testing the concept it
-covers. Every question's source_excerpt is checked against that stored
-verbatim transcript by _validate_hand_authored_item() below -- the same
-substance as ai/quiz_engine.py's validate_question_item() grounding check,
-just checked against a human-verified transcript instead of a live-fetched
-document, because a live fetch of these two doc_ids cannot produce text to
-check against at all.
+authored one MCQ per transcribed question testing the concept it covers.
+The loader below validates structure and that every ``doc_id`` exists in the
+hash-pinned corpus manifest. It does *not* independently compare excerpts to
+PDF pixels or prove subject-matter review, so every item remains DRAFT until
+an authorized reviewer checks the source, key, difficulty and competency tag.
 
 Nothing here is model-generated. generation_mode is always
 "hand-transcribed" -- distinct from "gemini-grounded" and
@@ -50,6 +48,12 @@ def _all_questions() -> list[dict]:
         questions = payload["questions"]
         for item in questions:
             _validate_hand_authored_item(item)
+        item_ids = [item["item_id"] for item in questions]
+        if len(item_ids) != len(set(item_ids)):
+            raise ValueError("hand_authored_questions.json contains duplicate item_id values")
+        normalized_text = [" ".join(item["question"].lower().split()) for item in questions]
+        if len(normalized_text) != len(set(normalized_text)):
+            raise ValueError("hand_authored_questions.json contains duplicate question text")
         _questions_cache = questions
     return _questions_cache
 

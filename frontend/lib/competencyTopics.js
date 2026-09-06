@@ -12,22 +12,22 @@ export const COMPETENCY_TOPICS = [
   },
   {
     id: 'data_quality',
-    label: 'Data Quality & Metadata Standards',
+    label: 'Quality Control & Data Quality',
     curriculumSlug: 'official-statistics',
   },
   {
-    id: 'national_accounts',
-    label: 'National Accounts & Price Statistics',
+    id: 'price_statistics',
+    label: 'Price Statistics & CPI',
     curriculumSlug: 'official-statistics',
   },
   {
-    id: 'digital_governance',
-    label: 'Digital Governance & Data Privacy',
+    id: 'data_privacy',
+    label: 'Digital Governance: Data Privacy',
     curriculumSlug: 'digital-literacy',
   },
   {
-    id: 'ai_technology',
-    label: 'AI & Responsible Technology',
+    id: 'ai_policy',
+    label: 'AI Policy & Literacy',
     curriculumSlug: 'digital-literacy',
   },
 ];

@@ -13,8 +13,8 @@ export default function LoginPage() {
   const authLogin = useAuthStore((s) => s.login);
   const authRegister = useAuthStore((s) => s.register);
 
-  // login → profile → quiz
-  const [currentStep, setCurrentStep] = useState('login');
+  // The demo starts with profile setup, then continues to the quiz.
+  const [currentStep, setCurrentStep] = useState('profile');
 
   // Stores the profile throughout the workflow
   const [officerProfile, setOfficerProfile] = useState(null);
@@ -41,6 +41,10 @@ export default function LoginPage() {
     return ok ? useAuthStore.getState().player : null;
   }
 
+  function profileEmail(input, username) {
+    return input.includes('@') ? input : `${username}@demo.prism.local`;
+  }
+
   /*
    * LOGIN
    */
@@ -48,8 +52,8 @@ export default function LoginPage() {
     e.preventDefault();
     setLoginError('');
 
-    if (!email.trim() || !password.trim()) {
-      setLoginError('Please enter your email and password.');
+    if (!email.trim()) {
+      setLoginError('Please enter any demo username or email.');
       return;
     }
 
@@ -64,7 +68,7 @@ export default function LoginPage() {
 
     const loggedInProfile = {
       name: 'Dr. Rajesh Sharma',
-      email: email.trim(),
+      email: profileEmail(email.trim(), realPlayer.username),
       player_id: realPlayer.player_id,
       username: realPlayer.username,
       cadreId: 'IND-88219',
@@ -137,6 +141,7 @@ export default function LoginPage() {
     return (
       <CreateProfilePage
         initialProfile={officerProfile}
+        onResolvePlayer={resolveRealPlayer}
         onBackToLogin={() => {
           setCurrentStep('login');
         }}
@@ -219,12 +224,12 @@ export default function LoginPage() {
                   htmlFor="email"
                   className="mb-1.5 block text-[10px] font-bold text-[#343846]"
                 >
-                  Official Email Address
+                  Demo Username or Email
                 </label>
 
                 <input
                   id="email"
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) =>
                     setEmail(e.target.value)
@@ -243,15 +248,8 @@ export default function LoginPage() {
                     htmlFor="password"
                     className="text-[10px] font-bold text-[#343846]"
                   >
-                    Password
+                    Demo Password (optional)
                   </label>
-
-                  <button
-                    type="button"
-                    className="text-[10px] font-semibold text-[#00236f] hover:underline"
-                  >
-                    Forgot password?
-                  </button>
 
                 </div>
 
@@ -264,7 +262,6 @@ export default function LoginPage() {
                   }
                   placeholder="Enter your password"
                   className="w-full rounded-xl border border-[#dfe2eb] bg-[#fafbfc] px-3 py-3 text-xs text-[#202536] outline-none transition hover:border-[#cdd2df] hover:bg-white focus:border-[#00236f] focus:bg-white focus:ring-4 focus:ring-[#00236f]/5"
-                  required
                 />
               </div>
 
@@ -310,7 +307,7 @@ export default function LoginPage() {
                   }
                   setOfficerProfile({
                     name: 'Dr. Rajesh Sharma',
-                    email: seed,
+                    email: profileEmail(seed, realPlayer.username),
                     player_id: realPlayer.player_id,
                     username: realPlayer.username,
                     cadreId: 'IND-88219',
@@ -324,11 +321,7 @@ export default function LoginPage() {
                     targetBand:
                       'Director — National Accounts (Band 4)',
                     phone: '+91 98101 23456',
-                    specialization: [
-                      'Sampling Design',
-                      'Econometric Forecasting',
-                      'PySpark & Distributed SQL',
-                    ],
+                    specialization: [COMPETENCY_TOPICS[0].label],
                     avatarInitials: 'RS',
                     isRegistered: false,
                   });
@@ -345,8 +338,7 @@ export default function LoginPage() {
 
           {/* Footer text */}
           <p className="mt-5 text-center text-[9px] leading-4 text-[#858895]">
-            Secure officer authentication and competency
-            assessment workflow
+            Demo access and competency assessment workflow
           </p>
 
         </div>

@@ -8,6 +8,7 @@ export default function CreateProfilePage({
   initialProfile,
   onSaveAndProceedToQuiz,
   onBackToLogin,
+  onResolvePlayer,
 }) {
   const [name, setName] = useState(
     initialProfile?.name || 'Dr. Rajesh Sharma'
@@ -247,11 +248,31 @@ export default function CreateProfilePage({
       return;
     }
 
+    setSubmitting(true);
+    let resolvedPlayer = initialProfile?.player_id
+      ? {
+          player_id: initialProfile.player_id,
+          username: initialProfile.username,
+        }
+      : null;
+
+    if (!resolvedPlayer && onResolvePlayer) {
+      resolvedPlayer = await onResolvePlayer(email);
+    }
+
+    if (!resolvedPlayer) {
+      setSubmitting(false);
+      setValidationError(
+        'Could not connect to the demo backend. Start it and try again.'
+      );
+      return;
+    }
+
     const updatedProfile = {
       name: name.trim(),
       email: email.trim(),
-      player_id: initialProfile?.player_id,
-      username: initialProfile?.username,
+      player_id: resolvedPlayer.player_id,
+      username: resolvedPlayer.username,
       cadreId: cadreId.trim(),
       designation,
       division,
@@ -274,7 +295,6 @@ export default function CreateProfilePage({
     // a network hiccup; the quiz itself only needs player_id, which we
     // already have from login.
     if (updatedProfile.player_id) {
-      setSubmitting(true);
       try {
         await learning.updateProfile(updatedProfile.player_id, {
           designation,
@@ -294,10 +314,10 @@ export default function CreateProfilePage({
       } catch (cause) {
         // Non-fatal -- see comment above.
         console.warn('[profile] Could not persist to the backend, continuing anyway:', cause.message);
-      } finally {
-        setSubmitting(false);
       }
     }
+
+    setSubmitting(false);
 
     if (onSaveAndProceedToQuiz) {
       onSaveAndProceedToQuiz(updatedProfile);
@@ -327,7 +347,7 @@ export default function CreateProfilePage({
                 </h1>
 
                 <span className="rounded-full bg-[#effcf9] px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-[#006b61]">
-                  Secure
+                  Demo profile
                 </span>
 
               </div>
@@ -391,8 +411,7 @@ export default function CreateProfilePage({
                       </h2>
 
                       <p className="mt-1 text-[10px] leading-4 text-[#7a7d8b]">
-                        Your designation determines the initial
-                        competency benchmark.
+                        Your designation records career context for this demo.
                       </p>
                     </div>
 
@@ -691,6 +710,7 @@ export default function CreateProfilePage({
                               domain.label
                             )
                           }
+                          aria-pressed={isChecked}
                           className={`flex min-h-[58px] items-center justify-between gap-3 rounded-xl border p-3 text-left transition ${
                             isChecked
                               ? 'border-[#9eafff] bg-[#f1f3ff] text-[#00236f]'
@@ -839,7 +859,7 @@ export default function CreateProfilePage({
                       </span>
 
                       <span className="text-[9px] font-semibold text-[#00236f]">
-                        {specializations.length}/6
+                        {specializations.length}/{COMPETENCY_TOPICS.length}
                       </span>
 
                     </div>
@@ -870,9 +890,7 @@ export default function CreateProfilePage({
                     </p>
 
                     <p className="mt-1 text-[9px] leading-4 text-[#36756d]">
-                      Your baseline quiz will be tailored to
-                      your designation and selected competency
-                      areas.
+                      Your baseline quiz will use the selected competency areas.
                     </p>
 
                   </div>
@@ -884,7 +902,7 @@ export default function CreateProfilePage({
               <div className="rounded-2xl border border-[#dfe2eb] bg-white p-4 shadow-sm">
 
                 <p className="text-xs font-bold text-[#202536]">
-                  Secure Profile Registration
+                  Demo Profile Registration
                 </p>
 
                 <p className="mt-1 text-[10px] leading-4 text-[#777a88]">

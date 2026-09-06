@@ -42,6 +42,7 @@ export default function CompetencyQuizPage({
   const [questions, setQuestions] = useState([]);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [results, setResults] = useState(null);
   const [submittingQuiz, setSubmittingQuiz] = useState(false);
 
@@ -63,7 +64,13 @@ export default function CompetencyQuizPage({
           selectedTopics.map((topic) =>
             learning
               .getCompetencyQuizQuestions(topic.id, QUESTIONS_PER_TOPIC)
-              .then((response) => response.questions.map((q) => ({ ...q, topic_id: topic.id })))
+              .then((response) =>
+                response.questions.map((q) => ({
+                  ...q,
+                  topic_id: topic.id,
+                  attempt_id: response.attempt_id,
+                }))
+              )
           )
         );
         if (!cancelled) setQuestions(batches.flat());
@@ -159,22 +166,36 @@ export default function CompetencyQuizPage({
   // ============================================================
 
   const handleSubmitQuiz = async () => {
+    if (answeredCount !== questions.length) {
+      setSubmitError('Please answer every question before submitting this baseline.');
+      return;
+    }
     setSubmittingQuiz(true);
+    setSubmitError('');
     setIsTimerRunning(false);
 
     try {
       const byTopic = {};
       questions.forEach((q) => {
         if (selectedAnswers[q.item_id] === undefined) return;
-        (byTopic[q.topic_id] ||= []).push({
+        const group = (byTopic[q.topic_id] ||= {
+          attemptId: q.attempt_id,
+          answers: [],
+        });
+        group.answers.push({
           item_id: q.item_id,
           selected_index: selectedAnswers[q.item_id],
         });
       });
 
       const topicResults = await Promise.all(
-        Object.entries(byTopic).map(([topicId, answers]) =>
-          learning.submitCompetencyQuiz(topicId, answers)
+        Object.entries(byTopic).map(([topicId, attempt]) =>
+          learning.submitCompetencyQuiz(
+            attempt.attemptId,
+            topicId,
+            attempt.answers,
+            officerProfile?.player_id
+          )
         )
       );
 
@@ -196,53 +217,24 @@ export default function CompetencyQuizPage({
 
       const scorePercentage = total ? Math.round((correct / total) * 100) : 0;
 
-      // Feed the real gap-analysis engine with what was actually
-      // demonstrated, grouped by curriculum (see lib/competencyTopics.js --
-      // /learning/assessment takes one curriculum_slug per call). Framed
-      // honestly as an approximation in routes/competency_quiz.py's own
-      // docstring: this is demonstrated quiz performance sent through the
-      // self_ratings channel, not a real self-report.
-      if (officerProfile?.player_id) {
-        const slugs = new Set(selectedTopics.map((t) => t.curriculumSlug));
-        await Promise.all(
-          Array.from(slugs).map((slug) => {
-            const ratingsForSlug = Object.fromEntries(
-              Object.entries(competencyScores)
-                .filter(([id]) => selectedTopics.some((t) => t.curriculumSlug === slug && byTopicHasCompetency(byTopic, id)))
-                .map(([id, score]) => [id, score.level])
-            );
-            if (Object.keys(ratingsForSlug).length === 0) return null;
-            return learning.assess(officerProfile.player_id, slug, ratingsForSlug).catch((cause) => {
-              console.warn('[quiz] Could not persist assessment for', slug, cause.message);
-            });
-          })
-        );
-      }
-
       setResults({
         total,
         correct,
         scorePercentage,
-        congruence: Math.min(95, Math.max(45, scorePercentage)),
         gradedByItemId,
         competencyScores: Object.values(competencyScores),
+        evidencePersisted: topicResults.every(
+          (topicResult) => topicResult.persisted_as_diagnostic_evidence
+        ),
       });
       setIsSubmitted(true);
     } catch (cause) {
-      console.warn('[quiz] Could not grade the quiz:', cause.message);
+      setSubmitError(cause.message || 'The quiz could not be graded. Please retry.');
       setIsTimerRunning(true);
     } finally {
       setSubmittingQuiz(false);
     }
   };
-
-  // topic_id -> whether any of its answered items landed in this
-  // competency_id (used only to route self_ratings to the right curriculum).
-  function byTopicHasCompetency(byTopic, competencyId) {
-    return Object.keys(byTopic).some((topicId) =>
-      questions.some((q) => q.topic_id === topicId && q.competency_id === competencyId)
-    );
-  }
 
   // ============================================================
   // FINISH QUIZ
@@ -257,8 +249,8 @@ export default function CompetencyQuizPage({
         score: results.correct,
         total: results.total,
         percentage: results.scorePercentage,
-        congruence: results.congruence,
         dimensionLevels: results.competencyScores,
+        evidencePersisted: results.evidencePersisted,
         testedAt: new Date().toISOString(),
       },
     });
@@ -351,8 +343,8 @@ export default function CompetencyQuizPage({
 
               <div
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border font-mono ${
-                  timeRemaining <= 60
-                    ? 'bg-red-50 border-red-200 text-red-700'
+                  timeRemaining === 0
+                    ? 'bg-[#f5f6fb] border-[#dfe2eb] text-[#555d6d]'
                     : 'bg-[#f5f6fb] border-[#dfe2eb] text-[#172033]'
                 }`}
               >
@@ -360,19 +352,19 @@ export default function CompetencyQuizPage({
                   size={17}
                   strokeWidth={2.2}
                   className={
-                    timeRemaining <= 60
-                      ? 'text-red-600'
+                    timeRemaining === 0
+                      ? 'text-[#555d6d]'
                       : 'text-[#904d00]'
                   }
                 />
 
                 <span className="font-bold tracking-wide">
-                  {formatTime(timeRemaining)}
+                  {timeRemaining === 0 ? 'PACE GUIDE ENDED' : formatTime(timeRemaining)}
                 </span>
               </div>
 
               <span className="hidden sm:inline-flex px-3 py-2 rounded-xl bg-[#fff2e9] text-[#904d00] font-bold text-[10px] font-mono border border-[#ffd2b5]">
-                PROCTORED
+                SUGGESTED PACE
               </span>
 
             </div>
@@ -399,8 +391,8 @@ export default function CompetencyQuizPage({
                 </h1>
 
                 <p className="text-xs text-[#727887] mt-1">
-                  Evaluate your current competency vector across six
-                  core dimensions.
+                    Evaluate your current competency vector across the
+                    areas selected in your profile.
                 </p>
               </div>
 
@@ -496,7 +488,11 @@ export default function CompetencyQuizPage({
 
                 {/* OPTIONS */}
 
-                <div className="space-y-2.5">
+                <div
+                  className="space-y-2.5"
+                  role="radiogroup"
+                  aria-label={`Question ${currentQuestionIndex + 1} answer options`}
+                >
 
                   {currentQ.options.map((optionText, optionIndex) => {
                     const isSelected =
@@ -508,6 +504,9 @@ export default function CompetencyQuizPage({
                         key={optionIndex}
                         type="button"
                         onClick={() => handleSelectOption(optionIndex)}
+                        role="radio"
+                        aria-checked={isSelected}
+                        aria-label={`${letter}. ${optionText}`}
                         className={`group w-full text-left p-3.5 sm:p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-start gap-3 ${
                           isSelected
                             ? 'bg-[#eef1ff] border-[#00236f] shadow-[0_3px_12px_rgba(0,35,111,0.08)]'
@@ -594,16 +593,26 @@ export default function CompetencyQuizPage({
                     <button
                       type="button"
                       onClick={handleSubmitQuiz}
-                      disabled={submittingQuiz}
+                      disabled={submittingQuiz || answeredCount !== questions.length}
                       className="bg-[#904d00] hover:bg-[#733d00] text-white px-5 py-2.5 rounded-xl text-[11px] font-bold font-mono transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <BadgeCheck size={16} />
-                      {submittingQuiz ? 'Grading…' : 'Submit Assessment'}
+                      {submittingQuiz
+                        ? 'Grading…'
+                        : answeredCount === questions.length
+                          ? 'Submit Assessment'
+                          : `Answer ${questions.length - answeredCount} more`}
                     </button>
 
                   )}
 
                 </div>
+
+                {submitError && (
+                  <p role="alert" className="mt-3 text-[11px] text-[#b3261e] font-mono">
+                    {submitError}
+                  </p>
+                )}
 
               </div>
             </div>
@@ -695,6 +704,11 @@ export default function CompetencyQuizPage({
                   <div className="h-2 bg-[#edf0f5] rounded-full overflow-hidden">
 
                     <div
+                      role="progressbar"
+                      aria-label="Quiz completion"
+                      aria-valuemin={0}
+                      aria-valuemax={questions.length}
+                      aria-valuenow={answeredCount}
                       className="h-full bg-[#00236f] rounded-full transition-all duration-500 ease-out"
                       style={{
                         width: `${progressPercent}%`,
@@ -712,10 +726,13 @@ export default function CompetencyQuizPage({
                   <button
                     type="button"
                     onClick={handleSubmitQuiz}
-                    className="w-full bg-[#f5f6fb] hover:bg-[#e9edff] text-[#00236f] py-2.5 px-3 rounded-xl text-[11px] font-mono font-bold border border-[#dfe2eb] transition-all cursor-pointer flex items-center justify-center gap-2"
+                    disabled={submittingQuiz || answeredCount !== questions.length}
+                    className="w-full bg-[#f5f6fb] hover:bg-[#e9edff] text-[#00236f] py-2.5 px-3 rounded-xl text-[11px] font-mono font-bold border border-[#dfe2eb] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ClipboardCheck size={16} />
-                    Finish & Calculate Baseline
+                    {answeredCount === questions.length
+                      ? 'Finish & Calculate Baseline'
+                      : `${answeredCount}/${questions.length} answered`}
                   </button>
 
                 </div>
@@ -734,24 +751,24 @@ export default function CompetencyQuizPage({
 
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.12em] font-bold font-mono">
-                      Cadre Alignment
+                      Assessment Scope
                     </p>
 
                     <p className="text-[9px] text-white/50 font-mono mt-0.5">
-                      MoSPI baseline matrix
+                      Curated prototype item set
                     </p>
                   </div>
 
                 </div>
 
                 <p className="text-[11px] leading-6 text-white/65">
-                  Your answers evaluate six mathematical dimensions
-                  matching the Cadre Cell baseline for{' '}
+                  Your selected specialities determine the question topics.
+                  Results are a provisional signal for{' '}
                   <span className="text-white font-semibold">
                     {officerProfile?.designation ||
                       'Statistical Officer'}
                   </span>
-                  .
+                  , not an official or psychometrically validated rating.
                 </p>
 
               </div>
@@ -790,7 +807,7 @@ export default function CompetencyQuizPage({
 
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#e6faf7] text-[#005147] font-mono text-[9px] font-bold tracking-wide mb-1.5">
                         <CheckCircle size={11} />
-                        BASELINE DIAGNOSTIC ATTESTED
+                        PROVISIONAL DEMO BASELINE
                       </span>
 
                       <h2 className="text-xl sm:text-2xl font-bold text-[#10182b]">
@@ -864,9 +881,6 @@ export default function CompetencyQuizPage({
 
                     const graded = results.gradedByItemId[q.item_id];
                     const isCorrect = Boolean(graded?.correct);
-                    const assignedLevel = isCorrect
-                      ? 'Level 4 / 5'
-                      : 'Level 2 / 5';
                     const selectedIndex = selectedAnswers[q.item_id];
                     const selectedLetter =
                       selectedIndex !== undefined
@@ -899,9 +913,7 @@ export default function CompetencyQuizPage({
                                 : 'bg-[#ffe5d3] text-[#904d00]'
                             }`}
                           >
-                            {isCorrect
-                              ? 'Mastered'
-                              : 'Gap Identified'}
+                            {isCorrect ? 'Correct' : 'Needs review'}
                           </span>
 
                         </div>
@@ -910,11 +922,11 @@ export default function CompetencyQuizPage({
 
                           <div className="flex items-center justify-between gap-3">
                             <span className="text-[#737a88]">
-                              Assigned Vector
+                              Item outcome
                             </span>
 
                             <strong className="text-[#172033]">
-                              {assignedLevel}
+                              {isCorrect ? 'Correct response' : 'Incorrect response'}
                             </strong>
                           </div>
 
@@ -968,7 +980,7 @@ export default function CompetencyQuizPage({
 
                   <div>
                     <h3 className="text-sm font-bold text-[#00236f]">
-                      Cadre Promotion & Learning Pathway
+                      Provisional Learning Signal
                     </h3>
 
                     <p className="text-[9px] text-[#858b98] font-mono mt-0.5 uppercase tracking-wide">
@@ -980,24 +992,12 @@ export default function CompetencyQuizPage({
 
                 <p className="text-[11px] text-[#555d6d] leading-6 font-mono mb-4">
 
-                  Based on your initial diagnostic score (
+                  Based only on this short curated diagnostic, your score is{' '}
                   <strong className="text-[#00236f]">
                     {results.scorePercentage}%
                   </strong>
-                  ) and declared designation (
-                  <strong>
-                    {officerProfile?.designation}
-                  </strong>
-                  ), this baseline places your initial vector
-                  congruence at{' '}
-                  <strong className="text-[#00236f]">
-                    {results.congruence}%
-                  </strong>{' '}
-                  toward your target benchmark (
-                  <strong>
-                    {officerProfile?.targetBand}
-                  </strong>
-                  ).
+                  . The ranking below uses answer accuracy and evidence count;
+                  it is not an official proficiency or promotion decision.
 
                 </p>
 
@@ -1005,24 +1005,21 @@ export default function CompetencyQuizPage({
 
                   {results.competencyScores
                     .slice()
-                    .sort((a, b) => a.level - b.level)
+                    .sort((a, b) => a.rank - b.rank)
                     .map((score) => (
                       <li key={score.competency_id} className="flex gap-2">
                         <span
                           className={
-                            score.level >= 3
+                            score.provisional_level >= 3
                               ? 'text-[#005147]'
                               : 'text-[#904d00]'
                           }
                         >
-                          {score.level >= 3 ? '✓' : '△'}
+                          {score.provisional_level >= 3 ? '✓' : '△'}
                         </span>
                         <span>
                           {score.competency_label}: {score.correct}/{score.total} correct
-                          {' '}(Level {score.level} / 5) —{' '}
-                          {score.level >= 3
-                            ? 'demonstrated on this baseline.'
-                            : 'flagged as a gap for your learning pathway.'}
+                          {' '}(Provisional {score.provisional_level} / 5, rank {score.rank}, {score.confidence} evidence)
                         </span>
                       </li>
                     ))}

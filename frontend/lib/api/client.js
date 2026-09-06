@@ -461,9 +461,14 @@ export const learning = {
   getCompetencyQuizQuestions: (topicId, count = 5) =>
     request(`/learning/competency-quiz/questions?topic_id=${encodeURIComponent(topicId)}&count=${count}`),
 
-  submitCompetencyQuiz: (topicId, answers) =>
+  submitCompetencyQuiz: (attemptId, topicId, answers, playerId) =>
     request('/learning/competency-quiz/submit', {
       method: 'POST',
-      body: { topic_id: topicId, answers },
+      body: {
+        attempt_id: attemptId,
+        topic_id: topicId,
+        answers,
+        ...(playerId ? { player_id: playerId } : {}),
+      },
     }),
 };

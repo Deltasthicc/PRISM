@@ -92,8 +92,21 @@ def test_answer_index_is_not_degenerate_across_the_whole_bank():
 
 
 def test_no_duplicate_item_ids():
-    ids = [item["item_id"] for doc_id in UPSC_DOC_IDS for item in questions_for_doc(doc_id)]
+    ids = [
+        item["item_id"]
+        for doc_id in ALL_HAND_AUTHORED_DOC_IDS
+        for item in questions_for_doc(doc_id)
+    ]
     assert len(ids) == len(set(ids))
+
+
+def test_no_duplicate_question_text_across_the_bank():
+    texts = [
+        " ".join(item["question"].lower().split())
+        for doc_id in ALL_HAND_AUTHORED_DOC_IDS
+        for item in questions_for_doc(doc_id)
+    ]
+    assert len(texts) == len(set(texts))
 
 
 def test_questions_for_competency_matches_manual_count():

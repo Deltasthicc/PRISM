@@ -1,114 +1,181 @@
-"""routes/competency_quiz.py -- the real, source-cited competency quiz served
-from services/hand_authored_questions.py, grouped into five topics.
+"""HTTP contract for the bounded, source-attributed demo competency quiz."""
 
-No network, no live document fetch, no Gemini call -- everything here is
-static, in-repo content, so these tests never skip and never flake.
-"""
+import uuid
+
+import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
+from db.database import Base, get_db
 from main import app
+from models.governance import AuditEvent, EvidenceRecord
+from models.player import Player
 from routes.competency_quiz import TOPICS
+from services.hand_authored_questions import questions_for_competency
 
 client = TestClient(app)
+DIFFICULTY_ORDER = {"easy": 0, "medium": 1, "hard": 2}
 
 
-def test_list_topics_returns_all_five_with_real_question_counts():
+def issue(topic_id: str, count: int = 5) -> dict:
+    response = client.get(
+        "/learning/competency-quiz/questions",
+        params={"topic_id": topic_id, "count": count},
+    )
+    assert response.status_code == 200
+    return response.json()
+
+
+def answer_key(topic_id: str) -> dict[str, int]:
+    return {
+        item["item_id"]: item["answer_index"]
+        for competency_id in TOPICS[topic_id]["competency_ids"]
+        for item in questions_for_competency(competency_id)
+    }
+
+
+def submit_payload(issued: dict, *, correct: bool, player_id: str | None = None) -> dict:
+    key = answer_key(issued["topic_id"])
+    answers = []
+    for question in issued["questions"]:
+        expected = key[question["item_id"]]
+        answers.append(
+            {
+                "item_id": question["item_id"],
+                "selected_index": expected if correct else (expected + 1) % 4,
+            }
+        )
+    return {
+        "attempt_id": issued["attempt_id"],
+        "topic_id": issued["topic_id"],
+        "answers": answers,
+        **({"player_id": player_id} if player_id else {}),
+    }
+
+
+def test_topics_are_five_honest_nonempty_bank_slices():
     response = client.get("/learning/competency-quiz/topics")
     assert response.status_code == 200
     topics = response.json()
-    assert {topic["topic_id"] for topic in topics} == set(TOPICS.keys())
+    assert len(topics) == 5
+    assert {topic["topic_id"] for topic in topics} == set(TOPICS)
     for topic in topics:
-        assert topic["question_count"] > 0, f"{topic['topic_id']} has no real questions available"
+        assert topic["question_count"] >= 2
+        assert all(
+            questions_for_competency(competency_id)
+            for competency_id in topic["competency_ids"]
+        ), f"{topic['topic_id']} advertises a competency with no item"
 
 
-def test_get_questions_never_leaks_the_answer():
-    response = client.get(
-        "/learning/competency-quiz/questions", params={"topic_id": "statistical_foundations", "count": 5}
-    )
-    assert response.status_code == 200
-    data = response.json()
-    assert data["topic_id"] == "statistical_foundations"
+def test_questions_are_bounded_balanced_ordered_and_do_not_leak_answers():
+    data = issue("statistical_foundations", 5)
+    assert data["assessment_status"] == "PROVISIONAL"
     assert len(data["questions"]) == 5
+    assert {question["competency_id"] for question in data["questions"]} == {
+        "os_statistical_foundations",
+        "os_sampling_design",
+    }
+    difficulties = [DIFFICULTY_ORDER[question["difficulty"]] for question in data["questions"]]
+    assert difficulties == sorted(difficulties)
     for question in data["questions"]:
         assert set(question) == {
-            "item_id", "question", "options", "competency_id",
-            "competency_label", "difficulty", "doc_id", "locator",
+            "item_id", "question", "options", "competency_id", "competency_label",
+            "difficulty", "doc_id", "locator", "item_status",
         }
+        assert question["item_status"] == "DRAFT"
         assert len(question["options"]) == 4
 
 
-def test_get_questions_rejects_unknown_topic():
-    response = client.get("/learning/competency-quiz/questions", params={"topic_id": "not-a-real-topic"})
-    assert response.status_code == 404
-
-
-def test_get_questions_count_is_bounded_by_the_real_pool_size():
-    # data_quality only has 2 real questions -- asking for 5 must not error
-    # or fabricate extra items, just return what actually exists.
-    response = client.get("/learning/competency-quiz/questions", params={"topic_id": "data_quality", "count": 5})
-    assert response.status_code == 200
-    assert len(response.json()["questions"]) == 2
-
-
-def test_submit_grades_correctly_against_the_real_answer_key():
-    questions = client.get(
-        "/learning/competency-quiz/questions", params={"topic_id": "digital_governance", "count": 5}
-    ).json()["questions"]
-
-    # Deliberately get every answer wrong first, to prove correct=False is
-    # reachable and not just a happy-path illusion.
-    wrong_answers = [{"item_id": q["item_id"], "selected_index": 0} for q in questions]
-    wrong_response = client.post(
-        "/learning/competency-quiz/submit",
-        json={"topic_id": "digital_governance", "answers": wrong_answers},
-    )
-    assert wrong_response.status_code == 200
-    wrong_body = wrong_response.json()
-    assert wrong_body["total"] == len(questions)
-    # At least one of the two real digital_governance items must NOT have
-    # its correct answer at index 0 after the shuffle -- otherwise this
-    # "deliberately wrong" setup would coincidentally score 100%.
-    assert wrong_body["correct"] < wrong_body["total"]
-
-    # Now answer using the real correct_index from the graded response --
-    # this proves the server, not the client, is the source of truth for
-    # what counts as correct.
-    correct_answers = [
-        {"item_id": g["item_id"], "selected_index": g["correct_index"]}
-        for g in wrong_body["graded_answers"]
-    ]
-    right_response = client.post(
-        "/learning/competency-quiz/submit",
-        json={"topic_id": "digital_governance", "answers": correct_answers},
-    )
-    right_body = right_response.json()
-    assert right_body["correct"] == right_body["total"]
-    assert right_body["score_percentage"] == 100
-
-
-def test_submit_returns_self_ratings_shaped_for_the_assessment_endpoint():
-    questions = client.get(
-        "/learning/competency-quiz/questions", params={"topic_id": "ai_technology", "count": 5}
-    ).json()["questions"]
-    answers = [{"item_id": q["item_id"], "selected_index": 0} for q in questions]
-    response = client.post("/learning/competency-quiz/submit", json={"topic_id": "ai_technology", "answers": answers})
-    body = response.json()
-    for competency_id, level in body["self_ratings"].items():
-        assert competency_id in {c["competency_id"] for c in body["competency_scores"]}
-        assert 0 <= level <= 5
-
-
-def test_submit_rejects_an_unknown_item_id():
-    response = client.post(
-        "/learning/competency-quiz/submit",
-        json={"topic_id": "statistical_foundations", "answers": [{"item_id": "not-real", "selected_index": 0}]},
-    )
-    assert response.status_code == 404
-
-
-def test_submit_rejects_empty_answers():
-    response = client.post(
-        "/learning/competency-quiz/submit",
-        json={"topic_id": "statistical_foundations", "answers": []},
+@pytest.mark.parametrize("count", [0, -1, 11, 100_000])
+def test_question_count_is_strictly_bounded(count):
+    response = client.get(
+        "/learning/competency-quiz/questions",
+        params={"topic_id": "statistical_foundations", "count": count},
     )
     assert response.status_code == 422
+
+
+def test_unknown_topic_is_rejected():
+    response = client.get(
+        "/learning/competency-quiz/questions", params={"topic_id": "not-a-real-topic"}
+    )
+    assert response.status_code == 404
+
+
+def test_submit_grades_and_ranks_without_calling_it_self_assessment():
+    issued = issue("ai_policy", 5)
+    response = client.post(
+        "/learning/competency-quiz/submit", json=submit_payload(issued, correct=True)
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["correct"] == body["total"] == len(issued["questions"])
+    assert body["score_percentage"] == 100
+    assert body["assessment_status"] == "PROVISIONAL"
+    assert "self_ratings" not in body
+    assert set(body["diagnostic_scores"]) == {
+        score["competency_id"] for score in body["competency_scores"]
+    }
+    assert [score["rank"] for score in body["competency_scores"]] == list(
+        range(1, len(body["competency_scores"]) + 1)
+    )
+    assert all(score["confidence"] == "low" for score in body["competency_scores"])
+
+
+def test_submit_requires_exact_issued_set_and_rejects_duplicate_and_cross_topic():
+    issued = issue("data_quality", 2)
+    payload = submit_payload(issued, correct=False)
+    partial = {**payload, "answers": payload["answers"][:1]}
+    assert client.post("/learning/competency-quiz/submit", json=partial).status_code == 422
+    duplicate = {**payload, "answers": [payload["answers"][0], payload["answers"][0]]}
+    assert client.post("/learning/competency-quiz/submit", json=duplicate).status_code == 422
+    wrong_topic = {**payload, "topic_id": "price_statistics"}
+    assert client.post("/learning/competency-quiz/submit", json=wrong_topic).status_code == 422
+
+
+def test_attempt_is_single_use():
+    issued = issue("data_privacy", 2)
+    payload = submit_payload(issued, correct=False)
+    assert client.post("/learning/competency-quiz/submit", json=payload).status_code == 200
+    assert client.post("/learning/competency-quiz/submit", json=payload).status_code == 409
+
+
+def test_submission_persists_separate_diagnostic_evidence_and_audit(tmp_path):
+    engine = create_engine(
+        f"sqlite:///{tmp_path / 'quiz.db'}", connect_args={"check_same_thread": False}
+    )
+    Base.metadata.create_all(bind=engine)
+    TestSession = sessionmaker(bind=engine)
+    db = TestSession()
+    player = Player(username=f"quiz-{uuid.uuid4()}")
+    db.add(player)
+    db.commit()
+    db.refresh(player)
+
+    def override_db():
+        session = TestSession()
+        try:
+            yield session
+        finally:
+            session.close()
+
+    app.dependency_overrides[get_db] = override_db
+    try:
+        issued = issue("price_statistics", 2)
+        response = client.post(
+            "/learning/competency-quiz/submit",
+            json=submit_payload(issued, correct=True, player_id=player.player_id),
+        )
+        assert response.status_code == 200
+        body = response.json()
+        assert body["persisted_as_diagnostic_evidence"] is True
+        records = db.query(EvidenceRecord).filter_by(player_id=player.player_id).all()
+        assert len(records) == len(body["competency_scores"])
+        assert {record.evidence_type for record in records} == {"diagnostic"}
+        assert all('\"provisional\":true' in record.detail for record in records)
+        assert db.query(AuditEvent).filter_by(action="competency_quiz.submit").count() == 1
+    finally:
+        app.dependency_overrides.pop(get_db, None)
+        db.close()
+        engine.dispose()

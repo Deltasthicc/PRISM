@@ -2,18 +2,13 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SquareCheckBig, Bolt, Lock, Check, Route, Play, Swords } from 'lucide-react';
-import { useAuthStore } from '@/store/useAuthStore';
-import QuestModeGate from '@/components/QuestModeGate';
 
 export default function PrerequisitePathways() {
   const router = useRouter();
-  const questModeOn = useAuthStore((s) => s.player?.preferred_mode === 'quest');
   const [activeCourseNode, setActiveCourseNode] = useState(2);
   const [inFlightProgress, setInFlightProgress] = useState(64);
   const [courseToast, setCourseToast] = useState('');
   const [schemaToast, setSchemaToast] = useState('');
-
-  if (!questModeOn) return <QuestModeGate />;
 
   const onNavigate = () => router.push('/guild');
   const onOpenModal = () => {

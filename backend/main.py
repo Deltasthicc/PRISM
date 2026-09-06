@@ -144,13 +144,22 @@ app.add_middleware(RequestLoggingMiddleware)
 # Import and include routers
 from routes.game import router as game_router
 from routes.ai_real import router as ai_router
-from routes.ai_voice import router as voice_router
 from routes.learning import router as learning_router
 
 app.include_router(game_router)
 app.include_router(ai_router)
-app.include_router(voice_router)
 app.include_router(learning_router)
+
+# The voice pipeline (routes/ai_voice.py) pulls in heavy, optional ML
+# dependencies (faster-whisper, piper-tts, numpy) at import time. A missing
+# or failed install of any one of them must not take down the entire
+# backend -- every other route still needs to work. Log and continue
+# without /ai/voice/* rather than crashing app startup.
+try:
+    from routes.ai_voice import router as voice_router
+    app.include_router(voice_router)
+except ImportError as exc:
+    print(f"[startup] Voice pipeline unavailable, skipping /ai/voice routes: {exc}")
 
 # Local-dev-only bridge from the demo username login to a real verified
 # Keycloak bearer token (routes/dev_auth.py). Omitted from the router

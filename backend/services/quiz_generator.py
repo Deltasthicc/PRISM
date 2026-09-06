@@ -6,7 +6,11 @@ import os
 import random
 import re
 
-import google.generativeai as genai
+# google.generativeai is imported lazily inside generate_quiz(), not here.
+# CLAUDE.md coding conventions: "keep heavy/optional SDK imports lazy". A
+# top-level import made the whole module unimportable without the SDK, which
+# defeated the extractive fallback below -- the one path specifically designed
+# to work with no model and no network.
 
 
 VALID_BLOOM_LEVELS = {"remember", "understand", "apply", "analyse", "evaluate"}
@@ -124,6 +128,14 @@ async def generate_quiz(
 ) -> tuple[list[dict], str]:
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key or api_key.startswith("your_"):
+        return _fallback_questions(source_text, count), "extractive-fallback"
+
+    try:
+        import google.generativeai as genai
+    except ImportError:
+        # SDK absent (a lean deployment, or the wrong interpreter). Same
+        # outcome as an unconfigured key: real questions, quoted from the
+        # source, just without the model.
         return _fallback_questions(source_text, count), "extractive-fallback"
 
     genai.configure(api_key=api_key)

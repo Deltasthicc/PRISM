@@ -19,19 +19,14 @@ export const useAuthStore = create(
           const { player } = await auth.me();
           set({ player, isAuthenticated: true, loading: false, error: null });
         } catch (e) {
-          // Only treat an actual 401/403 as "not logged in" -- and only when
-          // a real bearer token was sent and rejected (e.hadToken). A 401
-          // with NO token attached means dev-login itself never completed
-          // (Keycloak unreachable/misconfigured -- see client.js's
-          // tryDevLogin), which is an infra availability problem, not proof
-          // this player isn't who they say they are. Treating that as a hard
-          // logout would bounce an already-registered demo player back to
-          // /login on every single page load for as long as the identity
-          // service stays down. A dropped request or backend hiccup
-          // (error.code === 0, or any 5xx) is refetched from fetchMe()'s next
-          // call either way.
-          const isRealAuthRejection = (e.code === 401 || e.code === 403) && e.hadToken;
-          if (isRealAuthRejection) {
+          // Demo mode has no real auth (backend/routes/authorization.py's
+          // DISABLE_AUTH), so a 401/403 here can't mean "wrong identity" --
+          // only a genuinely missing player (404) means this player no
+          // longer exists. A dropped request or backend hiccup (error.code
+          // === 0, or any 5xx) is refetched from fetchMe()'s next call
+          // either way, not a reason to log out.
+          const playerGenuinelyMissing = e.code === 404;
+          if (playerGenuinelyMissing) {
             set({ player: null, isAuthenticated: false, loading: false });
           } else if (isInitialLoad) {
             // No prior local identity to fall back on (fresh tab, nothing in

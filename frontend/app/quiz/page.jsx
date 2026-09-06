@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { FileText, SquareLibrary } from 'lucide-react';
 
 
-export default function SourceQuizGenerator({ onNavigate, onOpenModal }) {
+export default function SourceQuizGenerator({ onNavigate = () => {}, onOpenModal = () => {} } = {}) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState('B');
   const [hasSubmitted, setHasSubmitted] = useState(false);

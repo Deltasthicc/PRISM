@@ -10,7 +10,7 @@
 ![Frontend](https://img.shields.io/badge/frontend-Next.js%2015%20%2F%20React%2019-000000?logo=nextdotjs&logoColor=white)
 ![Database](https://img.shields.io/badge/database-PostgreSQL%20(Neon)-4169E1?logo=postgresql&logoColor=white)
 ![Languages](https://img.shields.io/badge/UI-English%20%2F%20हिंदी-orange)
-![Tests](https://img.shields.io/badge/backend%20tests-843-brightgreen)
+![Tests](https://img.shields.io/badge/backend%20tests-852-brightgreen)
 
 [Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
@@ -22,7 +22,7 @@
 
 Government officers (MoSPI-style: statistical officers, analysts, policy staff) need a way to know exactly *which* skills they're missing, *why*, and *what to do about it* — without a vague "take this course" recommendation. PRISM is a **deterministic, explainable competency-gap engine**: it blends a learner's self-assessment with demonstrated performance (quiz results, exercises) at a fixed **65% demonstrated / 35% self-assessed** weighting, maps the result against a curated, government-source-cited competency catalog, and generates a personalized learning pathway with a plain-language rationale for every gap it identifies.
 
-It ships as a small "quest" game shell (XP, levels, a boss-fight metaphor for hard topics, a leaderboard) wrapped around that real assessment engine, because a hackathon demo needs to be inviting — but the numbers underneath are real, not decorative.
+Alongside the professional assessment workspace, there's an optional **Quest Mode** — a gamified layer (XP, levels, a boss-fight metaphor for hard topics, a leaderboard) that a learner explicitly opts into from a NavBar toggle. It's off by default; the demo's primary path is the professional workspace, and Quest Mode is there for whoever wants a more playful way to practice, not the default experience.
 
 **Four curricula, ~57 competencies**, each traceable to an actual government or standards document (see [`backend/services/competency_docs.py`](backend/services/competency_docs.py) and [`curricula.py`](backend/services/curricula.py)):
 - DSA Fundamentals
@@ -94,9 +94,11 @@ Being honest about this line is the point of this section — the frontend has a
 |---|---|
 | `/login` → `CreateProfilePage` → `CompetencyQuizPage` | **Real.** Multi-step flow resolves an actual backend player via `useAuthStore`, then a real profile form, then a source-cited baseline quiz served by `routes/competency_quiz.py`. |
 | `/stats` | **Real.** Every number comes from `GET /learning/pathway` — no hardcoded competency data. |
-| `/academy`, `/register`, `/dashboard`, `/leaderboard`, `/admin` | **Real.** Backed by live API calls (`learning.*` / `game.*`). |
-| `/character`, `/boss/[dungeonId]` | **Real.** Quest-mode RPG pages wired to real player/game state (hint tokens, damage, hero selection). |
-| `/dungeon`, `/guild`, `/quiz`, `/integration-registry` | **Still mockups.** No backend calls at all — progress %, test results, and export JSON are fabricated client-side placeholders. Left as-is deliberately; wiring them up is future work, not a bug. |
+| `/academy`, `/register`, `/dashboard`, `/admin` | **Real.** Backed by live API calls (`learning.*` / `game.*`). |
+| `/character`, `/boss/[dungeonId]`, `/leaderboard` | **Real, but gated behind Quest Mode.** Off by default — visiting directly shows `QuestModeGate` (a "turn on Quest Mode?" prompt) until the learner opts in from the NavBar toggle. Once on, these render genuine player/game state (hint tokens, damage, hero selection, XP-ranked leaderboard). Leaderboard's heading was corrected from a false "WEEKLY RANKS" to the honest "ALL-TIME RANKS" — the backend has always ranked by lifetime `total_xp`, no weekly window exists. |
+| `/guild` | **Gated behind Quest Mode, and still a self-contained mockup underneath.** The real backend endpoints it should call (`/game/guild/raid/join`, `/raid/status`) exist and work — `joinGuildRaid()` in `frontend/lib/api/client.js` is correctly wired — but nothing in the UI calls it yet; it's disconnected working infrastructure for a legitimately future feature, not fake code. |
+| `/dungeon`, `/quiz` | **Still mockups**, not gated by Quest Mode. No backend calls — progress percentages and quiz questions are fabricated/hardcoded client-side. Wiring them up is future work, not a bug. |
+| `/integration-registry` | **Still a mockup**, but its copy was fixed for honesty — it used to assert specific, never-checked compliance claims ("VERIFIED COMPLIANT", a fabricated audit hash, a specific RTI Act citation); now framed explicitly as "design-intent, not measured." |
 
 ## 🌐 Internationalization
 
@@ -168,7 +170,7 @@ Then open `http://localhost:3000`.
 
 ## 🧪 Tests & CI
 
-- **843 backend tests** (pytest), run against a real `postgres:16` service container in CI.
+- **852 backend tests** (pytest), run against a real `postgres:16` service container in CI.
 - **No frontend test suite** exists yet — `frontend/package.json` only defines `dev`/`build`/`start`/`lint`.
 - [`ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`:
   - `backend-tests` — `pip-audit` + full pytest suite against Postgres
@@ -187,7 +189,7 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 ## ⚠️ Known limitations
 
 - `DISABLE_AUTH=true` in the deployed demo means there is no real identity check on any request — see [Auth model](#-auth-model-read-this-before-you-judge-the-security).
-- Four frontend routes (`/dungeon`, `/guild`, `/quiz`, `/integration-registry`) are visual mockups with no backend behind them.
+- `/dungeon`, `/quiz`, and `/integration-registry` are visual mockups with no backend behind them; `/guild` has a real backend endpoint waiting but no UI wired to it yet.
 - The real browser OIDC/PKCE login flow (as opposed to the demo bypass and the dev-login bridge) is not yet implemented.
 - No frontend automated test suite.
 - Render's free tier means cold starts and tight memory headroom on Keycloak — not a production-scale deployment.
@@ -201,7 +203,7 @@ backend/
   models/        SQLAlchemy models (players, learning, governance, dungeon, guild, ...)
   security/      Real OIDC identity + RBAC (untouched by the demo bypass)
   migrations/    Alembic migrations
-  tests/         843 pytest tests
+  tests/         852 pytest tests
 
 frontend/
   app/           Next.js App Router pages (see the real-vs-mockup table above)
@@ -211,9 +213,12 @@ frontend/
 
 services/        Standalone optional AI microservice (separate FastAPI app)
 docs/            Contracts (OpenAPI), evidence log, problem statement
+docs/internal/   Lane coordination/strategy docs (team orchestration, handoffs, sync logs)
 deploy/          Render/Neon deployment walkthrough
 ```
 
+Root now holds only what someone evaluating the product needs first: `README.md`, `SIH26101_MASTER_CHECKLIST.md`, `EVIDENCE.md`, and the agent-instruction files (`CLAUDE.md`, `CODEX.md`, `AGENTS.md`). Internal lane-coordination docs live under `docs/internal/`.
+
 ## 🙌 Team
 
-Built for Smart India Hackathon 2026, Problem Statement 26101, across six coordinated lanes (identity & core data, AI/content, frontend, integrations, release engineering, and orchestration). See [`SIH26101_TEAM_ORCHESTRATION.md`](SIH26101_TEAM_ORCHESTRATION.md) for the full lane breakdown and [`EVIDENCE.md`](EVIDENCE.md) for the running evidence log.
+Built for Smart India Hackathon 2026, Problem Statement 26101, across six coordinated lanes (identity & core data, AI/content, frontend, integrations, release engineering, and orchestration). See [`docs/internal/SIH26101_TEAM_ORCHESTRATION.md`](docs/internal/SIH26101_TEAM_ORCHESTRATION.md) for the full lane breakdown and [`EVIDENCE.md`](EVIDENCE.md) for the running evidence log.

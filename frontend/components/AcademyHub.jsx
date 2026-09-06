@@ -7,6 +7,7 @@ import { BookOpen, BrainCircuit, FileQuestion, ShieldCheck } from 'lucide-react'
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { game, learning } from '@/lib/api/client';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -35,6 +36,7 @@ const LINK_BUTTON_CLASS = [
 export default function AcademyHub() {
   const { ready } = useRequireAuth();
   const player = useAuthStore((state) => state.player);
+  const { t } = useLanguage();
   const [profile, setProfile] = useState(EMPTY_PROFILE);
   const [selectedSlug, setSelectedSlug] = useState('official-statistics');
   const [ratings, setRatings] = useState({});
@@ -67,13 +69,13 @@ export default function AcademyHub() {
   );
 
   if (!ready || isLoading) {
-    return <p className="font-sans text-sm text-[#757682] text-center mt-10">Preparing your academy…</p>;
+    return <p className="font-sans text-sm text-[#757682] text-center mt-10">{t('academy.loadingAcademy')}</p>;
   }
   if (isError || !data) {
     return (
       <div className="flex flex-col items-center gap-3 mt-10" role="alert">
-        <p className="font-sans text-sm text-[#b3261e]">The academy could not be loaded.</p>
-        <Button variant="ghost" onClick={() => refetch()}>Retry</Button>
+        <p className="font-sans text-sm text-[#b3261e]">{t('academy.loadFailed')}</p>
+        <Button variant="ghost" onClick={() => refetch()}>{t('academy.retry')}</Button>
       </div>
     );
   }
@@ -142,18 +144,15 @@ export default function AcademyHub() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <Badge tone="accent">Skill Intelligence Beta</Badge>
-        <h1 className="font-sans text-xl font-bold text-[#00236f] mt-3">Learning Academy</h1>
-        <p className="font-sans text-sm text-[#757682] mt-2 max-w-4xl">
-          Build a role-aware competency profile, diagnose gaps, follow an explainable learning path,
-          practise through adaptive quests, and generate source-grounded quizzes from your own material.
-        </p>
+        <Badge tone="accent">{t('academy.betaBadge')}</Badge>
+        <h1 className="font-sans text-xl font-bold text-[#00236f] mt-3">{t('academy.heading')}</h1>
+        <p className="font-sans text-sm text-[#757682] mt-2 max-w-4xl">{t('academy.description')}</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Capability icon={BrainCircuit} title="Explainable diagnosis" body="Combines demonstrated performance with self-assessment and exposes every score." />
-        <Capability icon={BookOpen} title="Multiple disciplines" body="Official statistics, public policy, digital literacy, and DSA share one data-driven engine." />
-        <Capability icon={ShieldCheck} title="Honest integrations" body={`iGOT mode: ${data.integrations.igot.mode}. No fake enrolment or progress sync.`} />
+        <Capability icon={BrainCircuit} title={t('academy.capabilityDiagnosisTitle')} body={t('academy.capabilityDiagnosisBody')} />
+        <Capability icon={BookOpen} title={t('academy.capabilityDisciplinesTitle')} body={t('academy.capabilityDisciplinesBody')} />
+        <Capability icon={ShieldCheck} title={t('academy.capabilityIntegrationsTitle')} body={`iGOT mode: ${data.integrations.igot.mode}. No fake enrolment or progress sync.`} />
       </div>
 
       {error && (
@@ -163,16 +162,16 @@ export default function AcademyHub() {
       )}
 
       <Panel variant="accent">
-        <h2 className="font-sans text-base font-bold text-[#00236f] mb-4">1. Your competency profile</h2>
+        <h2 className="font-sans text-base font-bold text-[#00236f] mb-4">{t('academy.section1Heading')}</h2>
         <form onSubmit={saveProfile} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input id="designation" label="Designation" value={profile.designation || ''} onChange={(event) => setProfile({ ...profile, designation: event.target.value })} placeholder="Statistical Officer" />
-          <Input id="department" label="Department / Organisation" value={profile.department || ''} onChange={(event) => setProfile({ ...profile, department: event.target.value })} placeholder="MoSPI / State department / University" />
-          <Input id="job-role" label="Job role" value={profile.job_role || ''} onChange={(event) => setProfile({ ...profile, job_role: event.target.value })} placeholder="Survey design and data quality" />
-          <Input id="years-experience" label="Years of experience" type="number" min="0" max="60" value={profile.years_experience ?? 0} onChange={(event) => setProfile({ ...profile, years_experience: event.target.value })} />
-          <Input id="current-assignment" label="Current assignment" textarea rows="3" value={profile.current_assignment || ''} onChange={(event) => setProfile({ ...profile, current_assignment: event.target.value })} placeholder="Responsibilities, datasets, programmes, or decisions you currently support" />
+          <Input id="designation" label={t('academy.designationLabel')} value={profile.designation || ''} onChange={(event) => setProfile({ ...profile, designation: event.target.value })} placeholder="Statistical Officer" />
+          <Input id="department" label={t('academy.departmentLabel')} value={profile.department || ''} onChange={(event) => setProfile({ ...profile, department: event.target.value })} placeholder="MoSPI / State department / University" />
+          <Input id="job-role" label={t('academy.jobRoleLabel')} value={profile.job_role || ''} onChange={(event) => setProfile({ ...profile, job_role: event.target.value })} placeholder="Survey design and data quality" />
+          <Input id="years-experience" label={t('academy.yearsExperienceLabel')} type="number" min="0" max="60" value={profile.years_experience ?? 0} onChange={(event) => setProfile({ ...profile, years_experience: event.target.value })} />
+          <Input id="current-assignment" label={t('academy.currentAssignmentLabel')} textarea rows="3" value={profile.current_assignment || ''} onChange={(event) => setProfile({ ...profile, current_assignment: event.target.value })} placeholder="Responsibilities, datasets, programmes, or decisions you currently support" />
           <Input
             id="previous-trainings"
-            label="Previous training (comma-separated)"
+            label={t('academy.previousTrainingLabel')}
             textarea
             rows="3"
             value={(profile.previous_trainings || []).join(', ')}
@@ -183,27 +182,27 @@ export default function AcademyHub() {
             placeholder="Survey sampling, Python foundations, data visualisation"
           />
           <label className="flex flex-col gap-1.5">
-            <span className="font-sans text-xs font-semibold text-[#444651]">Current experience level</span>
+            <span className="font-sans text-xs font-semibold text-[#444651]">{t('academy.experienceLevelLabel')}</span>
             <select value={profile.experience_level} onChange={(event) => setProfile({ ...profile, experience_level: event.target.value })} className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f]">
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-              <option value="expert">Expert</option>
+              <option value="beginner">{t('academy.levelBeginner')}</option>
+              <option value="intermediate">{t('academy.levelIntermediate')}</option>
+              <option value="advanced">{t('academy.levelAdvanced')}</option>
+              <option value="expert">{t('academy.levelExpert')}</option>
             </select>
           </label>
-          <Input id="preferred-language" label="Preferred language" value={profile.preferred_language || 'English'} onChange={(event) => setProfile({ ...profile, preferred_language: event.target.value })} placeholder="English" />
-          <Input id="qualifications" label="Educational qualifications" textarea rows="3" value={profile.educational_qualifications || ''} onChange={(event) => setProfile({ ...profile, educational_qualifications: event.target.value })} placeholder="Degrees, certifications, or equivalent experience" />
-          <Input id="career-goal" label="Learning / career goal" textarea rows="3" value={profile.career_goal || ''} onChange={(event) => setProfile({ ...profile, career_goal: event.target.value })} placeholder="What should this pathway help you do?" />
+          <Input id="preferred-language" label={t('academy.preferredLanguageLabel')} value={profile.preferred_language || 'English'} onChange={(event) => setProfile({ ...profile, preferred_language: event.target.value })} placeholder="English" />
+          <Input id="qualifications" label={t('academy.qualificationsLabel')} textarea rows="3" value={profile.educational_qualifications || ''} onChange={(event) => setProfile({ ...profile, educational_qualifications: event.target.value })} placeholder="Degrees, certifications, or equivalent experience" />
+          <Input id="career-goal" label={t('academy.careerGoalLabel')} textarea rows="3" value={profile.career_goal || ''} onChange={(event) => setProfile({ ...profile, career_goal: event.target.value })} placeholder="What should this pathway help you do?" />
           <div className="md:col-span-2">
             <Button type="submit" disabled={working === 'profile'}>
-              {working === 'profile' ? 'Saving…' : profile.profile_id ? 'Update profile' : 'Create profile'}
+              {working === 'profile' ? t('academy.savingButton') : profile.profile_id ? t('academy.saveProfileButton') : t('academy.createProfileButton')}
             </Button>
           </div>
         </form>
       </Panel>
 
       <section aria-labelledby="paths-heading">
-        <h2 id="paths-heading" className="font-sans text-base font-bold text-[#00236f] mb-4">2. Choose a learning path</h2>
+        <h2 id="paths-heading" className="font-sans text-base font-bold text-[#00236f] mb-4">{t('academy.section2Heading')}</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {data.curricula.map((curriculum) => {
             const dungeon = dungeonBySlug[curriculum.slug];
@@ -221,17 +220,17 @@ export default function AcademyHub() {
                   <Badge tone="accent">{curriculum.level_band}</Badge>
                   <Badge tone="default">{curriculum.competency_count} competencies</Badge>
                 </div>
-                <p className="font-sans text-sm text-[#757682] mt-3">For: {curriculum.audience}</p>
+                <p className="font-sans text-sm text-[#757682] mt-3">{t('academy.forAudience')} {curriculum.audience}</p>
                 <div className="flex flex-wrap gap-2 mt-4">
                   <Button variant={active ? 'primary' : 'ghost'} onClick={() => { setSelectedSlug(curriculum.slug); setAssessment(null); setRatings({}); }}>
-                    {active ? 'Selected' : 'Assess this path'}
+                    {active ? t('academy.selectedBadge') : t('academy.assessThisPath')}
                   </Button>
                   {dungeon && (
                     <Link
                       href={`/dungeon/${dungeon.dungeon_id}`}
                       className={`${LINK_BUTTON_CLASS} bg-[#fe932c] text-white hover:bg-[#e57e1a]`}
                     >
-                      Start quest
+                      {t('academy.startQuest')}
                     </Link>
                   )}
                 </div>
@@ -243,10 +242,8 @@ export default function AcademyHub() {
 
       {selected && (
         <Panel>
-          <h2 className="font-sans text-base font-bold text-[#00236f] mb-2">3. Quick competency diagnostic</h2>
-          <p className="font-sans text-sm text-[#757682] mb-5">
-            Rate your current proficiency from 0 (no evidence) to 5 (expert). Quest performance is weighted more heavily when available.
-          </p>
+          <h2 className="font-sans text-base font-bold text-[#00236f] mb-2">{t('academy.section3Heading')}</h2>
+          <p className="font-sans text-sm text-[#757682] mb-5">{t('academy.section3Body')}</p>
           <div className="flex flex-col gap-4">
             {selected.competencies.map((competency) => (
               <label key={competency.id} className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-3 border-b border-[#c5c5d3]/40 pb-4">
@@ -262,7 +259,7 @@ export default function AcademyHub() {
             ))}
           </div>
           <Button className="mt-5" onClick={runAssessment} disabled={working === 'assessment'}>
-            {working === 'assessment' ? 'Analysing…' : 'Identify my gaps'}
+            {working === 'assessment' ? t('academy.analysingButton') : t('academy.identifyGapsButton')}
           </Button>
         </Panel>
       )}
@@ -272,32 +269,29 @@ export default function AcademyHub() {
       <Panel variant="accent">
         <div className="flex items-center gap-2 mb-2">
           <FileQuestion className="text-[#00236f]" size={18} aria-hidden="true" />
-          <h2 className="font-sans text-base font-bold text-[#00236f]">4. Create a grounded quiz</h2>
+          <h2 className="font-sans text-base font-bold text-[#00236f]">{t('academy.section4Heading')}</h2>
         </div>
-        <p className="font-sans text-sm text-[#757682] mb-4">
-          Upload up to 5 MB in TXT, Markdown, PDF, or DOCX. Every generated answer includes a source excerpt; ungrounded model output is rejected.
-          Without a configured model key, the deterministic fallback retains source wording and uses an English question template.
-        </p>
+        <p className="font-sans text-sm text-[#757682] mb-4">{t('academy.section4Body')}</p>
         <form onSubmit={createQuiz} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input id="quiz-title" name="title" label="Quiz title" required defaultValue="My learning material quiz" />
-          <Input id="quiz-language" name="language" label="Output language" required defaultValue={profile.preferred_language || 'English'} />
+          <Input id="quiz-title" name="title" label={t('academy.quizTitleLabel')} required defaultValue="My learning material quiz" />
+          <Input id="quiz-language" name="language" label={t('academy.outputLanguageLabel')} required defaultValue={profile.preferred_language || 'English'} />
           <label className="flex flex-col gap-1.5">
-            <span className="font-sans text-xs font-semibold text-[#444651]">Difficulty</span>
+            <span className="font-sans text-xs font-semibold text-[#444651]">{t('academy.difficultyLabel')}</span>
             <select name="difficulty" defaultValue="mixed" className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f]">
-              <option value="foundation">Foundation</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-              <option value="mixed">Mixed</option>
+              <option value="foundation">{t('academy.difficultyFoundation')}</option>
+              <option value="intermediate">{t('academy.difficultyIntermediate')}</option>
+              <option value="advanced">{t('academy.difficultyAdvanced')}</option>
+              <option value="mixed">{t('academy.difficultyMixed')}</option>
             </select>
           </label>
-          <Input id="question-count" name="question_count" label="Questions (3-10)" type="number" min="3" max="10" defaultValue="5" />
+          <Input id="question-count" name="question_count" label={t('academy.questionCountLabel')} type="number" min="3" max="10" defaultValue="5" />
           <label className="md:col-span-2 flex flex-col gap-1.5">
-            <span className="font-sans text-xs font-semibold text-[#444651]">Learning material</span>
+            <span className="font-sans text-xs font-semibold text-[#444651]">{t('academy.learningMaterialLabel')}</span>
             <input name="learning_file" type="file" required accept=".txt,.md,.pdf,.docx" className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 file:bg-[#00236f] file:text-white file:border-0 file:rounded-md file:px-3 file:py-1.5 file:mr-3" />
           </label>
           <div className="md:col-span-2">
             <Button type="submit" variant="accent" disabled={working === 'quiz'}>
-              {working === 'quiz' ? 'Generating & validating…' : 'Generate quiz'}
+              {working === 'quiz' ? t('academy.generatingButton') : t('academy.generateQuizButton')}
             </Button>
           </div>
         </form>
@@ -319,12 +313,13 @@ function Capability({ icon: Icon, title, body }) {
 }
 
 function AssessmentResults({ assessment, dungeon }) {
+  const { t } = useLanguage();
   return (
     <Panel variant="accent">
-      <h2 className="font-sans text-base font-bold text-[#00236f]">Your personalised pathway</h2>
+      <h2 className="font-sans text-base font-bold text-[#00236f]">{t('academy.pathwayHeading')}</h2>
       <p className="font-sans text-sm text-[#757682] mt-2">{assessment.method.note}</p>
       {assessment.pathway.length === 0 ? (
-        <p className="font-sans text-sm text-[#904d00] mt-4">No material gap was detected at your current pathway target. Use applied diagnostics to verify mastery.</p>
+        <p className="font-sans text-sm text-[#904d00] mt-4">{t('academy.noGapMessage')}</p>
       ) : (
         <ol className="flex flex-col gap-3 mt-4">
           {assessment.pathway.map((step) => (
@@ -343,7 +338,7 @@ function AssessmentResults({ assessment, dungeon }) {
         </ol>
       )}
 
-      <h3 className="font-sans text-sm font-bold text-[#00236f] mt-6">Recommended learning</h3>
+      <h3 className="font-sans text-sm font-bold text-[#00236f] mt-6">{t('academy.recommendedLearningHeading')}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
         {assessment.courses.map((course) => {
           const external = course.url.startsWith('http');
@@ -359,9 +354,9 @@ function AssessmentResults({ assessment, dungeon }) {
               <p className="font-sans text-sm font-semibold text-[#131b2e] mt-3">{course.title}</p>
               <p className="font-sans text-sm text-[#757682] mt-2">{course.verification_note}</p>
               {external ? (
-                <a href={href} target="_blank" rel="noreferrer" className="font-sans text-sm text-[#00236f] hover:underline mt-2 inline-block">Open authoritative catalog ↗</a>
+                <a href={href} target="_blank" rel="noreferrer" className="font-sans text-sm text-[#00236f] hover:underline mt-2 inline-block">{t('academy.openCatalog')}</a>
               ) : (
-                <Link href={href} className="font-sans text-sm text-[#00236f] hover:underline mt-2 inline-block">Start adaptive practice →</Link>
+                <Link href={href} className="font-sans text-sm text-[#00236f] hover:underline mt-2 inline-block">{t('academy.startAdaptivePractice')}</Link>
               )}
             </div>
           );

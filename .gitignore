@@ -34,3 +34,9 @@ Thumbs.db
 # Ephemeral Codex/Claude planning scratchpad; never commit.
 ClaudeCode_Codex_UwU.md
 backend/data/.doc_cache/
+
+# Local Piper voice model assets
+backend/models/piper/
+
+# Local Piper voice model assets
+backend/models/piper/

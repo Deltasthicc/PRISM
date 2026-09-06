@@ -96,6 +96,22 @@ export const useAuthStore = create(
           return false;
         }
       },
+
+      // Presentation-surface switch only (models/enums.py's LearningMode on
+      // the backend) -- 'professional' (default) or the opt-in 'quest'
+      // dungeon/combat layer. Never an authorization decision.
+      async setPreferredMode(mode) {
+        const p = get().player;
+        if (!p) return false;
+        try {
+          await auth.setPreferredMode(p.player_id, mode);
+          set({ player: { ...p, preferred_mode: mode } });
+          return true;
+        } catch (e) {
+          set({ error: e.message });
+          return false;
+        }
+      },
     }),
     {
       name: 'prism-auth',

@@ -22,6 +22,9 @@ export const TRANSLATIONS = {
       adaptivePractice: 'Adaptive Practice (DSA Quest)',
       integrationRegistry: 'Integration Registry',
       signOut: 'Sign out',
+      questModeOn: 'Quest Mode: On',
+      questModeOff: 'Quest Mode: Off',
+      questModeToggleTitle: 'Optional gamified practice layer (dungeon, XP, guild raids) -- off by default.',
     },
     login: {
       heading: 'Sign in',
@@ -258,6 +261,9 @@ export const TRANSLATIONS = {
       adaptivePractice: 'अनुकूली अभ्यास (DSA क्वेस्ट)',
       integrationRegistry: 'एकीकरण रजिस्ट्री',
       signOut: 'साइन आउट',
+      questModeOn: 'क्वेस्ट मोड: चालू',
+      questModeOff: 'क्वेस्ट मोड: बंद',
+      questModeToggleTitle: 'वैकल्पिक गेमिफाइड अभ्यास स्तर (डंजियन, XP, गिल्ड रेड) — डिफ़ॉल्ट रूप से बंद।',
     },
     login: {
       heading: 'साइन इन करें',

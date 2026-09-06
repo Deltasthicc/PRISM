@@ -15,6 +15,7 @@ import DamageNumber from '@/components/DamageNumber';
 import VillainSprite from '@/components/VillainSprite';
 import PowerupButton from '@/components/PowerupButton';
 import PixelSprite from '@/components/PixelSprite';
+import QuestModeGate from '@/components/QuestModeGate';
 import { heroOrDefault, queuedPowerupText } from '@/lib/sprites/heroSprites';
 
 const VERDICT_TONE = { correct: 'arcane', partial: 'gold', incorrect: 'blood' };
@@ -79,6 +80,7 @@ export default function BossFightPage() {
   }, []);
 
   if (!ready) return null;
+  if (player?.preferred_mode !== 'quest') return <QuestModeGate />;
 
   if (submitError && !currentQuestion) {
     return (

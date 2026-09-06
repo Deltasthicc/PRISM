@@ -237,6 +237,9 @@ export const auth = {
 
   setHero: async (playerId, heroId) =>
     request(`/game/player/${playerId}/hero`, { method: 'POST', body: { hero_id: heroId } }),
+
+  setPreferredMode: async (playerId, mode) =>
+    request(`/game/player/${playerId}/mode`, { method: 'POST', body: { preferred_mode: mode } }),
 };
 
 export const game = {

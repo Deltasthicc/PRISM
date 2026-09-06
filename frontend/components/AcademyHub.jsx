@@ -225,9 +225,9 @@ export default function AcademyHub() {
                   <Button variant={active ? 'primary' : 'ghost'} onClick={() => { setSelectedSlug(curriculum.slug); setAssessment(null); setRatings({}); }}>
                     {active ? t('academy.selectedBadge') : t('academy.assessThisPath')}
                   </Button>
-                  {dungeon && (
+                  {dungeon && player?.preferred_mode === 'quest' && (
                     <Link
-                      href={`/dungeon/${dungeon.dungeon_id}`}
+                      href="/dungeon"
                       className={`${LINK_BUTTON_CLASS} bg-[#fe932c] text-white hover:bg-[#e57e1a]`}
                     >
                       {t('academy.startQuest')}

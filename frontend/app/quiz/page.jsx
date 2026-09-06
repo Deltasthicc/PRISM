@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   FileText,
   ArrowRight,
@@ -18,12 +19,20 @@ import {
 } from 'lucide-react';
 
 
-export default function SourceQuizGenerator({ onNavigate = () => {}, onOpenModal = () => {} } = {}) {
+export default function SourceQuizGenerator() {
+  const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState('B');
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [quizToast, setQuizToast] = useState('');
   const [isResynthesizing, setIsResynthesizing] = useState(false);
+  const [pdfToast, setPdfToast] = useState('');
+
+  const onNavigate = () => router.push('/guild');
+  const onOpenModal = () => {
+    setPdfToast('Design-intent mockup -- no real bounded PDF viewer exists for this prototype yet.');
+    setTimeout(() => setPdfToast(''), 3500);
+  };
 
   const questions = [
     {
@@ -136,8 +145,11 @@ export default function SourceQuizGenerator({ onNavigate = () => {}, onOpenModal
 
   return (
     <div className="flex flex-col w-full">
-      {/* Algorithmic Provenance Suite Top Banner */}
-      
+      {pdfToast && (
+        <div className="mb-4 rounded-lg border border-[#c5c5d3]/40 bg-[#f2f3ff] px-4 py-2.5 text-xs text-[#00236f] font-medium">
+          {pdfToast}
+        </div>
+      )}
 
         {/* Ingested Document Anchor Card */}
         <div className="bg-white rounded-xl p-4 shadow-sm border border-[#c5c5d3]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">

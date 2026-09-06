@@ -22,7 +22,7 @@ const vt323 = VT323({
 export const metadata = {
   title: 'PRISM',
   description:
-    'Personalized Readiness Intelligence & Skill Mapping -- a competency gap-analysis and learning-pathway platform, with an optional gamified practice mode.',
+    'Personalized Readiness Intelligence & Skill Mapping -- an explainable competency gap-analysis and learning-pathway platform.',
 };
 
 export default function RootLayout({ children }) {

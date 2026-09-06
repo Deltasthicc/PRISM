@@ -13,8 +13,8 @@ export default function LoginPage() {
   const authLogin = useAuthStore((s) => s.login);
   const authRegister = useAuthStore((s) => s.register);
 
-  // The demo starts with profile setup, then continues to the quiz.
-  const [currentStep, setCurrentStep] = useState('profile');
+  // Demo flow: login -> profile setup -> competency quiz.
+  const [currentStep, setCurrentStep] = useState('login');
 
   // Stores the profile throughout the workflow
   const [officerProfile, setOfficerProfile] = useState(null);

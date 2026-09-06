@@ -18,25 +18,20 @@ export default function NavBar() {
 
   if (!isAuthenticated) return null;
 
-  // Quest mode (dungeon/combat/guild-raid) is an explicit opt-in, off by
-  // default (models/enums.py's LearningMode, player.preferred_mode) -- the
-  // team's own recorded decision to scrap the RPG framing as the primary
-  // experience while keeping the underlying layer available as future scope
-  // (SIH26101_MASTER_CHECKLIST.md). These two tabs only appear once a
-  // learner has explicitly switched the toggle below.
+  // Quest mode (character/boss fights/leaderboard) is an explicit opt-in,
+  // off by default (models/enums.py's LearningMode, player.preferred_mode).
+  // Prerequisite Pathways and Adaptive Practice are NOT part of that gate --
+  // the toggle is a placeholder for now and doesn't change their
+  // availability; both nav tabs always show.
   const questModeOn = player?.preferred_mode === 'quest';
   const navTabs = [
-    ...(questModeOn
-      ? [{ href: '/dungeon', label: t('nav.prerequisitePathways'), hasDot: false }]
-      : []),
+    { href: '/dungeon', label: t('nav.prerequisitePathways'), hasDot: false },
     {
       href: '/quiz',
       label: t('nav.sourceQuizGenerator'),
       hasDot: false,
     },
-    ...(questModeOn
-      ? [{ href: '/guild', label: t('nav.adaptivePractice'), hasDot: false }]
-      : []),
+    { href: '/guild', label: t('nav.adaptivePractice'), hasDot: false },
     {
       href: '/integration-registry',
       label: t('nav.integrationRegistry'),

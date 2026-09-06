@@ -2,8 +2,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { GraduationCap, Download, Landmark, Gamepad2, ArrowRight, BookOpen, Table2, ShieldCheck } from 'lucide-react';
-import { useAuthStore } from '@/store/useAuthStore';
-
 // Design-intent registry: what each integration is meant to become and how
 // it behaves today. None of the figures here (record counts, latency,
 // hashes) are measured from a live system -- this prototype has no real
@@ -14,7 +12,6 @@ import { useAuthStore } from '@/store/useAuthStore';
 // against anything -- removed rather than repeated here.
 export default function IntegrationRegistry() {
   const [toastMessage, setToastMessage] = useState('');
-  const questModeOn = useAuthStore((s) => s.player?.preferred_mode === 'quest');
 
   const showToast = (message) => {
     setToastMessage(message);
@@ -28,7 +25,7 @@ export default function IntegrationRegistry() {
       connectors: [
         { name: 'iGOT Karmayogi', mode: 'Catalog-fallback (static course list)', status: 'not live-integrated' },
         { name: 'NSSTA / TPAC', mode: 'Static curated catalog', status: 'not live-integrated' },
-        { name: 'Adaptive DSA practice (Pyodide)', mode: 'Client-side WASM', status: 'optional, opt-in Quest mode' },
+        { name: 'Adaptive DSA practice (Pyodide)', mode: 'Client-side WASM', status: 'client-side mockup' },
         { name: 'Document ingestion / retrieval', mode: 'Extractive + optional Gemini grounding', status: 'implemented, see backend/services/competency_docs.py' },
       ],
     };
@@ -105,57 +102,35 @@ export default function IntegrationRegistry() {
           </div>
         </div>
 
-        {/* Module 3: Adaptive DSA practice -- Quest mode only */}
-        {questModeOn ? (
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-[#c5c5d3]/30 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-[#eaedff] mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-[#89f5e7] text-[#00312c] flex items-center justify-center font-bold">
-                    <Gamepad2 className="w-[18px] h-[18px]" />
-                  </div>
-                  <h3 className="text-base font-bold text-[#00236f]">Adaptive DSA Practice (Quest mode)</h3>
+        {/* Module 3: Adaptive DSA practice */}
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-[#c5c5d3]/30 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-[#eaedff] mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#89f5e7] text-[#00312c] flex items-center justify-center font-bold">
+                  <Gamepad2 className="w-[18px] h-[18px]" />
                 </div>
-                <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#89f5e7] text-[#00201d] font-bold">
-                  OPT-IN
-                </span>
+                <h3 className="text-base font-bold text-[#00236f]">Adaptive DSA Practice</h3>
               </div>
-              <p className="text-xs text-[#444651] mb-4 leading-relaxed">
-                The optional gamified practice layer -- dungeon/combat-style DSA drills. Off by
-                default; you have it enabled via the Quest Mode toggle in the top nav.
-              </p>
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#89f5e7] text-[#00201d] font-bold">
+                CLIENT-SIDE MOCKUP
+              </span>
             </div>
-            <div className="flex items-center justify-between pt-2 border-t border-[#eaedff]">
-              <Link
-                href="/guild"
-                className="text-[#00236f] hover:underline text-xs font-semibold flex items-center gap-1"
-              >
-                <span>Open adaptive practice</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
+            <p className="text-xs text-[#444651] mb-4 leading-relaxed">
+              A code-runner practice UI. Test results shown here are placeholder local state, not
+              a real sandboxed execution backend yet.
+            </p>
           </div>
-        ) : (
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-[#c5c5d3]/30 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-[#eaedff] mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-[#f2f3ff] text-[#757682] flex items-center justify-center font-bold">
-                    <Gamepad2 className="w-[18px] h-[18px]" />
-                  </div>
-                  <h3 className="text-base font-bold text-[#757682]">Adaptive DSA Practice (Quest mode)</h3>
-                </div>
-                <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#f2f3ff] text-[#757682] font-bold">
-                  OFF
-                </span>
-              </div>
-              <p className="text-xs text-[#757682] mb-4 leading-relaxed">
-                An optional gamified practice layer exists but is off by default. Turn on Quest
-                Mode from the top navigation bar to try it.
-              </p>
-            </div>
+          <div className="flex items-center justify-between pt-2 border-t border-[#eaedff]">
+            <Link
+              href="/guild"
+              className="text-[#00236f] hover:underline text-xs font-semibold flex items-center gap-1"
+            >
+              <span>Open adaptive practice</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
-        )}
+        </div>
 
         {/* Module 4: Document Ingestion & retrieval */}
         <div className="bg-white rounded-xl p-5 shadow-sm border border-[#c5c5d3]/30 flex flex-col justify-between">

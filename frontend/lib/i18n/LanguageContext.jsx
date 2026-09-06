@@ -11,21 +11,36 @@ const LanguageContext = createContext({
   t: (key) => key,
 });
 
+// `key` is always a hardcoded string literal at every call site (e.g.
+// t('nav.signOut')), never user input -- but walking a dict by a
+// caller-supplied path one segment at a time, with no own-property check,
+// is exactly the shape a prototype-pollution scanner flags on sight (a
+// segment of "__proto__" would otherwise walk into Object.prototype
+// instead of failing the lookup). Guarding each segment with a real
+// hasOwnProperty check closes that off for good, regardless of where a
+// future caller's key string comes from.
+function getOwn(node, segment) {
+  if (node === null || typeof node !== 'object') return undefined;
+  if (!Object.prototype.hasOwnProperty.call(node, segment)) return undefined;
+  return node[segment];
+}
+
+function resolve(dict, path) {
+  let node = dict;
+  for (const segment of path) {
+    node = getOwn(node, segment);
+    if (node === undefined) return undefined;
+  }
+  return typeof node === 'string' ? node : undefined;
+}
+
 function lookup(language, key) {
   const path = key.split('.');
-  let node = TRANSLATIONS[language];
-  for (const segment of path) {
-    node = node?.[segment];
-    if (node === undefined) break;
-  }
-  if (typeof node === 'string') return node;
+  const value = resolve(TRANSLATIONS[language], path);
+  if (value !== undefined) return value;
   // Fall back to English rather than showing a raw dot-path key to the user.
-  let fallback = TRANSLATIONS[DEFAULT_LANGUAGE];
-  for (const segment of path) {
-    fallback = fallback?.[segment];
-    if (fallback === undefined) break;
-  }
-  return typeof fallback === 'string' ? fallback : key;
+  const fallback = resolve(TRANSLATIONS[DEFAULT_LANGUAGE], path);
+  return fallback !== undefined ? fallback : key;
 }
 
 export function LanguageProvider({ children }) {

@@ -263,7 +263,7 @@ Clients authenticate through one of three mechanisms:
   - WebSocket is closed with code `1008` (Policy Violation) and clear rejection reason (`AUTHENTICATION_REQUIRED`, `INVALID_CREDENTIALS`, `EXPIRED_CREDENTIALS`, `TENANT_SCOPE_REQUIRED`, `ACCESS_DENIED`).
 
 #### Handshake Sequence
-1. **Client Connection:** Client connects to `ws://.../ai/voice/stream`.
+1. **Client Connection:** Client connects to `wss://.../ai/voice/stream` (TLS-encrypted in production; unencrypted `ws` protocol is restricted strictly to local developer testing).
 2. **Authentication / Start Negotiation:** Client provides credentials via header or initial frame, and specifies audio format (16000 Hz, 1 channel, `pcm_s16le`).
 3. **Server Ready (Server $\to$ Client):**
    ```json

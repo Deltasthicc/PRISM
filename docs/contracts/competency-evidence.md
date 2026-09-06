@@ -462,6 +462,72 @@ resolver deliberately does not authorize — per `data-authorization.md` section
 boundary, the route must verify the token, resolve an active local binding, require the relevant
 permission and enforce own-player scope *before* calling it.
 
+### 9.6 Lane 5 and Lane 2 — the sourced course catalogue
+
+Lane 3 has added a citation registry to `services/curricula.py`: `SOURCES` (12 government
+publications with publisher, URL, publication date and a `RETRIEVED_ON` date), `COMPETENCY_SOURCES`
+(a citation plus a `DIRECT`/`INDIRECT` strength for each competency) and a `source_registry()`
+accessor. All 44 non-DSA competencies are now cited; DSA deliberately carries none. Consumers get
+four new per-competency fields — `source_record`, `source_detail`, `source_strength` and
+`source_registry_version` — alongside the existing `source` string, whose value changed from the
+flat `"demo"` to a stable source ID such as `"SRC-01"`. The curriculum-level `source` is unchanged,
+so Lane 1's `AcademyHub.jsx` badge still works.
+
+**A source citation is not validation.** `authoring_status` stays `PROVISIONAL` on every
+competency including those with a `DIRECT` MoSPI citation, and
+`test_competency_source_registry.py` fails if that ever changes. The source proves the subject is
+real and trained on by the Government of India; it says nothing about whether our target levels,
+prerequisite edges or behavioural anchors for it are right.
+
+**The catalogue itself: JSON, not a table.** `backend/data/course_catalogue.json` holds 61 course
+records covering every one of the 44 non-DSA competencies, transcribed from SRC-01 (NSSTA training
+calendar) and SRC-02 (iGOT NLW-2024 recommendations). Each carries provider, duration, URL, source
+ID and a page/table locator; iGOT records additionally carry their real `do_` content ID.
+`backend/services/course_catalogue.py` loads it and matches against it.
+
+A JSON file rather than a database table is a deliberate scope decision, not a temporary
+workaround. The catalogue is read-only reference data that ships with the code, exactly like
+`curricula.py`. A table plus an Alembic migration would buy nothing until there is a live provider
+sync to reconcile against, and it would put a Lane 2 dependency in front of a demo-visible
+improvement. `learning_materials` was considered and cannot stand in: its `player_id`, `filename`
+and `sha256` are all `NOT NULL` and describe one learner's uploaded file, so a course row would
+need a fabricated owner, filename and hash, and there would still be nowhere to put provider, URL,
+duration, competency mapping or status.
+
+When a real provider adapter exists, `course_catalogue.py` is the seam to replace, and persistence
+becomes a genuine Lane 2 conversation with reconciliation requirements to justify it. Until then,
+no route may describe the catalogue as persisted.
+
+**Matching is keyword-based and deterministic.** No embeddings, no vector store —
+`SIH26101_WINNING_PLAYBOOK.md` section 6 gates those behind "only when real retrieval is
+implemented". Every recommendation carries `match_type` (`mapped` or `keyword`), `match_score`,
+`matched_terms` and a human-readable `match_reason`, so a judge can see whether a course was
+curated for that competency or surfaced on specific words, and can change a competency label and
+watch the result move. A keyword hit needs at least two distinct non-stopword terms: one shared
+word is coincidence, and an empty list is a better answer than a wrong one — the pathway already
+falls back to internal practice. The 11 DSA competencies deliberately return nothing.
+
+**Lane 5 — the wiring.** `services/course_catalogue.py` is a new file whose nearest mission owner
+is Lane 5 (`SIH26101_TEAM_ORCHESTRATION.md` section 2 assigns unlisted files that way); Lane 3
+authored the data and the matcher, Lane 5 owns the integration. `learning_catalog.py` is untouched.
+To adopt it, replace the homepage link in `recommend_courses()` with:
+
+```python
+from services.course_catalogue import recommend_for_competency
+
+for gap in skill_gaps[:5]:
+    courses.extend(recommend_for_competency(gap["competency_id"], gap["label"], gap["description"]))
+```
+
+Three constraints to preserve:
+
+- Records stay `status="CATALOGUE"`. `integration_status()` must keep reporting `catalog-fallback`
+  until a real adapter exists — a richer catalogue is not an integration.
+- The course-to-competency mapping is **ours**. Every record carries
+  `mapping_assurance="PROVISIONAL"`; do not describe it as iGOT's mapping.
+- The `do_` IDs were transcribed from a published PDF, not obtained from an API. They are catalogue
+  references, not proof of API access.
+
 ## 10. Change process
 
 `SIH26101_TEAM_ORCHESTRATION.md` section 8: open a proposal with old/new examples and

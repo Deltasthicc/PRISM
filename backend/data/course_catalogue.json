@@ -1,0 +1,1148 @@
+{
+  "catalogue_version": "prototype-v1",
+  "retrieved": "2026-09-06",
+  "status": "CATALOGUE",
+  "note": "Real published course records transcribed from government documents. Not a live provider sync: no enrolment, completion or competency writeback is available, and the course-to-competency mapping is team inference, not the provider's.",
+  "courses": [
+    {
+      "course_id": "nssta::large-scale-sample-surveys",
+      "provider": "NSSTA, Greater NOIDA",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Planning and Designing of large scale sample surveys",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_survey_design",
+        "os_sampling_design",
+        "os_data_collection"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 1",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::large-scale-data-r",
+      "provider": "IIT Kanpur / IASRI",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Handling Large Scale Data & Data Analysis using R",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_statistical_programming",
+        "os_big_data"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 2",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::migration-research",
+      "provider": "IIPS / Centre for Development Studies, Thiruvananthapuram",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Methods and Approaches to Research on Migration Issues",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_data_collection",
+        "os_survey_design"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 4",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::big-data-analysis",
+      "provider": "Dr. MCRHRD Hyderabad / C R Rao AIMSC / IIT Madras",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Big Data Analysis",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_big_data",
+        "os_ml",
+        "os_visualization",
+        "os_statistical_programming"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 5",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::poverty-inequality",
+      "provider": "JNU",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Poverty Analysis and Mapping and measuring Inequality",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_official_statistics",
+        "os_statistical_foundations"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 6",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::labour-force-employment",
+      "provider": "NSSTA",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Labour Force and Employment",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_labour_statistics"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 7",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::ai-blockchain",
+      "provider": "C R Rao AIMSC / IISc Bangalore / IIT Madras",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Artificial Intelligence (AI) and Concept of Block Chain",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_ml"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 8",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::python-for-statisticians",
+      "provider": "C R Rao AIMSC, Hyderabad",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Python Training for Statisticians",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_statistical_programming"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 10",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::data-warehouse",
+      "provider": "C R Rao AIMSC, Hyderabad",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Data Analysts and Data Ware House",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_data_management_sql",
+        "os_big_data"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 11",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::national-accounts",
+      "provider": "NSSTA / IMF SARTTAC",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "National Accounts",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_national_accounts"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 12",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::ai-machine-learning",
+      "provider": "IIT Madras",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Training on Artificial Intelligence and Machine learning",
+      "duration": "Two weeks",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_ml",
+        "os_big_data"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 14",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::current-economic-issues",
+      "provider": "IIM Ahmedabad / IGIDR Mumbai",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Current Economic Issues",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_national_accounts",
+        "os_official_statistics"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 15",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::iss-official-statistics-block",
+      "provider": "NSSTA",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Official Statistics (Agriculture and Allied, Industrial, National Accounts, Labour Force, Price, Trade, Social and Education Statistics)",
+      "duration": "15 weeks",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_official_statistics",
+        "os_agricultural_statistics",
+        "os_industrial_statistics",
+        "os_price_statistics"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Annexure I, ISS probationer module 2",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::iss-survey-methodology",
+      "provider": "NSSTA, ISI, SDRD, DPD, FOD",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Survey methodology and Data Analytics: designing, building, collecting, processing, analysing, disseminating and evaluating survey/census data",
+      "duration": "8 weeks",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_data_collection",
+        "os_survey_design",
+        "os_data_quality"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Annexure I, ISS probationer module 10",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::iss-core-it",
+      "provider": "NSSTA",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Core IT including Big Data, Data Warehousing and Data Analytics",
+      "duration": "12 weeks",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_big_data",
+        "os_data_management_sql"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Annexure I, ISS probationer module 15",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::iss-gis",
+      "provider": "IIRS & FSI, Dehradun; Labour Bureau, Shimla",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Application of GIS, Environment Statistics and Activities of Labour Bureau",
+      "duration": "2 weeks",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_gis"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Annexure I, ISS probationer module 17",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::sss-basic-statistics",
+      "provider": "NSSTA",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Basic Statistics & Sample Survey Techniques",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_statistical_foundations",
+        "os_sampling_design"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Annexure II, SSS induction module A",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::sss-official-statistics",
+      "provider": "NSSTA",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Official Statistics: functions of MoSPI, sources of official statistics and the Collection of Statistics Act 2008",
+      "duration": "Two weeks",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "os_official_statistics",
+        "os_data_quality"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Annexure II, SSS induction module A",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "mospi::sdg-nif-2026",
+      "provider": "MoSPI",
+      "provider_type": "institute",
+      "provider_record_id": null,
+      "title": "SDG National Indicator Framework 2026, with metadata",
+      "duration": "",
+      "url": "https://www.mospi.gov.in/metadata-national-indicator-framework",
+      "competency_ids": [
+        "os_sdg_indicators",
+        "os_metadata_standards"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-05",
+      "locator": "",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "mospi::nqaf-assessment",
+      "provider": "MoSPI, Coordination and Publication Division",
+      "provider_type": "institute",
+      "provider_record_id": null,
+      "title": "Assessment of the Indian Statistical System against the National Quality Assurance Framework",
+      "duration": "",
+      "url": "https://mospi.gov.in/sites/default/files/cocsso/Presentation/Coordination%20and%20publication%20division.pdf",
+      "competency_ids": [
+        "os_data_quality"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-08",
+      "locator": "",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "ogd::sdg-nif-catalogue",
+      "provider": "data.gov.in / NIC",
+      "provider_type": "institute",
+      "provider_record_id": null,
+      "title": "Open Government Data Platform India -- SDG NIF catalogue and resource API",
+      "duration": "",
+      "url": "https://www.data.gov.in/catalog/sustainable-development-goals-national-indicator-framework",
+      "competency_ids": [
+        "os_open_data",
+        "os_apis_interoperability"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-09",
+      "locator": "",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1134354826750771201203",
+      "provider": "Indian Institute of Public Administration",
+      "provider_type": "igot",
+      "provider_record_id": "do_1134354826750771201203",
+      "title": "Public Policy and the VUCA World",
+      "duration": "2 hr 7 min",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1134354826750771201203",
+      "competency_ids": [
+        "pa_policy_design",
+        "pa_governance_foundations"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1139301654992896001153",
+      "provider": "Indian School of Public Policy",
+      "provider_type": "igot",
+      "provider_record_id": "do_1139301654992896001153",
+      "title": "Public Policy Writing",
+      "duration": "2 hr 45 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1139301654992896001153",
+      "competency_ids": [
+        "pa_policy_design",
+        "pa_communication"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1138317860123607041131",
+      "provider": "Quality Council of India",
+      "provider_type": "igot",
+      "provider_record_id": "do_1138317860123607041131",
+      "title": "Fundamentals of Program and Project Management",
+      "duration": "9 hr 5 min",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1138317860123607041131",
+      "competency_ids": [
+        "pa_program_management"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_11390113879938662411",
+      "provider": "NSE Academy",
+      "provider_type": "igot",
+      "provider_record_id": "do_11390113879938662411",
+      "title": "Finance for Non-Finance Professionals (FNFP)",
+      "duration": "55 min",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_11390113879938662411",
+      "competency_ids": [
+        "pa_public_finance"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113952832553205760115",
+      "provider": "ISB Hyderabad",
+      "provider_type": "igot",
+      "provider_record_id": "do_113952832553205760115",
+      "title": "Public - Private Partnership",
+      "duration": "1 hr 50 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113952832553205760115",
+      "competency_ids": [
+        "pa_policy_design",
+        "pa_public_finance"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113952147264946176170",
+      "provider": "ISB Hyderabad",
+      "provider_type": "igot",
+      "provider_record_id": "do_113952147264946176170",
+      "title": "Purpose-Driven Leadership",
+      "duration": "1 hr 55 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113952147264946176170",
+      "competency_ids": [
+        "pa_leadership"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113960769474232320131",
+      "provider": "Totally Aligned Organization",
+      "provider_type": "igot",
+      "provider_record_id": "do_113960769474232320131",
+      "title": "Leading the Karmayogi Way",
+      "duration": "2 hr 15 min",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113960769474232320131",
+      "competency_ids": [
+        "pa_leadership",
+        "pa_change_management"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113955620332421120130",
+      "provider": "ISB Hyderabad",
+      "provider_type": "igot",
+      "provider_record_id": "do_113955620332421120130",
+      "title": "Managing and Leading Teams",
+      "duration": "1 hr 40 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113955620332421120130",
+      "competency_ids": [
+        "pa_leadership"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1138416487704576001135",
+      "provider": "Harappa Education",
+      "provider_type": "igot",
+      "provider_record_id": "do_1138416487704576001135",
+      "title": "Speaking Effectively",
+      "duration": "5 hrs 14 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1138416487704576001135",
+      "competency_ids": [
+        "pa_communication"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_11384383331773644811",
+      "provider": "DoPT",
+      "provider_type": "igot",
+      "provider_record_id": "do_11384383331773644811",
+      "title": "Communication for Citizen - Centricity",
+      "duration": "1 hr 35 min",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_11384383331773644811",
+      "competency_ids": [
+        "pa_communication",
+        "pa_governance_foundations"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, Director/DS",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1138416474369310721120",
+      "provider": "Harappa Education",
+      "provider_type": "igot",
+      "provider_record_id": "do_1138416474369310721120",
+      "title": "Structuring Problems",
+      "duration": "2 hrs 37 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1138416474369310721120",
+      "competency_ids": [
+        "pa_decision_making"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1141142234379386881387",
+      "provider": "Fractal",
+      "provider_type": "igot",
+      "provider_record_id": "do_1141142234379386881387",
+      "title": "Human Decision Making and its Biases",
+      "duration": "2 hrs 18 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1141142234379386881387",
+      "competency_ids": [
+        "pa_decision_making"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_114141193899892736139",
+      "provider": "Fractal",
+      "provider_type": "igot",
+      "provider_record_id": "do_114141193899892736139",
+      "title": "Structured Approach to Problem Solving",
+      "duration": "3 hrs 8 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_114141193899892736139",
+      "competency_ids": [
+        "pa_decision_making"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113950139420188672133",
+      "provider": "ISB Hyderabad",
+      "provider_type": "igot",
+      "provider_record_id": "do_113950139420188672133",
+      "title": "Critical Thinking",
+      "duration": "1 hr 51 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113950139420188672133",
+      "competency_ids": [
+        "pa_decision_making"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113945207591919616158",
+      "provider": "ISB Hyderabad",
+      "provider_type": "igot",
+      "provider_record_id": "do_113945207591919616158",
+      "title": "Negotiation",
+      "duration": "3 hr 45 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113945207591919616158",
+      "competency_ids": [
+        "pa_communication",
+        "pa_change_management"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113827634862047232152",
+      "provider": "DoPT",
+      "provider_type": "igot",
+      "provider_record_id": "do_113827634862047232152",
+      "title": "Team Building",
+      "duration": "1 hr 25 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113827634862047232152",
+      "competency_ids": [
+        "pa_leadership",
+        "pa_change_management"
+      ],
+      "track": "Behavioral",
+      "source_id": "SRC-02",
+      "locator": "Behavioral, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113858103759618048193",
+      "provider": "Capacity Building Commission",
+      "provider_type": "igot",
+      "provider_record_id": "do_113858103759618048193",
+      "title": "Design Thinking",
+      "duration": "1 hr 55 min",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113858103759618048193",
+      "competency_ids": [
+        "pa_policy_design",
+        "pa_change_management"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1141637027431383041450",
+      "provider": "Karmayogi Bharat",
+      "provider_type": "igot",
+      "provider_record_id": "do_1141637027431383041450",
+      "title": "Mission Karmayogi",
+      "duration": "1 hr",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1141637027431383041450",
+      "competency_ids": [
+        "pa_governance_foundations",
+        "pa_ethics"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1141534070151987201679",
+      "provider": "NITI Aayog",
+      "provider_type": "igot",
+      "provider_record_id": "do_1141534070151987201679",
+      "title": "Viksit Bharat",
+      "duration": "1 hr",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1141534070151987201679",
+      "competency_ids": [
+        "pa_governance_foundations"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1135948071783301121144",
+      "provider": "ISTM",
+      "provider_type": "igot",
+      "provider_record_id": "do_1135948071783301121144",
+      "title": "Noting And Drafting",
+      "duration": "2 hr 6 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1135948071783301121144",
+      "competency_ids": [
+        "pa_communication"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, ASO and upto",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::communication-skill-development",
+      "provider": "IIM Ahmedabad",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Communication Skill Development",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "pa_communication"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 9",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::leadership-strategic-management",
+      "provider": "NSSTA (MCTP Phase 3)",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Leadership and Strategic Management",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "pa_leadership"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "MCTP Phase 3, component (i)",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::iss-monitoring-evaluation",
+      "provider": "ASCI, Hyderabad",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Monitoring & Evaluation",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "pa_monitoring_evaluation"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Annexure I, ISS probationer module 13",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::iss-time-series-econometrics",
+      "provider": "ISEC Bangalore",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "Time Series and Applied Econometrics",
+      "duration": "Two weeks",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "pa_impact_evaluation"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Annexure I, ISS probationer module 5",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nssta::gfr-vigilance",
+      "provider": "NSSTA",
+      "provider_type": "nssta",
+      "provider_record_id": null,
+      "title": "GFR and Vigilance",
+      "duration": "One week",
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "competency_ids": [
+        "pa_ethics",
+        "pa_public_finance"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-01",
+      "locator": "Domain-specific course 13",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "cbc::kqf-v1",
+      "provider": "Capacity Building Commission",
+      "provider_type": "institute",
+      "provider_record_id": null,
+      "title": "Karmayogi Quality Framework, v1 -- ethical and values alignment",
+      "duration": "",
+      "url": "https://cbc.gov.in/sites/default/files/2026-05/Final_KQF_v1_merged%20%281%29_0.pdf",
+      "competency_ids": [
+        "pa_ethics"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-04",
+      "locator": "",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113828944907091968176",
+      "provider": "Bharat Sanchar Nigam Limited (BSNL)",
+      "provider_type": "igot",
+      "provider_record_id": "do_113828944907091968176",
+      "title": "Digital Literacy",
+      "duration": "2 hr 6 min",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113828944907091968176",
+      "competency_ids": [
+        "dl_digital_foundations"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Recommendations for MTS",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_11391672014338457611",
+      "provider": "UpGrad",
+      "provider_type": "igot",
+      "provider_record_id": "do_11391672014338457611",
+      "title": "Cyber Security",
+      "duration": "2 hr 56 min",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_11391672014338457611",
+      "competency_ids": [
+        "dl_cyber_hygiene"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_113814138061455360187",
+      "provider": "Microsoft",
+      "provider_type": "igot",
+      "provider_record_id": "do_113814138061455360187",
+      "title": "Cyber Security Basics",
+      "duration": "2 hr 22 min",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_113814138061455360187",
+      "competency_ids": [
+        "dl_cyber_hygiene",
+        "dl_digital_foundations"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Recommendations for All",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_11401522104510054415",
+      "provider": "Karmayogi Bharat",
+      "provider_type": "igot",
+      "provider_record_id": "do_11401522104510054415",
+      "title": "Digital Personal Data Protection Act, 2023: An Overview",
+      "duration": "1 hr 12 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_11401522104510054415",
+      "competency_ids": [
+        "dl_data_privacy"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1140994741049999361127",
+      "provider": "DataDotOrg",
+      "provider_type": "igot",
+      "provider_record_id": "do_1140994741049999361127",
+      "title": "Responsible Data Management",
+      "duration": "1 hr 58 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1140994741049999361127",
+      "competency_ids": [
+        "dl_data_privacy",
+        "dl_responsible_ai",
+        "dl_data_literacy"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Recommendations for All",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1141311869341614081189",
+      "provider": "Fractal",
+      "provider_type": "igot",
+      "provider_record_id": "do_1141311869341614081189",
+      "title": "Data Storytelling",
+      "duration": "2 hrs 49 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1141311869341614081189",
+      "competency_ids": [
+        "dl_data_literacy",
+        "pa_data_storytelling",
+        "os_visualization"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_114085334432260096152",
+      "provider": "Fractal",
+      "provider_type": "igot",
+      "provider_record_id": "do_114085334432260096152",
+      "title": "Gen AI for Everyone",
+      "duration": "2 hrs 49 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_114085334432260096152",
+      "competency_ids": [
+        "dl_ai_literacy"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_1136258909109616641481",
+      "provider": "Wadhwani Foundation",
+      "provider_type": "igot",
+      "provider_record_id": "do_1136258909109616641481",
+      "title": "Introduction to Emerging Technologies",
+      "duration": "2 hr 20 mins",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_1136258909109616641481",
+      "competency_ids": [
+        "dl_ai_literacy",
+        "dl_digital_public_infrastructure"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "igot::do_114085865386598400145",
+      "provider": "Wadhwani Foundation",
+      "provider_type": "igot",
+      "provider_record_id": "do_114085865386598400145",
+      "title": "ChatGPT and Generative AI tools for Government Officials",
+      "duration": "1 hr",
+      "url": "https://portal.igotkarmayogi.gov.in/app/toc/do_114085865386598400145",
+      "competency_ids": [
+        "dl_responsible_ai",
+        "dl_ai_literacy"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-02",
+      "locator": "Functional, JS & Above",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nielit::cyber-security-tools",
+      "provider": "NIELIT, MeitY",
+      "provider_type": "institute",
+      "provider_record_id": null,
+      "title": "Online Course on Cyber Security Tools",
+      "duration": "",
+      "url": "https://www.nielit.gov.in/content/online-course-cyber-security-tools",
+      "competency_ids": [
+        "dl_cyber_hygiene"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-11",
+      "locator": "",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nielit::cyber-security-cloud",
+      "provider": "NIELIT, MeitY",
+      "provider_type": "institute",
+      "provider_record_id": null,
+      "title": "Certificate Course on Cyber Security & Cloud Computing",
+      "duration": "",
+      "url": "https://www.nielit.gov.in/content/online-course-certificate-course-cyber-security-cloud-computing",
+      "competency_ids": [
+        "dl_government_cloud",
+        "dl_cyber_hygiene",
+        "os_big_data"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-11",
+      "locator": "",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "nielit::digital-literacy",
+      "provider": "NIELIT, MeitY",
+      "provider_type": "institute",
+      "provider_record_id": null,
+      "title": "Digital Literacy Courses (DLC)",
+      "duration": "",
+      "url": "https://www.nielit.gov.in/ajmer/content/digital-literacy-courses",
+      "competency_ids": [
+        "dl_digital_foundations",
+        "dl_spreadsheets"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-11",
+      "locator": "",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "cdac::education",
+      "provider": "C-DAC, MeitY",
+      "provider_type": "institute",
+      "provider_record_id": null,
+      "title": "C-DAC education and training programmes (advanced computing, cyber security, PKI)",
+      "duration": "",
+      "url": "https://www.cdac.in/index.aspx?id=education",
+      "competency_ids": [
+        "dl_digital_signatures"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-12",
+      "locator": "",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    },
+    {
+      "course_id": "sidh::master-catalogue",
+      "provider": "MSDE / NCVET",
+      "provider_type": "institute",
+      "provider_record_id": null,
+      "title": "Skill India Digital Hub master catalogue (NSQF-levelled)",
+      "duration": "",
+      "url": "https://www.skillindiadigital.gov.in/about-us",
+      "competency_ids": [
+        "dl_digital_public_infrastructure",
+        "dl_collaboration"
+      ],
+      "track": "Functional",
+      "source_id": "SRC-13",
+      "locator": "",
+      "status": "CATALOGUE",
+      "mapping_assurance": "PROVISIONAL",
+      "retrieved": "2026-09-06"
+    }
+  ]
+}

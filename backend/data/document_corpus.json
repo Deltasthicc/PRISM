@@ -1,0 +1,386 @@
+{
+  "corpus_version": "prototype-v1",
+  "verified_on": "2026-09-06",
+  "total_documents": 21,
+  "note": "Every document was downloaded, hashed and text-extracted on verified_on. sha256 is of the exact bytes retrieved from url on that date.",
+  "documents": [
+    {
+      "doc_id": "cbc_capacity_report",
+      "title": "Handbook: Performance Measurement Approach for MDOs",
+      "publisher": "Capacity Building Commission",
+      "source_id": "SRC-35",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_program_management",
+        "pa_monitoring_evaluation",
+        "pa_change_management"
+      ],
+      "url": "https://cbc.gov.in/sites/default/files/2026-03/Handbook-Performance%20Measurement%20Approach%20for%20MDOs%20(1).pdf",
+      "sha256": "34c2935a7e9c710a0c012a7ae17a7fcbc579b9a7e87ae9703f93fefe3cd986a9",
+      "bytes": 2831307,
+      "pages": 9,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "cbc_kqf",
+      "title": "Karmayogi Quality Framework, v1",
+      "publisher": "Capacity Building Commission",
+      "source_id": "SRC-04",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_ethics",
+        "pa_leadership"
+      ],
+      "url": "https://cbc.gov.in/sites/default/files/2026-05/Final_KQF_v1_merged%20%281%29_0.pdf",
+      "sha256": "45f0499974997ba4f33cdc47484d22c82e8396dd888210c61ff1c80f195b3667",
+      "bytes": 1100496,
+      "pages": 26,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "cca_dsc_interop",
+      "title": "Interoperability Guidelines for Digital Signature Certificates",
+      "publisher": "Controller of Certifying Authorities, MeitY",
+      "source_id": "SRC-32",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_digital_signatures"
+      ],
+      "url": "https://cca.gov.in/sites/files/pdf/guidelines/CCA-IOG.pdf",
+      "sha256": "ecb6abc3cad4a233992753d4668f367140ffa77f879068f762c63c2f7175ccb4",
+      "bytes": 1413027,
+      "pages": 122,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "cca_esign_eauth",
+      "title": "e-Authentication Guidelines for eSign Online Electronic Signature Service",
+      "publisher": "Controller of Certifying Authorities, MeitY",
+      "source_id": "SRC-31",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_digital_signatures"
+      ],
+      "url": "https://cca.gov.in/sites/files/pdf/esign/CCA-EAUTH.pdf",
+      "sha256": "f12e019d460d391bd7f6973b228e01d8ff52dd1eed69fe07af84aa53236873f3",
+      "bytes": 352151,
+      "pages": 22,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "cca_esign_integration",
+      "title": "Electronic Signature Application Integration Guidelines, v1.0",
+      "publisher": "Controller of Certifying Authorities, MeitY",
+      "source_id": "SRC-33",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_digital_signatures",
+        "dl_digital_public_infrastructure"
+      ],
+      "url": "https://cca.gov.in/sites/files/pdf/guidelines/CCA-ESAIG.pdf",
+      "sha256": "2f578cc8fc37f7ec5f6872e3d57fcddbaf96eb28e642b76a48be323f20f16ed1",
+      "bytes": 535258,
+      "pages": 11,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "certin_audit_policy",
+      "title": "Comprehensive Cyber Security Audit Policy Guidelines",
+      "publisher": "CERT-In, MeitY",
+      "source_id": "SRC-30",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_cyber_hygiene"
+      ],
+      "url": "https://www.cert-in.org.in/PDF/Comprehensive_Cyber_Security_Audit_Policy_Guidelines.pdf",
+      "sha256": "ad2b9b38d5af8e1c55d450f7122059d65546bf7be904ba5ace59cbd1fcc3bc09",
+      "bytes": 553513,
+      "pages": 69,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "certin_govt_entities",
+      "title": "CERT-In Guidelines for Government Entities",
+      "publisher": "CERT-In, MeitY",
+      "source_id": "SRC-29",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_cyber_hygiene",
+        "dl_government_cloud"
+      ],
+      "url": "https://www.cert-in.org.in/PDF/guidelinesgovtentities.pdf",
+      "sha256": "bca0e5b8ac45f20fd5f41977634dbdaf6c0b7d7185feddabda0d8170e1a513d5",
+      "bytes": 1416712,
+      "pages": 76,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "dpdp_act_2023",
+      "title": "The Digital Personal Data Protection Act, 2023 (No. 22 of 2023)",
+      "publisher": "Ministry of Electronics & Information Technology",
+      "source_id": "SRC-26",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_data_privacy"
+      ],
+      "url": "https://www.meity.gov.in/static/uploads/2024/06/2bf1f0e9f04e6fb4f8fef35e82c42aa5.pdf",
+      "sha256": "4deb23981d3010c8225a2ff6149e7243dc2268455b299e283afebdd7b72a7d15",
+      "bytes": 182082,
+      "pages": 21,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "cpi_faq_2024",
+      "title": "Frequently Asked Questions on the CPI 2024 Series",
+      "publisher": "MoSPI",
+      "source_id": "SRC-23",
+      "category": "statistical",
+      "competency_ids": [
+        "os_price_statistics"
+      ],
+      "url": "https://www.mospi.gov.in/uploads/documents/documents/1770891066052-Annexure_V.pdf",
+      "sha256": "7720b6404da8508dbf0c99ed56eae066a88bf2b873c2113c121326ffb53d69c4",
+      "bytes": 273029,
+      "pages": 7,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "cpi_imputation",
+      "title": "CPI Technical Note on Imputation",
+      "publisher": "MoSPI",
+      "source_id": "SRC-24",
+      "category": "statistical",
+      "competency_ids": [
+        "os_price_statistics",
+        "os_data_quality"
+      ],
+      "url": "https://www.mospi.gov.in/sites/default/files/press_release/CPI%20Technical%20Note%20on%20Imputation.pdf",
+      "sha256": "eba17eb872d4b5a0d4aa8acf87892fe73671f68c546e765e47bdf55dc6d99b07",
+      "bytes": 298354,
+      "pages": 9,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "cpi_manual_2010",
+      "title": "Manual on Consumer Price Index, 2010",
+      "publisher": "MoSPI, Central Statistics Office",
+      "source_id": "SRC-22",
+      "category": "statistical",
+      "competency_ids": [
+        "os_price_statistics",
+        "os_official_statistics"
+      ],
+      "url": "https://mospi.gov.in/sites/default/files/publication_reports/manual_cpi_2010.pdf",
+      "sha256": "b9f15f9d2b86541eeea8c2ac724af66039859a64d57a7add525af76f0d0b7f6c",
+      "bytes": 5413523,
+      "pages": 163,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "expert_group_cpi",
+      "title": "Expert Group Report on Comprehensive Updation of the Consumer Price Index",
+      "publisher": "MoSPI",
+      "source_id": "SRC-28",
+      "category": "statistical",
+      "competency_ids": [
+        "os_price_statistics",
+        "os_data_quality",
+        "os_survey_design"
+      ],
+      "url": "https://www.mospi.gov.in/uploads/Marquee/doc-0aee0026-bf32-4213-ae4f-c5308088444e.pdf",
+      "sha256": "7ed0adbd4a13447ef05c1087c3b2f0930b7fd0158ec58219daa60f36b2e069a1",
+      "bytes": 5022008,
+      "pages": 258,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "nas_sources_methods",
+      "title": "National Accounts Statistics: Sources and Methods, 2012",
+      "publisher": "MoSPI, Central Statistics Office",
+      "source_id": "SRC-20",
+      "category": "statistical",
+      "competency_ids": [
+        "os_national_accounts",
+        "os_official_statistics",
+        "os_industrial_statistics"
+      ],
+      "url": "https://www.mospi.gov.in/sites/default/files/publication_reports/sources_method_2012%20(1).pdf",
+      "sha256": "ebbadd5c0e5cc9e23a6d825b2704d341bff5b2cf2727cabcce29633acfe885b3",
+      "bytes": 5245408,
+      "pages": 353,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "nas_state_district",
+      "title": "National Accounts Statistics: Manual on Estimation of State and District Income",
+      "publisher": "MoSPI",
+      "source_id": "SRC-21",
+      "category": "statistical",
+      "competency_ids": [
+        "os_national_accounts",
+        "os_metadata_standards"
+      ],
+      "url": "https://www.mospi.gov.in/sites/default/files/publication_reports/national_accounta.pdf",
+      "sha256": "3ed49564fbc0b12d813818d1a51f4c9ea22b7356121ae68611aab624ab8d253f",
+      "bytes": 2517681,
+      "pages": 136,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "nqaf_cocsso",
+      "title": "Indian Statistical System assessment against the National Quality Assurance Framework",
+      "publisher": "MoSPI",
+      "source_id": "SRC-08",
+      "category": "statistical",
+      "competency_ids": [
+        "os_data_quality",
+        "os_official_statistics"
+      ],
+      "url": "https://mospi.gov.in/sites/default/files/cocsso/Presentation/Coordination%20and%20publication%20division.pdf",
+      "sha256": "cd2dbdca9142983af52c14106172e7a86df0e7e6604d7ac16cf72a9991e0a663",
+      "bytes": 425459,
+      "pages": 11,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "nssta_calendar",
+      "title": "NSSTA Training Calendar 2021-22",
+      "publisher": "MoSPI / NSO / NSSTA",
+      "source_id": "SRC-01",
+      "category": "statistical",
+      "competency_ids": [
+        "os_official_statistics"
+      ],
+      "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
+      "sha256": "daf9b6fe4108b4aad2daca6b5f441814c83e3474373bd3b52e4ca22829b09ec1",
+      "bytes": 507791,
+      "pages": 29,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "plfs_2017_18",
+      "title": "Annual Report, Periodic Labour Force Survey 2017-18",
+      "publisher": "MoSPI, National Statistical Office",
+      "source_id": "SRC-25",
+      "category": "statistical",
+      "competency_ids": [
+        "os_labour_statistics",
+        "os_survey_design",
+        "os_sampling_design"
+      ],
+      "url": "https://www.mospi.gov.in/sites/default/files/publication_reports/Annual%20Report,%20PLFS%202017-18_31052019.pdf",
+      "sha256": "2ff169b5b587bfffb20da891dc664d0996c1ae902150f7b21b38d3707bb1b4e3",
+      "bytes": 19401270,
+      "pages": 643,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "sdg_nif_2026",
+      "title": "SDG National Indicator Framework 2026, with metadata",
+      "publisher": "MoSPI",
+      "source_id": "SRC-05",
+      "category": "statistical",
+      "competency_ids": [
+        "os_sdg_indicators",
+        "os_metadata_standards"
+      ],
+      "url": "https://www.mospi.gov.in/uploads/publications_reports/publications_reports1782719243840_1f31af3d-72ef-43f0-8038-c029553699f3_SDG_NIF_2026_(along_with_metadata).pdf",
+      "sha256": "9d60c27e204b97e31e916833f63e6d4a50807b44c1eda2da36239d0d4d98149a",
+      "bytes": 3330706,
+      "pages": 166,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "sif_guideline",
+      "title": "SIF Guideline, version 1.1",
+      "publisher": "MoSPI",
+      "source_id": "SRC-07",
+      "category": "statistical",
+      "competency_ids": [
+        "os_metadata_standards",
+        "os_data_quality"
+      ],
+      "url": "https://www.mospi.gov.in/sites/default/files/SIF%20Guideline%20by%20MoSPI.pdf",
+      "sha256": "a26c2272a0e32f68ff581f3e14fe6992993426036bf8aa880ffcba5903ef3454",
+      "bytes": 276984,
+      "pages": 9,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "ndsap_impl",
+      "title": "NDSAP Implementation Guidelines, v2.2",
+      "publisher": "data.gov.in / NIC",
+      "source_id": "SRC-34",
+      "category": "technical",
+      "competency_ids": [
+        "os_open_data",
+        "os_apis_interoperability",
+        "os_metadata_standards"
+      ],
+      "url": "https://www.data.gov.in/sites/default/files/NDSAP_Implementation_Guidelines_2.2.pdf",
+      "sha256": "040fdf4c6c337bdde6d52ec6ca8bee5c88eabde4fe165ac8da27ee6266edafd5",
+      "bytes": 1240146,
+      "pages": 46,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "niti_ai_strategy",
+      "title": "National Strategy for Artificial Intelligence",
+      "publisher": "NITI Aayog",
+      "source_id": "SRC-27",
+      "category": "technical",
+      "competency_ids": [
+        "os_ml",
+        "dl_ai_literacy",
+        "dl_responsible_ai"
+      ],
+      "url": "https://www.niti.gov.in/sites/default/files/2023-03/National-Strategy-for-Artificial-Intelligence.pdf",
+      "sha256": "da5404dbb584c8956aae707dfcfe324dc1df11a179bc8288af0e898f4e37dcc5",
+      "bytes": 4615281,
+      "pages": 114,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06"
+    }
+  ]
+}

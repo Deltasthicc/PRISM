@@ -33,3 +33,4 @@ Thumbs.db
 
 # Ephemeral Codex/Claude planning scratchpad; never commit.
 ClaudeCode_Codex_UwU.md
+backend/data/.doc_cache/

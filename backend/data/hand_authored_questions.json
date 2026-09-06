@@ -1,0 +1,277 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-06",
+  "note": "MCQs authored by direct human review of the page images of upsc_csm26_statistics_p1 / upsc_csm26_statistics_p2 (see document_corpus.json) -- both are scanned bilingual page-image PDFs with no embedded text layer, so services/competency_docs.py's automatic extract_document_text()/quiz_from_document() correctly refuses them ('may be a scanned document needing OCR'). Every source_excerpt below is a verbatim transcription of real printed text on the cited page, checked against the image by a human, not model-generated or paraphrased. These are Civil Services (Main) Examination descriptive/analytical questions (five of eight answered, each worth 9-20 marks) -- there is no official answer key or MCQ form for this paper. Each item below tests one well-defined, single-correct-answer concept drawn directly from the real printed question, with the MCQ form (stem, four options, one correct answer) and the explanation authored by the reviewer, same as any textbook-style conceptual check. status is DRAFT until reviewed against CLAUDE.md invariant 9, same as any other generated item in this codebase.",
+  "questions": [
+    {
+      "item_id": "ha_p1_q1a_bonferroni",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Paper I, Q1(a)(i), page 2",
+      "source_excerpt": "Show that for n events A_1, A_2, ⋯, A_n\n\nP(⋂_{i=1}^{n} A_i) ≥ ∑_{i=1}^{n} P(A_i) − (n − 1)",
+      "question": "The Bonferroni-type inequality asked to be proved states P(⋂ᵢ Aᵢ) ≥ ∑ᵢ P(Aᵢ) − (n − 1) for n events. What does this inequality give a usable lower bound for?",
+      "options": [
+        "The probability that all n events occur simultaneously",
+        "The probability that none of the n events occur",
+        "The expected number of events that occur",
+        "The variance of the number of events that occur"
+      ],
+      "answer_index": 0,
+      "explanation": "The left-hand side, P(⋂ Aᵢ), is the probability of the intersection of all n events -- i.e. that every one of them occurs. The inequality bounds that joint probability below using only the individual (marginal) probabilities, which is what makes it practically useful: you rarely know the joint distribution but often do know each P(Aᵢ)."
+    },
+    {
+      "item_id": "ha_p1_q1a_mutually_exclusive",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Paper I, Q1(a)(ii), page 2",
+      "source_excerpt": "For two mutually exclusive events A and B, show that\n\nP(A|A ∪ B) = P(A) / (P(A) + P(B)); P(A), P(B) > 0",
+      "question": "For two mutually exclusive events A and B with P(A), P(B) > 0, the identity P(A|A∪B) = P(A)/(P(A)+P(B)) holds. Why does mutual exclusivity make this simplification possible?",
+      "options": [
+        "Because P(A ∩ (A∪B)) = P(A) and P(A∪B) = P(A) + P(B) exactly, with no overlap term to subtract",
+        "Because P(A) and P(B) must be equal when A and B are mutually exclusive",
+        "Because conditioning on a union always divides by the sum of the two probabilities, regardless of overlap",
+        "Because mutually exclusive events are always independent, so P(A|A∪B) = P(A)"
+      ],
+      "answer_index": 0,
+      "explanation": "By definition, P(A|A∪B) = P(A ∩ (A∪B)) / P(A∪B). Since A ⊆ A∪B, the numerator is just P(A). Since A and B are mutually exclusive (A∩B = ∅), the general union formula P(A∪B) = P(A)+P(B)−P(A∩B) simplifies to P(A)+P(B) with no overlap to subtract. Options C and D describe unrelated or false general rules -- independence and mutual exclusivity are different, usually incompatible properties for events with positive probability."
+    },
+    {
+      "item_id": "ha_p1_q1c_chebyshev",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Paper I, Q1(c), page 3",
+      "source_excerpt": "A random variable X has the probability density function f(x) = e^{-x} x^λ / λ!; x > 0, where λ is a positive integer. Using Chebyshev's inequality, show that P[0 < X < 2(λ+1)] > λ / (λ+1)",
+      "question": "This question asks you to bound P[0 < X < 2(λ+1)] for a Gamma(λ+1, 1)-type random variable using Chebyshev's inequality rather than its exact distribution. What is the essential trade-off of using Chebyshev's inequality here instead of computing the exact probability?",
+      "options": [
+        "Chebyshev's inequality only needs the mean and variance of X, not its full distribution, but it gives a looser bound than the exact probability",
+        "Chebyshev's inequality gives the exact value of the probability, making distributional assumptions unnecessary",
+        "Chebyshev's inequality only applies to discrete random variables, so it cannot be used for this continuous X",
+        "Chebyshev's inequality requires X to be normally distributed, which this exponential-family density satisfies"
+      ],
+      "answer_index": 0,
+      "explanation": "Chebyshev's inequality, P(|X−μ| ≥ kσ) ≤ 1/k², is a distribution-free bound that only needs the mean μ and variance σ² -- it works for any distribution with finite variance, discrete or continuous, and does not require normality. Its cost is that the bound is typically much looser than the true probability computed from the exact distribution, which is exactly why the question asks for a 'show that ... >' inequality rather than an exact value."
+    },
+    {
+      "item_id": "ha_p1_q1d_rao_blackwell",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Paper I, Q1(d)(i), page 3",
+      "source_excerpt": "Describe how Rao-Blackwell theorem enables one to find the UMVUE.",
+      "question": "The Rao-Blackwell theorem is used to construct a UMVUE (uniformly minimum variance unbiased estimator). What does the theorem guarantee when you condition any unbiased estimator on a sufficient statistic?",
+      "options": [
+        "The resulting conditioned estimator remains unbiased and has variance no greater than the original estimator's",
+        "The resulting conditioned estimator becomes the maximum likelihood estimator automatically",
+        "The resulting conditioned estimator is guaranteed to be normally distributed regardless of the original distribution",
+        "The resulting conditioned estimator always has strictly larger variance, which is why it should be avoided"
+      ],
+      "answer_index": 0,
+      "explanation": "The Rao-Blackwell theorem states that if T is a sufficient statistic and δ is any unbiased estimator of a parameter, then E[δ|T] is also unbiased and its variance is never larger than that of δ -- it can only improve (or match) precision, never worsen it. Combined with completeness of T (Lehmann-Scheffé), this conditioned estimator becomes the UMVUE. It has nothing to do with the estimator's distribution becoming normal, and it is not the same procedure as maximum likelihood estimation."
+    },
+    {
+      "item_id": "ha_p1_q3c_sufficiency",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Paper I, Q3(c), page 8",
+      "source_excerpt": "Prove that there always exists a sufficient statistic for the one-parameter exponential family of distributions. Using it, show that sample total is sufficient statistic for the parameter for the Poisson model. State whether this estimator is complete.",
+      "question": "For the one-parameter exponential family of distributions, the question asks you to show the sample total ∑Xi is a sufficient statistic for the Poisson model's parameter. What does 'sufficient' mean for this statistic?",
+      "options": [
+        "The conditional distribution of the sample, given the value of the sample total, does not depend on the unknown parameter at all",
+        "The sample total is the only function of the data that is an unbiased estimator of the parameter",
+        "The sample total always has the smallest possible variance among every conceivable estimator of the parameter",
+        "The sample total is sufficient only if the sample size n is larger than 30"
+      ],
+      "answer_index": 0,
+      "explanation": "A statistic T is sufficient for a parameter θ if, once you know T, the remaining conditional distribution of the full sample carries no further information about θ -- i.e. it doesn't depend on θ. For the Poisson distribution (a one-parameter exponential family member), the Fisher-Neyman factorization theorem shows the sample total is exactly this kind of statistic; it also happens to be complete, which the question separately asks you to state."
+    },
+    {
+      "item_id": "ha_p1_q4a_mle_unbiased",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Paper I, Q4(a), page 8",
+      "source_excerpt": "Let X_1, X_2, ⋯, X_n be i.i.d. random variables following N(μ, σ²). Find the maximum likelihood estimator for σ² and examine whether the same is unbiased. If biased, suggest an unbiased estimator for σ² and examine whether it is consistent.",
+      "question": "The maximum likelihood estimator of σ² for an i.i.d. Normal(μ, σ²) sample, using divisor n rather than (n−1) in the sample variance formula, is asked to be examined for bias. What is true of this particular MLE?",
+      "options": [
+        "It is a biased estimator of σ², systematically underestimating it on average, though the bias vanishes as n → ∞",
+        "It is an unbiased estimator of σ² for every sample size n",
+        "It is unbiased only when μ is known in advance, and biased otherwise",
+        "It cannot be computed unless the population is known to be Normal"
+      ],
+      "answer_index": 0,
+      "explanation": "The MLE of σ² under Normality is (1/n)∑(Xᵢ−X̄)², whose expectation is ((n−1)/n)σ² -- strictly less than σ², so it is biased downward. This is exactly why the question then asks for an unbiased alternative (dividing by n−1 instead) and whether that alternative is consistent. The bias does shrink to zero as n grows, which is why the MLE is still asymptotically unbiased and consistent even though it is biased for finite n."
+    },
+    {
+      "item_id": "ha_p1_q4c_sprt",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Paper I, Q4(c), page 8",
+      "source_excerpt": "Describe sequential probability ratio test (SPRT). Find the SPRT for testing H_0: θ = θ_0 against H_1: θ = θ_1, using random observations from Poisson(θ). Also find the OC function for the test.",
+      "question": "Unlike a fixed-sample-size hypothesis test, Wald's Sequential Probability Ratio Test (SPRT) does not decide after a predetermined number of observations. What actually determines when an SPRT stops sampling and reaches a decision?",
+      "options": [
+        "The running likelihood ratio of the observations so far crossing one of two pre-set boundaries, accepting H0, accepting H1, or continuing to sample otherwise",
+        "A fixed sample size calculated in advance from the desired Type I and Type II error rates",
+        "The sample mean converging to within a fixed tolerance of θ_0 or θ_1",
+        "A p-value computed after each observation falling below 0.05"
+      ],
+      "answer_index": 0,
+      "explanation": "SPRT computes the cumulative likelihood ratio Λ_n after each new observation and compares it against two boundaries (derived from the target Type I/II error rates α and β). If Λ_n exceeds the upper boundary, H1 is accepted; if it falls below the lower boundary, H0 is accepted; otherwise sampling continues. This is precisely what makes it 'sequential' rather than fixed-sample-size, and is also why its operating characteristic (OC) function -- the probability of accepting H0 as a function of the true θ -- is worth deriving separately, as the question also asks."
+    },
+    {
+      "item_id": "ha_p1_q5b_stratified_allocation",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Paper I, Q5(b), page 10",
+      "source_excerpt": "A population is divided into three strata. Determine the sample size for each stratum for a total sample of size 100 under (i) proportional allocation and (ii) optimum allocation.",
+      "question": "A stratified sample is being allocated across strata using either proportional allocation or optimum (Neyman) allocation. What is the key extra information optimum allocation uses that proportional allocation ignores?",
+      "options": [
+        "The variability (S_h) within each stratum and the cost (C_h) of sampling per unit in that stratum, not just the stratum's population size",
+        "The correlation between the survey variable and an auxiliary variable measured in a pilot study",
+        "Whether the strata were formed using equal-width or equal-frequency class boundaries",
+        "The total number of strata, regardless of their individual sizes"
+      ],
+      "answer_index": 0,
+      "explanation": "Proportional allocation sets each stratum's sample size proportional only to its population size N_h. Neyman (optimum) allocation additionally weights by each stratum's standard deviation S_h (more variable strata need more sample) and, in the cost-constrained version, by the per-unit sampling cost C_h in that stratum -- allocating more sample where variability is high and/or sampling is cheap. This is exactly the (N_h, S_h², C_h) table structure the real question supplies for three strata."
+    },
+    {
+      "item_id": "ha_p1_q6a_gauss_markov",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Paper I, Q6(a), page 10",
+      "source_excerpt": "Let l'β be any estimable linear function of parameters β_1, β_2, ⋯, β_p. Then prove that (i) there exists a unique linear function c'Y of random variables Y_1, Y_2, ⋯, Y_n such that c ∈ V(A') and E(c'Y) = l'β ...; (ii) variance of c'Y is less than the variance of any other linear unbiased estimator.",
+      "question": "This question is essentially asking you to prove the Gauss-Markov theorem for an estimable linear function of a linear model's parameters. What does the Gauss-Markov theorem establish about the resulting estimator?",
+      "options": [
+        "It is the Best Linear Unbiased Estimator (BLUE) -- unbiased, and with the smallest variance among all linear unbiased estimators of that quantity",
+        "It is the estimator with the smallest variance among all possible estimators, linear or not",
+        "It is guaranteed to be normally distributed regardless of the error distribution",
+        "It only applies when the design matrix A has full column rank"
+      ],
+      "answer_index": 0,
+      "explanation": "The Gauss-Markov theorem proves that, under the standard linear model assumptions (uncorrelated errors with constant variance), the least-squares estimator of an estimable linear function is the Best Linear Unbiased Estimator -- best meaning minimum variance among the class of linear unbiased estimators, not among every possible estimator (a nonlinear or biased estimator could in principle do better on other criteria). It doesn't require or imply normality of the errors, and it doesn't require full column rank of A -- 'estimable' functions are specifically the ones that remain well-defined even when A is rank-deficient."
+    },
+    {
+      "item_id": "ha_p1_q8b_horvitz_thompson",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Paper I, Q8(b), page 14",
+      "source_excerpt": "A population of N=4 units has values y_1=10, y_2=20, y_3=30 and y_4=40. Consider a sample of size n=2 without replacement with inclusion probabilities proportional to a size measure x_i ... Using Horvitz-Thompson estimator, estimate the population total.",
+      "question": "The Horvitz-Thompson estimator is used here to estimate a population total from a sample drawn with unequal inclusion probabilities (probability proportional to size). Why does the Horvitz-Thompson estimator divide each sampled unit's value by its own inclusion probability π_i, rather than simply averaging and scaling up by N/n as in simple random sampling?",
+      "options": [
+        "Because with unequal selection probabilities, each sampled unit represents a different number of population units, so dividing by π_i correctly re-weights it back to represent its true share of the population, keeping the estimator unbiased",
+        "Because dividing by π_i is only a variance-reduction trick with no effect on whether the estimator is unbiased",
+        "Because π_i must always equal n/N for the estimator to be valid, making the division a constant scaling factor",
+        "Because the population total can only be estimated this way when sampling is done with replacement"
+      ],
+      "answer_index": 0,
+      "explanation": "Under unequal-probability sampling, a unit with a higher inclusion probability is 'easier' to get into the sample and so should count for less when scaled up, and vice versa; y_i/π_i is precisely the re-weighting that makes E[ˆY] = ∑y_i = Y (the true total) regardless of how unequal the π_i values are, which is what makes Horvitz-Thompson unbiased under any fixed sampling design with known, positive inclusion probabilities. It is not restricted to π_i = n/N (that special case is just the simple-random-sampling estimator), and it works for without-replacement unequal-probability designs, which is exactly the PPS-without-replacement setup in the real question."
+    },
+    {
+      "item_id": "ha_p2_q1a_hazard_rate",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Paper II, Q1(a), page 2",
+      "source_excerpt": "Suppose that a given individual in a population has a survival time which is exponential with a hazard rate θ. Let X be the life length of a randomly chosen individual of this population. Find the survival function of X. Find the hazard rate of X. What is the shape of the hazard rate?",
+      "question": "For a lifetime X that is exponentially distributed with hazard rate θ, the question asks for the 'shape' of the hazard rate over time. What is distinctive about the exponential distribution's hazard rate compared to most other lifetime distributions?",
+      "options": [
+        "It is constant over time -- the instantaneous risk of failure does not depend on how long the item has already survived (the 'memoryless' property)",
+        "It always increases over time, reflecting wear-out or aging",
+        "It always decreases over time, reflecting early-life 'infant mortality' failures",
+        "It is undefined for the exponential distribution because it has no finite mean"
+      ],
+      "answer_index": 0,
+      "explanation": "The exponential distribution is the only continuous distribution with a constant hazard rate h(x) = θ for all x ≥ 0 -- this is the defining consequence of its memoryless property: the probability of failing in the next instant is the same whether the unit is brand new or has already survived a long time. Increasing hazard (wear-out) and decreasing hazard (infant mortality/'bathtub' shapes) are properties of other lifetime distributions (e.g. Weibull with shape parameter ≠ 1), not the exponential."
+    },
+    {
+      "item_id": "ha_p2_q1b_acceptance_sampling",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Paper II, Q1(b), page 2",
+      "source_excerpt": "Construct a single sampling plan for attributes, given the following data: A.Q.L. = 0.05, Producer's risk = 0.05, Consumer's risk = 0.10, LTPD = 0.20",
+      "question": "A single sampling plan for attributes is being constructed from an Acceptable Quality Level (AQL), a Lot Tolerance Percent Defective (LTPD), and the producer's and consumer's risk at each. What do the producer's risk and consumer's risk each represent?",
+      "options": [
+        "Producer's risk is the probability of rejecting a genuinely good lot (at the AQL); consumer's risk is the probability of accepting a genuinely bad lot (at the LTPD)",
+        "Producer's risk and consumer's risk are two names for the same quantity, just measured by different parties",
+        "Producer's risk is the cost of manufacturing the lot; consumer's risk is the price the consumer pays for it",
+        "Producer's risk applies only to attribute sampling plans; consumer's risk applies only to variable sampling plans"
+      ],
+      "answer_index": 0,
+      "explanation": "In acceptance sampling, the producer's risk (α) is the chance a lot that is actually acceptable (defect rate at or below AQL) gets rejected by the sampling plan anyway -- a false rejection that hurts the producer. The consumer's risk (β) is the chance a lot that is actually unacceptable (defect rate at or above LTPD) gets accepted anyway -- a false acceptance that hurts the consumer. These are genuinely different risks belonging to different parties, not a cost/price distinction and not restricted to attributes-only plans (variable sampling plans define analogous risks)."
+    },
+    {
+      "item_id": "ha_p2_q1c_control_chart_sample_size",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_data_quality",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Paper II, Q1(c), page 2",
+      "source_excerpt": "Describe the effect of sample size on X̄, R and s charts for the sample sizes n ≤ 5, 5 < n ≤ 10 and n > 10.",
+      "question": "For quality-control charts, the s (sample standard deviation) chart is generally preferred over the R (range) chart once the subgroup sample size n grows larger (roughly n > 10). Why?",
+      "options": [
+        "The range only uses the two extreme observations in a subgroup, so it becomes an increasingly wasteful, less efficient estimator of variability as n grows and more of the sample's information is left unused",
+        "The R chart cannot mathematically be computed for subgroup sizes larger than 10",
+        "The s chart is easier to plot by hand than the R chart at any sample size",
+        "Regulatory standards require the s chart specifically for subgroup sizes above 10"
+      ],
+      "answer_index": 0,
+      "explanation": "The range R = max − min uses only two data points from the subgroup no matter how large n is, so its statistical efficiency relative to the full-sample standard deviation s falls off as n grows -- s uses every observation. This is exactly why standard quality-control practice (and this question) treats n ≤ 5, 5 < n ≤ 10, and n > 10 as different regimes: R charts are simple and nearly as efficient as s charts for small n, but the s chart's efficiency advantage becomes worth the extra computation once n is larger. Both charts remain computable at any n -- the distinction is efficiency, not feasibility."
+    },
+    {
+      "item_id": "ha_p2_q4b_minimax",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Paper II, Q4(b), page 4",
+      "source_excerpt": "What is the minimax criterion with respect to a game? ... Determine whether the game is stable or not. Also, obtain the optimal strategies and the value of the game.",
+      "question": "The minimax criterion is used to determine a two-player zero-sum game's value from a payoff matrix. A game is called 'stable' (has a saddle point in pure strategies) precisely when which condition holds?",
+      "options": [
+        "The maximum of the row minimums equals the minimum of the column maximums (maximin = minimax)",
+        "Every entry in the payoff matrix is positive",
+        "The payoff matrix is square (same number of rows and columns)",
+        "Both players have exactly the same set of available strategies"
+      ],
+      "answer_index": 0,
+      "explanation": "A two-player zero-sum game has a saddle point (is 'stable', solvable in pure strategies) exactly when the maximin value (the best of the worst-case row outcomes) equals the minimax value (the best of the worst-case column outcomes). When maximin ≠ minimax, no pure-strategy equilibrium exists and the game must be solved using mixed strategies instead. Matrix squareness, sign of the payoffs, and identical strategy sets for both players are unrelated to whether a saddle point exists."
+    },
+    {
+      "item_id": "ha_p2_q5b_fertility_rates",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Paper II, Q5(b), page 12",
+      "source_excerpt": "Compute the Age-specific Fertility Rate, the Total Fertility Rate, and the Gross Reproduction Rate, from the data given below ... Assume that the proportion of female births is 46.2 percent.",
+      "question": "The Total Fertility Rate (TFR) and the Gross Reproduction Rate (GRR) are both computed by summing age-specific fertility rates across the reproductive age groups. What is the key difference between them?",
+      "options": [
+        "TFR counts all live births per woman across her reproductive years; GRR counts only female live births, using the proportion of female births to isolate direct female-to-female replacement",
+        "TFR is measured per 1,000 women while GRR is measured per woman -- the two describe the same births, just at different scales",
+        "GRR is always larger than TFR because it also accounts for infant mortality before reproductive age",
+        "TFR applies only to urban populations while GRR applies only to rural populations"
+      ],
+      "answer_index": 0,
+      "explanation": "TFR sums the age-specific fertility rates to give the expected total number of children a woman would bear across her reproductive life if age-specific rates stayed constant. GRR narrows this to only daughters, using the proportion of female births (here, 46.2%) applied to each age-specific rate before summing -- it measures direct female generational replacement, ignoring mortality (which is what the Net Reproduction Rate, not asked here, would add). It has nothing to do with urban/rural scope or measurement units -- both are typically expressed per woman."
+    }
+  ]
+}

@@ -181,6 +181,24 @@ def test_path_player_write_route_rejects_another_players_id():
     assert other.hero_id is None
 
 
+def test_path_player_mode_write_route_rejects_another_players_id():
+    db = _db()
+    owner = Player(username="mode-owner")
+    other = Player(username="mode-other")
+    db.add_all([owner, other])
+    db.commit()
+
+    response = TestClient(_app(db, _principal(owner.player_id))).post(
+        f"/game/player/{other.player_id}/mode",
+        json={"preferred_mode": "quest"},
+    )
+
+    assert response.status_code == 403
+    assert response.json() == {"detail": "Access denied"}
+    db.refresh(other)
+    assert other.preferred_mode == "professional"
+
+
 def test_by_username_lookup_never_leaks_the_full_profile():
     """The one route that stays deliberately unauthenticated (it's the
     pre-token bootstrap step for the demo login -- see routes/dev_auth.py)

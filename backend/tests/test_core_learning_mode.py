@@ -4,12 +4,12 @@ thread, 2 Sep 2026) that a non-gamified, KCM/Mission Karmayogi-oriented
 "professional" experience is the default/base product, with the existing
 dungeon/XP/combat layer preserved as an explicit "quest" opt-in.
 
-This is a foundation, not the feature: no route reads or writes this value
-yet (see schemas/player.py's PlayerCreate docstring), no curriculum-per-mode
-policy exists (Lane 3's decision), and no frontend routes on it (Lane 1/5's
-decision). These tests only prove the Lane 2-owned storage layer itself:
-the default is correct, invalid values are genuinely rejected (not just
-documented as rejected), and the migration is symmetric.
+This file only proves the Lane 2-owned storage layer itself: the default is
+correct, invalid values are genuinely rejected (not just documented as
+rejected), and the migration is symmetric. The read/write route
+(POST /game/player/{player_id}/mode) and its own tests live in
+test_api_player_mode.py; no curriculum-per-mode policy exists yet (Lane 3's
+decision).
 """
 from __future__ import annotations
 

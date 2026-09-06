@@ -1,10 +1,12 @@
 import React from 'react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export const CompetencyVectorCard = ({
   dimension,
   isSelected,
   onSelect,
 }) => {
+  const { t } = useLanguage();
   const { status, officerLevel, requiredLevel } = dimension;
   const progressPct = Math.min(100, Math.round((officerLevel / requiredLevel) * 100));
 
@@ -58,8 +60,8 @@ export const CompetencyVectorCard = ({
         <div className="flex items-center gap-3 shrink-0">
           <div className="w-24 hidden sm:flex flex-col gap-1">
             <div className="flex justify-between font-mono text-[10px] text-[#757682]">
-              <span className="font-bold text-[#00236f]">L{officerLevel}</span>
-              <span>Req L{requiredLevel}</span>
+              <span className="font-bold text-[#00236f]">{t('competencyCard.levelPrefix')}{officerLevel}</span>
+              <span>{t('competencyCard.reqLevelPrefix')}{requiredLevel}</span>
             </div>
             <div className="w-full h-1.5 bg-[#eaedff] rounded-full overflow-hidden">
               <div

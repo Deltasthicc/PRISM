@@ -415,24 +415,29 @@ async function requestMultipart(path, formData) {
   return data;
 }
 
+// `uiLang` below is this app's own two-letter language code ('en'/'hi', see
+// lib/i18n/LanguageContext.jsx) -- NOT the free-text "Output language" a quiz
+// generation request also takes (that one names the language for an LLM
+// prompt, e.g. "English"/"Hindi", and stays independent since a learner may
+// want quiz content in a different language than their own UI chrome).
 export const learning = {
-  getCurricula: () => request('/learning/curricula'),
+  getCurricula: (uiLang = 'en') => request(`/learning/curricula?lang=${uiLang}`),
 
-  getIntegrationStatus: () => request('/learning/integrations/status'),
+  getIntegrationStatus: (uiLang = 'en') => request(`/learning/integrations/status?lang=${uiLang}`),
 
   getProfile: (playerId) => request(`/learning/profile/${playerId}`),
 
   updateProfile: (playerId, profile) =>
     request(`/learning/profile/${playerId}`, { method: 'PUT', body: profile }),
 
-  assess: (playerId, curriculumSlug, selfRatings) =>
-    request(`/learning/assessment/${playerId}`, {
+  assess: (playerId, curriculumSlug, selfRatings, uiLang = 'en') =>
+    request(`/learning/assessment/${playerId}?lang=${uiLang}`, {
       method: 'POST',
       body: { curriculum_slug: curriculumSlug, self_ratings: selfRatings },
     }),
 
-  getPathway: (playerId, curriculumSlug) =>
-    request(`/learning/pathway/${playerId}?curriculum_slug=${encodeURIComponent(curriculumSlug)}`),
+  getPathway: (playerId, curriculumSlug, uiLang = 'en') =>
+    request(`/learning/pathway/${playerId}?curriculum_slug=${encodeURIComponent(curriculumSlug)}&lang=${uiLang}`),
 
   generateQuiz: async ({ playerId, title, difficulty, language, questionCount, file }) => {
     const form = new FormData();
@@ -447,5 +452,5 @@ export const learning = {
 
   listQuizzes: (playerId) => request(`/learning/quiz/${playerId}`),
 
-  getAdminOverview: () => request('/learning/admin/overview'),
+  getAdminOverview: (uiLang = 'en') => request(`/learning/admin/overview?lang=${uiLang}`),
 };

@@ -2,7 +2,7 @@
 
 from collections import Counter
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from db.database import get_db
@@ -14,6 +14,11 @@ from services.learning_catalog import integration_status
 
 router = APIRouter(prefix="/learning", tags=["Learning Analytics"])
 
+_PRIVACY_NOTE = {
+    "en": "This endpoint intentionally exposes latest-distinct-learner aggregates only.",
+    "hi": "यह एंडपॉइंट जानबूझकर केवल नवीनतम-विशिष्ट-शिक्षार्थी समुच्चय ही प्रकट करता है।",
+}
+
 
 @router.get("/admin/overview")
 async def admin_overview(
@@ -21,6 +26,7 @@ async def admin_overview(
     principal: BoundPrincipal = Depends(
         require_permission_dependency(Permission.ORGANIZATION_ANALYTICS_READ)
     ),
+    lang: str = Query("en", pattern="^(en|hi)$"),
 ):
     """Aggregate-only dashboard using the latest assessment per learner stream."""
     assessments_by_stream = {}
@@ -48,6 +54,6 @@ async def admin_overview(
             for competency, count in gap_counter.most_common(8)
         ],
         "gap_priorities": dict(priority_counter),
-        "integration_status": integration_status(),
-        "privacy_note": "This endpoint intentionally exposes latest-distinct-learner aggregates only.",
+        "integration_status": integration_status(lang),
+        "privacy_note": _PRIVACY_NOTE.get(lang, _PRIVACY_NOTE["en"]),
     }

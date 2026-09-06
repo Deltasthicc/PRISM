@@ -36,7 +36,7 @@ const LINK_BUTTON_CLASS = [
 export default function AcademyHub() {
   const { ready } = useRequireAuth();
   const player = useAuthStore((state) => state.player);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [profile, setProfile] = useState(EMPTY_PROFILE);
   const [selectedSlug, setSelectedSlug] = useState('official-statistics');
   const [ratings, setRatings] = useState({});
@@ -46,13 +46,13 @@ export default function AcademyHub() {
   const [error, setError] = useState('');
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['academy', player?.player_id],
+    queryKey: ['academy', player?.player_id, language],
     queryFn: async () => {
       const [curricula, dungeons, profileData, integrations] = await Promise.all([
-        learning.getCurricula(),
+        learning.getCurricula(language),
         game.listDungeons(),
         learning.getProfile(player.player_id),
-        learning.getIntegrationStatus(),
+        learning.getIntegrationStatus(language),
       ]);
       return { curricula: curricula.curricula, dungeons, profile: profileData.profile, integrations };
     },
@@ -106,7 +106,7 @@ export default function AcademyHub() {
     setError('');
     setAssessment(null);
     try {
-      setAssessment(await learning.assess(player.player_id, selectedSlug, ratings));
+      setAssessment(await learning.assess(player.player_id, selectedSlug, ratings, language));
     } catch (cause) {
       setError(cause.message);
     } finally {
@@ -274,7 +274,14 @@ export default function AcademyHub() {
         <p className="font-sans text-sm text-[#757682] mb-4">{t('academy.section4Body')}</p>
         <form onSubmit={createQuiz} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input id="quiz-title" name="title" label={t('academy.quizTitleLabel')} required defaultValue="My learning material quiz" />
-          <Input id="quiz-language" name="language" label={t('academy.outputLanguageLabel')} required defaultValue={profile.preferred_language || 'English'} />
+          <Input
+            key={language}
+            id="quiz-language"
+            name="language"
+            label={t('academy.outputLanguageLabel')}
+            required
+            defaultValue={language === 'hi' ? 'Hindi' : 'English'}
+          />
           <label className="flex flex-col gap-1.5">
             <span className="font-sans text-xs font-semibold text-[#444651]">{t('academy.difficultyLabel')}</span>
             <select name="difficulty" defaultValue="mixed" className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f]">

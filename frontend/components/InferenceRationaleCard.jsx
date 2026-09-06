@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 const CONFIDENCE_TONE = {
   none: { bg: 'bg-[#fce8e6]', text: 'text-[#b3261e]', border: 'border-[#f5c6c2]' },
@@ -11,6 +12,7 @@ const CONFIDENCE_TONE = {
 // invented ("Survey History"/"Proctored Quiz"/self-appraisal percentages in an earlier
 // version of this component were placeholder content with no backend behind them).
 export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => {
+  const { t } = useLanguage();
   const { rationale, name } = dimension;
   const confidenceTone = CONFIDENCE_TONE[rationale.confidence] || CONFIDENCE_TONE.none;
 
@@ -18,11 +20,11 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
     <div className="bg-[#ffffff] border border-[#c5c5d3]/30 rounded-xl p-4 md:p-6 shadow-sm mb-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-[#eaedff] mb-4">
         <div className="flex items-center gap-2 flex-wrap">
-          <h3 className="font-sans text-base text-[#00236f] font-bold">Gap analysis: {name}</h3>
+          <h3 className="font-sans text-base text-[#00236f] font-bold">{t('rationale.gapAnalysisPrefix')} {name}</h3>
           <span
             className={`px-2 py-0.5 rounded font-mono text-[11px] font-semibold border ${confidenceTone.bg} ${confidenceTone.text} ${confidenceTone.border}`}
           >
-            {rationale.confidence} confidence
+            {rationale.confidence} {t('rationale.confidenceSuffix')}
           </span>
         </div>
         <span className="font-mono text-xs text-[#757682]">
@@ -35,7 +37,7 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
           <span className="font-sans text-lg text-[#00236f] font-bold block">
             {rationale.observedLevel.toFixed(1)}/5
           </span>
-          <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">Observed level</p>
+          <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">{t('rationale.observedLevel')}</p>
           <span className="font-mono text-xs text-[#757682] block mt-1">{rationale.observedLabel}</span>
         </div>
 
@@ -43,9 +45,9 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
           <span className="font-sans text-lg text-[#904d00] font-bold block">
             {rationale.pathwayTarget.toFixed(1)}/5
           </span>
-          <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">Pathway target</p>
+          <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">{t('rationale.pathwayTarget')}</p>
           <span className="font-mono text-xs text-[#757682] block mt-1">
-            {rationale.matchedRole ? `for ${rationale.matchedRole}` : 'based on your experience level'}
+            {rationale.matchedRole ? `${t('rationale.forPrefix')} ${rationale.matchedRole}` : t('rationale.basedOnExperienceLevel')}
           </span>
         </div>
 
@@ -53,7 +55,7 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
           <span className="font-sans text-lg text-[#00236f] font-bold block">
             {rationale.gap.toFixed(1)}
           </span>
-          <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">Gap (levels)</p>
+          <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">{t('rationale.gapLevels')}</p>
           <span className="font-mono text-xs text-[#757682] block mt-1">{rationale.priority}</span>
         </div>
 
@@ -61,15 +63,15 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
           <span className={`font-sans text-lg font-bold block ${confidenceTone.text}`}>
             {rationale.evidenceSources.length}
           </span>
-          <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">Evidence source(s)</p>
+          <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">{t('rationale.evidenceSources')}</p>
           <span className="font-mono text-xs text-[#757682] block mt-1">
-            {rationale.evidenceSources.length ? rationale.evidenceSources.join(', ') : 'none recorded yet'}
+            {rationale.evidenceSources.length ? rationale.evidenceSources.join(', ') : t('rationale.noneRecordedYet')}
           </span>
         </div>
       </div>
 
       <p className="text-xs text-[#444651] mb-3 bg-[#faf8ff] p-2.5 rounded-lg border border-[#c5c5d3]/20 leading-relaxed font-sans">
-        <strong className="text-[#00236f]">How this was scored:</strong> {rationale.evidenceNote}
+        <strong className="text-[#00236f]">{t('rationale.howThisWasScored')}</strong> {rationale.evidenceNote}
       </p>
 
       {rationale.recommendedAction && (
@@ -81,7 +83,7 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
       <div className="bg-[#f2f3ff] p-3 rounded-xl border border-[#c5c5d3]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap font-mono text-xs text-[#444651]">
           <span className="font-mono text-[10px] uppercase text-[#757682] font-bold mr-1 tracking-wider">
-            Evidence:
+            {t('rationale.evidenceLabel')}
           </span>
           {rationale.evidenceRecords.length ? (
             rationale.evidenceRecords.map((record, idx) => (
@@ -95,7 +97,7 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
               </span>
             ))
           ) : (
-            <span className="text-[#757682]">none recorded yet</span>
+            <span className="text-[#757682]">{t('rationale.noneRecordedYet')}</span>
           )}
         </div>
 
@@ -103,7 +105,7 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
           onClick={() => onViewLearningPathway(dimension.id)}
           className="inline-flex items-center gap-2 bg-[#00236f] text-white px-4 py-2 rounded-lg font-sans text-sm hover:bg-[#1e3a8a] transition-colors shadow-sm shrink-0 font-semibold cursor-pointer"
         >
-          <span>Open in Academy</span>
+          <span>{t('rationale.openInAcademy')}</span>
         </button>
       </div>
     </div>

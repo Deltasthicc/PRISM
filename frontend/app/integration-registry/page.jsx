@@ -3,31 +3,32 @@
 import { useQuery } from '@tanstack/react-query';
 import { ShieldCheck, ExternalLink } from 'lucide-react';
 import { useRequireAuth } from '@/lib/useRequireAuth';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { learning } from '@/lib/api/client';
-
-const PROVIDER_LABEL = { igot: 'iGOT Karmayogi', nssta: 'NSSTA / TPAC' };
 
 export default function IntegrationRegistryPage() {
   const { ready } = useRequireAuth();
+  const { t, language } = useLanguage();
+  const PROVIDER_LABEL = { igot: t('integrationRegistry.providerIgot'), nssta: t('integrationRegistry.providerNssta') };
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['integration-status'],
-    queryFn: () => learning.getIntegrationStatus(),
+    queryKey: ['integration-status', language],
+    queryFn: () => learning.getIntegrationStatus(language),
     enabled: ready,
   });
 
   if (!ready || isLoading) {
-    return <p className="font-sans text-sm text-[#757682] text-center mt-10">Loading integration status…</p>;
+    return <p className="font-sans text-sm text-[#757682] text-center mt-10">{t('integrationRegistry.loading')}</p>;
   }
   if (isError || !data) {
     return (
       <div className="flex flex-col items-center gap-3 mt-10" role="alert">
-        <p className="font-sans text-sm text-[#b3261e]">The integration registry could not be loaded.</p>
+        <p className="font-sans text-sm text-[#b3261e]">{t('integrationRegistry.loadFailed')}</p>
         <button
           onClick={() => refetch()}
           className="font-sans text-sm font-semibold px-4 py-2 rounded-lg border border-[#c5c5d3]/60 text-[#00236f] hover:bg-[#f2f3ff]"
         >
-          Retry
+          {t('integrationRegistry.retry')}
         </button>
       </div>
     );
@@ -38,12 +39,8 @@ export default function IntegrationRegistryPage() {
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
       <header>
-        <h1 className="font-sans text-xl font-bold text-[#00236f]">Integration Registry</h1>
-        <p className="font-sans text-sm text-[#757682] mt-2">
-          Every external learning-provider integration this platform recognizes, and its honest current
-          status — no integration here is ever reported as live unless a real, authenticated connection
-          has actually been verified.
-        </p>
+        <h1 className="font-sans text-xl font-bold text-[#00236f]">{t('integrationRegistry.heading')}</h1>
+        <p className="font-sans text-sm text-[#757682] mt-2">{t('integrationRegistry.subtitle')}</p>
       </header>
 
       <div className="flex flex-col gap-3">
@@ -68,7 +65,7 @@ export default function IntegrationRegistryPage() {
           </div>
         ))}
         {providers.length === 0 && (
-          <p className="font-sans text-sm text-[#757682]">No integrations are registered yet.</p>
+          <p className="font-sans text-sm text-[#757682]">{t('integrationRegistry.noIntegrations')}</p>
         )}
       </div>
 
@@ -78,7 +75,7 @@ export default function IntegrationRegistryPage() {
         rel="noreferrer"
         className="inline-flex items-center gap-1.5 font-sans text-sm text-[#00236f] hover:underline w-fit"
       >
-        Open the iGOT Karmayogi public catalog <ExternalLink size={14} aria-hidden="true" />
+        {t('integrationRegistry.openIgotCatalog')} <ExternalLink size={14} aria-hidden="true" />
       </a>
     </div>
   );

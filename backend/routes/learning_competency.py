@@ -39,8 +39,8 @@ def _resolve_competency_context(
 
 
 @router.get("/curricula")
-async def list_curricula():
-    return {"curricula": public_curricula(), "proficiency_scale": {"minimum": 0, "maximum": 5}}
+async def list_curricula(lang: str = Query("en", pattern="^(en|hi)$")):
+    return {"curricula": public_curricula(lang), "proficiency_scale": {"minimum": 0, "maximum": 5}}
 
 
 @router.post("/assessment/{player_id}")
@@ -51,6 +51,7 @@ async def assess_competencies(
     principal: BoundPrincipal = Depends(
         require_own_player_dependency(Permission.ASSESSMENT_SELF_WRITE)
     ),
+    lang: str = Query("en", pattern="^(en|hi)$"),
 ):
     player_or_404(db, player_id)
     if not get_curriculum(body.curriculum_slug):
@@ -69,6 +70,7 @@ async def assess_competencies(
             profile.experience_level if profile else "beginner",
             evidence=evidence,
             role_targets=role_targets,
+            lang=lang,
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
@@ -95,6 +97,7 @@ async def get_pathway(
     principal: BoundPrincipal = Depends(
         require_own_player_dependency(Permission.PATHWAY_SELF_READ)
     ),
+    lang: str = Query("en", pattern="^(en|hi)$"),
 ):
     player_or_404(db, player_id)
     profile = db.query(LearnerProfile).filter(LearnerProfile.player_id == player_id).first()
@@ -113,6 +116,7 @@ async def get_pathway(
             profile.experience_level if profile else "beginner",
             evidence=evidence,
             role_targets=role_targets,
+            lang=lang,
         )
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc

@@ -30,6 +30,7 @@ from models.session import GameSession
 from models.learning import LearnerProfile, CompetencyAssessment, LearningMaterial, GeneratedQuiz
 from models.governance import RoleTarget, EvidenceRecord, SourceVersion, AuditEvent
 from models.identity import IdentityBinding
+from models.question_bank import QuestionBankItem, QuestionBankAttempt
 
 
 @asynccontextmanager

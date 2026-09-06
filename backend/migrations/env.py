@@ -15,6 +15,7 @@ from models import (
     learning,
     player,
     question,
+    question_bank,
     session,
     submission,
 )
@@ -28,6 +29,7 @@ _REGISTERED_MODEL_MODULES = (
     learning,
     player,
     question,
+    question_bank,
     session,
     submission,
 )

@@ -16,7 +16,9 @@ GOVERNANCE_REVISION = "2baf7d4bd8a2"
 IDENTITY_REVISION = "cf4271f204a3"
 AUDIT_APPEND_ONLY_REVISION = "036de46dd515"
 RETIRE_AUDIT_DELETE_REJECTION_REVISION = "4631f204d4ba"
-HEAD_REVISION = "6564595b3466"
+MEASURED_INDEXES_REVISION = "6564595b3466"
+QUESTION_BANK_REVISION = "c29341762ab8"
+HEAD_REVISION = QUESTION_BANK_REVISION
 GOVERNANCE_TABLES = {
     "audit_events",
     "evidence_records",
@@ -24,6 +26,7 @@ GOVERNANCE_TABLES = {
     "source_versions",
 }
 IDENTITY_TABLES = {"identity_bindings"}
+QUESTION_BANK_TABLES = {"question_bank_items", "question_bank_attempts"}
 
 
 def _database_url(path: Path) -> str:
@@ -64,7 +67,8 @@ def test_full_migration_chain_upgrades_and_downgrades_fresh_database(tmp_path):
     assert revision == HEAD_REVISION
     assert GOVERNANCE_TABLES <= names
     assert IDENTITY_TABLES <= names
-    assert len(names) == 18
+    assert QUESTION_BANK_TABLES <= names
+    assert len(names) == 20
 
     _run_alembic(database_url, "downgrade", "base")
     assert inspect(engine).get_table_names() == ["alembic_version"]

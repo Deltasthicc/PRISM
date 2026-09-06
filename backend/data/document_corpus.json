@@ -1,7 +1,7 @@
 {
   "corpus_version": "prototype-v1",
   "verified_on": "2026-09-06",
-  "total_documents": 21,
+  "total_documents": 23,
   "note": "Every document was downloaded, hashed and text-extracted on verified_on. sha256 is of the exact bytes retrieved from url on that date.",
   "documents": [
     {
@@ -381,6 +381,44 @@
       "content_type": "application/pdf",
       "link_status": "verified-file",
       "verified_on": "2026-09-06"
+    },
+    {
+      "doc_id": "upsc_csm26_statistics_p1",
+      "title": "Civil Services (Main) Examination, 2026 - Statistics (Paper I)",
+      "publisher": "Union Public Service Commission",
+      "source_id": "SRC-36",
+      "category": "statistical",
+      "competency_ids": [
+        "os_statistical_foundations",
+        "os_sampling_design"
+      ],
+      "url": "https://www.upsc.gov.in/sites/default/files/QP-CSM-26-010926-Optional-STATISTICS-PAPER_I.pdf",
+      "sha256": "af24e4da3b4ccd3719070712c9169164d4f439ba2b18816d8ec3de5f11b77811",
+      "bytes": 5783940,
+      "pages": 15,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06",
+      "extraction_note": "Scanned bilingual (Hindi/English) page-image PDF, no embedded text layer -- pypdf.extract_text() returns 0 characters on every page (confirmed 2026-09-06). extract_document_text() correctly raises DocumentUnavailable for this doc_id ('may be a scanned document needing OCR'); do not expect quiz_from_document() to work here without an OCR step this corpus does not yet have. See services/hand_authored_questions.py for MCQs hand-transcribed directly from these page images by human review instead of automatic extraction."
+    },
+    {
+      "doc_id": "upsc_csm26_statistics_p2",
+      "title": "Civil Services (Main) Examination, 2026 - Statistics (Paper II)",
+      "publisher": "Union Public Service Commission",
+      "source_id": "SRC-37",
+      "category": "statistical",
+      "competency_ids": [
+        "os_statistical_foundations",
+        "os_data_quality"
+      ],
+      "url": "https://www.upsc.gov.in/sites/default/files/QP-CSM-26-010926-Optional-STATISTICS-PAPER_II.pdf",
+      "sha256": "424a0d102a2408aae3105beb81611a3ea65b74b6f53ed7088910b7336cc36f35",
+      "bytes": 6033520,
+      "pages": 15,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-06",
+      "extraction_note": "Scanned bilingual (Hindi/English) page-image PDF, no embedded text layer -- pypdf.extract_text() returns 0 characters on every page (confirmed 2026-09-06). extract_document_text() correctly raises DocumentUnavailable for this doc_id ('may be a scanned document needing OCR'); do not expect quiz_from_document() to work here without an OCR step this corpus does not yet have. See services/hand_authored_questions.py for MCQs hand-transcribed directly from these page images by human review instead of automatic extraction."
     }
   ]
 }

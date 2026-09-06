@@ -4,7 +4,7 @@ Owner: Lane 2 (Core Platform, Identity & Data)
 
 Consumers: Lanes 3, 4, 5, 6
 
-Change approval: Lanes 5 and 6 (`SIH26101_TEAM_ORCHESTRATION.md` section 4)
+Change approval: Lanes 5 and 6 (`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 4)
 
 Status: **v1 demo contract — storage and query semantics, internal subject-data export/deletion
 primitives, and PostgreSQL backup/restore are defined and independently reviewed/accepted. A
@@ -285,7 +285,7 @@ On PostgreSQL, `audit_events` rows are additionally protected against in-place m
 database level, but the genuine append-only guarantee — rows are never removed except through the
 dedicated retention job — remains an application-layer property, not a database one. Migration
 `036de46dd515` (Package U) originally added a trigger rejecting both `UPDATE` and `DELETE`
-unconditionally; Codex's cold immutable audit (`LANE2_SYNC.md`, 2026-09-01) found this directly
+unconditionally; Codex's cold immutable audit (`docs/internal/LANE2_SYNC.md`, 2026-09-01) found this directly
 broke `scripts/retention_job.py`, whose only registered category is `audit_events` — the moment any
 maximum retention is ever cited for that category, the retention job's own `DELETE` would be
 rejected by its own project's trigger. Follow-up migration `4631f204d4ba` (Package V) retired only
@@ -300,7 +300,7 @@ the application's own connection role, not a security boundary against someone h
 credentials, and not a compliance claim. A second external audit proposed a broader version (full
 audit triggers across tables with captured actor/purpose context); that version was rejected
 because it would need session-context plumbing that does not exist and would misrepresent what a
-trigger the app's own role can disable actually proves — see `LANE2_SYNC.md` for the full technical
+trigger the app's own role can disable actually proves — see `docs/internal/LANE2_SYNC.md` for the full technical
 reasoning on both the original scoping (Package U) and the cross-package conflict/fix (Package V).
 
 `security.retention.assert_minimum_retention_satisfied()` is a guard for whatever automated
@@ -330,7 +330,7 @@ expired rows all read the same batch and only 3 rows were ever actually deleted,
 unprocessed. A follow-up live drill under the identical scenario (11 expired + 2 young rows, 4
 concurrent workers, batch size 3) confirmed the fix: disjoint per-worker deletions, a union of
 exactly the 11 expired IDs, a durable audit-event deleted-count sum of 11, both young rows
-untouched, and a clean `0/0` final rerun with no misleading audit event. See `LANE2_SYNC.md`'s
+untouched, and a clean `0/0` final rerun with no misleading audit event. See `docs/internal/LANE2_SYNC.md`'s
 Activity log for exact evidence. The production fix and its forced-contention/cleanup regression
 contract are independently accepted; this remains local PostgreSQL evidence, not a production
 operations or compliance claim.
@@ -341,7 +341,7 @@ operations or compliance claim.
 out to `docker exec`/`docker cp` against the named running Postgres container (this host has no
 local `pg_dump`/`pg_restore`; the container does). A full drill — insert marker rows, back up,
 delete the rows to simulate loss, restore, confirm the rows and the rest of the schema (18 tables,
-Alembic head unchanged) came back exactly — was run and passed; see `LANE2_SYNC.md`'s Activity log
+Alembic head unchanged) came back exactly — was run and passed; see `docs/internal/LANE2_SYNC.md`'s Activity log
 for the exact evidence. This proves the mechanism works against the current local dev container. It
 is **not** a disaster-recovery plan: there is no backup schedule, no offsite/encrypted storage, no
 retention policy for backup files themselves, and no restore runbook for a real incident. Those
@@ -361,7 +361,7 @@ controls based on these internal primitives alone.
 
 Any lane needing a new field, alternate latest-record ordering, tenant representation or
 authorization rule opens a contract-change proposal against this file
-(`SIH26101_TEAM_ORCHESTRATION.md` section 8, “Cross-lane handoff”) instead of editing Lane 2's
+(`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 8, “Cross-lane handoff”) instead of editing Lane 2's
 models or silently inventing query semantics. The proposal must identify required migrations,
 backfill behavior, consumers, tests and rollback impact.
 
@@ -371,7 +371,7 @@ backfill behavior, consumers, tests and rollback impact.
 which experience surface a learner is currently associated with: `"professional"` (the default —
 the non-gamified, KCM/Mission Karmayogi-oriented base product for government-official learners) or
 `"quest"` (the existing optional dungeon/XP/combat layer, an explicit opt-in per the team's own
-recorded decision — see `SIH26101_MASTER_CHECKLIST.md` and `SIH26101_WINNING_PLAYBOOK.md` — never
+recorded decision — see `SIH26101_MASTER_CHECKLIST.md` and `docs/internal/SIH26101_WINNING_PLAYBOOK.md` — never
 the default a learner lands in). New rows default to `"professional"` at both the ORM (`default=`)
 and database (`server_default`) level; a `CHECK` constraint (`ck_players_preferred_mode_known_value`,
 declared identically in the model's `__table_args__` and the migration so `alembic check` and a

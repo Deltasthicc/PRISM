@@ -6,7 +6,7 @@ Create Date: 2026-09-02 11:22:47.185316
 
 Package U's migration (036de46dd515) made PostgreSQL reject BOTH UPDATE and
 DELETE against audit_events. That was a real integrated defect, found by
-Codex's cold immutable audit (LANE2_SYNC.md, 2026-09-01): audit_events is
+Codex's cold immutable audit (docs/internal/LANE2_SYNC.md, 2026-09-01): audit_events is
 the only category `scripts/retention_job.py` has ever registered
 (`CATEGORY_TABLES`), so the unconditional DELETE rejection makes the
 retention-enforcement job permanently unusable for its one real target the

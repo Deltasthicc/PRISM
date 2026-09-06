@@ -6,7 +6,7 @@ Status: evidence-backed strategy, not a promise of winning
 
 Execution ledger: `SIH26101_MASTER_CHECKLIST.md`
 
-Team operating model: `SIH26101_TEAM_ORCHESTRATION.md`
+Team operating model: `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`
 
 Canonical build scope: `docs/SIH26101_PROBLEM_STATEMENT.md` (`PS-01`…`PS-18`)
 

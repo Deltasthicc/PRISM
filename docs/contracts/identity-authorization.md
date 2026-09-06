@@ -193,7 +193,7 @@ stub) was exercised against a local HTTP server serving a mutating JWKS document
 already-cached key kept verifying its own tokens, a newly-rotated-in key's unmatched `kid` forced a
 real refetch and then verified, and a retired key was correctly rejected once that refetch had
 actually happened. See `backend/tests/test_core_identity.py`'s key-rotation tests and
-`LANE2_SYNC.md`'s Activity log for exact evidence. This proves the mechanism through the real
+`docs/internal/LANE2_SYNC.md`'s Activity log for exact evidence. This proves the mechanism through the real
 `PyJWKClient` class this project ships, not a live Keycloak rotation drill specifically -- Keycloak
 uses the same standard JWKS contract, so this is the correct thing to have proven, not a
 substitute that happens to be easier.

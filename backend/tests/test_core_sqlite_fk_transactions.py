@@ -37,7 +37,7 @@ it. `test_core_identity_bootstrap.py::test_concurrent_bootstrap_attempts_create_
 is the existing regression proof that the same `BEGIN IMMEDIATE` mechanism
 still serializes two genuinely concurrent writers correctly. Both were run
 after this package's `db/database.py` change and are cited as evidence in
-`LANE2_SYNC.md` rather than duplicated here.
+`docs/internal/LANE2_SYNC.md` rather than duplicated here.
 
 The live-PostgreSQL tests exist for documented parity, not because
 PostgreSQL needed a fix -- it has always enforced FKs unconditionally.

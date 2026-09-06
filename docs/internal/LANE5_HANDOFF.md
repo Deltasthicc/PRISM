@@ -73,7 +73,7 @@ The governing contract is `docs/contracts/identity-authorization.md`, section 1.
 - secure access-token/session handling and logout; and
 - no implicit grant or resource-owner-password grant.
 
-`LANE2_INTEGRATION_GUIDE.md` repeats this as the Lane 1/Lane 5 browser handoff. Lane 2 does not
+`docs/internal/LANE2_INTEGRATION_GUIDE.md` repeats this as the Lane 1/Lane 5 browser handoff. Lane 2 does not
 implement the browser flow. Lane 1 owns the browser UI and accessible login/recovery experience;
 Lane 5 supplies the protected API contract and coordinates the redirect/session handoff.
 
@@ -128,7 +128,7 @@ should be run after dependencies are installed.
 - Lane 1 consumes the protected API contract and must not infer `player_id` from username, email or
   OIDC subject.
 - Lane 1 should read `docs/contracts/identity-authorization.md` section 1 and
-  `LANE2_INTEGRATION_GUIDE.md` before implementing browser login. Lane 5 does not own the frontend
+  `docs/internal/LANE2_INTEGRATION_GUIDE.md` before implementing browser login. Lane 5 does not own the frontend
   login UI, but must review the API/session handoff and claims assumptions.
 - Lane 3 supplies role-target/evidence semantics; Lane 5 only forwards and exposes those contracts.
 - Lane 4 owns AI internals and `ai_real.py`; Lane 5 should consume its public service contract.

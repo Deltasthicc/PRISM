@@ -26,7 +26,7 @@ docker compose -f docker-compose.dev.yml up -d --wait
 ## Test users
 
 Every user's password is `prism_dev_local_only`. Each has exactly one realm
-role, matching `SIH26101_TEAM_ORCHESTRATION.md` section 5's Lane 2 RBAC list.
+role, matching `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 5's Lane 2 RBAC list.
 
 | Username | Role |
 |---|---|
@@ -67,7 +67,7 @@ one by default, and `security/identity.py` requires it.
 
 - Proves `security/identity.py` correctly verifies a real signed JWT via a
   real JWKS fetch, rejects tampered signatures, wrong issuers, and wrong
-  audiences — see `LANE2_SYNC.md`'s Activity log for the exact live-verified
+  audiences — see `docs/internal/LANE2_SYNC.md`'s Activity log for the exact live-verified
   scenarios.
 - Key rotation is verified separately (Package P) against a local mock JWKS
   server using the exact `PyJWKClient` class this project ships — not
@@ -78,5 +78,5 @@ one by default, and `security/identity.py` requires it.
   claims, token format, or availability.
 - Does **not** by itself authorize anything — `security/rbac.py` is what
   turns a verified subject into an application permission decision, through
-  an explicit local identity binding (see `LANE2_SYNC.md`'s Phase 2 contract
+  an explicit local identity binding (see `docs/internal/LANE2_SYNC.md`'s Phase 2 contract
   for why `sub` is never compared directly to `players.player_id`).

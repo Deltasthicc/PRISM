@@ -92,7 +92,7 @@ def upgrade() -> None:
     # 2's db/repositories.py latest-row lookups issues, and was kept only
     # after a representative ~120k-row PostgreSQL EXPLAIN (ANALYZE, BUFFERS)
     # comparison showed a real access-path improvement (Package 4;
-    # LANE2_SYNC.md carries the exact before/after planner costs) --
+    # docs/internal/LANE2_SYNC.md carries the exact before/after planner costs) --
     # candidates that did not show a materially better plan were not added.
     _create_index_if_missing(
         "ix_competency_assessments_lookup_newest",

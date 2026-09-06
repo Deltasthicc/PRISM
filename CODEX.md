@@ -7,12 +7,12 @@ Persistent project guidance for Codex working on `PRISM`.
 Before the first implementation action, read:
 
 1. `docs/SIH26101_PROBLEM_STATEMENT.md` — canonical user-supplied requirement contract (`PS-01`…`PS-18`).
-2. `SIH26101_TEAM_ORCHESTRATION.md` — six lane/file/agent ownership boundaries.
+2. `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` — six lane/file/agent ownership boundaries.
 3. `SIH26101_MASTER_CHECKLIST.md` — current priorities and readiness gates.
 4. `README.md` — verified present behavior versus aspirations.
 5. Relevant source and tests.
 
-Use `SIH26101_WINNING_PLAYBOOK.md` for demo/pitch decisions. Treat `docs/archive/**` only as historical context.
+Use `docs/internal/SIH26101_WINNING_PLAYBOOK.md` for demo/pitch decisions. Treat `docs/archive/**` only as historical context.
 
 The problem-statement capture is preserved at `docs/SIH26101_PROBLEM_STATEMENT.md` with attachment SHA-256 `A745A905D42A03D363875C844418D22189F00B15E8C733B7EC6453172D36D561`. Do not silently reduce the project to a quiz generator or RPG.
 
@@ -73,7 +73,7 @@ The primary product is the Professional experience (`/academy`, `/admin` and the
   forcing overlap is meaningful) -- both closed in follow-up `ac5a2e7` and accepted after Codex's
   narrow immutable re-review: five consecutive 6-test live PostgreSQL runs, a fresh 347-test full
   gate, clean Alembic head/check and no leaked disposable database. Full evidence and reasoning for
-  all of S/T/U/V is in `LANE2_SYNC.md`. Existing product routes do not invoke any of this foundation; there is no browser
+  all of S/T/U/V is in `docs/internal/LANE2_SYNC.md`. Existing product routes do not invoke any of this foundation; there is no browser
   SSO, row-level organization tenancy, approved production IdP, frontend test suite, observability
   stack or production authorization. A CI workflow exists, but its presence alone is not evidence of
   a green remote run.
@@ -91,7 +91,7 @@ When a human assigns a lane, edit only that lane’s controlled paths:
 5. Product API, Integrations & Analytics — domain routes, iGOT/NSSTA adapters and dashboard analytics.
 6. Quality, Security, Release & Evidence — CI/E2E/security/deployment/observability/current operational docs.
 
-The exact path map, test subtrees, contracts and reviewers live in `SIH26101_TEAM_ORCHESTRATION.md`. If another lane must change, return a contract proposal; do not edit its files opportunistically. If the user explicitly assigns a cross-lane task, state the contract impacts and keep edits grouped by owner.
+The exact path map, test subtrees, contracts and reviewers live in `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`. If another lane must change, return a contract proposal; do not edit its files opportunistically. If the user explicitly assigns a cross-lane task, state the contract impacts and keep edits grouped by owner.
 
 ## Architecture invariants
 

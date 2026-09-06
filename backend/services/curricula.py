@@ -24,7 +24,7 @@ with open(_TRANSLATIONS_PATH, encoding="utf-8") as _handle:
     _CURRICULA_HI: dict = json.load(_handle)
 
 
-# SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 acceptance evidence:
+# docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 acceptance evidence:
 # "Every competency/target has source, authoring status and version." The
 # per-curriculum `source` key below records origin; `authoring_status` records
 # assurance using the fixed documented vocabulary (CODEX.md architectural
@@ -165,7 +165,7 @@ SOURCES: dict[str, dict] = {
 # INDIRECT: the subject appears only inside a broader course's content list, or
 # is reached through an adjacent programme. An INDIRECT citation is an honest
 # "this is the best government source we found", not a claim of coverage --
-# SIH26101_WINNING_PLAYBOOK.md section 2 forbids dressing a weak source up.
+# docs/internal/SIH26101_WINNING_PLAYBOOK.md section 2 forbids dressing a weak source up.
 DIRECT = "DIRECT"
 INDIRECT = "INDIRECT"
 

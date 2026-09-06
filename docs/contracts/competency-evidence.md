@@ -5,7 +5,7 @@ Owner: Lane 3 (Competency & Learning Intelligence)
 Consumers: Lanes 1, 5, 6
 
 Change approval: Lane 2, Lane 5 and a named domain reviewer
-(`SIH26101_TEAM_ORCHESTRATION.md` section 4)
+(`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 4)
 
 Contract version: **v1**
 
@@ -127,7 +127,7 @@ same 65/35 weights this policy version has always used:
 | nothing | `0.0` | `no evidence yet` |
 
 `reviewer`, `diagnostic` and `provider_imported` are recorded, separated and displayed but
-**deliberately do not move the score**. `SIH26101_TEAM_ORCHESTRATION.md` section 5 asks Lane 3 to
+**deliberately do not move the score**. `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 5 asks Lane 3 to
 *separate* the five types, not to blend them, and no domain-reviewer-validated weights exist for
 these three — inventing weights would be exactly the fabricated psychometric precision
 `CLAUDE.md` invariant #4 forbids. `method.scored_evidence_types` and
@@ -280,7 +280,7 @@ A fixture is regenerated only by deliberately running
 `backend/tests/fixtures/generate_golden_fixtures.py` after a reviewed policy change (a new blend
 weight, a new priority threshold, new anchor text), followed by hand-verifying the diff before
 committing — never as a reflex to make a failing test pass. This satisfies
-`SIH26101_TEAM_ORCHESTRATION.md` section 5's Lane 3 acceptance evidence: "Golden policy fixtures
+`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 5's Lane 3 acceptance evidence: "Golden policy fixtures
 produce stable gaps and pathways."
 
 ## 6. Status vocabulary
@@ -304,7 +304,7 @@ the public role → activity → competency pattern; the wording is the team's, 
 
 `backend/labs/sampling_lab.py`. Safety posture is contractual, not incidental: no lab accepts,
 compiles or executes learner-supplied code (`SIH26101_MASTER_CHECKLIST.md` section 4.4;
-`SIH26101_WINNING_PLAYBOOK.md` section 10). Tasks are module constants; a learner supplies exactly
+`docs/internal/SIH26101_WINNING_PLAYBOOK.md` section 10). Tasks are module constants; a learner supplies exactly
 one number.
 
 ```python
@@ -365,7 +365,7 @@ Stated plainly so no consumer or slide over-claims:
 
 ## 9. Open handoffs
 
-Filed per `SIH26101_TEAM_ORCHESTRATION.md` section 8 — Lane 3 does not edit another lane's files.
+Filed per `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 8 — Lane 3 does not edit another lane's files.
 
 ### 9.1 Lane 5 — pass the profile fields through
 
@@ -407,14 +407,14 @@ result = analyse_competencies(..., role_targets=role_targets)
 
 `resolve_role_targets()` raises `ValueError` for an unknown curriculum, the same as the engine, so
 the existing `except ValueError` handling covers it. Until this lands,
-`SIH26101_WINNING_PLAYBOOK.md` section 2's prohibition still applies: do not describe the API as
+`docs/internal/SIH26101_WINNING_PLAYBOOK.md` section 2's prohibition still applies: do not describe the API as
 "role-aware", because through HTTP it is not yet.
 
 ### 9.2 Lane 5 — expose and persist the lab
 
 Needs `GET` for `list_tasks()` and `POST` for `evaluate_submission()`, mapping `LabInputError`
 to 422. On a correct attempt, persist the returned `evidence` payload so the result feeds back
-into `measured_scores` — that is what closes `SIH26101_WINNING_PLAYBOOK.md` section 1's
+into `measured_scores` — that is what closes `docs/internal/SIH26101_WINNING_PLAYBOOK.md` section 1's
 target → evidence → gap → practice → reassessment loop and satisfies PS-10.
 
 ### 9.3 Lane 2 — `RoleTarget` key semantics and the activity layer
@@ -423,14 +423,14 @@ target → evidence → gap → practice → reassessment loop and satisfies PS-
 selects targets from `current_assignment` and `department` as well
 (`SIH26101_MASTER_CHECKLIST.md` section 4.1 requires all four), which that column cannot express
 without a widened definition or a key-type column. Separately, neither model has an `activity`
-layer, while `SIH26101_WINNING_PLAYBOOK.md` section 8 scripts the team to describe the data model
+layer, while `docs/internal/SIH26101_WINNING_PLAYBOOK.md` section 8 scripts the team to describe the data model
 as role → activity → competency. Both need a decision before that claim is made on stage.
 
 ### 9.4 Lane 6 — stale claims in root docs
 
 `README.md` and `SIH26101_MASTER_CHECKLIST.md` still state that targeting is experience-level-only
 and that stored role fields do not affect targets. That is now false at the service layer (true
-still at the HTTP layer until 9.1 lands). `SIH26101_WINNING_PLAYBOOK.md` section 8 also scripts
+still at the HTTP layer until 9.1 lands). `docs/internal/SIH26101_WINNING_PLAYBOOK.md` section 8 also scripts
 "anchors derived from public role and training sources"; the accurate phrasing is that they follow
 FRAC's structure with team-authored wording, pending review.
 
@@ -499,7 +499,7 @@ becomes a genuine Lane 2 conversation with reconciliation requirements to justif
 no route may describe the catalogue as persisted.
 
 **Matching is keyword-based and deterministic.** No embeddings, no vector store —
-`SIH26101_WINNING_PLAYBOOK.md` section 6 gates those behind "only when real retrieval is
+`docs/internal/SIH26101_WINNING_PLAYBOOK.md` section 6 gates those behind "only when real retrieval is
 implemented". Every recommendation carries `match_type` (`mapped` or `keyword`), `match_score`,
 `matched_terms` and a human-readable `match_reason`, so a judge can see whether a course was
 curated for that competency or surfaced on specific words, and can change a competency label and
@@ -508,7 +508,7 @@ word is coincidence, and an empty list is a better answer than a wrong one — t
 falls back to internal practice. The 11 DSA competencies deliberately return nothing.
 
 **Lane 5 — the wiring.** `services/course_catalogue.py` is a new file whose nearest mission owner
-is Lane 5 (`SIH26101_TEAM_ORCHESTRATION.md` section 2 assigns unlisted files that way); Lane 3
+is Lane 5 (`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 2 assigns unlisted files that way); Lane 3
 authored the data and the matcher, Lane 5 owns the integration. `learning_catalog.py` is untouched.
 To adopt it, replace the homepage link in `recommend_courses()` with:
 
@@ -530,7 +530,7 @@ Three constraints to preserve:
 
 ## 10. Change process
 
-`SIH26101_TEAM_ORCHESTRATION.md` section 8: open a proposal with old/new examples and
+`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 8: open a proposal with old/new examples and
 compatibility impact; the owner and named approvers (Lane 2, Lane 5, domain reviewer) accept or
 reject; the producer change merges first with compatibility tests; consumers update in separate
 PRs; Lane 6 verifies the integrated story.

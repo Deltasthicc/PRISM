@@ -185,7 +185,7 @@ Restating plainly, matching every other Lane 2 contract's own discipline about o
 
 ## 6. Change process
 
-Same as every other Lane 2 contract (`SIH26101_TEAM_ORCHESTRATION.md` section 8): once Lane 6 or the
+Same as every other Lane 2 contract (`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 8): once Lane 6 or the
 accountable deployment/security owner supplies the missing input for a section, open a proposal
 against that section specifically, get it reviewed, then implement and test it as its own package —
 not as a silent edit to this specification.

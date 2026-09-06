@@ -1,7 +1,7 @@
 # Lane 2 sync log — Claude Code + Codex working in parallel
 
 Branch: `codex/lane-2-core-data/bootstrap`
-Lane: 2 — Core Platform, Identity & Data (`SIH26101_TEAM_ORCHESTRATION.md` section 2)
+Lane: 2 — Core Platform, Identity & Data (`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 2)
 Owner files: `backend/db/**`, `backend/models/**`, `backend/schemas/**`, `backend/security/**`,
 `backend/main.py`, `backend/tests/test_core_*.py`
 
@@ -35,7 +35,7 @@ describes, so status and code never drift apart.
 
 ## Work split (today's session)
 
-Both halves implement Lane 2's immediate package from `SIH26101_TEAM_ORCHESTRATION.md` section 5:
+Both halves implement Lane 2's immediate package from `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 5:
 *"Define minimal versioned role-target, competency, evidence, assessment, source-version and
 audit records. Replace startup column surgery with Alembic and add PostgreSQL configuration while
 retaining deterministic local reset. Define latest-assessment and tenant semantics consumed by
@@ -74,7 +74,7 @@ Files:
 - `backend/db/database.py` — add PostgreSQL support alongside the existing SQLite path. Keep
   `DATABASE_URL` env-var driven exactly as today; don't remove the SQLite WAL-pragma branch or
   `ensure_columns()` — SQLite stays the documented local-demo profile
-  (`SIH26101_WINNING_PLAYBOOK.md` section 6), Postgres is additive, not a replacement.
+  (`docs/internal/SIH26101_WINNING_PLAYBOOK.md` section 6), Postgres is additive, not a replacement.
 - New Alembic scaffold (`backend/alembic.ini`, `backend/migrations/env.py`, `backend/migrations/
   versions/`, whatever Alembic's own `alembic init` layout produces — use real `alembic init` /
   `alembic revision --autogenerate`, don't hand-write a migration file). Baseline migration should
@@ -86,12 +86,12 @@ Files:
   (`psycopg[binary]` or `psycopg2-binary` — pick one, state which and why in your Activity log
   entry).
 - `docs/contracts/data-authorization.md` — replace the "NOT YET DEFINED" scaffold with the real
-  latest-assessment and tenant semantics contract (SIH26101_TEAM_ORCHESTRATION.md section 5, Lane
+  latest-assessment and tenant semantics contract (docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane
   2 immediate package, third bullet). This is a design decision Lanes 3-5 will read and depend on
   — be concrete (exact field names/query pattern for "latest assessment", exact definition of
   "tenant" for this product today), not just a restatement of the scaffold's bullet points.
 
-Acceptance evidence (from `SIH26101_TEAM_ORCHESTRATION.md` section 5, Lane 2):
+Acceptance evidence (from `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 5, Lane 2):
 - Forward migration applies cleanly against a fresh empty database (SQLite AND Postgres, if a
   local Postgres is available to test against — if not, say so explicitly rather than claiming
   both were tested).
@@ -149,7 +149,7 @@ def get_current_subject(authorization_header: str | None) -> AuthenticatedSubjec
 ```python
 # backend/security/rbac.py (AuthZ half -- Codex)
 ROLE_NAMES = {"learner", "trainer", "content_reviewer", "department_admin",
-              "organization_admin", "auditor"}  # SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 2
+              "organization_admin", "auditor"}  # docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 2
 
 @dataclass(frozen=True)
 class BoundPrincipal:
@@ -215,7 +215,7 @@ than self-approve.
 - `README.md`
 - `CODEX.md`
 - `SIH26101_MASTER_CHECKLIST.md`
-- `SIH26101_TEAM_ORCHESTRATION.md`
+- `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`
 - `EVIDENCE.md`
 
 Codex will replace stale SQLite/42-test/no-auth claims with evidence-bounded current reality, check
@@ -258,7 +258,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | L — Retention policy + PostgreSQL backup/restore | Claude Code | **done — accepted by Codex after immutable review and an independent live concurrent backup/restore drill; no remaining correctness finding** | 2026-09-01 | `backend/security/retention.py`, `backend/scripts/backup_restore.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_backup_restore.py`, `docs/contracts/data-authorization.md` |
 | M — Permanent-bootstrap invariant + K review fixes | Codex | **done — reviewed and accepted by Claude Code, no issues** | 2026-09-01 | `backend/security/identity_bootstrap.py`, `backend/security/rbac.py`, `backend/models/identity.py`, `backend/tests/test_core_identity_bootstrap.py`, `docs/contracts/identity-authorization.md`, stale docstring only in `backend/security/data_rights.py` |
 | N — Package L adversarial acceptance contract | Codex | **done — reviewed and accepted by Claude Code (da4c6f3..59a1376), regression-injection-verified not vacuous, no findings** | 2026-09-01 | `backend/tests/test_core_backup_restore_adversarial.py` (new only); Claude continues to own Package L implementation and existing tests |
-| O-A — root truth/checklist/handoff reconciliation | Codex | **done — reviewed and accepted by Claude Code (`a94492e`), no findings** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
+| O-A — root truth/checklist/handoff reconciliation | Codex | **done — reviewed and accepted by Claude Code (`a94492e`), no findings** | 2026-09-01 | `README.md`, `CODEX.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`, `EVIDENCE.md` |
 | O-B — Lane 2 contract/Claude truth reconciliation | Claude Code | **done — all corrections applied and accepted through final O-C review** | 2026-09-02 | `CLAUDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `docs/contracts/README.md`, `backend/keycloak/README.md` |
 | O-C — reciprocal immutable review and final closure | Codex + Claude Code | **COMPLETE — Package V production behavior was accepted at `847c0a8`; its forced-contention, negative-control, pre-yield-cleanup and final-rerun-audit hardening at `ac5a2e7` passed Codex's narrow immutable re-review. No remaining local Lane 2 correctness finding.** | 2026-09-02 | review-only outside each agent's owned files; findings/closure recorded here |
 | P/S — Retention enforcement job (atomic PostgreSQL row claiming) + JWKS key-rotation evidence | Claude Code | **ACCEPTED and integrated at Package V head. Independent Package V reproduction: expired row deleted, young row retained, durable audit count 1; full real-PostgreSQL four-test contract green.** | 2026-09-02 | `backend/security/retention.py`, `backend/scripts/retention_job.py`, `backend/tests/test_core_retention.py`, `backend/tests/test_core_retention_job.py`, `backend/security/identity.py`, `backend/tests/test_core_identity.py`, `docs/contracts/data-authorization.md` |
@@ -267,16 +267,16 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 | S — Atomic PostgreSQL row-claiming for concurrent retention `--apply` | Claude Code | **ACCEPTED by Codex on immutable `699641a`/current-tree review, including an independent live four-worker drill. The code is correct in isolation; Package U subsequently introduced an integration conflict at head, assigned to V rather than reopening S's locking algorithm.** | 2026-09-01 | `backend/scripts/retention_job.py`, `backend/tests/test_core_retention_job.py`; truth docs |
 | T — Full independent Lane 2 security/data audit | Claude Code | **ACCEPTED by Codex on immutable `ec888cd` review: actual DELETE rowcounts and canonical JSON audit-actor encoding are correct, regressions pass, no remaining T finding.** | 2026-09-01 | `backend/security/data_rights.py`, `backend/security/rbac.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_rbac.py`, contract docs |
 | U — Second external-audit review + PostgreSQL audit-events trigger | Claude Code | **SUPERSEDED by accepted Package V. U's historical migration mechanics remain valid evidence; its unconditional DELETE boundary is deliberately retired at the current head. RLS/self-hash/ETL dispositions accepted, with ETL justified by no real source/continuity contract rather than tenancy.** | 2026-09-02 | `backend/migrations/versions/036de46dd515_audit_events_append_only_trigger.py`, migration tests/docs |
-| V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
+| V — Reconcile audit immutability with lawful retention | Claude Code | **ACCEPTED in full. Production fix accepted by Codex on immutable `847c0a8`; forced-contention, deterministic negative-control, unconditional pre-yield cleanup and explicit final-rerun audit-absence hardening accepted on immutable `ac5a2e7`. Five consecutive 6-test live PostgreSQL reruns plus a fresh 347-test full gate passed during final review; Alembic head/check clean and no disposable database leaked.** | 2026-09-02 | `backend/tests/test_core_retention_job_postgres_integration.py`; truth docs (`README.md`, `CLAUDE.md`, `CODEX.md`, `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, `docs/contracts/data-authorization.md`) |
 | W-A — Cross-lane read repository facade | Codex | **ACCEPTED by Claude on immutable `3a75b28`; Claude's one non-blocking competency-isolation test suggestion was closed at `be9e338`.** | 2026-09-03 | `backend/db/repositories.py`, `backend/tests/test_core_repository_consumers.py` (new), `docs/contracts/data-authorization.md`, `LANE2_SYNC.md` |
-| W-B — Database operator UX + per-lane integration handbook | Claude Code | **Claude's handbook/privacy boundary and whole-table repair accepted by Codex; partial-column failure repaired in W-C, which Claude has now ACCEPTED — see the W-C row.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
+| W-B — Database operator UX + per-lane integration handbook | Claude Code | **Claude's handbook/privacy boundary and whole-table repair accepted by Codex; partial-column failure repaired in W-C, which Claude has now ACCEPTED — see the W-C row.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status.py`, `docs/internal/LANE2_INTEGRATION_GUIDE.md`, `docs/internal/LANE2_HANDOFF_FOR_OTHER_LANES.md`, `LANE2_SYNC.md` |
 | W-C — Legacy-column-safe table counts | Codex | **ACCEPTED by Claude on independent immutable review of `8d0d1de`: table-level `COUNT(*)` confirmed via captured compiled SQL (no ORM column projection), independently-constructed legacy schema and private-looking values confirmed absent from output, all six requested commands reproduced with matching results. Package W is closed.** | 2026-09-03 | `backend/scripts/database_status.py`, `backend/tests/test_core_database_status_adversarial.py`, `LANE2_SYNC.md` |
 | X — Dependency security and reproducibility | Claude Code | **implemented; independently re-verified by Claude Code on the current merged `main` tip (459/459 full suite including Lane 5's PR #2, `pip-audit` clean) after Shashwat dropped the per-package stop-and-wait review gate — see Activity log. Not yet reviewed by Codex; will close on review if Codex still does one, but is not blocked on it.** | 2026-09-03 | `backend/requirements.txt`, `backend/requirements-dev.txt`, `backend/requirements.lock` (new), `backend/models/governance.py`, `backend/tests/test_core_dependency_upgrade_adversarial.py` (new), `LANE2_SYNC.md` |
 | Y — SQLite foreign-key enforcement and transaction-semantics parity | Claude Code | **implemented and verified** | 2026-09-03 | `backend/db/database.py`, `backend/tests/test_core_sqlite_fk_transactions.py` (new), `backend/tests/test_core_repository_consumers.py`, `backend/tests/test_core_database_status.py`, `LANE2_SYNC.md` |
-| Z — Composed authorization dependency hardening (review/repair of Lane 5 PR #2) | Codex | **implemented and verified; integrated onto `main` by Claude Code from `codex/lane2-package3`@`0559348`** | 2026-09-04 | `backend/routes/authorization.py`, `backend/routes/learning.py`, `backend/tests/test_authorization_dependencies.py` (new), `backend/tests/test_api_integration_lane5.py`, `LANE2_INTEGRATION_GUIDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `LANE2_SYNC.md` |
+| Z — Composed authorization dependency hardening (review/repair of Lane 5 PR #2) | Codex | **implemented and verified; integrated onto `main` by Claude Code from `codex/lane2-package3`@`0559348`** | 2026-09-04 | `backend/routes/authorization.py`, `backend/routes/learning.py`, `backend/tests/test_authorization_dependencies.py` (new), `backend/tests/test_api_integration_lane5.py`, `docs/internal/LANE2_INTEGRATION_GUIDE.md`, `docs/contracts/data-authorization.md`, `docs/contracts/identity-authorization.md`, `LANE2_SYNC.md` |
 | AA — Measured indexes + governance CHECK constraints (Package 4) | Claude Code | **implemented and verified, built on Codex's abandoned draft (ran out of tokens mid-package) after independently re-benchmarking and fixing two real bugs in it — see Activity log** | 2026-09-04 | `backend/models/governance.py`, `backend/models/learning.py`, `backend/models/session.py`, `backend/models/submission.py`, `backend/migrations/versions/6564595b3466_add_measured_indexes_and_governance_.py` (new), `backend/migrations/versions/2baf7d4bd8a2_add_governance_tables.py`, `backend/tests/test_core_measured_indexes_and_constraints.py` (new), `backend/tests/test_core_database.py`, `backend/tests/test_core_migrations.py`, `LANE2_SYNC.md` |
 | AB — `export_subject_data()` point-in-time snapshot consistency (Package 5) | Claude Code | **implemented and verified; the "single transaction" version was tried first and demonstrably failed a concurrent-write test before landing on the real two-phase design — see Activity log** | 2026-09-04 | `backend/security/data_rights.py`, `backend/tests/test_core_data_rights.py`, `backend/tests/test_core_data_rights_snapshot.py` (new), `LANE2_SYNC.md` |
-| AC — `hide_parameters`, `ensure_columns()` injection hardening, `--migration-only` status mode (Package 6) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/db/database.py`, `backend/scripts/database_status.py`, `backend/tests/test_core_database.py`, `backend/tests/test_core_database_status.py`, `LANE2_INTEGRATION_GUIDE.md`, `LANE2_SYNC.md` |
+| AC — `hide_parameters`, `ensure_columns()` injection hardening, `--migration-only` status mode (Package 6) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/db/database.py`, `backend/scripts/database_status.py`, `backend/tests/test_core_database.py`, `backend/tests/test_core_database_status.py`, `docs/internal/LANE2_INTEGRATION_GUIDE.md`, `LANE2_SYNC.md` |
 | AD — Alembic 1.19.1 bump + live schema-contract test (Package 7) | Claude Code | **implemented and verified** | 2026-09-04 | `backend/requirements.txt`, `backend/requirements.lock`, `backend/alembic.ini`, `backend/tests/test_core_schema_contract.py` (new), `LANE2_SYNC.md` |
 | AE — Privacy-safe `lane2_doctor` OIDC discovery/JWKS diagnostics (Package 8) | Claude Code | **implemented and verified, including a live run against the real local Keycloak container** | 2026-09-04 | `backend/security/identity.py`, `backend/scripts/lane2_doctor.py` (new), `backend/tests/test_core_lane2_doctor.py` (new), `LANE2_SYNC.md` |
 | AF — Production PostgreSQL hardening specification (Package 9) | Claude Code | **specify-only, as agreed — no implementation, no dev-drill; filed and reviewable** | 2026-09-04 | `docs/contracts/production-database-hardening.md` (new), `docs/contracts/README.md`, `LANE2_SYNC.md` |
@@ -285,7 +285,7 @@ and explicit handoffs for work that belongs to Lanes 1, 5, 6 or accountable exte
 ## Backlog / next up
 
 Once Half B is done, whoever is free next should pick from
-`SIH26101_TEAM_ORCHESTRATION.md` section 5's Lane 2 "Next package" (not started by either agent
+`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 5's Lane 2 "Next package" (not started by either agent
 yet):
 
 - ~~OIDC authentication, server-derived subject, RBAC, deployment-database tenant guard and
@@ -362,7 +362,7 @@ always knows what's claimed.
     isolation, invalid inputs and read-only behavior. These helpers do not authorize a caller;
     Lane 5 must compose Lane 2's verified principal/RBAC/object-scope checks before calling them.
   - **Claude W-B is proposed to own only** a privacy-safe read-only database-status/operator tool
-    and its tests, plus `LANE2_INTEGRATION_GUIDE.md` and the existing cross-lane handoff document.
+    and its tests, plus `docs/internal/LANE2_INTEGRATION_GUIDE.md` and the existing cross-lane handoff document.
     The guide should give each Lane 1/3/4/5/6 an exact “Lane 2 provides / you provide / route and
     DB usage / acceptance evidence” section and copy-ready team message. The status tool must never
     dump PII, tokens, profile text, answers or uploaded excerpts. Claude should claim W-B in this
@@ -378,7 +378,7 @@ always knows what's claimed.
   (`codex/lane-2-core-data/integration-ergonomics`, branched from `origin/main` at `e939f69`), never
   touching the shared checkout Codex was actively editing W-A in.** Read (not edited) Codex's
   in-progress `backend/db/repositories.py`/`docs/contracts/data-authorization.md` diffs only to
-  document their real signatures accurately in `LANE2_INTEGRATION_GUIDE.md`, explicitly caveated as
+  document their real signatures accurately in `docs/internal/LANE2_INTEGRATION_GUIDE.md`, explicitly caveated as
   "Package W-A, in review — check this file for the accepted commit hash" rather than presented as
   already merged.
 
@@ -414,7 +414,7 @@ always knows what's claimed.
   call-time-local-import pattern, the same precedent as `scripts/retention_job.py`) rather than
   touching the real configured database.
 
-  **`LANE2_INTEGRATION_GUIDE.md` (new).** Per Package W-A/W-B's own proposal, one section per Lane
+  **`docs/internal/LANE2_INTEGRATION_GUIDE.md` (new).** Per Package W-A/W-B's own proposal, one section per Lane
   1/3/4/5/6 with exactly "Lane 2 provides / you provide / route and DB usage / acceptance evidence"
   plus a copy-ready team message — grounded in the actual current contracts, models and this
   package's tool, not aspirational. Explicitly flags, without overstepping into fixing them: Lane
@@ -423,7 +423,7 @@ always knows what's claimed.
   currently unreachable by any real user); the missing `player_id` in
   `labs/sampling_lab.py`'s `evidence_payload()`; the un-flagged fallback response in
   `routes/ai_real.py`'s Quest-mode question generator; and the live but dormant `json` import bug in
-  `ai/grading.py`. Cross-referenced from `LANE2_HANDOFF_FOR_OTHER_LANES.md`'s header, which remains
+  `ai/grading.py`. Cross-referenced from `docs/internal/LANE2_HANDOFF_FOR_OTHER_LANES.md`'s header, which remains
   the separate dated issue list rather than being merged into this new file.
 
   **Evidence.** `pytest backend/tests/test_core_database_status.py`: 19 passed. Full backend suite
@@ -1555,7 +1555,7 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
 - 2026-09-01 — Claude Code — O-B and Package P both done, pushed together (same files touch
   `docs/contracts/data-authorization.md`, so one commit). Not touching any O-A or Q file
   (`CODEX.md`/`EVIDENCE.md`/`README.md`/`SIH26101_MASTER_CHECKLIST.md`/
-  `SIH26101_TEAM_ORCHESTRATION.md`/`backend/security/encryption.py`/
+  `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`/`backend/security/encryption.py`/
   `backend/tests/test_core_encryption.py`/`docs/contracts/encryption-key-ownership.md`/
   `backend/requirements.txt`/`backend/security/__init__.py`), all currently mid-edit by Codex in
   the shared worktree.
@@ -1984,7 +1984,7 @@ Append-only. Newest entry at the bottom. Format: `date — agent — what happen
   conflated line). Confirmed the reported CI-run claim: `gh run list --branch
   codex/lane-2-core-data/bootstrap` returns nothing, matching CODEX.md's own honest "presence alone
   is not evidence of a green remote run" wording. `README.md`'s new "Lane 2 completion and handoff"
-  section and `SIH26101_TEAM_ORCHESTRATION.md`'s copy-ready per-lane messages are accurate and
+  section and `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`'s copy-ready per-lane messages are accurate and
   well-scoped -- no overclaiming of route protection, government IdP status, or production
   readiness found anywhere across the five O-A files.
 
@@ -2091,7 +2091,7 @@ START SAFELY
 2. Check out `codex/lane-2-core-data/bootstrap` and pull with `--ff-only`.
 3. Confirm HEAD is at least `72289b8` and the tree is clean before editing.
 4. Read, in order: `AGENTS.md`, `CODEX.md`, `docs/SIH26101_PROBLEM_STATEMENT.md`,
-   `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, then the complete latest
+   `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, then the complete latest
    `LANE2_SYNC.md`. Treat the final user-directed handoff section as the current assignment.
 5. Read immutable commits `7f4eb9f` and `72289b8` and the two Codex-owned tests
    `backend/tests/test_core_identity_adversarial.py` and
@@ -2172,7 +2172,7 @@ After the code and live drill are green:
    final count and distinguish local HTTP/PyJWKClient rotation from live Keycloak rotation.
 3. Update `EVIDENCE.md` and the append-only evidence log in `SIH26101_MASTER_CHECKLIST.md` with the
    final full-suite and live-concurrency result. Do not rewrite historical 42/237/272/337 evidence.
-4. Re-read `README.md`, `CODEX.md` and `SIH26101_TEAM_ORCHESTRATION.md`; update only stale current
+4. Re-read `README.md`, `CODEX.md` and `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`; update only stale current
    Lane 2 status/count wording. Preserve these truths: routes remain unprotected; browser SSO and
    approved production IdP are absent; one deployment database is one tenant; no model uses the
    AEAD envelope; no approved maximum retention exists; KMS/TLS/storage/offsite DR are absent;
@@ -2425,7 +2425,7 @@ FINAL GATES AND DELIVERY
   refused to do (see the master checklist's own "PROPOSED... needs implementation and validation"
   discipline). The real prerequisite -- an authoritative organization/department model -- is already
   the explicit, standing escalation to accountable external owners in
-  `SIH26101_TEAM_ORCHESTRATION.md`'s Lane 2 handoff section. RLS is real, correct, valuable future
+  `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`'s Lane 2 handoff section. RLS is real, correct, valuable future
   work; it is not currently buildable without first fabricating the column it would need to filter
   on.
 
@@ -2742,7 +2742,7 @@ FINAL GATES AND DELIVERY
 
   **Corrected every prior "database-enforced append-only" claim** this session had written for
   Package U, since Package V changes what is actually true: `README.md`, `CLAUDE.md`, `CODEX.md`,
-  `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md` (the checked-item clause) and
+  `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md` (the checked-item clause) and
   `docs/contracts/data-authorization.md` section 6.3 all now say the database blocks `UPDATE` only,
   `DELETE` is intentional and governed by the retention job, and the real append-only guarantee is
   an application-layer property. `EVIDENCE.md`'s historical Package U/Codex-audit rows were not
@@ -2818,7 +2818,7 @@ FINAL GATES AND DELIVERY
     unaccepted, contradicting the corrected paragraph earlier in the same file.
   - `SIH26101_MASTER_CHECKLIST.md`'s header/current-truth row still says P/S awaits Codex and
     reports 339 tests.
-  - current status in `CODEX.md`, `CLAUDE.md` and `SIH26101_TEAM_ORCHESTRATION.md` still says the
+  - current status in `CODEX.md`, `CLAUDE.md` and `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` still says the
     accepted retention/Package V work awaits Codex; update after these findings close.
   - README/CODEX/CLAUDE still partly justify rejecting legacy ETL by “no tenant model.” Tenancy is
     irrelevant to whether ETL can exist; the defensible reason already accepted by Codex is that
@@ -2901,7 +2901,7 @@ FINAL GATES AND DELIVERY
   > `codex/lane-2-core-data/bootstrap`. Start with `git fetch origin`, check that your tree is clean,
   > check out that branch and pull. Your minimum base is Codex review commit `e246ff9`. Read, in
   > order, `AGENTS.md`, `CODEX.md`, `docs/SIH26101_PROBLEM_STATEMENT.md`,
-  > `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, then the latest Package V and
+  > `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`, then the latest Package V and
   > Codex review entries at the end of `LANE2_SYNC.md`. Inspect the code/tests yourself; do not rely
   > on this summary as proof.
   >
@@ -2933,7 +2933,7 @@ FINAL GATES AND DELIVERY
   > `test:package_v_final_rerun` produced zero new `retention_job.enforce_maximum` audit rows.
   > 4. Reconcile current-status documentation without rewriting historical evidence. At minimum
   > inspect and correct `README.md`, `CODEX.md`, `CLAUDE.md`,
-  > `SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`,
+  > `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`, `SIH26101_MASTER_CHECKLIST.md`,
   > `docs/contracts/data-authorization.md`, and the `LANE2_SYNC.md` Status board/current entry.
   > Remove stale statements that Package V/S/T await Codex, that PostgreSQL rejects DELETE, or that
   > the current count is only 339/341 when describing the live-Postgres gate. State the exact latest
@@ -3064,9 +3064,9 @@ FINAL GATES AND DELIVERY
   accepted, test hardening awaiting narrow re-review) and both current counts (341/6-skipped without
   Postgres, 347 with it). `SIH26101_MASTER_CHECKLIST.md`'s header paragraph and "Automated tests" row
   no longer say Package P/S "awaits Codex" or cite 339 as current. `CODEX.md`, `CLAUDE.md` and
-  `SIH26101_TEAM_ORCHESTRATION.md` all now state Codex's actual S/T/V verdicts instead of a blanket
+  `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` all now state Codex's actual S/T/V verdicts instead of a blanket
   "awaiting review," and cite 341/347. The ETL rejection rationale is corrected everywhere it still
-  said "no tenant model" (`README.md`, `SIH26101_TEAM_ORCHESTRATION.md`, `CODEX.md`) to the reasoning
+  said "no tenant model" (`README.md`, `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`, `CODEX.md`) to the reasoning
   Codex's own disposition actually accepted: no identified real source dataset, continuity
   requirement, approved field/identity mapping, conflict policy, reconciliation contract or
   acceptance owner -- tenancy is irrelevant to whether that migration could exist.
@@ -3374,7 +3374,7 @@ FINAL GATES AND DELIVERY
   Competency Model)/Mission Karmayogi, so the base/default experience must be non-gamified, with
   the existing dungeon/Quest layer preserved as an explicit, secondary opt-in for reaching a
   broader audience -- not a new decision, this is the same "professional default, Quest optional"
-  split already recorded in `SIH26101_MASTER_CHECKLIST.md`/`SIH26101_WINNING_PLAYBOOK.md`, now
+  split already recorded in `SIH26101_MASTER_CHECKLIST.md`/`docs/internal/SIH26101_WINNING_PLAYBOOK.md`, now
   asked to get a real, even if minimal, data-layer foundation rather than staying only a frontend-
   routing convention. Scoped strictly to Lane 2 ownership (models/schemas/migrations), explicitly
   not curriculum-per-mode policy (Lane 3) or routing/rendering (Lane 1/5), per the user's own
@@ -3463,7 +3463,7 @@ FINAL GATES AND DELIVERY
   `git diff --check` clean; `.coverage` added to `.gitignore` rather than committed.
 
   Updated current-status counts (402/408, replacing 341/347) in `CLAUDE.md`, `CODEX.md`,
-  `SIH26101_TEAM_ORCHESTRATION.md`. Historical dated rows in `EVIDENCE.md`/
+  `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`. Historical dated rows in `EVIDENCE.md`/
   `SIH26101_MASTER_CHECKLIST.md` preserved unchanged; new rows appended for the merge, the scaffold,
   and the coverage pass.
 
@@ -3487,7 +3487,7 @@ FINAL GATES AND DELIVERY
   seeding defaults off. It is a persistent **local Docker database**, not a deployed online/cloud
   database. A hosted shared database still requires Lane 6 deployment/secrets/operations work.
 
-  Browser/source evidence confirms the remaining handoff in `LANE2_HANDOFF_FOR_OTHER_LANES.md`:
+  Browser/source evidence confirms the remaining handoff in `docs/internal/LANE2_HANDOFF_FOR_OTHER_LANES.md`:
   `players.preferred_mode` is a valid constrained storage foundation but no route writes it and no
   UI reads it, so Dungeon/Guild/Ranks remain visible in professional mode (Lanes 1+5). Academy still
   has the torch overlay and eleven `Pixel*` panels in the inspected viewport; only the bats were
@@ -3654,7 +3654,7 @@ FINAL GATES AND DELIVERY
 
 - 2026-09-03 — Codex — **Claimed W-C, limited to the rejected W-B surface after repeated fetches
   found no owner repair.** Codex may edit only `backend/scripts/database_status.py`, its test file,
-  the accuracy/status lines in `LANE2_INTEGRATION_GUIDE.md`, and this log. The repair must preserve
+  the accuracy/status lines in `docs/internal/LANE2_INTEGRATION_GUIDE.md`, and this log. The repair must preserve
   Claude's privacy boundary while making empty/partial schemas produce structured status (not raw
   SQL tracebacks), make the migration gate fail closed when required tables are absent, and name
   Lane 3/Lane 4 feature refs for branch-specific findings. Claude retains independent review
@@ -3684,7 +3684,7 @@ FINAL GATES AND DELIVERY
   `evidence_payload(task_id)` missing `player_id` is real on
   `origin/codex/lane-3-competency/role-target-v1` — both were already independently confirmed by
   Claude's own earlier ground-truth per-branch audit of those exact branches, not merely trusted from
-  Codex's correction. Restored both findings into `LANE2_INTEGRATION_GUIDE.md`, each now explicitly
+  Codex's correction. Restored both findings into `docs/internal/LANE2_INTEGRATION_GUIDE.md`, each now explicitly
   prefixed "On `origin/codex/lane-<n>-.../<branch>`" rather than presented as a fact about `main`, in
   both the prose and the copy-ready message for that lane. Also re-audited the rest of the guide's
   Lane 3/4/5 claims against `main` directly (`git show main:...` on every referenced file) rather
@@ -4320,7 +4320,7 @@ FINAL GATES AND DELIVERY
   than merely discarded after running; `--migration-only` combined with `--check-migrations` still
   correctly fails closed on a stamped-but-partially-migrated database and still passes on a healthy
   one, using only the cheap path; `format_human` renders an explicit "skipped (--migration-only)"
-  marker rather than a silently-empty counts block. `LANE2_INTEGRATION_GUIDE.md` updated to tell
+  marker rather than a silently-empty counts block. `docs/internal/LANE2_INTEGRATION_GUIDE.md` updated to tell
   Lane 6 to pair `--check-migrations` with `--migration-only` for CI specifically.
 
   **Full-suite evidence:** SQLite **540/540** (500 baseline + 40 new); live PostgreSQL **539/540**

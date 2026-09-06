@@ -7,12 +7,12 @@ Persistent project guidance for Claude Code working on `PRISM`.
 Before implementing anything, read:
 
 1. `docs/SIH26101_PROBLEM_STATEMENT.md` — canonical user-supplied requirements (`PS-01`…`PS-18`).
-2. `SIH26101_TEAM_ORCHESTRATION.md` — six disjoint ownership lanes and contracts.
+2. `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` — six disjoint ownership lanes and contracts.
 3. `SIH26101_MASTER_CHECKLIST.md` — current priority/readiness gates.
 4. `README.md` — verified present behavior and known gaps.
 5. Relevant source and tests.
 
-Use `SIH26101_WINNING_PLAYBOOK.md` for demo/pitch choices. `docs/archive/**` is historical and must not be used as current implementation guidance.
+Use `docs/internal/SIH26101_WINNING_PLAYBOOK.md` for demo/pitch choices. `docs/archive/**` is historical and must not be used as current implementation guidance.
 
 The problem-statement capture is persisted at `docs/SIH26101_PROBLEM_STATEMENT.md` with attachment SHA-256 `A745A905D42A03D363875C844418D22189F00B15E8C733B7EC6453172D36D561`. Do not silently narrow the product to quizzes or the inherited RPG.
 
@@ -83,7 +83,7 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
   candidate selection — both closed in a follow-up commit that also added a deterministic negative
   control proving the forced-overlap methodology is meaningful (an equivalent unlocked-select flow
   fails the same contract when forced to overlap the same way). Awaiting Codex's narrow re-review of
-  exactly those four items. Full evidence and reasoning in `LANE2_SYNC.md`.
+  exactly those four items. Full evidence and reasoning in `docs/internal/LANE2_SYNC.md`.
 - Next.js frontend; lint passed in the last verification.
 - Four backend curricula/34 competencies exist, but do not cover the full supplied competency list and have no MoSPI/CBC/NSSTA approval.
 - DSA Quest works in the browser; non-DSA backend dungeons are blocked by frontend routing/filter assumptions.
@@ -117,7 +117,7 @@ The Quest engine/UI was forked from a differently branded DSA learning game and 
 
 ## Six-lane rule
 
-Identify the owner in `SIH26101_TEAM_ORCHESTRATION.md` before editing:
+Identify the owner in `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` before editing:
 
 1. Professional Experience & Accessibility
 2. Core Platform, Identity & Data

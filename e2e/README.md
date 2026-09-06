@@ -1,6 +1,6 @@
 # e2e
 
-Owner: Lane 6 (Quality, Security, Release & Evidence) -- `SIH26101_TEAM_ORCHESTRATION.md`
+Owner: Lane 6 (Quality, Security, Release & Evidence) -- `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`
 section 2.
 
 Empty scaffold. No end-to-end test tooling is installed in this repository yet. The next real

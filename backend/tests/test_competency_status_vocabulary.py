@@ -2,7 +2,7 @@
 
 CODEX.md and CLAUDE.md architectural invariants both require SIMULATED,
 CATALOGUE, LIVE, PROVISIONAL and NO EVIDENCE to be used "precisely", and
-SIH26101_TEAM_ORCHESTRATION.md section 5 puts Lane 1 on the hook to render
+docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5 puts Lane 1 on the hook to render
 exactly those states. Lane 3 therefore must not invent near-miss spellings
 ("provisional", "no_evidence", "unreviewed") in the fields Lane 1 reads --
 these tests fail if it starts to.

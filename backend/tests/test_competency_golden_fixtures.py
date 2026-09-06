@@ -1,6 +1,6 @@
 """Golden fixture tests for the gap/pathway engine.
 
-SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 acceptance evidence:
+docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 acceptance evidence:
 "Golden policy fixtures produce stable gaps and pathways." Every existing
 Lane 3 test checks a specific field or behavior; these instead pin the
 *entire* output for six realistic scenarios and fail on any drift, intended

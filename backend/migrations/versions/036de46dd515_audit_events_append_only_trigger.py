@@ -20,7 +20,7 @@ trigger -- a compromised or malicious holder of the app's own database
 credentials is not stopped by it. It does not add actor/purpose context,
 does not survive a transaction rollback (Postgres triggers are not
 autonomous transactions), and is not a compliance or "tamper-proof"
-claim -- see LANE2_SYNC.md for the independent-audit review that scoped
+claim -- see docs/internal/LANE2_SYNC.md for the independent-audit review that scoped
 this down from the originally proposed "capture every table's writes with
 full context" trigger design, which this project rejected as unproven and
 partially fabricated.

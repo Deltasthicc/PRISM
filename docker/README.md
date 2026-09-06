@@ -1,6 +1,6 @@
 # docker
 
-Owner: Lane 6 (Quality, Security, Release & Evidence) -- `SIH26101_TEAM_ORCHESTRATION.md`
+Owner: Lane 6 (Quality, Security, Release & Evidence) -- `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`
 section 2.
 
 Empty scaffold. No Dockerfile or container image exists yet for this project. Local development

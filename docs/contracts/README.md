@@ -2,7 +2,7 @@
 
 Thin, versioned interfaces coordinate the six lanes without shared file ownership — nine today,
 listed below (not a fixed count: a lane can add a narrowly scoped contract, like Lane 2's
-`encryption-key-ownership.md`, as its own primitives grow). See `SIH26101_TEAM_ORCHESTRATION.md`
+`encryption-key-ownership.md`, as its own primitives grow). See `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`
 section 4 ("Contract-first dependency model") for why these exist and who owns/consumes/approves
 changes to each one.
 

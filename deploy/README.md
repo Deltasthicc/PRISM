@@ -1,11 +1,11 @@
 # deploy
 
-Owner: Lane 6 (Quality, Security, Release & Evidence) -- `SIH26101_TEAM_ORCHESTRATION.md`
+Owner: Lane 6 (Quality, Security, Release & Evidence) -- `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`
 section 2.
 
 Status: **a real, live, shared free-tier team environment** (database + backend + local-standards
 OIDC provider), so the six lanes stop looking at six different local databases. **Not** a
-government-approved production deployment -- see `SIH26101_TEAM_ORCHESTRATION.md` section 11,
+government-approved production deployment -- see `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 11,
 "Production authorization remains external", and `SIH26101_MASTER_CHECKLIST.md` section 5.1. Free
 hosting tiers, no SLA, no on-call, no DR -- good enough for a hackathon team to see each other's
 data, not for real learner data or a real government pilot.

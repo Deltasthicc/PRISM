@@ -1,7 +1,7 @@
 """Tests for services/behavioral_anchors.py and its wiring into
 services/learning_engine.py -- Lane 3's "sourced MoSPI pilot taxonomy with
 competency-specific L1-L5 behavioural anchors" deliverable
-(SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 immediate package).
+(docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 immediate package).
 
 Anchors are per-item records ({descriptor, source, status, reviewed_by,
 version}), not a single blanket note for the whole file -- per the same

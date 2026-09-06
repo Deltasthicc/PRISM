@@ -1,7 +1,7 @@
 """Tests for the versioned role-target seam (services/role_targets.py) and its
 wiring into services/learning_engine.py -- Lane 3's immediate-package item:
 "replace experience-only targeting with an explicit versioned role-target
-selection contract" (SIH26101_TEAM_ORCHESTRATION.md section 5).
+selection contract" (docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5).
 """
 from services.learning_engine import analyse_competencies
 from services.role_targets import (

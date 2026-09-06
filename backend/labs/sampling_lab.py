@@ -1,16 +1,16 @@
 """Bounded sampling-design lab for the Official Statistics domain (PS-08).
 
-Why sampling and not CPI or data quality: SIH26101_TEAM_ORCHESTRATION.md
+Why sampling and not CPI or data quality: docs/internal/SIH26101_TEAM_ORCHESTRATION.md
 section 5 allows any of the three, and services/behavioral_anchors.py already
 defines os_sampling_design's Level 2 anchor as "Can calculate a simple random
 sample size for a given confidence level and margin of error." This lab tests
 exactly that behavior, so a passed task is evidence against a competency that
 already exists in the taxonomy, with a target, anchors and a pathway position
--- which is what closes SIH26101_WINNING_PLAYBOOK.md section 1's
+-- which is what closes docs/internal/SIH26101_WINNING_PLAYBOOK.md section 1's
 target -> evidence -> gap -> practice -> reassessment loop.
 
 Safety posture (SIH26101_MASTER_CHECKLIST.md section 4.4,
-SIH26101_TEAM_ORCHESTRATION.md section 5 Lane 3 acceptance evidence):
+docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5 Lane 3 acceptance evidence):
 
 - No learner code is accepted or executed. The learner submits one number per
   task; the expected value is recomputed here from a fixed formula.
@@ -256,7 +256,7 @@ def evaluate_submission(task_id: str, submitted_answer: object) -> dict:
 
     The steps are returned whether the learner was right or wrong: the point
     of a lab is the learning feedback, not the verdict
-    (SIH26101_TEAM_ORCHESTRATION.md section 5: "The lab has resource bounds,
+    (docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5: "The lab has resource bounds,
     learning feedback and no arbitrary code execution on the API host").
     """
     task = TASKS.get(task_id)

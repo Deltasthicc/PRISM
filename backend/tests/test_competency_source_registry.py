@@ -1,6 +1,6 @@
 """Lane 3 sourced-taxonomy tests.
 
-SIH26101_TEAM_ORCHESTRATION.md section 2 makes "sourced taxonomy" a Lane 3
+docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 2 makes "sourced taxonomy" a Lane 3
 must-deliver. These pin the *shape and honesty* of the citations, not their
 content -- a test cannot verify that a government PDF says what we claim, so
 what it can do is refuse a citation that is dangling, undated, mislabelled, or
@@ -148,7 +148,7 @@ def test_a_citation_never_upgrades_authoring_status():
     proves the subject is real and trained-on; it does not validate our target
     level, prerequisites or anchors. SIH26101_MASTER_CHECKLIST.md section 4.1
     marks that validation BLOCKED-EXTERNAL, and
-    SIH26101_WINNING_PLAYBOOK.md section 2 forbids claiming otherwise."""
+    docs/internal/SIH26101_WINNING_PLAYBOOK.md section 2 forbids claiming otherwise."""
     for slug, competency in _all_competencies():
         assert competency["authoring_status"] == PROVISIONAL, (
             f"{slug}:{competency['id']} is {competency['authoring_status']}, not PROVISIONAL -- "

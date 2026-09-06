@@ -4,7 +4,7 @@ Owner of this file: Lane 2 (Core Platform, Identity & Data), written 2 September
 project owner tested the deployed app and raised a batch of issues. Lane 2's scope is
 `backend/db/**`, `backend/models/**`, `backend/schemas/**`, `backend/main.py`,
 `backend/security/**`, `backend/tests/test_core_*.py` and `docs/contracts/data-authorization.md`
-(see `SIH26101_TEAM_ORCHESTRATION.md` section 2 for the full ownership table). Several of the
+(see `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 2 for the full ownership table). Several of the
 raised issues are genuinely outside that scope. Rather than silently skip them or overstep into
 another lane's files, this file records exactly what's needed and who owns it, so whoever picks up
 that lane next has a ready punch list instead of rediscovering the same gaps.
@@ -12,7 +12,7 @@ that lane next has a ready punch list instead of rediscovering the same gaps.
 Each item below states: what was observed, why it's not Lane 2's file to fix, which lane owns it,
 and what Lane 2 already provides that the owning lane can build on.
 
-**See also `LANE2_INTEGRATION_GUIDE.md`** (Package W-B, 3 September 2026): the standing reference
+**See also `docs/internal/LANE2_INTEGRATION_GUIDE.md`** (Package W-B, 3 September 2026): the standing reference
 for *how* to integrate with Lane 2 at all — exact repository/security function signatures, a
 `database_status.py` tool for checking your own local setup, and a "Lane 2 provides / you provide /
 route and DB usage / acceptance evidence" section per lane. This file stays the dated,
@@ -59,7 +59,7 @@ Quest's own routes (`/dungeon`, `/combat`, `/boss`, `/character`, `/guild`, `/le
 `/academy`, `/dashboard`, `/admin`, `/stats`, `/`, `/login`, `/register`. The torch-flicker/CRT
 scanline overlays and the pixel font itself were left alone — they're subtler, and a full
 "distinct professional visual theme" (already flagged as an open gap in
-`SIH26101_MASTER_CHECKLIST.md`/`SIH26101_WINNING_PLAYBOOK.md` after the PRISM rebrand) is a real
+`SIH26101_MASTER_CHECKLIST.md`/`docs/internal/SIH26101_WINNING_PLAYBOOK.md` after the PRISM rebrand) is a real
 design project, not a one-line fix.
 
 **Why not Lane 2:** All of `frontend/**` — pixel font choice, panel/button component styling,
@@ -83,7 +83,7 @@ translation (not just UI chrome), that's content pipeline work — Lane 4's terr
 
 **Relevant existing constraint:** `docs/SIH26101_PROBLEM_STATEMENT.md` (PS-09) already scopes this
 as "one end-to-end English/Hindi journey" for the demo, not full multi-language operations —
-Lane 1 owns that requirement (`SIH26101_TEAM_ORCHESTRATION.md`'s ownership table lists `PS-09`
+Lane 1 owns that requirement (`docs/internal/SIH26101_TEAM_ORCHESTRATION.md`'s ownership table lists `PS-09`
 under Lane 1). Adding more Indian languages beyond Hindi is a further ask beyond the current
 problem-statement scope; flag it to the team before committing to it, since translation quality and
 maintenance cost scale with every language added.
@@ -102,7 +102,7 @@ this was already fixed and whether it's Lane 2's issue.
 (`backend/security/identity.py`, tested against live Keycloak and real JWKS key rotation), an
 issuer/subject identity-binding model, and a fixed RBAC permission-checking policy
 (`backend/security/rbac.py`). These are implemented, tested, and Codex-accepted (see
-`LANE2_SYNC.md`). **Attaching them to actual HTTP routes — making `GET /learning/admin/overview`
+`docs/internal/LANE2_SYNC.md`). **Attaching them to actual HTTP routes — making `GET /learning/admin/overview`
 in `backend/routes/learning.py` actually require a verified token and an `organization_admin` (or
 similar) permission before it returns data — is Lane 5's job**
 (`backend/routes/**` except `ai_real.py`, per the ownership table), not Lane 2's. Confirmed by

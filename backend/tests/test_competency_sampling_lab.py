@@ -1,6 +1,6 @@
 """Tests for backend/labs/sampling_lab.py -- Lane 3's PS-08 deliverable:
 "one bounded CPI, sampling or data-quality lab with deterministic expected
-output" (SIH26101_TEAM_ORCHESTRATION.md section 5).
+output" (docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5).
 
 Acceptance evidence being proven here (same section): "The lab has resource
 bounds, learning feedback and no arbitrary code execution on the API host."

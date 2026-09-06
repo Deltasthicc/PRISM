@@ -134,7 +134,7 @@ def should_seed_demo_data(*, database_backend: str | None = None) -> bool:
     promise depends on this) and False on PostgreSQL: a migration-managed
     database implies something closer to a shared or persistent environment,
     where silently injecting a fake player and curriculum content is not a
-    safe default. See docs/contracts/data-authorization.md and LANE2_SYNC.md
+    safe default. See docs/contracts/data-authorization.md and docs/internal/LANE2_SYNC.md
     for why this boundary exists -- it is not yet a real controlled-pilot
     seeding policy, just an explicit off switch for anything other than the
     local SQLite demo.

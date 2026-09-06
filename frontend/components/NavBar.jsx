@@ -5,38 +5,41 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { User, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function NavBar() {
   const pathname = usePathname();
   const player = useAuthStore((s) => s.player);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const logout = useAuthStore((s) => s.logout);
+  const { t } = useLanguage();
 
   if (!isAuthenticated) return null;
   const navTabs = [
     {
       href: '/competency-and-gap-analysis',
-      label: 'Competency & Gap Analysis',
+      label: t('nav.competencyGapAnalysis'),
       hasDot: true,
     },
     {
       href: '/dungeon',
-      label: 'Prerequisite Pathways',
+      label: t('nav.prerequisitePathways'),
       hasDot: false,
     },
     {
       href: '/quiz',
-      label: 'Source Quiz Generator',
+      label: t('nav.sourceQuizGenerator'),
       hasDot: false,
     },
     {
       href: '/guild',
-      label: 'Adaptive Practice (DSA Quest)',
+      label: t('nav.adaptivePractice'),
       hasDot: false,
     },
     {
       href: '/integration-registry',
-      label: 'Integration Registry',
+      label: t('nav.integrationRegistry'),
       hasDot: false,
     },
   ];
@@ -55,17 +58,18 @@ export default function NavBar() {
 
           <div className="flex flex-col">
             <span className="text-base sm:text-lg font-bold text-[#00236f] leading-tight tracking-tight">
-              PRISM
+              {t('brand.name')}
             </span>
 
             <span className="font-mono text-[9px] sm:text-[10px] text-[#757682] uppercase tracking-wider">
-              Personalized Readiness Intelligence &amp; Skill Mapping
+              {t('brand.tagline')}
             </span>
           </div>
         </Link>
 
         {/* ================= USER ================= */}
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <Link
             href="/stats"
             className="flex items-center gap-2.5 bg-[#f2f3ff]/80 px-3 py-1.5 rounded-lg border border-[#c5c5d3]/30 hover:bg-[#e2e7ff] hover:border-[#00236f]/30 transition-all"
@@ -84,7 +88,7 @@ export default function NavBar() {
           <button
             type="button"
             onClick={() => logout()}
-            title="Sign out"
+            title={t('nav.signOut')}
             className="p-2 rounded-lg border border-[#c5c5d3]/40 text-[#757682] hover:text-[#00236f] hover:border-[#00236f]/30 transition-colors"
           >
             <LogOut size={16} />

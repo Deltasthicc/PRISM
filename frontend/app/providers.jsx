@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/useAuthStore';
+import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 
 function AuthBootstrap() {
   const fetchMe = useAuthStore((s) => s.fetchMe);
@@ -24,8 +25,10 @@ export default function Providers({ children }) {
 
   return (
     <QueryClientProvider client={client}>
-      <AuthBootstrap />
-      {children}
+      <LanguageProvider>
+        <AuthBootstrap />
+        {children}
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

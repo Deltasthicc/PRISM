@@ -58,18 +58,96 @@ def _confidence(evidence_sources: list[str]) -> str:
     return "moderate"
 
 
-def _level_label(score: float) -> str:
+# Bounded, hand-translated template strings for this engine's own generated
+# prose (never AI output -- these are plain Python f-strings). Curriculum
+# label/description translation lives in services/curricula.py's
+# curricula_hi.json instead, since it's a different, much larger dataset with
+# its own review process.
+_LEVEL_LABEL = {
+    "en": {
+        "not_yet_evidenced": "not yet evidenced",
+        "foundation": "foundation",
+        "working_knowledge": "working knowledge",
+        "practitioner": "practitioner",
+        "advanced": "advanced",
+        "expert": "expert",
+    },
+    "hi": {
+        "not_yet_evidenced": "अभी तक कोई प्रमाण नहीं",
+        "foundation": "आधारभूत",
+        "working_knowledge": "कार्यसाधक ज्ञान",
+        "practitioner": "अभ्यासी",
+        "advanced": "उन्नत",
+        "expert": "विशेषज्ञ",
+    },
+}
+
+_EVIDENCE_TYPE_LABEL = {
+    "en": {
+        "reviewer": "reviewer",
+        "diagnostic": "diagnostic",
+        "observed_practice": "observed practice",
+        "provider_imported": "provider-imported",
+        "self_report": "self-report",
+    },
+    "hi": {
+        "reviewer": "समीक्षक",
+        "diagnostic": "निदान",
+        "observed_practice": "देखा गया अभ्यास",
+        "provider_imported": "प्रदाता-आयातित",
+        "self_report": "स्व-रिपोर्ट",
+    },
+}
+
+_EVIDENCE_SENTENCE = {
+    "en": {
+        "both": "65% demonstrated performance + 35% self-assessment",
+        "measured_only": "demonstrated performance",
+        "self_only": "self-assessment only; diagnostic evidence still required",
+        "unscored": "{types} evidence recorded but not scored under policy {version}; no rated evidence yet",
+        "none": "no evidence yet",
+    },
+    "hi": {
+        "both": "65% प्रदर्शित प्रदर्शन + 35% स्व-मूल्यांकन",
+        "measured_only": "प्रदर्शित प्रदर्शन",
+        "self_only": "केवल स्व-मूल्यांकन; अभी भी निदान प्रमाण आवश्यक है",
+        "unscored": "{types} प्रमाण दर्ज है लेकिन नीति {version} के तहत स्कोर नहीं किया गया; अभी कोई रेटेड प्रमाण नहीं",
+        "none": "अभी तक कोई प्रमाण नहीं",
+    },
+}
+
+_RECOMMENDED_ACTION = {
+    "en": {
+        "unassessed": "Complete a diagnostic to establish a baseline -- no evidence recorded yet",
+        "foundation": "Complete a diagnostic and foundation module",
+        "targeted": "Complete targeted learning, then re-assess with applied questions",
+    },
+    "hi": {
+        "unassessed": "आधाररेखा स्थापित करने के लिए एक निदान पूरा करें -- अभी तक कोई प्रमाण दर्ज नहीं है",
+        "foundation": "एक निदान और आधारभूत मॉड्यूल पूरा करें",
+        "targeted": "लक्षित शिक्षण पूरा करें, फिर लागू प्रश्नों के साथ पुनः मूल्यांकन करें",
+    },
+}
+
+_METHOD_NOTE = {
+    "en": "Self-ratings never override demonstrated performance; missing evidence is surfaced explicitly.",
+    "hi": "स्व-रेटिंग कभी भी प्रदर्शित प्रदर्शन को अधिलेखित नहीं करती; अनुपस्थित प्रमाण को स्पष्ट रूप से दिखाया जाता है।",
+}
+
+
+def _level_label(score: float, lang: str = "en") -> str:
+    labels = _LEVEL_LABEL.get(lang, _LEVEL_LABEL["en"])
     if score < 1.0:
-        return "not yet evidenced"
+        return labels["not_yet_evidenced"]
     if score < 2.0:
-        return "foundation"
+        return labels["foundation"]
     if score < 3.0:
-        return "working knowledge"
+        return labels["working_knowledge"]
     if score < 4.0:
-        return "practitioner"
+        return labels["practitioner"]
     if score < 4.75:
-        return "advanced"
-    return "expert"
+        return labels["advanced"]
+    return labels["expert"]
 
 
 def analyse_competencies(
@@ -83,6 +161,7 @@ def analyse_competencies(
     department: str = "",
     evidence: dict[str, dict[str, dict]] | None = None,
     role_targets: dict[str, dict] | None = None,
+    lang: str = "en",
 ) -> dict:
     """Compute an explainable competency gap and ordered pathway.
 
@@ -97,9 +176,12 @@ def analyse_competencies(
     This function stays pure: no database, no HTTP, no clock. That is what
     lets the golden fixtures pin its output exactly.
     """
-    curriculum = get_curriculum(curriculum_slug)
+    curriculum = get_curriculum(curriculum_slug, lang)
     if not curriculum:
         raise ValueError(f"Unknown curriculum: {curriculum_slug}")
+
+    evidence_sentences = _EVIDENCE_SENTENCE.get(lang, _EVIDENCE_SENTENCE["en"])
+    evidence_type_labels = _EVIDENCE_TYPE_LABEL.get(lang, _EVIDENCE_TYPE_LABEL["en"])
 
     allowed = {item["id"] for item in curriculum["competencies"]}
     unknown = sorted(set(self_ratings) - allowed)
@@ -161,25 +243,25 @@ def analyse_competencies(
 
         if measured is not None and self_score is not None:
             observed = measured * 0.65 + self_score * 0.35
-            evidence = "65% demonstrated performance + 35% self-assessment"
+            evidence = evidence_sentences["both"]
         elif measured is not None:
             observed = measured
-            evidence = "demonstrated performance"
+            evidence = evidence_sentences["measured_only"]
         elif self_score is not None:
             observed = self_score
-            evidence = "self-assessment only; diagnostic evidence still required"
+            evidence = evidence_sentences["self_only"]
         elif unscored_present:
             # Evidence exists, but none of it is scored under this policy
             # version -- so there is still no defensible number. Say that,
             # rather than letting 0.0 read as a measured floor.
             observed = 0.0
-            evidence = (
-                f"{', '.join(unscored_present)} evidence recorded but not scored under "
-                f"policy {ASSESSMENT_POLICY_VERSION}; no rated evidence yet"
+            evidence = evidence_sentences["unscored"].format(
+                types=", ".join(evidence_type_labels.get(t, t) for t in unscored_present),
+                version=ASSESSMENT_POLICY_VERSION,
             )
         else:
             observed = 0.0
-            evidence = "no evidence yet"
+            evidence = evidence_sentences["none"]
 
         # A resolved map (from services/role_target_resolver.py, backed by
         # Lane 2's role_targets table) is authoritative and complete when
@@ -225,7 +307,7 @@ def analyse_competencies(
                 "description": item["description"],
                 "prerequisites": item.get("prerequisites", []),
                 "observed_level": round(observed, 2),
-                "observed_label": _level_label(observed),
+                "observed_label": _level_label(observed, lang),
                 "observed_anchor": get_anchor(competency_id, observed),
                 "target_anchor": get_anchor(competency_id, pathway_target),
                 "pathway_target": pathway_target,
@@ -273,17 +355,17 @@ def analyse_competencies(
                     "step": len(pathway) + 1,
                     **item,
                     "recommended_action": (
-                        "Complete a diagnostic to establish a baseline -- no evidence recorded yet"
+                        _RECOMMENDED_ACTION.get(lang, _RECOMMENDED_ACTION["en"])["unassessed"]
                         if item["priority"] == "unassessed"
-                        else "Complete a diagnostic and foundation module"
+                        else _RECOMMENDED_ACTION.get(lang, _RECOMMENDED_ACTION["en"])["foundation"]
                         if item["observed_level"] < 1
-                        else "Complete targeted learning, then re-assess with applied questions"
+                        else _RECOMMENDED_ACTION.get(lang, _RECOMMENDED_ACTION["en"])["targeted"]
                     ),
                 }
             )
             pending.pop(item["competency_id"], None)
 
-    courses = recommend_courses(skill_gaps)
+    courses = recommend_courses(skill_gaps, lang)
     return {
         "curriculum_slug": curriculum_slug,
         "curriculum_name": curriculum["name"],
@@ -297,7 +379,7 @@ def analyse_competencies(
             "scale": "0-5 proficiency",
             "demonstrated_weight": 0.65,
             "self_assessment_weight": 0.35,
-            "note": "Self-ratings never override demonstrated performance; missing evidence is surfaced explicitly.",
+            "note": _METHOD_NOTE.get(lang, _METHOD_NOTE["en"]),
             "policy_version": ASSESSMENT_POLICY_VERSION,
             "scored_evidence_types": list(SCORING_EVIDENCE_TYPES),
             "recorded_unscored_evidence_types": list(UNSCORED_EVIDENCE_TYPES),

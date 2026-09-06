@@ -29,7 +29,7 @@ export default function IntegrationRegistry({ onNavigate = () => {}, onOpenModal
   };
 
   const handleReindex = () => {
-    setToastMessage('Re-indexing local vectors: 18 statistical anchors verified with Cosine Similarity ΓëÑ 0.88.');
+    setToastMessage('Re-indexing local vectors: 18 statistical anchors verified with Cosine Similarity ≥ 0.88.');
     setTimeout(() => setToastMessage(''), 3500);
   };
 
@@ -107,7 +107,7 @@ export default function IntegrationRegistry({ onNavigate = () => {}, onOpenModal
             <div className="grid grid-cols-3 gap-2 bg-[#f2f3ff] p-2.5 rounded-lg font-mono text-xs mb-4">
               <div>
                 <span className="text-[10px] text-[#757682] block">Cadre Scope</span>
-                <span className="font-bold text-[#131b2e]">Band 1 ΓåÆ 4</span>
+                <span className="font-bold text-[#131b2e]">Band 1 → 4</span>
               </div>
               <div>
                 <span className="text-[10px] text-[#757682] block">Sync Mode</span>
@@ -206,7 +206,7 @@ export default function IntegrationRegistry({ onNavigate = () => {}, onOpenModal
               </div>
               <div>
                 <span className="text-[10px] text-[#757682] block">Min Cosine Match</span>
-                <span className="font-bold text-[#131b2e]">╬╕ ΓëÑ 0.88</span>
+                <span className="font-bold text-[#131b2e]">≥ 0.88</span>
               </div>
               <div>
                 <span className="text-[10px] text-[#757682] block">Embedding Model</span>

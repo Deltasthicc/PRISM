@@ -18,11 +18,6 @@ export default function NavBar() {
   if (!isAuthenticated) return null;
   const navTabs = [
     {
-      href: '/competency-and-gap-analysis',
-      label: t('nav.competencyGapAnalysis'),
-      hasDot: true,
-    },
-    {
       href: '/dungeon',
       label: t('nav.prerequisitePathways'),
       hasDot: false,

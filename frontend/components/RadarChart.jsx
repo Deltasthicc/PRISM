@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 // Generic N-gon radar -- any real curriculum can have a different number of
 // tracked competencies (dsa-fundamentals has 11, official-statistics has
@@ -11,6 +12,7 @@ export const RadarChart = ({
   selectedDimensionId,
   onSelectDimension,
 }) => {
+  const { t } = useLanguage();
   const [hoveredId, setHoveredId] = useState(null);
 
   const cx = 170;
@@ -61,14 +63,14 @@ export const RadarChart = ({
       <div className="flex items-center justify-between mb-2">
         <div>
           <span className="font-mono text-[10px] text-[#757682] uppercase tracking-wider font-semibold">
-            Multi-Dimensional Mapping
+            {t('radar.multiDimensionalMapping')}
           </span>
           <h3 className="font-sans font-semibold text-lg text-[#131b2e]">
-            Skill Vector Divergence
+            {t('radar.skillVectorDivergence')}
           </h3>
         </div>
         <span className="font-mono text-xs px-2 py-0.5 rounded bg-[#f2f3ff] text-[#444651] font-medium border border-[#c5c5d3]/30">
-          {axisCount} {axisCount === 1 ? 'Dimension' : 'Dimensions'}
+          {axisCount} {axisCount === 1 ? t('radar.dimension') : t('radar.dimensions')}
         </span>
       </div>
 
@@ -198,11 +200,11 @@ export const RadarChart = ({
       <div className="flex items-center justify-center gap-6 pt-3 border-t border-[#eaedff]">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-sm bg-[#00236f] inline-block shadow-sm"></span>
-          <span className="font-sans text-xs text-[#131b2e] font-medium">Observed level</span>
+          <span className="font-sans text-xs text-[#131b2e] font-medium">{t('radar.observedLevel')}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-sm bg-[#fe932c] inline-block shadow-sm"></span>
-          <span className="font-sans text-xs text-[#444651] font-medium">Pathway target</span>
+          <span className="font-sans text-xs text-[#444651] font-medium">{t('radar.pathwayTarget')}</span>
         </div>
       </div>
     </div>

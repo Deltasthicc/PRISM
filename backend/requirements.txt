@@ -36,7 +36,7 @@ pypdf==6.16.2
 python-docx==1.1.2
 
 # Voice AI pipeline additions (backend/ai/voice, backend/routes/ai_voice.py):
-numpy==2.5.2
+numpy==2.4.6
 faster-whisper==1.2.1
 piper-tts==1.8.0
 

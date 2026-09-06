@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { learning } from '@/lib/api/client';
 import { RadarChart } from '@/components/RadarChart';
 import { VectorBalanceCard } from '@/components/VectorBalanceCard';
@@ -35,15 +36,15 @@ const PRIORITY_STATUS = {
   unassessed: 'unassessed',
 };
 
-function toDimension(item, curriculum) {
+function toDimension(item, curriculum, t) {
   const requiredLevel = Math.max(1, Math.round(item.pathway_target ?? item.role_target ?? 3));
   const officerLevel = Math.round(item.observed_level ?? 0);
   const gapText =
     item.priority === 'unassessed'
-      ? 'not yet assessed'
+      ? t('stats.notYetAssessed')
       : item.gap <= 0.05
-        ? 'on target'
-        : `-${item.gap.toFixed(1)} levels`;
+        ? t('stats.onTarget')
+        : `-${item.gap.toFixed(1)} ${t('stats.levels')}`;
 
   return {
     id: item.competency_id,
@@ -57,7 +58,7 @@ function toDimension(item, curriculum) {
     icon: CURRICULUM_ICON[curriculum.slug] || Sparkles,
     rationale: {
       observedLevel: item.observed_level ?? 0,
-      observedLabel: item.observed_label || 'not yet evidenced',
+      observedLabel: item.observed_label || t('stats.notYetEvidenced'),
       pathwayTarget: item.pathway_target ?? item.role_target ?? requiredLevel,
       matchedRole: item.matched_role,
       gap: item.gap ?? 0,
@@ -79,6 +80,7 @@ export default function StatsPage() {
   const { ready } = useRequireAuth();
   const router = useRouter();
   const player = useAuthStore((s) => s.player);
+  const { t, language } = useLanguage();
   const [selectedSlug, setSelectedSlug] = useState(null);
   const [selectedDimId, setSelectedDimId] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -90,8 +92,8 @@ export default function StatsPage() {
   });
 
   const { data: curriculaData } = useQuery({
-    queryKey: ['curricula'],
-    queryFn: () => learning.getCurricula(),
+    queryKey: ['curricula', language],
+    queryFn: () => learning.getCurricula(language),
     enabled: ready && !!player,
   });
 
@@ -107,8 +109,8 @@ export default function StatsPage() {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['pathway', player?.player_id, activeSlug],
-    queryFn: () => learning.getPathway(player.player_id, activeSlug),
+    queryKey: ['pathway', player?.player_id, activeSlug, language],
+    queryFn: () => learning.getPathway(player.player_id, activeSlug, language),
     enabled: ready && !!player && !!activeSlug,
   });
 
@@ -116,7 +118,7 @@ export default function StatsPage() {
 
   const gapItems = pathwayData?.pathway?.length ? pathwayData.pathway : pathwayData?.competencies || [];
   const dimensions = activeCurriculum
-    ? [...gapItems].sort((a, b) => (b.gap ?? 0) - (a.gap ?? 0)).map((item) => toDimension(item, activeCurriculum))
+    ? [...gapItems].sort((a, b) => (b.gap ?? 0) - (a.gap ?? 0)).map((item) => toDimension(item, activeCurriculum, t))
     : [];
   const filteredDimensions = statusFilter === 'all' ? dimensions : dimensions.filter((d) => d.status === statusFilter);
   const radarDimensions = dimensions.slice(0, 8);
@@ -134,14 +136,14 @@ export default function StatsPage() {
             <div className="flex flex-col">
               <h2 className="font-sans text-base text-[#00236f] font-bold">{player.username}</h2>
               <span className="font-sans text-xs text-[#444651] mt-0.5">
-                {profile?.designation || 'Designation not set'} · {profile?.department || 'Department not set'}
+                {profile?.designation || t('stats.designationNotSet')} · {profile?.department || t('stats.departmentNotSet')}
                 {' — '}
                 <button
                   type="button"
                   onClick={() => router.push('/academy')}
                   className="text-[#00236f] underline cursor-pointer"
                 >
-                  complete your profile
+                  {t('stats.completeProfile')}
                 </button>
               </span>
             </div>
@@ -149,7 +151,7 @@ export default function StatsPage() {
 
           {curricula.length > 0 && (
             <div className="flex items-center gap-2 bg-[#f2f3ff] px-3 py-1.5 rounded-lg border border-[#c5c5d3]/30">
-              <span className="font-mono text-xs text-[#757682]">Curriculum:</span>
+              <span className="font-mono text-xs text-[#757682]">{t('stats.curriculumLabel')}</span>
               <select
                 value={activeSlug || ''}
                 onChange={(e) => {
@@ -171,28 +173,28 @@ export default function StatsPage() {
 
       {isLoading ? (
         <Panel>
-          <p className="font-sans text-sm text-[#757682]">Loading your competency data…</p>
+          <p className="font-sans text-sm text-[#757682]">{t('stats.loading')}</p>
         </Panel>
       ) : isError ? (
         <Panel className="text-center">
-          <p className="font-sans text-sm text-[#b3261e] mb-3">Could not load your competency data.</p>
+          <p className="font-sans text-sm text-[#b3261e] mb-3">{t('stats.loadFailed')}</p>
           <button type="button" onClick={() => refetch()} className="text-sm text-[#00236f] underline cursor-pointer">
-            Retry
+            {t('stats.retry')}
           </button>
         </Panel>
       ) : dimensions.length === 0 ? (
         <Panel className="text-center">
           <p className="font-sans text-sm text-[#444651]">
-            No tracked competencies yet for {activeCurriculum?.name || 'this curriculum'}. Complete a self-assessment
-            in{' '}
+            {t('stats.noTrackedPrefix')} {activeCurriculum?.name || t('stats.thisCurriculum')}
+            {t('stats.completeSelfAssessmentIn')}{' '}
             <button
               type="button"
               onClick={() => router.push('/academy')}
               className="text-[#00236f] underline cursor-pointer"
             >
-              Academy
+              {t('stats.academyLink')}
             </button>{' '}
-            to see your gap analysis here.
+            {t('stats.toSeeGapAnalysis')}
           </p>
         </Panel>
       ) : (
@@ -207,9 +209,7 @@ export default function StatsPage() {
                 />
               ) : (
                 <Panel>
-                  <p className="font-sans text-sm text-[#757682]">
-                    Track at least 3 competencies in this curriculum to see a radar view.
-                  </p>
+                  <p className="font-sans text-sm text-[#757682]">{t('stats.trackAtLeast3')}</p>
                 </Panel>
               )}
               <VectorBalanceCard dimensions={dimensions} selectedFilter={statusFilter} onFilterChange={setStatusFilter} />
@@ -222,7 +222,8 @@ export default function StatsPage() {
                     {activeCurriculum?.name}
                   </span>
                   <h2 className="font-sans text-base text-[#131b2e] font-bold">
-                    {filteredDimensions.length} tracked {filteredDimensions.length === 1 ? 'competency' : 'competencies'}
+                    {filteredDimensions.length} {t('stats.trackedSuffix')}{' '}
+                    {filteredDimensions.length === 1 ? t('stats.competency') : t('stats.competencies')}
                   </h2>
                 </div>
                 {statusFilter !== 'all' && (
@@ -231,7 +232,7 @@ export default function StatsPage() {
                     onClick={() => setStatusFilter('all')}
                     className="text-xs font-mono text-[#00236f] hover:underline cursor-pointer"
                   >
-                    Clear filter
+                    {t('stats.clearFilter')}
                   </button>
                 )}
               </div>

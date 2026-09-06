@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { HEROES } from '@/lib/sprites/heroSprites';
 import PixelPanel from '@/components/ui/PixelPanel';
 import PixelButton from '@/components/ui/PixelButton';
@@ -15,6 +16,7 @@ export default function CharacterSelectPage() {
   const router = useRouter();
   const player = useAuthStore((s) => s.player);
   const selectHero = useAuthStore((s) => s.selectHero);
+  const { t } = useLanguage();
   const [selected, setSelected] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -28,16 +30,14 @@ export default function CharacterSelectPage() {
     const ok = await selectHero(selected);
     setSaving(false);
     if (ok) router.push('/dungeon');
-    else setError('Could not save your choice. Try again.');
+    else setError(t('character.saveError'));
   }
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-5">
       <div className="text-center">
-        <h1 className="font-display text-sm text-parchment">CHOOSE YOUR HERO</h1>
-        <p className="font-body text-parchment-dim mt-2">
-          Every hero carries one unique power, usable 3 times per hour. Pick whoever suits how you fight.
-        </p>
+        <h1 className="font-display text-sm text-parchment">{t('character.heading')}</h1>
+        <p className="font-body text-parchment-dim mt-2">{t('character.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -73,7 +73,7 @@ export default function CharacterSelectPage() {
 
       <div className="flex justify-center">
         <PixelButton variant="gold" disabled={!selected || saving} onClick={handleConfirm}>
-          {saving ? 'ENTERING THE DUNGEON…' : 'BEGIN YOUR JOURNEY'}
+          {saving ? t('character.entering') : t('character.begin')}
         </PixelButton>
       </div>
     </div>

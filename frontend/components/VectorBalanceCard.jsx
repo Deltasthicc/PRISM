@@ -1,10 +1,12 @@
 import React from 'react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export const VectorBalanceCard = ({
   dimensions,
   selectedFilter,
   onFilterChange,
 }) => {
+  const { t } = useLanguage();
   const matchedCount = dimensions.filter(d => d.status === 'matched').length;
   const moderateCount = dimensions.filter(d => d.status === 'moderate').length;
   const criticalCount = dimensions.filter(d => d.status === 'critical').length;
@@ -12,7 +14,7 @@ export const VectorBalanceCard = ({
 
   // Calculate total gap levels: sum of (officerLevel - requiredLevel)
   const totalGap = dimensions.reduce((acc, d) => acc + (d.officerLevel - d.requiredLevel), 0);
-  const gapText = totalGap === 0 ? 'Fully Aligned' : `${totalGap > 0 ? '+' : ''}${totalGap} Levels`;
+  const gapText = totalGap === 0 ? t('vectorBalance.fullyAligned') : `${totalGap > 0 ? '+' : ''}${totalGap} ${t('vectorBalance.levelsSuffix')}`;
 
   // Congruence percentage: ratio of total officer levels to total required levels
   const totalOfficer = dimensions.reduce((acc, d) => acc + d.officerLevel, 0);
@@ -24,14 +26,14 @@ export const VectorBalanceCard = ({
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="font-mono text-[10px] text-[#757682] uppercase tracking-wider font-bold">
-            Vector Congruence
+            {t('vectorBalance.vectorCongruence')}
           </span>
           <span className="px-2 py-0.5 rounded bg-[#1e3a8a] text-[#90a8ff] font-mono text-xs font-bold">
             {congruencePct}%
           </span>
         </div>
         <span className="font-mono text-xs text-[#757682]">
-          Gap: {gapText}
+          {t('vectorBalance.gapPrefix')} {gapText}
         </span>
       </div>
 
@@ -57,7 +59,7 @@ export const VectorBalanceCard = ({
             {matchedCount}
           </span>
           <span className="font-mono text-[10px] text-[#00236f] uppercase font-bold tracking-wider">
-            Matched
+            {t('vectorBalance.matched')}
           </span>
         </button>
 
@@ -73,7 +75,7 @@ export const VectorBalanceCard = ({
             {moderateCount}
           </span>
           <span className="font-mono text-[10px] text-[#904d00] uppercase font-bold tracking-wider">
-            Moderate
+            {t('vectorBalance.moderate')}
           </span>
         </button>
 
@@ -89,7 +91,7 @@ export const VectorBalanceCard = ({
             {criticalCount}
           </span>
           <span className="font-mono text-[10px] text-[#ba1a1a] uppercase font-bold tracking-wider">
-            Critical
+            {t('vectorBalance.critical')}
           </span>
         </button>
 
@@ -105,7 +107,7 @@ export const VectorBalanceCard = ({
             {unassessedCount}
           </span>
           <span className="font-mono text-[10px] text-[#757682] uppercase font-bold tracking-wider">
-            Unassessed
+            {t('vectorBalance.unassessed')}
           </span>
         </button>
       </div>

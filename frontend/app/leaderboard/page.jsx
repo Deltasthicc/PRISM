@@ -5,6 +5,7 @@ import { Trophy } from 'lucide-react';
 import clsx from 'clsx';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { game } from '@/lib/api/client';
 import PixelPanel from '@/components/ui/PixelPanel';
 import PixelBadge from '@/components/ui/PixelBadge';
@@ -17,6 +18,7 @@ const RANK_TONE = ['gold', 'arcane', 'ember'];
 export default function LeaderboardPage() {
   const { ready } = useRequireAuth();
   const player = useAuthStore((s) => s.player);
+  const { t } = useLanguage();
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['leaderboard'],
@@ -32,16 +34,16 @@ export default function LeaderboardPage() {
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-4">
       <h1 className="font-display text-sm text-parchment text-center flex items-center justify-center gap-2">
-        <Trophy size={18} className="text-gold" /> WEEKLY RANKS
+        <Trophy size={18} className="text-gold" /> {t('leaderboard.heading')}
       </h1>
 
       <PixelPanel>
         {isLoading ? (
-          <p className="font-body text-parchment-dim">Tallying the realm&apos;s XP…</p>
+          <p className="font-body text-parchment-dim">{t('leaderboard.loading')}</p>
         ) : isError ? (
           <div className="flex flex-col items-center gap-3">
-            <p className="font-body text-blood">Could not load the leaderboard.</p>
-            <PixelButton variant="ghost" onClick={() => refetch()}>RETRY</PixelButton>
+            <p className="font-body text-blood">{t('leaderboard.loadFailed')}</p>
+            <PixelButton variant="ghost" onClick={() => refetch()}>{t('leaderboard.retry')}</PixelButton>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
@@ -62,11 +64,11 @@ export default function LeaderboardPage() {
                     <span className="font-body text-lg text-parchment leading-tight">{row.username}</span>
                     <span className="font-body text-sm text-parchment-dim leading-tight">{hero.name}</span>
                   </div>
-                  {i < 3 && <PixelBadge tone={RANK_TONE[i]}>TOP {i + 1}</PixelBadge>}
+                  {i < 3 && <PixelBadge tone={RANK_TONE[i]}>{t('leaderboard.topPrefix')} {i + 1}</PixelBadge>}
                 </div>
                 <div className="flex items-center gap-3">
-                  <PixelBadge tone="gold">🔥 {row.streak_days}d</PixelBadge>
-                  <span className="font-body text-lg text-gold">{row.total_xp} XP</span>
+                  <PixelBadge tone="gold">🔥 {row.streak_days}{t('leaderboard.daySuffix')}</PixelBadge>
+                  <span className="font-body text-lg text-gold">{row.total_xp} {t('leaderboard.xpSuffix')}</span>
                 </div>
               </div>
               );

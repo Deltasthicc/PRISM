@@ -7,7 +7,21 @@ without pretending that this in-repository seed data is the authoritative
 iGOT or Karmayogi Competency Model catalog.
 """
 
+import json
+import os
 from copy import deepcopy
+
+# Hand-translated (see scripts/generate_curricula_hi.py's docstring for why
+# not machine-generated this time) Hindi overlay for the fields actually
+# rendered to a learner: curriculum name/domain/description/audience/
+# level_band and each competency's label/description. Deliberately does NOT
+# cover COMPETENCY_SOURCES' citation excerpts or SOURCES' title/publisher --
+# those are literal references to real government documents, and
+# paraphrase-translating a citation misrepresents it rather than localizing
+# it; neither is shown to a learner today regardless.
+_TRANSLATIONS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "curricula_hi.json")
+with open(_TRANSLATIONS_PATH, encoding="utf-8") as _handle:
+    _CURRICULA_HI: dict = json.load(_handle)
 
 
 # SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 acceptance evidence:
@@ -685,9 +699,36 @@ def validate_curricula(catalog: dict = CURRICULA) -> None:
         )
 
 
-def get_curriculum(slug: str) -> dict | None:
+def _localize(curriculum: dict, slug: str, lang: str) -> dict:
+    """Overlay the Hindi translation onto a copy of `curriculum`, field by
+    field -- never mutates the English source, and any field missing from
+    the translation (should not happen; see scripts/generate_curricula_hi.py's
+    validate_shape) silently falls back to English rather than raising."""
+    if lang != "hi":
+        return curriculum
+    translation = _CURRICULA_HI.get(slug)
+    if not translation:
+        return curriculum
+    for field in ("name", "domain", "description", "audience", "level_band"):
+        if translation.get(field):
+            curriculum[field] = translation[field]
+    translated_competencies = translation.get("competencies", {})
+    for competency in curriculum.get("competencies", []):
+        translated = translated_competencies.get(competency["id"])
+        if not translated:
+            continue
+        if translated.get("label"):
+            competency["label"] = translated["label"]
+        if translated.get("description"):
+            competency["description"] = translated["description"]
+    return curriculum
+
+
+def get_curriculum(slug: str, lang: str = "en") -> dict | None:
     curriculum = CURRICULA.get(slug)
-    return deepcopy(curriculum) if curriculum else None
+    if not curriculum:
+        return None
+    return _localize(deepcopy(curriculum), slug, lang)
 
 
 def curriculum_graph(slug: str) -> dict[str, list[str]]:
@@ -705,20 +746,21 @@ def curriculum_for_topic(topic: str) -> tuple[str, dict] | tuple[None, None]:
     return None, None
 
 
-def public_curricula() -> list[dict]:
+def public_curricula(lang: str = "en") -> list[dict]:
     return [
         {
             "slug": slug,
-            "name": curriculum["name"],
-            "domain": curriculum["domain"],
-            "description": curriculum["description"],
-            "audience": curriculum["audience"],
-            "level_band": curriculum["level_band"],
+            "name": localized["name"],
+            "domain": localized["domain"],
+            "description": localized["description"],
+            "audience": localized["audience"],
+            "level_band": localized["level_band"],
             "source": curriculum["source"],
-            "competency_count": len(curriculum["competencies"]),
-            "competencies": deepcopy(curriculum["competencies"]),
+            "competency_count": len(localized["competencies"]),
+            "competencies": localized["competencies"],
         }
         for slug, curriculum in CURRICULA.items()
+        for localized in [_localize(deepcopy(curriculum), slug, lang)]
     ]
 
 

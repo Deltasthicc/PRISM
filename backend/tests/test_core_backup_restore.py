@@ -3,7 +3,7 @@
 Covers the pure-logic parts (URL parsing, error handling) without Docker, so
 this suite runs everywhere. The actual backup/restore drill against a real
 Postgres container is run manually and its evidence recorded in
-LANE2_SYNC.md, same precedent as every other Docker-dependent verification
+docs/internal/LANE2_SYNC.md, same precedent as every other Docker-dependent verification
 in this project (SEED_DEMO_DATA, the Alembic migrations, Keycloak).
 """
 from __future__ import annotations

@@ -49,7 +49,7 @@ target_metadata = Base.metadata
 # Half A landed these models before the migration scaffold. The initial
 # baseline intentionally omits them so a separately reviewed follow-up
 # revision can introduce the governance tables. This switch is only used by
-# the one baseline-generation command documented in LANE2_SYNC.md; normal
+# the one baseline-generation command documented in docs/internal/LANE2_SYNC.md; normal
 # autogenerate runs see every registered model.
 _BASELINE_EXCLUDED_TABLES = {
     "audit_events",

@@ -1,7 +1,7 @@
 """
 The one write path for models.governance.AuditEvent.
 
-Lane 2 (SIH26101_TEAM_ORCHESTRATION.md section 5, "Object/function
+Lane 2 (docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, "Object/function
 authorization matrix" acceptance evidence) -- route code should call
 record_audit_event() rather than constructing an AuditEvent row directly, so
 every audit write goes through one place if the shape ever needs to change.

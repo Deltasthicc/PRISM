@@ -3,7 +3,7 @@
 Fully offline: generates its own RSA keypair and signs test tokens directly,
 so this suite never needs a running OIDC provider -- the real Keycloak
 container in backend/docker-compose.dev.yml is verified manually instead
-(see LANE2_SYNC.md's Activity log for that evidence), matching the
+(see docs/internal/LANE2_SYNC.md's Activity log for that evidence), matching the
 SEED_DEMO_DATA/Postgres precedent of not making pytest hard-depend on an
 external service.
 """
@@ -292,7 +292,7 @@ def test_verifier_from_env_requires_both_env_vars(monkeypatch):
 
 
 # --- issuer scheme, discovery-document, and typ hardening
-# (findings from Codex's pre-commit review of this file, LANE2_SYNC.md
+# (findings from Codex's pre-commit review of this file, docs/internal/LANE2_SYNC.md
 # Phase 2 Activity log) ---
 
 

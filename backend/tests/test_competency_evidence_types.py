@@ -1,6 +1,6 @@
 """Tests for separated evidence types across the five storage kinds.
 
-SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 next package: "Separate
+docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 next package: "Separate
 self-report, diagnostic, observed-practice, reviewer and provider evidence."
 The requirement is *separation*, not blending -- there are no validated
 weights for the three non-scoring types, so they are recorded and shown

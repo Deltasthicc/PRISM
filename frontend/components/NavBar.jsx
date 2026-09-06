@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Gamepad2 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -13,25 +13,30 @@ export default function NavBar() {
   const player = useAuthStore((s) => s.player);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const logout = useAuthStore((s) => s.logout);
+  const setPreferredMode = useAuthStore((s) => s.setPreferredMode);
   const { t } = useLanguage();
 
   if (!isAuthenticated) return null;
+
+  // Quest mode (dungeon/combat/guild-raid) is an explicit opt-in, off by
+  // default (models/enums.py's LearningMode, player.preferred_mode) -- the
+  // team's own recorded decision to scrap the RPG framing as the primary
+  // experience while keeping the underlying layer available as future scope
+  // (SIH26101_MASTER_CHECKLIST.md). These two tabs only appear once a
+  // learner has explicitly switched the toggle below.
+  const questModeOn = player?.preferred_mode === 'quest';
   const navTabs = [
-    {
-      href: '/dungeon',
-      label: t('nav.prerequisitePathways'),
-      hasDot: false,
-    },
+    ...(questModeOn
+      ? [{ href: '/dungeon', label: t('nav.prerequisitePathways'), hasDot: false }]
+      : []),
     {
       href: '/quiz',
       label: t('nav.sourceQuizGenerator'),
       hasDot: false,
     },
-    {
-      href: '/guild',
-      label: t('nav.adaptivePractice'),
-      hasDot: false,
-    },
+    ...(questModeOn
+      ? [{ href: '/guild', label: t('nav.adaptivePractice'), hasDot: false }]
+      : []),
     {
       href: '/integration-registry',
       label: t('nav.integrationRegistry'),
@@ -64,6 +69,20 @@ export default function NavBar() {
 
         {/* ================= USER ================= */}
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setPreferredMode(questModeOn ? 'professional' : 'quest')}
+            title={t('nav.questModeToggleTitle')}
+            aria-pressed={questModeOn}
+            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
+              questModeOn
+                ? 'bg-[#eef1ff] border-[#00236f]/30 text-[#00236f]'
+                : 'border-[#c5c5d3]/40 text-[#757682] hover:text-[#00236f] hover:border-[#00236f]/30'
+            }`}
+          >
+            <Gamepad2 size={14} />
+            {questModeOn ? t('nav.questModeOn') : t('nav.questModeOff')}
+          </button>
           <LanguageSwitcher />
           <Link
             href="/stats"

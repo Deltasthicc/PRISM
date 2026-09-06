@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 # Lane 6 (Quality, Security, Release & Evidence) owns this file --
-# SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 6 immediate package.
+# docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 6 immediate package.
 #
 # What this currently covers: backend pytest, frontend lint + production build, and a JSON
 # well-formedness check on the docs/contracts/openapi.json scaffold.

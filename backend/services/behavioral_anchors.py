@@ -14,7 +14,7 @@ specific wording of every anchor below is team-authored and unreviewed.
 
 Every anchor is a per-item record -- {descriptor, source, status,
 reviewed_by, version} -- not a single blanket note for the whole file. This
-follows SIH26101_TEAM_ORCHESTRATION.md section 5's Lane 3 acceptance
+follows docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5's Lane 3 acceptance
 evidence verbatim: "Every competency/target has source, authoring status and
 version," and mirrors the per-record shape (source, approved_by,
 framework_version) SIH26101_MASTER_CHECKLIST.md section 4.1 specifies for

@@ -26,7 +26,7 @@ class LearningMode(str, Enum):
     modes, this only ever changes which UI a learner is presented.
     `QUEST` is the existing optional dungeon/combat/XP layer, preserved as
     an explicit opt-in per the team's own recorded decision (see
-    `SIH26101_MASTER_CHECKLIST.md`/`SIH26101_WINNING_PLAYBOOK.md`) rather
+    `SIH26101_MASTER_CHECKLIST.md`/`docs/internal/SIH26101_WINNING_PLAYBOOK.md`) rather
     than the default, so it stays a deliberate choice and never becomes
     the thing a government-official learner is defaulted into.
 

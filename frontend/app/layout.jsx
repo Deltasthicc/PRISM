@@ -22,7 +22,7 @@ const vt323 = VT323({
 export const metadata = {
   title: 'PRISM',
   description:
-    'A cross-domain skill-intelligence platform with an adaptive practice RPG built in.',
+    'Personalized Readiness Intelligence & Skill Mapping -- a competency gap-analysis and learning-pathway platform, with an optional gamified practice mode.',
 };
 
 export default function RootLayout({ children }) {
@@ -32,8 +32,6 @@ export default function RootLayout({ children }) {
       className={`${pressStart.variable} ${vt323.variable}`}
     >
       <body suppressHydrationWarning>
-        <div className="torch-flicker" aria-hidden="true" />
-
         <MusicPlayer />
 
         <Providers>

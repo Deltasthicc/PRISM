@@ -1,6 +1,6 @@
 """Reads a learner's separated evidence rows and hands the gap engine plain data.
 
-`SIH26101_TEAM_ORCHESTRATION.md` section 5, Lane 3 next package: "Separate
+`docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 5, Lane 3 next package: "Separate
 self-report, diagnostic, observed-practice, reviewer and provider evidence."
 Lane 2 owns the storage (`models/governance.py`'s `EvidenceRecord`) and the
 ordering rules (`db/repositories.py`'s `get_latest_evidence`); this module

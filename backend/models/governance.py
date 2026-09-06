@@ -1,6 +1,6 @@
 """
 Versioned role-target, evidence, source-version and audit records -- Lane 2's
-"minimal versioned records" deliverable (SIH26101_TEAM_ORCHESTRATION.md
+"minimal versioned records" deliverable (docs/internal/SIH26101_TEAM_ORCHESTRATION.md
 section 5, Lane 2 immediate package; docs/contracts/data-authorization.md).
 
 These are additive, brand-new tables. On the SQLite demo profile, plain
@@ -189,7 +189,7 @@ class SourceVersion(Base):
 
 class AuditEvent(Base):
     """Append-only log of privileged reads/writes, role changes, content
-    approval and exports (SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 2
+    approval and exports (docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 2
     acceptance evidence). Write with security.audit.record_audit_event() --
     do not construct/add this model directly from route code, so every write
     path stays consistent."""

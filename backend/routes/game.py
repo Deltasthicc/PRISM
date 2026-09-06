@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from db.database import get_db
 from models.player import Player
+from models.enums import LEARNING_MODE_VALUES
 from models.dungeon import Dungeon, Room
 from models.session import GameSession
 from models.question import Question
@@ -159,6 +160,12 @@ def _serialize_player(player: Player, histories: list[AccuracyHistory]) -> dict:
         # MAX_HINT_TOKENS was enforced on writes (e.g. this repo's seeded demo
         # player). Clamping on read fixes the display without a DB migration.
         "hint_tokens": min(player.hint_tokens, MAX_HINT_TOKENS),
+        # Presentation-surface discriminator only (models/enums.py) -- never
+        # an authorization decision. schemas.player.PlayerResponse has always
+        # declared this field; it was never actually included in the dict
+        # returned here, so every caller of GET /player/{id} silently got a
+        # response that didn't match its own documented schema.
+        "preferred_mode": player.preferred_mode,
         "accuracy_history": [
             {
                 "topic": h.topic, "attempts": h.attempts, "correct": h.correct,
@@ -229,6 +236,33 @@ async def select_hero(
     player.hero_id = hero_id
     db.commit()
     return {"hero_id": hero_id}
+
+
+# ─── Experience-surface mode ───
+
+@router.post("/player/{player_id}/mode")
+async def set_preferred_mode(
+    player_id: str,
+    body: dict,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_own_player_dependency(Permission.PLAYER_SELF_WRITE)
+    ),
+):
+    """Switch which experience surface (models/enums.py's LearningMode) this
+    player is presented -- professional (default) or the opt-in quest/dungeon
+    layer. Presentation only, same as the column itself: never a permission
+    or tenant check, and RBAC/scoped_to_own_player above are unaffected by
+    the value being switched."""
+    preferred_mode = body.get("preferred_mode")
+    if preferred_mode not in LEARNING_MODE_VALUES:
+        raise HTTPException(status_code=422, detail=f"Unknown mode: {preferred_mode!r}")
+    player = db.query(Player).filter(Player.player_id == player_id).first()
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    player.preferred_mode = preferred_mode
+    db.commit()
+    return {"preferred_mode": preferred_mode}
 
 
 # ─── Powerups ───

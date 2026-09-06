@@ -2,7 +2,7 @@
 
 Golden fixtures pin `learning_engine.analyse_competencies()`'s output for a
 fixed set of inputs, so `test_competency_golden_fixtures.py` catches any
-unintended drift -- SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3
+unintended drift -- docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3
 acceptance evidence: "Golden policy fixtures produce stable gaps and
 pathways."
 

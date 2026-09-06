@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document records the security, quality, and release checks currently implemented for the PRISM prototype.
+This document records the security, quality, and release checks currently implemented for the PRISM prototype. For the detailed, append-only historical log of individual test drills and package-by-package reviews this summary is drawn from, see the root `EVIDENCE.md`.
 
 ## CI / Quality Gates
 

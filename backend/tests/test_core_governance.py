@@ -1,6 +1,6 @@
 """
 Tests for the Lane 2 versioned governance records (models/governance.py,
-schemas/governance.py, security/audit.py) -- SIH26101_TEAM_ORCHESTRATION.md
+schemas/governance.py, security/audit.py) -- docs/internal/SIH26101_TEAM_ORCHESTRATION.md
 section 5, Lane 2 immediate package.
 
 Follows the same in-memory-SQLite pattern as

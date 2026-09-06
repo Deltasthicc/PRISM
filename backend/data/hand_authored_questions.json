@@ -13,12 +13,12 @@
       "source_excerpt": "Show that for n events A_1, A_2, ⋯, A_n\n\nP(⋂_{i=1}^{n} A_i) ≥ ∑_{i=1}^{n} P(A_i) − (n − 1)",
       "question": "The Bonferroni-type inequality asked to be proved states P(⋂ᵢ Aᵢ) ≥ ∑ᵢ P(Aᵢ) − (n − 1) for n events. What does this inequality give a usable lower bound for?",
       "options": [
-        "The probability that all n events occur simultaneously",
-        "The probability that none of the n events occur",
         "The expected number of events that occur",
-        "The variance of the number of events that occur"
+        "The variance of the number of events that occur",
+        "The probability that all n events occur simultaneously",
+        "The probability that none of the n events occur"
       ],
-      "answer_index": 0,
+      "answer_index": 2,
       "explanation": "The left-hand side, P(⋂ Aᵢ), is the probability of the intersection of all n events -- i.e. that every one of them occurs. The inequality bounds that joint probability below using only the individual (marginal) probabilities, which is what makes it practically useful: you rarely know the joint distribution but often do know each P(Aᵢ)."
     },
     {
@@ -31,12 +31,12 @@
       "source_excerpt": "For two mutually exclusive events A and B, show that\n\nP(A|A ∪ B) = P(A) / (P(A) + P(B)); P(A), P(B) > 0",
       "question": "For two mutually exclusive events A and B with P(A), P(B) > 0, the identity P(A|A∪B) = P(A)/(P(A)+P(B)) holds. Why does mutual exclusivity make this simplification possible?",
       "options": [
+        "Because mutually exclusive events are always independent, so P(A|A∪B) = P(A)",
         "Because P(A ∩ (A∪B)) = P(A) and P(A∪B) = P(A) + P(B) exactly, with no overlap term to subtract",
-        "Because P(A) and P(B) must be equal when A and B are mutually exclusive",
         "Because conditioning on a union always divides by the sum of the two probabilities, regardless of overlap",
-        "Because mutually exclusive events are always independent, so P(A|A∪B) = P(A)"
+        "Because P(A) and P(B) must be equal when A and B are mutually exclusive"
       ],
-      "answer_index": 0,
+      "answer_index": 1,
       "explanation": "By definition, P(A|A∪B) = P(A ∩ (A∪B)) / P(A∪B). Since A ⊆ A∪B, the numerator is just P(A). Since A and B are mutually exclusive (A∩B = ∅), the general union formula P(A∪B) = P(A)+P(B)−P(A∩B) simplifies to P(A)+P(B) with no overlap to subtract. Options C and D describe unrelated or false general rules -- independence and mutual exclusivity are different, usually incompatible properties for events with positive probability."
     },
     {
@@ -67,12 +67,12 @@
       "source_excerpt": "Describe how Rao-Blackwell theorem enables one to find the UMVUE.",
       "question": "The Rao-Blackwell theorem is used to construct a UMVUE (uniformly minimum variance unbiased estimator). What does the theorem guarantee when you condition any unbiased estimator on a sufficient statistic?",
       "options": [
-        "The resulting conditioned estimator remains unbiased and has variance no greater than the original estimator's",
-        "The resulting conditioned estimator becomes the maximum likelihood estimator automatically",
         "The resulting conditioned estimator is guaranteed to be normally distributed regardless of the original distribution",
-        "The resulting conditioned estimator always has strictly larger variance, which is why it should be avoided"
+        "The resulting conditioned estimator becomes the maximum likelihood estimator automatically",
+        "The resulting conditioned estimator always has strictly larger variance, which is why it should be avoided",
+        "The resulting conditioned estimator remains unbiased and has variance no greater than the original estimator's"
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "The Rao-Blackwell theorem states that if T is a sufficient statistic and δ is any unbiased estimator of a parameter, then E[δ|T] is also unbiased and its variance is never larger than that of δ -- it can only improve (or match) precision, never worsen it. Combined with completeness of T (Lehmann-Scheffé), this conditioned estimator becomes the UMVUE. It has nothing to do with the estimator's distribution becoming normal, and it is not the same procedure as maximum likelihood estimation."
     },
     {
@@ -85,12 +85,12 @@
       "source_excerpt": "Prove that there always exists a sufficient statistic for the one-parameter exponential family of distributions. Using it, show that sample total is sufficient statistic for the parameter for the Poisson model. State whether this estimator is complete.",
       "question": "For the one-parameter exponential family of distributions, the question asks you to show the sample total ∑Xi is a sufficient statistic for the Poisson model's parameter. What does 'sufficient' mean for this statistic?",
       "options": [
-        "The conditional distribution of the sample, given the value of the sample total, does not depend on the unknown parameter at all",
+        "The sample total is sufficient only if the sample size n is larger than 30",
         "The sample total is the only function of the data that is an unbiased estimator of the parameter",
         "The sample total always has the smallest possible variance among every conceivable estimator of the parameter",
-        "The sample total is sufficient only if the sample size n is larger than 30"
+        "The conditional distribution of the sample, given the value of the sample total, does not depend on the unknown parameter at all"
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "A statistic T is sufficient for a parameter θ if, once you know T, the remaining conditional distribution of the full sample carries no further information about θ -- i.e. it doesn't depend on θ. For the Poisson distribution (a one-parameter exponential family member), the Fisher-Neyman factorization theorem shows the sample total is exactly this kind of statistic; it also happens to be complete, which the question separately asks you to state."
     },
     {
@@ -103,12 +103,12 @@
       "source_excerpt": "Let X_1, X_2, ⋯, X_n be i.i.d. random variables following N(μ, σ²). Find the maximum likelihood estimator for σ² and examine whether the same is unbiased. If biased, suggest an unbiased estimator for σ² and examine whether it is consistent.",
       "question": "The maximum likelihood estimator of σ² for an i.i.d. Normal(μ, σ²) sample, using divisor n rather than (n−1) in the sample variance formula, is asked to be examined for bias. What is true of this particular MLE?",
       "options": [
-        "It is a biased estimator of σ², systematically underestimating it on average, though the bias vanishes as n → ∞",
         "It is an unbiased estimator of σ² for every sample size n",
+        "It cannot be computed unless the population is known to be Normal",
         "It is unbiased only when μ is known in advance, and biased otherwise",
-        "It cannot be computed unless the population is known to be Normal"
+        "It is a biased estimator of σ², systematically underestimating it on average, though the bias vanishes as n → ∞"
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "The MLE of σ² under Normality is (1/n)∑(Xᵢ−X̄)², whose expectation is ((n−1)/n)σ² -- strictly less than σ², so it is biased downward. This is exactly why the question then asks for an unbiased alternative (dividing by n−1 instead) and whether that alternative is consistent. The bias does shrink to zero as n grows, which is why the MLE is still asymptotically unbiased and consistent even though it is biased for finite n."
     },
     {
@@ -121,12 +121,12 @@
       "source_excerpt": "Describe sequential probability ratio test (SPRT). Find the SPRT for testing H_0: θ = θ_0 against H_1: θ = θ_1, using random observations from Poisson(θ). Also find the OC function for the test.",
       "question": "Unlike a fixed-sample-size hypothesis test, Wald's Sequential Probability Ratio Test (SPRT) does not decide after a predetermined number of observations. What actually determines when an SPRT stops sampling and reaches a decision?",
       "options": [
-        "The running likelihood ratio of the observations so far crossing one of two pre-set boundaries, accepting H0, accepting H1, or continuing to sample otherwise",
         "A fixed sample size calculated in advance from the desired Type I and Type II error rates",
+        "A p-value computed after each observation falling below 0.05",
         "The sample mean converging to within a fixed tolerance of θ_0 or θ_1",
-        "A p-value computed after each observation falling below 0.05"
+        "The running likelihood ratio of the observations so far crossing one of two pre-set boundaries, accepting H0, accepting H1, or continuing to sample otherwise"
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "SPRT computes the cumulative likelihood ratio Λ_n after each new observation and compares it against two boundaries (derived from the target Type I/II error rates α and β). If Λ_n exceeds the upper boundary, H1 is accepted; if it falls below the lower boundary, H0 is accepted; otherwise sampling continues. This is precisely what makes it 'sequential' rather than fixed-sample-size, and is also why its operating characteristic (OC) function -- the probability of accepting H0 as a function of the true θ -- is worth deriving separately, as the question also asks."
     },
     {
@@ -139,12 +139,12 @@
       "source_excerpt": "A population is divided into three strata. Determine the sample size for each stratum for a total sample of size 100 under (i) proportional allocation and (ii) optimum allocation.",
       "question": "A stratified sample is being allocated across strata using either proportional allocation or optimum (Neyman) allocation. What is the key extra information optimum allocation uses that proportional allocation ignores?",
       "options": [
-        "The variability (S_h) within each stratum and the cost (C_h) of sampling per unit in that stratum, not just the stratum's population size",
-        "The correlation between the survey variable and an auxiliary variable measured in a pilot study",
         "Whether the strata were formed using equal-width or equal-frequency class boundaries",
+        "The correlation between the survey variable and an auxiliary variable measured in a pilot study",
+        "The variability (S_h) within each stratum and the cost (C_h) of sampling per unit in that stratum, not just the stratum's population size",
         "The total number of strata, regardless of their individual sizes"
       ],
-      "answer_index": 0,
+      "answer_index": 2,
       "explanation": "Proportional allocation sets each stratum's sample size proportional only to its population size N_h. Neyman (optimum) allocation additionally weights by each stratum's standard deviation S_h (more variable strata need more sample) and, in the cost-constrained version, by the per-unit sampling cost C_h in that stratum -- allocating more sample where variability is high and/or sampling is cheap. This is exactly the (N_h, S_h², C_h) table structure the real question supplies for three strata."
     },
     {
@@ -157,12 +157,12 @@
       "source_excerpt": "Let l'β be any estimable linear function of parameters β_1, β_2, ⋯, β_p. Then prove that (i) there exists a unique linear function c'Y of random variables Y_1, Y_2, ⋯, Y_n such that c ∈ V(A') and E(c'Y) = l'β ...; (ii) variance of c'Y is less than the variance of any other linear unbiased estimator.",
       "question": "This question is essentially asking you to prove the Gauss-Markov theorem for an estimable linear function of a linear model's parameters. What does the Gauss-Markov theorem establish about the resulting estimator?",
       "options": [
-        "It is the Best Linear Unbiased Estimator (BLUE) -- unbiased, and with the smallest variance among all linear unbiased estimators of that quantity",
         "It is the estimator with the smallest variance among all possible estimators, linear or not",
         "It is guaranteed to be normally distributed regardless of the error distribution",
-        "It only applies when the design matrix A has full column rank"
+        "It only applies when the design matrix A has full column rank",
+        "It is the Best Linear Unbiased Estimator (BLUE) -- unbiased, and with the smallest variance among all linear unbiased estimators of that quantity"
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "The Gauss-Markov theorem proves that, under the standard linear model assumptions (uncorrelated errors with constant variance), the least-squares estimator of an estimable linear function is the Best Linear Unbiased Estimator -- best meaning minimum variance among the class of linear unbiased estimators, not among every possible estimator (a nonlinear or biased estimator could in principle do better on other criteria). It doesn't require or imply normality of the errors, and it doesn't require full column rank of A -- 'estimable' functions are specifically the ones that remain well-defined even when A is rank-deficient."
     },
     {
@@ -175,12 +175,12 @@
       "source_excerpt": "A population of N=4 units has values y_1=10, y_2=20, y_3=30 and y_4=40. Consider a sample of size n=2 without replacement with inclusion probabilities proportional to a size measure x_i ... Using Horvitz-Thompson estimator, estimate the population total.",
       "question": "The Horvitz-Thompson estimator is used here to estimate a population total from a sample drawn with unequal inclusion probabilities (probability proportional to size). Why does the Horvitz-Thompson estimator divide each sampled unit's value by its own inclusion probability π_i, rather than simply averaging and scaling up by N/n as in simple random sampling?",
       "options": [
-        "Because with unequal selection probabilities, each sampled unit represents a different number of population units, so dividing by π_i correctly re-weights it back to represent its true share of the population, keeping the estimator unbiased",
         "Because dividing by π_i is only a variance-reduction trick with no effect on whether the estimator is unbiased",
+        "Because with unequal selection probabilities, each sampled unit represents a different number of population units, so dividing by π_i correctly re-weights it back to represent its true share of the population, keeping the estimator unbiased",
         "Because π_i must always equal n/N for the estimator to be valid, making the division a constant scaling factor",
         "Because the population total can only be estimated this way when sampling is done with replacement"
       ],
-      "answer_index": 0,
+      "answer_index": 1,
       "explanation": "Under unequal-probability sampling, a unit with a higher inclusion probability is 'easier' to get into the sample and so should count for less when scaled up, and vice versa; y_i/π_i is precisely the re-weighting that makes E[ˆY] = ∑y_i = Y (the true total) regardless of how unequal the π_i values are, which is what makes Horvitz-Thompson unbiased under any fixed sampling design with known, positive inclusion probabilities. It is not restricted to π_i = n/N (that special case is just the simple-random-sampling estimator), and it works for without-replacement unequal-probability designs, which is exactly the PPS-without-replacement setup in the real question."
     },
     {
@@ -193,12 +193,12 @@
       "source_excerpt": "Suppose that a given individual in a population has a survival time which is exponential with a hazard rate θ. Let X be the life length of a randomly chosen individual of this population. Find the survival function of X. Find the hazard rate of X. What is the shape of the hazard rate?",
       "question": "For a lifetime X that is exponentially distributed with hazard rate θ, the question asks for the 'shape' of the hazard rate over time. What is distinctive about the exponential distribution's hazard rate compared to most other lifetime distributions?",
       "options": [
-        "It is constant over time -- the instantaneous risk of failure does not depend on how long the item has already survived (the 'memoryless' property)",
+        "It is undefined for the exponential distribution because it has no finite mean",
         "It always increases over time, reflecting wear-out or aging",
-        "It always decreases over time, reflecting early-life 'infant mortality' failures",
-        "It is undefined for the exponential distribution because it has no finite mean"
+        "It is constant over time -- the instantaneous risk of failure does not depend on how long the item has already survived (the 'memoryless' property)",
+        "It always decreases over time, reflecting early-life 'infant mortality' failures"
       ],
-      "answer_index": 0,
+      "answer_index": 2,
       "explanation": "The exponential distribution is the only continuous distribution with a constant hazard rate h(x) = θ for all x ≥ 0 -- this is the defining consequence of its memoryless property: the probability of failing in the next instant is the same whether the unit is brand new or has already survived a long time. Increasing hazard (wear-out) and decreasing hazard (infant mortality/'bathtub' shapes) are properties of other lifetime distributions (e.g. Weibull with shape parameter ≠ 1), not the exponential."
     },
     {
@@ -211,12 +211,12 @@
       "source_excerpt": "Construct a single sampling plan for attributes, given the following data: A.Q.L. = 0.05, Producer's risk = 0.05, Consumer's risk = 0.10, LTPD = 0.20",
       "question": "A single sampling plan for attributes is being constructed from an Acceptable Quality Level (AQL), a Lot Tolerance Percent Defective (LTPD), and the producer's and consumer's risk at each. What do the producer's risk and consumer's risk each represent?",
       "options": [
-        "Producer's risk is the probability of rejecting a genuinely good lot (at the AQL); consumer's risk is the probability of accepting a genuinely bad lot (at the LTPD)",
-        "Producer's risk and consumer's risk are two names for the same quantity, just measured by different parties",
+        "Producer's risk applies only to attribute sampling plans; consumer's risk applies only to variable sampling plans",
         "Producer's risk is the cost of manufacturing the lot; consumer's risk is the price the consumer pays for it",
-        "Producer's risk applies only to attribute sampling plans; consumer's risk applies only to variable sampling plans"
+        "Producer's risk and consumer's risk are two names for the same quantity, just measured by different parties",
+        "Producer's risk is the probability of rejecting a genuinely good lot (at the AQL); consumer's risk is the probability of accepting a genuinely bad lot (at the LTPD)"
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "In acceptance sampling, the producer's risk (α) is the chance a lot that is actually acceptable (defect rate at or below AQL) gets rejected by the sampling plan anyway -- a false rejection that hurts the producer. The consumer's risk (β) is the chance a lot that is actually unacceptable (defect rate at or above LTPD) gets accepted anyway -- a false acceptance that hurts the consumer. These are genuinely different risks belonging to different parties, not a cost/price distinction and not restricted to attributes-only plans (variable sampling plans define analogous risks)."
     },
     {
@@ -229,12 +229,12 @@
       "source_excerpt": "Describe the effect of sample size on X̄, R and s charts for the sample sizes n ≤ 5, 5 < n ≤ 10 and n > 10.",
       "question": "For quality-control charts, the s (sample standard deviation) chart is generally preferred over the R (range) chart once the subgroup sample size n grows larger (roughly n > 10). Why?",
       "options": [
-        "The range only uses the two extreme observations in a subgroup, so it becomes an increasingly wasteful, less efficient estimator of variability as n grows and more of the sample's information is left unused",
-        "The R chart cannot mathematically be computed for subgroup sizes larger than 10",
         "The s chart is easier to plot by hand than the R chart at any sample size",
-        "Regulatory standards require the s chart specifically for subgroup sizes above 10"
+        "Regulatory standards require the s chart specifically for subgroup sizes above 10",
+        "The range only uses the two extreme observations in a subgroup, so it becomes an increasingly wasteful, less efficient estimator of variability as n grows and more of the sample's information is left unused",
+        "The R chart cannot mathematically be computed for subgroup sizes larger than 10"
       ],
-      "answer_index": 0,
+      "answer_index": 2,
       "explanation": "The range R = max − min uses only two data points from the subgroup no matter how large n is, so its statistical efficiency relative to the full-sample standard deviation s falls off as n grows -- s uses every observation. This is exactly why standard quality-control practice (and this question) treats n ≤ 5, 5 < n ≤ 10, and n > 10 as different regimes: R charts are simple and nearly as efficient as s charts for small n, but the s chart's efficiency advantage becomes worth the extra computation once n is larger. Both charts remain computable at any n -- the distinction is efficiency, not feasibility."
     },
     {
@@ -247,12 +247,12 @@
       "source_excerpt": "What is the minimax criterion with respect to a game? ... Determine whether the game is stable or not. Also, obtain the optimal strategies and the value of the game.",
       "question": "The minimax criterion is used to determine a two-player zero-sum game's value from a payoff matrix. A game is called 'stable' (has a saddle point in pure strategies) precisely when which condition holds?",
       "options": [
+        "Both players have exactly the same set of available strategies",
         "The maximum of the row minimums equals the minimum of the column maximums (maximin = minimax)",
-        "Every entry in the payoff matrix is positive",
         "The payoff matrix is square (same number of rows and columns)",
-        "Both players have exactly the same set of available strategies"
+        "Every entry in the payoff matrix is positive"
       ],
-      "answer_index": 0,
+      "answer_index": 1,
       "explanation": "A two-player zero-sum game has a saddle point (is 'stable', solvable in pure strategies) exactly when the maximin value (the best of the worst-case row outcomes) equals the minimax value (the best of the worst-case column outcomes). When maximin ≠ minimax, no pure-strategy equilibrium exists and the game must be solved using mixed strategies instead. Matrix squareness, sign of the payoffs, and identical strategy sets for both players are unrelated to whether a saddle point exists."
     },
     {
@@ -265,13 +265,121 @@
       "source_excerpt": "Compute the Age-specific Fertility Rate, the Total Fertility Rate, and the Gross Reproduction Rate, from the data given below ... Assume that the proportion of female births is 46.2 percent.",
       "question": "The Total Fertility Rate (TFR) and the Gross Reproduction Rate (GRR) are both computed by summing age-specific fertility rates across the reproductive age groups. What is the key difference between them?",
       "options": [
-        "TFR counts all live births per woman across her reproductive years; GRR counts only female live births, using the proportion of female births to isolate direct female-to-female replacement",
         "TFR is measured per 1,000 women while GRR is measured per woman -- the two describe the same births, just at different scales",
         "GRR is always larger than TFR because it also accounts for infant mortality before reproductive age",
-        "TFR applies only to urban populations while GRR applies only to rural populations"
+        "TFR applies only to urban populations while GRR applies only to rural populations",
+        "TFR counts all live births per woman across her reproductive years; GRR counts only female live births, using the proportion of female births to isolate direct female-to-female replacement"
+      ],
+      "answer_index": 3,
+      "explanation": "TFR sums the age-specific fertility rates to give the expected total number of children a woman would bear across her reproductive life if age-specific rates stayed constant. GRR narrows this to only daughters, using the proportion of female births (here, 46.2%) applied to each age-specific rate before summing -- it measures direct female generational replacement, ignoring mortality (which is what the Net Reproduction Rate, not asked here, would add). It has nothing to do with urban/rural scope or measurement units -- both are typically expressed per woman."
+    },
+    {
+      "item_id": "ha_cpi_rent_imputation",
+      "doc_id": "cpi_manual_2010",
+      "competency_id": "os_price_statistics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Manual on Consumer Price Index (CPI), 2010, pages 21-30 (section on rent of self-owned houses)",
+      "source_excerpt": "In India, the general practice in family budget enquiries is to estimate the rents of self-owned houses (whenever such instances occur) on the basis of prevailing standards, and the estimated rents are pooled with the actual rents paid for hired tenements by sample families, to arrive at the average rent paid per family. This eliminates the need for pricing home-ownership costs in the index.",
+      "question": "For self-owned houses in a Consumer Price Index family budget enquiry, the manual describes estimating a rental value rather than leaving them out of the index entirely. Why does the CPI need an estimated rent for a house the household already owns and pays no rent on?",
+      "options": [
+        "So that owner-occupied and rented households both contribute a consistent housing-cost component to the index, instead of the index only reflecting the (different) population of renters",
+        "Because self-owned houses are legally required to be taxed at their rental value regardless of any price index",
+        "So that the number of sampled households can be reduced by treating owners and renters as identical",
+        "Because owner-occupied housing costs are always higher than rented housing costs and must be corrected downward"
       ],
       "answer_index": 0,
-      "explanation": "TFR sums the age-specific fertility rates to give the expected total number of children a woman would bear across her reproductive life if age-specific rates stayed constant. GRR narrows this to only daughters, using the proportion of female births (here, 46.2%) applied to each age-specific rate before summing -- it measures direct female generational replacement, ignoring mortality (which is what the Net Reproduction Rate, not asked here, would add). It has nothing to do with urban/rural scope or measurement units -- both are typically expressed per woman."
+      "explanation": "If self-owned housing were simply excluded from the index, the CPI's housing component would only reflect what the subset of renting households pay -- a biased picture of the population's actual housing cost exposure. Estimating a rental value for self-owned homes (pooled with actual rents from tenements) lets every household contribute a comparable housing-cost figure, which is exactly the manual's stated reason: 'this eliminates the need for pricing home-ownership costs in the index' while still keeping housing represented for owner-occupiers."
+    },
+    {
+      "item_id": "ha_cpi_weighting_diagram_threshold",
+      "doc_id": "cpi_manual_2010",
+      "competency_id": "os_price_statistics",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Manual on Consumer Price Index (CPI), 2010, pages 21-30 (section 3.24, Construction of Weighting Diagram)",
+      "source_excerpt": "The criteria generally adopted for selecting the items, are their importance and representativeness in the respective consumption groups, availability of suitable units for pricing and the possibility of collecting price data on a continuing basis. Thus, the items on which significant expenditure (according to ILO those items accounting for one per cent or more of total expenditure incurred by an average family at sub-group level) is recorded in the average budget and those with characteristic price trends, are generally included in the index.",
+      "question": "Not every item a household spends money on is included in a CPI's weighting diagram. According to the ILO criterion the manual cites, what is the main expenditure-share threshold used to decide whether an item is significant enough to include?",
+      "options": [
+        "Items are included or excluded solely based on whether their price changed in the last year",
+        "An item accounting for roughly 1% or more of an average family's total expenditure at the sub-group level",
+        "Any item purchased by at least 50% of surveyed households, regardless of how much is spent on it",
+        "Only items that are purchased at least once a week by every household in the sample"
+      ],
+      "answer_index": 1,
+      "explanation": "The manual states the ILO convention directly: items accounting for one per cent or more of total expenditure at the sub-group level are the ones considered significant enough for inclusion, alongside practical concerns like whether a suitable pricing unit exists and whether price data can be collected continuingly. Purchase frequency across households and single-year price movement are not the stated criteria -- expenditure share is."
+    },
+    {
+      "item_id": "ha_dpdp_personal_data_breach",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Digital Personal Data Protection Act, 2023, definitions section, clause (u)",
+      "source_excerpt": "\"personal data breach\" means any unauthorised processing of personal data or accidental disclosure, acquisition, sharing, use, alteration, destruction or loss of access to personal data, that compromises the confidentiality, integrity or availability of personal data;",
+      "question": "Under the DPDP Act 2023's own definition, does a 'personal data breach' require that the data was leaked to an outside party?",
+      "options": [
+        "Yes -- the definition only covers cases where personal data is disclosed or acquired by a party outside the Data Fiduciary's organisation",
+        "No -- it also includes purely internal events, such as unauthorised processing or accidental alteration/destruction of the data, as long as confidentiality, integrity, or availability is compromised",
+        "Yes -- but only if the breach involves at least 100 affected individuals",
+        "No -- the Act only defines a breach as occurring when the affected individual formally reports it to the Data Protection Board"
+      ],
+      "answer_index": 1,
+      "explanation": "The Act's definition is deliberately broad: it covers 'unauthorised processing... or accidental disclosure, acquisition, sharing, use, alteration, destruction or loss of access' -- alteration and destruction are internal integrity failures, not external leaks, and are explicitly included as long as confidentiality, integrity, or availability is compromised. There is no external-disclosure requirement, no individual-report trigger, and no minimum-affected-count threshold in the definition itself."
+    },
+    {
+      "item_id": "ha_dpdp_processing_definition",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Digital Personal Data Protection Act, 2023, definitions section, clause (x)",
+      "source_excerpt": "\"processing\" in relation to personal data, means a wholly or partly automated operation or set of operations performed on digital personal data, and includes operations such as collection, recording, organisation, structuring, storage, adaptation, retrieval, use, alignment or combination, indexing, sharing, disclosure by transmission, dissemination or otherwise making available, restriction, erasure or destruction;",
+      "question": "The DPDP Act 2023 defines 'processing' of personal data very broadly. Which of the following would NOT count as processing under this definition?",
+      "options": [
+        "Merely storing a citizen's data on paper with no computer involved at any stage",
+        "Sharing a citizen's data with another department electronically",
+        "Collecting a citizen's data through an online form",
+        "Deleting a citizen's data from a database"
+      ],
+      "answer_index": 0,
+      "explanation": "The Act's definition covers 'digital personal data' specifically and requires the operation to be 'wholly or partly automated' -- purely paper-based handling with no automated component at any stage falls outside processing as this Act defines it (though other laws may still govern it). Collection, sharing/disclosure, and erasure are all explicitly named operations within the definition, so each of the other three options is squarely covered."
+    },
+    {
+      "item_id": "ha_niti_aiforall_doctrine",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "National Strategy for Artificial Intelligence, NITI Aayog, page 8 (\"India's Approach to Leadership in AI\")",
+      "source_excerpt": "#AIforAll - the brand proposed for India implies inclusive technology leadership, where the full potential of AI is realised in pursuance of the country's unique needs and aspirations. The strategy should strive to leverage AI for economic growth, social development and inclusive growth, and finally as a 'Garage' for emerging and developing [countries].",
+      "question": "NITI Aayog's National Strategy for AI proposes '#AIforAll' as India's brand of AI leadership. According to the strategy document itself, what does this framing emphasize that a purely commercially-driven AI adoption strategy would not?",
+      "options": [
+        "Restricting AI development exclusively to government research institutions",
+        "Adopting AI strategy only after all other developed nations have already done so",
+        "Maximizing short-term commercial revenue from AI products before other countries can compete",
+        "Inclusive technology leadership serving India's own social and economic development needs, and positioning India as a proving ground ('Garage') for solutions relevant to other developing countries"
+      ],
+      "answer_index": 3,
+      "explanation": "The document explicitly contrasts #AIforAll with adoption 'driven primarily from a commercial perspective' -- it frames India's approach as inclusive (serving the country's own needs and aspirations, not just profit) and as a 'Garage' for emerging/developing nations broadly, i.e. a place where AI solutions are built and proven for problems shared by the wider developing world, not a race to commercialize fastest or a wait-and-follow strategy."
+    },
+    {
+      "item_id": "ha_niti_ai_transformative_scale",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "National Strategy for Artificial Intelligence, NITI Aayog, page 8",
+      "source_excerpt": "Technology disruptions like AI are once-in-a-generation phenomenon, and hence large-scale adoption strategies, especially national strategies, cannot be built on the sidelines of previous technology transitions.",
+      "question": "The strategy argues that national AI adoption strategies 'cannot be built on the sidelines of previous technology transitions.' What is this statement arguing against?",
+      "options": [
+        "Allowing private companies to participate in national AI development at all",
+        "Using any lessons at all from earlier technology adoption waves (e.g. internet or mobile rollout) when designing AI policy",
+        "Building AI infrastructure before first building basic electricity and internet infrastructure",
+        "Treating AI policy as a minor add-on to existing IT/digitisation strategies, rather than as a strategy that needs its own dedicated national framing given AI's scale of disruption"
+      ],
+      "answer_index": 3,
+      "explanation": "The statement's point is about the *scale of dedicated strategic attention* AI deserves -- calling it a 'once-in-a-generation phenomenon' means it warrants a strategy built specifically for it, not one treated as a peripheral extension of prior technology-transition policy. It is not arguing against learning from history in general (option B overreaches the claim), nor does it say anything about private-sector participation or infrastructure sequencing."
     }
   ]
 }

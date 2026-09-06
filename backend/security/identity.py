@@ -21,7 +21,7 @@ It never turns that into an authorization decision, and it never treats its
 .player_id` -- OIDC `sub` is unique only within its issuer.
 security.rbac.resolve_bound_principal() is what turns a verified subject
 into an actual local principal, through an explicit, administrator-created
-binding; see LANE2_SYNC.md's Phase 2 contract for why the two must not be
+binding; see docs/internal/LANE2_SYNC.md's Phase 2 contract for why the two must not be
 conflated.
 
 There is no government-approved IdP available (SIH26101_MASTER_CHECKLIST.md

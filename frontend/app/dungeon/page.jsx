@@ -1,11 +1,25 @@
 'use client';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { SquareCheckBig, Bolt, Lock, Check, Route, Play, Swords } from 'lucide-react';
+import { useAuthStore } from '@/store/useAuthStore';
+import QuestModeGate from '@/components/QuestModeGate';
 
-export default function PrerequisitePathways({ onNavigate = () => {}, onOpenModal = () => {} } = {}) {
+export default function PrerequisitePathways() {
+  const router = useRouter();
+  const questModeOn = useAuthStore((s) => s.player?.preferred_mode === 'quest');
   const [activeCourseNode, setActiveCourseNode] = useState(2);
   const [inFlightProgress, setInFlightProgress] = useState(64);
   const [courseToast, setCourseToast] = useState('');
+  const [schemaToast, setSchemaToast] = useState('');
+
+  if (!questModeOn) return <QuestModeGate />;
+
+  const onNavigate = () => router.push('/guild');
+  const onOpenModal = () => {
+    setSchemaToast('Design-intent mockup -- no real ingestion schema docs exist for this prototype yet.');
+    setTimeout(() => setSchemaToast(''), 3500);
+  };
 
   const handleContinueCourse = () => {
     setCourseToast('Synchronizing PySpark 3.4.1 GovEnv cluster state: Advancing Module 5 of 8...');
@@ -47,6 +61,12 @@ export default function PrerequisitePathways({ onNavigate = () => {}, onOpenModa
           <div className="px-4 py-2.5 bg-[#dce1ff] text-[#00164e] rounded-lg text-xs font-mono flex items-center gap-2 border border-[#b6c4ff] shadow-sm animate-in fade-in duration-200">
             <span className="material-symbols-outlined text-[18px] text-[#00236f]">check_circle</span>
             <span>{courseToast}</span>
+          </div>
+        )}
+
+        {schemaToast && (
+          <div className="px-4 py-2.5 bg-[#f2f3ff] text-[#00236f] rounded-lg text-xs font-mono flex items-center gap-2 border border-[#c5c5d3]/40 shadow-sm animate-in fade-in duration-200">
+            <span>{schemaToast}</span>
           </div>
         )}
 

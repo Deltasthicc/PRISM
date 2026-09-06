@@ -1,8 +1,11 @@
 'use client';
 import React, { useState } from 'react';
 import { Play, RotateCcw, Cloud, Download, Terminal, CircleHelp, Database, CircleCheck, PartyPopper, Award } from 'lucide-react';
+import { useAuthStore } from '@/store/useAuthStore';
+import QuestModeGate from '@/components/QuestModeGate';
 
-export default function AdaptivePracticeDsaQuest({ onNavigate = () => {} } = {}) {
+export default function AdaptivePracticeDsaQuest() {
+  const questModeOn = useAuthStore((s) => s.player?.preferred_mode === 'quest');
   const [selectedLang, setSelectedLang] = useState('Python 3.11 (Pyodide)');
   const [isRunning, setIsRunning] = useState(false);
   const [bossHp, setBossHp] = useState(210);
@@ -102,6 +105,8 @@ export default function AdaptivePracticeDsaQuest({ onNavigate = () => {} } = {})
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  if (!questModeOn) return <QuestModeGate />;
 
   return (
     <div className="flex flex-col w-full">

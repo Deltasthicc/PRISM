@@ -4,7 +4,7 @@ Codex recognizes `AGENTS.md` as repository-scoped guidance. Before making change
 
 1. `CODEX.md`
 2. `docs/SIH26101_PROBLEM_STATEMENT.md`
-3. `SIH26101_TEAM_ORCHESTRATION.md`
+3. `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`
 4. `SIH26101_MASTER_CHECKLIST.md`
 5. The relevant source files and tests for the assigned lane
 

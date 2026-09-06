@@ -312,6 +312,45 @@ def test_unknown_hero_id_rejected(client):
     assert resp.status_code == 422
 
 
+def test_new_player_defaults_to_professional_mode_and_get_player_returns_it(client):
+    player_id = client.post("/game/player/create", json={"username": "mode-default"}).json()["player_id"]
+
+    resp = client.get(f"/game/player/{player_id}")
+    assert resp.status_code == 200
+    # schemas.player.PlayerResponse has always declared this field -- this
+    # pins that _serialize_player() actually includes it in the response,
+    # not just that the schema documents it.
+    assert resp.json()["preferred_mode"] == "professional"
+
+
+def test_switching_to_quest_mode_persists_and_is_reflected_on_get(client):
+    player_id = client.post("/game/player/create", json={"username": "mode-switcher"}).json()["player_id"]
+
+    resp = client.post(f"/game/player/{player_id}/mode", json={"preferred_mode": "quest"})
+    assert resp.status_code == 200
+    assert resp.json() == {"preferred_mode": "quest"}
+
+    assert client.get(f"/game/player/{player_id}").json()["preferred_mode"] == "quest"
+
+    # Switching back to professional is symmetric, not a one-way ratchet.
+    back = client.post(f"/game/player/{player_id}/mode", json={"preferred_mode": "professional"})
+    assert back.status_code == 200
+    assert client.get(f"/game/player/{player_id}").json()["preferred_mode"] == "professional"
+
+
+def test_unknown_mode_value_rejected(client):
+    player_id = client.post("/game/player/create", json={"username": "mode-bogus"}).json()["player_id"]
+
+    resp = client.post(f"/game/player/{player_id}/mode", json={"preferred_mode": "dungeon-master"})
+    assert resp.status_code == 422
+    assert client.get(f"/game/player/{player_id}").json()["preferred_mode"] == "professional"
+
+
+def test_mode_switch_for_unknown_player_is_404(client):
+    resp = client.post("/game/player/does-not-exist/mode", json={"preferred_mode": "quest"})
+    assert resp.status_code == 404
+
+
 def test_hits_landed_never_exceeds_hits_required_even_with_stray_submissions(client):
     """Guards the min(boss_max_hp, cumulative_damage) clamp -- a player who
     somehow deals more cumulative damage to a topic than its boss's HP pool

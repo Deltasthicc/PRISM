@@ -13,7 +13,7 @@ ASSESSMENT_POLICY_VERSION = "prototype-v1"
 
 # The one documented status term that applies to a Lane 3 competency result
 # (CODEX.md architectural invariants: use SIMULATED, CATALOGUE, LIVE,
-# PROVISIONAL and NO EVIDENCE "precisely"; SIH26101_TEAM_ORCHESTRATION.md
+# PROVISIONAL and NO EVIDENCE "precisely"; docs/internal/SIH26101_TEAM_ORCHESTRATION.md
 # section 5 has Lane 1 render exactly these). The vocabulary defines no
 # positive counterpart, so evidence_state is this string or None -- the
 # present case is described by evidence_sources instead of an invented term.
@@ -31,7 +31,7 @@ EVIDENCE_TYPE_ORDER = (
 )
 
 # Only these two contribute to observed_level, at the 65/35 weights this
-# policy version has always used. SIH26101_TEAM_ORCHESTRATION.md section 5
+# policy version has always used. docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5
 # asks Lane 3 to *separate* the five evidence types -- not to blend them --
 # and no validated weights exist for the other three, so they are recorded,
 # separated and displayed while deliberately not moving the score. Giving

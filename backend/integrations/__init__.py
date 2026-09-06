@@ -1,6 +1,6 @@
 """Lane 5 (Product API, Integrations & Analytics) — reserved for the `LearningProviderAdapter`
 interface and the simulated/live iGOT and NSSTA adapters described in
-SIH26101_TEAM_ORCHESTRATION.md section 5 (Lane 5) and docs/SIH26101_PROBLEM_STATEMENT.md
+docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5 (Lane 5) and docs/SIH26101_PROBLEM_STATEMENT.md
 PS-05/PS-17. Contract: docs/contracts/provider-adapter.md.
 
 Empty scaffold. `backend/services/learning_catalog.py` remains the current, honest

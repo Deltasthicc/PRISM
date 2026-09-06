@@ -1,7 +1,7 @@
 """JSON-backed course catalogue with deterministic keyword matching.
 
 New file, so ownership is assigned before first modification rather than
-assumed (SIH26101_TEAM_ORCHESTRATION.md section 2, "Unlisted legacy files are
+assumed (docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 2, "Unlisted legacy files are
 assigned ... using the nearest mission owner"). Nearest mission owner is
 Lane 5, which owns provider recommendations and `learning_catalog.py`.
 Recorded in `docs/contracts/competency-evidence.md` section 9.6; Lane 3
@@ -18,7 +18,7 @@ When a real adapter exists, this module is the seam to replace.
 Matching is deliberately keyword-based and deterministic, not embeddings:
 every recommendation can state exactly which words matched, a judge can change
 a competency label and watch the result move, and there is no model to explain
-away. SIH26101_WINNING_PLAYBOOK.md section 6 puts a vector adapter behind
+away. docs/internal/SIH26101_WINNING_PLAYBOOK.md section 6 puts a vector adapter behind
 "only when real retrieval is implemented"; this is the honest version until
 then.
 

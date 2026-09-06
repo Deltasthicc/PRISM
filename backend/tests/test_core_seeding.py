@@ -4,7 +4,7 @@ Covers the pure resolution function directly, then the real main.py lifespan
 end-to-end over subprocess-driven temp SQLite, the same pattern
 test_core_migrations.py uses. PostgreSQL's opt-out-by-default behavior was
 additionally verified manually against a live container and is recorded in
-LANE2_SYNC.md -- not exercised here, so this suite keeps running without a
+docs/internal/LANE2_SYNC.md -- not exercised here, so this suite keeps running without a
 database server, per CLAUDE.md's testing invariant.
 """
 from __future__ import annotations

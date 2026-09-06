@@ -1,4 +1,4 @@
-# CODEOWNERS -- mirrors the six-lane ownership map in SIH26101_TEAM_ORCHESTRATION.md section 2.
+# CODEOWNERS -- mirrors the six-lane ownership map in docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 2.
 #
 # The handles below (@lane-1-owner ... @lane-6-owner) are PLACEHOLDERS, not real GitHub
 # usernames. GitHub silently ignores a CODEOWNERS entry that does not resolve to a real
@@ -30,9 +30,12 @@
 /docker/ @lane-6-owner
 /backend/tests/conftest.py @lane-6-owner
 /SIH26101_MASTER_CHECKLIST.md @lane-6-owner
-/SIH26101_WINNING_PLAYBOOK.md @lane-6-owner
-/SIH26101_TEAM_ORCHESTRATION.md @lane-6-owner
 /EVIDENCE.md @lane-6-owner
+# The remaining root-markdown lines above are covered by /docs/ already now
+# that they live under docs/internal/ (SIH26101_WINNING_PLAYBOOK.md,
+# SIH26101_TEAM_ORCHESTRATION.md, LANE2_SYNC.md, LANE2_INTEGRATION_GUIDE.md,
+# LANE2_HANDOFF_FOR_OTHER_LANES.md, LANE5_HANDOFF.md) -- no separate line
+# needed, same @lane-6-owner either way.
 
 # --- Lane 3: Competency & Learning Intelligence ---
 /backend/services/curricula.py @lane-3-owner

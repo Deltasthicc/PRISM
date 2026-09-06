@@ -237,6 +237,9 @@ export const auth = {
 
   setHero: async (playerId, heroId) =>
     request(`/game/player/${playerId}/hero`, { method: 'POST', body: { hero_id: heroId } }),
+
+  setPreferredMode: async (playerId, mode) =>
+    request(`/game/player/${playerId}/mode`, { method: 'POST', body: { preferred_mode: mode } }),
 };
 
 export const game = {
@@ -453,4 +456,22 @@ export const learning = {
   listQuizzes: (playerId) => request(`/learning/quiz/${playerId}`),
 
   getAdminOverview: (uiLang = 'en') => request(`/learning/admin/overview?lang=${uiLang}`),
+
+  // Real, source-cited competency quiz (routes/competency_quiz.py) -- see
+  // lib/competencyTopics.js for the fixed topic_id list this maps to.
+  getCompetencyQuizTopics: () => request('/learning/competency-quiz/topics'),
+
+  getCompetencyQuizQuestions: (topicId, count = 5) =>
+    request(`/learning/competency-quiz/questions?topic_id=${encodeURIComponent(topicId)}&count=${count}`),
+
+  submitCompetencyQuiz: (attemptId, topicId, answers, playerId) =>
+    request('/learning/competency-quiz/submit', {
+      method: 'POST',
+      body: {
+        attempt_id: attemptId,
+        topic_id: topicId,
+        answers,
+        ...(playerId ? { player_id: playerId } : {}),
+      },
+    }),
 };

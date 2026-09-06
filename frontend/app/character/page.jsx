@@ -10,6 +10,7 @@ import PixelPanel from '@/components/ui/PixelPanel';
 import PixelButton from '@/components/ui/PixelButton';
 import PixelBadge from '@/components/ui/PixelBadge';
 import PixelSprite from '@/components/PixelSprite';
+import QuestModeGate from '@/components/QuestModeGate';
 
 export default function CharacterSelectPage() {
   const { ready } = useRequireAuth();
@@ -22,6 +23,7 @@ export default function CharacterSelectPage() {
   const [error, setError] = useState(null);
 
   if (!ready || !player) return null;
+  if (player.preferred_mode !== 'quest') return <QuestModeGate />;
 
   async function handleConfirm() {
     if (!selected) return;

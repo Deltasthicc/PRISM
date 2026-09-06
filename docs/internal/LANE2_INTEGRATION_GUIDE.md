@@ -1,6 +1,6 @@
 # Lane 2 integration guide
 
-Owner: Lane 2 (Core Platform, Identity & Data). Written as Package W-B (`LANE2_SYNC.md`'s "Package
+Owner: Lane 2 (Core Platform, Identity & Data). Written as Package W-B (`docs/internal/LANE2_SYNC.md`'s "Package
 W — cross-lane database usability and accountability loop"), alongside Codex's Package W-A
 (`backend/db/repositories.py`'s read facade). This is the single place every other lane should look
 to answer three questions: *what can I use of Lane 2's today without asking*, *what do I still need
@@ -11,7 +11,7 @@ This guide does not replace the contracts (`docs/contracts/data-authorization.md
 signatures, file paths and a copy-ready message per lane. Where this guide and a contract disagree,
 the contract wins; open a correction here rather than trusting a stale summary.
 
-`LANE2_HANDOFF_FOR_OTHER_LANES.md` remains the dated, issue-by-issue punch list raised from live
+`docs/internal/LANE2_HANDOFF_FOR_OTHER_LANES.md` remains the dated, issue-by-issue punch list raised from live
 testing (Quest-mode-optional, professional theming, i18n, admin RBAC, self-assessment policy). This
 guide is the standing reference for *how to integrate at all*; that file is the standing reference
 for *specific defects already found*. Read both.
@@ -68,7 +68,7 @@ and Quest-only nav items disappearing; no UI claim that data is organization-iso
 > browser login flow spec you need (`docs/contracts/identity-authorization.md` §1 — Authorization
 > Code + PKCE, `S256`, no implicit/password grant). Once Lane 5 exposes a read/write route for
 > `preferred_mode`, please add the settings control and conditional nav hiding described in
-> `LANE2_HANDOFF_FOR_OTHER_LANES.md` item 1. Please build browser login against §1 exactly rather
+> `docs/internal/LANE2_HANDOFF_FOR_OTHER_LANES.md` item 1. Please build browser login against §1 exactly rather
 > than a placeholder flow — it will save a rebuild later.
 
 ## Lane 3 — Competency & Learning Intelligence
@@ -92,7 +92,7 @@ mistake this guide's first draft made about Lane 4 (see that section's note).
   (`schemas/governance.py`) requires `player_id` — any evidence-writing code (a lab, a diagnostic,
   a reviewer action) needs to supply it.
 - **Package W-A** (Codex, commit `3a75b28`, ACCEPTED on Claude's independent review — see
-  `LANE2_SYNC.md`'s Package W entry) adds three read-only repository functions to
+  `docs/internal/LANE2_SYNC.md`'s Package W entry) adds three read-only repository functions to
   `backend/db/repositories.py`:
   ```python
   get_current_role_target(db, role, competency_id, *, as_of=None)   # exact-role lookup, half-open validity window
@@ -147,7 +147,7 @@ row vs. `None` — not just that the lookup function itself is tested in isolati
 scaffold — none of the ingestion/retrieval/assistant/review-lifecycle claims below describe `main`
 itself. An earlier draft of this guide stated a `backend/ai/grading.py` bug as if it were a fact
 about the shared codebase without saying which branch it lived on; Codex flagged the ambiguity on
-review (see `LANE2_SYNC.md`'s Package W entry), and on rechecking, the finding is real — it's just
+review (see `docs/internal/LANE2_SYNC.md`'s Package W entry), and on rechecking, the finding is real — it's just
 scoped to `origin/codex/lane-4-content-ai/bootstrap`, your active working branch, not `main`. Every
 branch-specific claim below now names its branch explicitly so this doesn't happen again.
 

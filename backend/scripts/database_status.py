@@ -27,10 +27,10 @@ Design constraints (all load-bearing, not stylistic):
   status -- "tell me my database isn't set up yet" is this tool's primary
   purpose, not an edge case it can afford to crash on.
 
-See `LANE2_INTEGRATION_GUIDE.md` for how other lanes are expected to use
+See `docs/internal/LANE2_INTEGRATION_GUIDE.md` for how other lanes are expected to use
 this (health-checking their own local setup, CI gating on `--check-migrations
 --migration-only` -- see `get_database_status`'s `include_counts` for why the
-CI form skips every table's row count), and `LANE2_SYNC.md`'s Package W (and
+CI form skips every table's row count), and `docs/internal/LANE2_SYNC.md`'s Package W (and
 Package 6/AC) entries for the coordination that produced it.
 """
 from __future__ import annotations

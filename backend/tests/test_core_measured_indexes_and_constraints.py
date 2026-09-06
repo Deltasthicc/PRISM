@@ -5,7 +5,7 @@ Every index below matches the exact WHERE/ORDER BY shape one of
 `db/repositories.py`'s latest-row lookups issues, and was kept only after a
 representative ~120k-row PostgreSQL `EXPLAIN (ANALYZE, BUFFERS)` comparison
 showed a real access-path improvement -- not added speculatively. The raw
-before/after planner output is recorded in `LANE2_SYNC.md`'s Package 4 entry,
+before/after planner output is recorded in `docs/internal/LANE2_SYNC.md`'s Package 4 entry,
 not reproduced here; this file proves the schema actually matches that
 evidence (the indexes/constraints exist, with the right columns, on both
 dialects) and that the new constraints actually reject bad data rather than

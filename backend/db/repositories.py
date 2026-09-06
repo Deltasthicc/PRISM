@@ -9,7 +9,7 @@ get_latest_assessment() into an actual HTTP endpoint
 `GET /learning/assessment/{player_id}/latest` is not implemented yet) and
 into backend/routes/learning.py's existing pathway lookup, which today
 orders by `created_at` only and does not yet use the `assessment_id`
-tie-breaker below -- see LANE2_SYNC.md's Package H entry.
+tie-breaker below -- see docs/internal/LANE2_SYNC.md's Package H entry.
 """
 from __future__ import annotations
 

@@ -4,8 +4,8 @@ Every other test file in this suite proves the retention-job/trigger
 mechanisms either against SQLite (with the PostgreSQL dialect monkeypatched
 for the FOR UPDATE SKIP LOCKED compiled-SQL check) or against real
 PostgreSQL only via one-off manual drills whose transcripts are copied into
-`LANE2_SYNC.md`/`EVIDENCE.md`. Codex's cold immutable audit of Package U
-(LANE2_SYNC.md, 2026-09-01) asked for something stronger: a committed,
+`docs/internal/LANE2_SYNC.md`/`EVIDENCE.md`. Codex's cold immutable audit of Package U
+(docs/internal/LANE2_SYNC.md, 2026-09-01) asked for something stronger: a committed,
 re-runnable "regression/opt-in PostgreSQL integration contract" that proves
 the real trigger and the real retention job stay compatible at the real
 Alembic head -- not just a transcript of a script that was run once.
@@ -39,7 +39,7 @@ for:
     (d) migration downgrade/upgrade across the Package V revision is clean
         (test_migration_downgrade_restores_delete_rejection_and_upgrade_removes_it_again).
 
-Codex's immutable review of the first version of this file (LANE2_SYNC.md,
+Codex's immutable review of the first version of this file (docs/internal/LANE2_SYNC.md,
 2026-09-02) found two further "P2" gaps and this revision closes both:
 
   P2 finding 2 -- the disposable-database fixture only cleaned up after

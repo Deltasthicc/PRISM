@@ -12,6 +12,7 @@ import PixelBadge from '@/components/ui/PixelBadge';
 import PixelButton from '@/components/ui/PixelButton';
 import PixelSprite from '@/components/PixelSprite';
 import { heroOrDefault } from '@/lib/sprites/heroSprites';
+import QuestModeGate from '@/components/QuestModeGate';
 
 const RANK_TONE = ['gold', 'arcane', 'ember'];
 
@@ -23,11 +24,12 @@ export default function LeaderboardPage() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['leaderboard'],
     queryFn: () => game.getLeaderboard(),
-    enabled: ready,
+    enabled: ready && player?.preferred_mode === 'quest',
     refetchInterval: 10000, // was 5000 -- halved background query volume, still feels live
   });
 
   if (!ready) return null;
+  if (player?.preferred_mode !== 'quest') return <QuestModeGate />;
 
   const board = data?.leaderboard || [];
 

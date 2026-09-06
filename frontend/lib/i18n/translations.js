@@ -227,7 +227,7 @@ export const TRANSLATIONS = {
       subtitleAfter: '— live from the LLM, RL tuner, and NLP judge.',
     },
     leaderboard: {
-      heading: 'WEEKLY RANKS',
+      heading: 'ALL-TIME RANKS',
       loading: "Tallying the realm's XP…",
       loadFailed: 'Could not load the leaderboard.',
       retry: 'RETRY',
@@ -462,7 +462,7 @@ export const TRANSLATIONS = {
       subtitleAfter: '— LLM, RL ट्यूनर, और NLP जज से लाइव।',
     },
     leaderboard: {
-      heading: 'साप्ताहिक रैंक',
+      heading: 'सर्वकालिक रैंक',
       loading: 'क्षेत्र का XP गिना जा रहा है…',
       loadFailed: 'लीडरबोर्ड लोड नहीं हो सका।',
       retry: 'पुनः प्रयास करें',

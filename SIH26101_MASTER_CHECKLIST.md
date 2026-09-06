@@ -55,7 +55,7 @@ This is the single execution ledger for the project. It separates what the repos
 | Identity/security | Product routes remain username/player-ID demo interfaces and are not protected. Lane 2 implements local OIDC JWT verification, issuer/sub binding, fixed RBAC/bootstrap, deployment-database tenant guards and audited security/data-rights primitives; browser SSO, row-level organization tenancy, route enforcement, approved production IdP, rate limits and secrets operations remain open | **VERIFIED** |
 | Admin metrics | Aggregate-only response, but repeated historical assessments inflate `learner_count` for a gap | **VERIFIED** |
 | Dashboard coverage | No provider-derived learning hours, training-effectiveness measurement, emerging-skill analysis or validated predictive analytics | **VERIFIED** |
-| Guild/leaderboard | Guild backend exists; frontend lacks raid question/submit flow. UI says weekly while backend rank is lifetime XP | **VERIFIED** |
+| Guild/leaderboard | Both now gated behind the opt-in `preferred_mode` Quest toggle (6 Sep 2026), off the professional path by default. Guild backend exists; frontend still lacks a real raid question/submit flow (`joinGuildRaid()` has zero callers). Leaderboard heading corrected to "ALL-TIME RANKS", matching the real lifetime-XP ranking -- no weekly window exists | **VERIFIED** |
 | Delivery | CI workflow and Alembic migration framework exist; no fresh remote-CI result is claimed here. Frontend tests, production deployment definition, observability stack and repository licence remain absent/unverified | **VERIFIED** |
 
 A clean local frontend production build completed independently on 3 September 2026 (14 routes),
@@ -113,8 +113,8 @@ Do these before adding new “AI” features.
 - [ ] Complete: profile → diagnostic → competency evidence → gap explanation → ordered pathway → provider-labelled recommendation → practice → re-assessment → admin change.
 - [ ] Make every result expose `why`, `evidence`, target version, formula version and timestamp.
 - [ ] Correct admin gap counts to count distinct learners from their latest relevant assessment.
-- [ ] Replace “weekly leaderboard” copy or implement a real weekly time window.
-- [ ] Either complete the guild raid interaction or remove it from the official demo path.
+- [x] ~~Replace "weekly leaderboard" copy or implement a real weekly time window.~~ **FIXED 6 September 2026:** changed the heading to "ALL-TIME RANKS"/"सर्वकालिक रैंक", matching what the backend actually ranks by (`total_xp`, lifetime) -- no real weekly window exists to implement. `/leaderboard` is also now gated behind the `preferred_mode` Quest-mode toggle alongside the rest of the Quest routes, since it's `Pixel*`-styled XP/streak content, not part of the professional path. **VERIFIED**
+- [x] ~~Either complete the guild raid interaction or remove it from the official demo path.~~ **PARTIALLY RESOLVED 6 September 2026:** took the "remove from the official path" branch, not "complete it" -- `/guild` (and the rest of Quest mode) is now gated behind the opt-in `preferred_mode` toggle, off by default, so it is no longer on the professional/official demo path at all. The raid interaction itself is still not complete: `frontend/lib/api/client.js`'s `joinGuildRaid()` (a real, correctly-wired call to `/game/guild/raid/join` and `/game/guild/raid/status`) has zero callers anywhere in the frontend -- `/guild`'s current UI (`AdaptivePracticeDsaQuest`) is a self-contained WASM code-arena mockup with local-only state, entirely disconnected from that real backend raid system. Left as-is rather than deleted (unlike the dead `dsa-dungeon-01` constant above, this is real, working backend-integration code for a feature that's legitimately still future scope, not a fake value) -- completing it is still open if Quest mode is ever built out further. **VERIFIED**
 
 ### P0 exit gate
 

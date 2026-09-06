@@ -453,4 +453,17 @@ export const learning = {
   listQuizzes: (playerId) => request(`/learning/quiz/${playerId}`),
 
   getAdminOverview: (uiLang = 'en') => request(`/learning/admin/overview?lang=${uiLang}`),
+
+  // Real, source-cited competency quiz (routes/competency_quiz.py) -- see
+  // lib/competencyTopics.js for the fixed topic_id list this maps to.
+  getCompetencyQuizTopics: () => request('/learning/competency-quiz/topics'),
+
+  getCompetencyQuizQuestions: (topicId, count = 5) =>
+    request(`/learning/competency-quiz/questions?topic_id=${encodeURIComponent(topicId)}&count=${count}`),
+
+  submitCompetencyQuiz: (topicId, answers) =>
+    request('/learning/competency-quiz/submit', {
+      method: 'POST',
+      body: { topic_id: topicId, answers },
+    }),
 };

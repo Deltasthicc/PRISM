@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import {
   ArrowLeft,
@@ -10,13 +10,17 @@ import {
   CheckCircle,
   ChevronRight,
   ClipboardCheck,
-  Info,
   LayoutDashboard,
   Lightbulb,
   Network,
   Radar,
   Timer,
 } from 'lucide-react';
+
+import { learning } from '@/lib/api/client';
+import { COMPETENCY_TOPICS, TOPIC_BY_LABEL } from '@/lib/competencyTopics';
+
+const QUESTIONS_PER_TOPIC = 3;
 
 export default function CompetencyQuizPage({
   officerProfile,
@@ -26,10 +30,58 @@ export default function CompetencyQuizPage({
 }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [showExplanation, setShowExplanation] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(600);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
+
+  // Real, source-cited questions fetched from routes/competency_quiz.py,
+  // one topic per specialization the officer picked in CreateProfilePage.
+  // Falls back to the first real topic if none of their picks matched one
+  // (shouldn't happen once CreateProfilePage only offers real topics, but a
+  // profile created before that change could still have stale labels).
+  const [questions, setQuestions] = useState([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [results, setResults] = useState(null);
+  const [submittingQuiz, setSubmittingQuiz] = useState(false);
+
+  const selectedTopics = useMemo(() => {
+    const picked = (officerProfile?.specialization || [])
+      .map((label) => TOPIC_BY_LABEL[label])
+      .filter(Boolean);
+    return picked.length > 0 ? picked : [COMPETENCY_TOPICS[0]];
+  }, [officerProfile?.specialization]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadQuestions() {
+      setLoadingQuestions(true);
+      setLoadError('');
+      try {
+        const batches = await Promise.all(
+          selectedTopics.map((topic) =>
+            learning
+              .getCompetencyQuizQuestions(topic.id, QUESTIONS_PER_TOPIC)
+              .then((response) => response.questions.map((q) => ({ ...q, topic_id: topic.id })))
+          )
+        );
+        if (!cancelled) setQuestions(batches.flat());
+      } catch (cause) {
+        if (!cancelled) setLoadError(cause.message);
+      } finally {
+        if (!cancelled) setLoadingQuestions(false);
+      }
+    }
+
+    loadQuestions();
+    return () => {
+      cancelled = true;
+    };
+    // selectedTopics is derived from officerProfile.specialization, which is
+    // stable for the lifetime of one quiz attempt.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ============================================================
   // TIMER
@@ -55,319 +107,142 @@ export default function CompetencyQuizPage({
   };
 
   // ============================================================
-  // QUESTIONS
-  // ============================================================
-
-  const questions = [
-    {
-      id: 1,
-      dimension: 'NSSO Sampling & Survey Methodology',
-      dimensionKey: 'sampling',
-      code: 'NSSTA-STAT-701',
-      question:
-        'In a multi-stage stratified sample survey (such as the Periodic Labour Force Survey - PLFS), if sample attrition in rural sub-rounds exceeds 8.5%, what is the statistically compliant protocol under MoSPI survey guidelines?',
-      citation:
-        'MoSPI Annual Report 2023-24 §4.2 / NSSTA Manual on Survey Errors',
-      options: [
-        {
-          id: 'A',
-          text:
-            'Substitute non-responding households with convenient replacement Primary Sampling Units (PSUs) in adjacent enumeration blocks.',
-        },
-        {
-          id: 'B',
-          text:
-            'Apply post-stratification re-weighting using Registrar General of India (RGI) district-level auxiliary projections to mitigate selection bias.',
-        },
-        {
-          id: 'C',
-          text:
-            'Drop the entire sub-round from national GDP aggregation and impute all household expenditure values using simple mean imputation.',
-        },
-        {
-          id: 'D',
-          text:
-            'Re-run the survey without finite population correction (FPC) and report only unweighted sampling medians.',
-        },
-      ],
-      correctAnswer: 'B',
-      explanation:
-        'Official gazette standards mandate that PSU substitution introduces severe selection bias. Instead, post-stratification re-weighting factors derived from Registrar General of India (RGI) district-level projections must be applied to preserve unbiased estimators.',
-    },
-
-    {
-      id: 2,
-      dimension: 'Large-Scale Data Wrangling & PySpark',
-      dimensionKey: 'sql',
-      code: 'CSO-DATA-402',
-      question:
-        'When executing a distributed join on 50 million Annual Survey of Industries (ASI) records in PySpark, executor nodes crash with `OutOfMemory: Java Heap Space` due to high partition skew on district codes. What is the optimal distributed execution strategy?',
-      citation: 'GovCloud Cluster Infrastructure Guidelines v3.1',
-      options: [
-        {
-          id: 'A',
-          text:
-            'Increase `spark.driver.memory` to 128GB while leaving executor memory unchanged and disabling adaptive query execution.',
-        },
-        {
-          id: 'B',
-          text:
-            'Broadcast the large 50M records dataframe across all worker nodes to eliminate data shuffling.',
-        },
-        {
-          id: 'C',
-          text:
-            'Enable Adaptive Query Execution (AQE) with skew join optimization (`spark.sql.adaptive.skewJoin.enabled=true`) and salt the skewed join keys.',
-        },
-        {
-          id: 'D',
-          text:
-            'Export all records into a single CSV file and process them sequentially on a single core.',
-        },
-      ],
-      correctAnswer: 'C',
-      explanation:
-        'High key skew cannot be resolved by driver memory or broadcasting 50M records (which causes broadcast OOM). Enabling Spark AQE skew join splitting and salting the skewed keys uniformly redistributes partition weight across executor heaps.',
-    },
-
-    {
-      id: 3,
-      dimension: 'Econometric & Time-Series Forecasting',
-      dimensionKey: 'econo',
-      code: 'NAD-TS-505',
-      question:
-        'When updating Consumer Price Index (CPI) and Index of Industrial Production (IIP) series during a decennial base-year revision, which method is recommended by MoSPI to link old and new index numbers without introducing artificial structural jumps?',
-      citation: 'National Accounts Statistics: Sources and Methods (MoSPI NAD)',
-      options: [
-        {
-          id: 'A',
-          text:
-            'Splicing using linking factors calculated from the overlapping period of both series (ratio method at common base periods).',
-        },
-        {
-          id: 'B',
-          text:
-            'Arbitrarily scaling all pre-revision historical values by the latest wholesale inflation index.',
-        },
-        {
-          id: 'C',
-          text:
-            'Completely discarding all pre-revision time-series data to avoid comparison discrepancies.',
-        },
-        {
-          id: 'D',
-          text:
-            'Unweighted linear regression against international crude oil benchmarks.',
-        },
-      ],
-      correctAnswer: 'A',
-      explanation:
-        'Standard National Accounts practice dictates that splicing through linking factors derived from the overlapping period of old and revised series guarantees seamless long-term continuity without creating artificial statistical discontinuity.',
-    },
-
-    {
-      id: 4,
-      dimension: 'DPDP Act 2023 & Sovereign Cloud Governance',
-      dimensionKey: 'cloud',
-      code: 'DPDP-SOV-101',
-      question:
-        'Under Section 8 of the Digital Personal Data Protection (DPDP) Act 2023 and National Data Sharing & Accessibility Policy (NDSAP), what technical measure is mandatory before releasing anonymized microdata containing granular geo-spatial and household demographics?',
-      citation:
-        'Digital Personal Data Protection Act 2023 (Gazette of India, Act No. 22 of 2023)',
-      options: [
-        {
-          id: 'A',
-          text:
-            'Hashing only the Aadhaar number while retaining direct phone numbers and exact GPS coordinates intact.',
-        },
-        {
-          id: 'B',
-          text:
-            'Enforcing k-anonymity (k ≥ 5) and l-diversity on quasi-identifiers, plus spatial aggregation to district/tehsil centroids to prevent re-identification.',
-        },
-        {
-          id: 'C',
-          text:
-            'Publishing raw tables in open CSV format with a disclaimer asking citizens not to de-anonymize individuals.',
-        },
-        {
-          id: 'D',
-          text:
-            'Restricting dataset downloads to users with personal social media accounts.',
-        },
-      ],
-      correctAnswer: 'B',
-      explanation:
-        'DPDP 2023 and sovereign data governance require strict mathematical anonymization: quasi-identifiers must pass k-anonymity (k ≥ 5) and l-diversity, paired with spatial fuzzing to centroids to neutralize auxiliary linkage attacks.',
-    },
-
-    {
-      id: 5,
-      dimension: 'Distributed Machine Learning & Imputation',
-      dimensionKey: 'dml',
-      code: 'ML-IMP-603',
-      question:
-        'When imputing missing financial variables in the Annual Survey of Industries (ASI) microdata where missingness is Missing at Random (MAR), which machine learning approach best preserves multivariate covariance structures without deflating standard errors?',
-      citation: 'CSO Big Data & ML Research Working Paper 2023-09',
-      options: [
-        {
-          id: 'A',
-          text:
-            'Unconditional Mean Imputation substituting missing values with the state-level column arithmetic mean.',
-        },
-        {
-          id: 'B',
-          text:
-            'Single deterministic regression imputation without adding stochastic residual error terms.',
-        },
-        {
-          id: 'C',
-          text:
-            'Multiple Imputation by Chained Equations (MICE) or Random Forest-based MissForest with stochastic variance preservation.',
-        },
-        {
-          id: 'D',
-          text:
-            'Deleting all enterprise records that contain any missing field.',
-        },
-      ],
-      correctAnswer: 'C',
-      explanation:
-        'Mean or single deterministic imputation severely artificially shrinks variance and distorts covariance structures. Multiple Imputation by Chained Equations (MICE) or MissForest models uncertainty and retains true population variance.',
-    },
-
-    {
-      id: 6,
-      dimension: 'Algorithms & Graph Theory (DSA Core)',
-      dimensionKey: 'dsa',
-      code: 'DSA-GRAPH-301',
-      question:
-        'In national accounts inter-industry Supply and Use Tables (SUT), resolving circular supply chain dependencies to generate an admissible production sequence mathematically maps to which graph algorithm?',
-      citation:
-        'MoSPI Analytical Workbench: DAG Topological Sort & SCC Algorithms',
-      options: [
-        {
-          id: 'A',
-          text:
-            'Kahn’s Algorithm for Topological Sorting on Directed Acyclic Graphs (DAG), coupled with Tarjan’s SCC algorithm to detect circular supply feedback loops.',
-        },
-        {
-          id: 'B',
-          text:
-            'Dijkstra’s Single-Source Shortest Path algorithm on undirected trees.',
-        },
-        {
-          id: 'C',
-          text:
-            'Kruskal’s Minimum Spanning Tree algorithm for unweighted networks.',
-        },
-        {
-          id: 'D',
-          text:
-            'Breadth-First Search (BFS) for binary search trees.',
-        },
-      ],
-      correctAnswer: 'A',
-      explanation:
-        'Economic flow pipelines model industry inputs and outputs as directed graphs. Kahn’s Topological Sort computes the valid execution schedule, while Tarjan’s Strongly Connected Components (SCC) algorithm isolates circular cyclic dependency loops.',
-    },
-  ];
-
-  // ============================================================
   // QUIZ STATE
   // ============================================================
+  // `questions` is now fetched from the real backend (see the useEffect
+  // above) -- routes/competency_quiz.py, backed by
+  // services/hand_authored_questions.py. Each question's `options` is a
+  // plain array of strings (not {id,text} objects); the letter shown in the
+  // UI (A/B/C/D) is just its array index, and `selectedAnswers` stores that
+  // numeric index, not a letter -- the real answer_index never reaches the
+  // client until after /submit grades it server-side.
 
   const currentQ = questions[currentQuestionIndex];
 
   const answeredCount = Object.keys(selectedAnswers).length;
 
-  const progressPercent = Math.round(
-    (answeredCount / questions.length) * 100
-  );
+  const progressPercent = questions.length
+    ? Math.round((answeredCount / questions.length) * 100)
+    : 0;
 
   // ============================================================
   // SELECT ANSWER
   // ============================================================
 
-  const handleSelectOption = (optionId) => {
-    if (isSubmitted) return;
+  const handleSelectOption = (optionIndex) => {
+    if (isSubmitted || !currentQ) return;
 
     setSelectedAnswers({
       ...selectedAnswers,
-      [currentQ.id]: optionId,
+      [currentQ.item_id]: optionIndex,
     });
   };
 
   // ============================================================
-  // NEXT
+  // NEXT / PREVIOUS
   // ============================================================
 
   const handleNext = () => {
-    setShowExplanation(false);
-
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
 
-  // ============================================================
-  // PREVIOUS
-  // ============================================================
-
   const handlePrev = () => {
-    setShowExplanation(false);
-
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
   // ============================================================
-  // SUBMIT
+  // SUBMIT -- real server-side grading, one call per selected topic
   // ============================================================
 
-  const handleSubmitQuiz = () => {
-    setIsSubmitted(true);
+  const handleSubmitQuiz = async () => {
+    setSubmittingQuiz(true);
     setIsTimerRunning(false);
-  };
 
-  // ============================================================
-  // RESULTS
-  // ============================================================
+    try {
+      const byTopic = {};
+      questions.forEach((q) => {
+        if (selectedAnswers[q.item_id] === undefined) return;
+        (byTopic[q.topic_id] ||= []).push({
+          item_id: q.item_id,
+          selected_index: selectedAnswers[q.item_id],
+        });
+      });
 
-  const calculateResults = () => {
-    let correct = 0;
-    const dimensionScores = {};
+      const topicResults = await Promise.all(
+        Object.entries(byTopic).map(([topicId, answers]) =>
+          learning.submitCompetencyQuiz(topicId, answers)
+        )
+      );
 
-    questions.forEach((q) => {
-      const isCorrect = selectedAnswers[q.id] === q.correctAnswer;
+      const gradedByItemId = {};
+      const competencyScores = {};
+      let correct = 0;
+      let total = 0;
 
-      if (isCorrect) {
-        correct += 1;
+      topicResults.forEach((topicResult) => {
+        correct += topicResult.correct;
+        total += topicResult.total;
+        topicResult.graded_answers.forEach((g) => {
+          gradedByItemId[g.item_id] = g;
+        });
+        topicResult.competency_scores.forEach((c) => {
+          competencyScores[c.competency_id] = c;
+        });
+      });
+
+      const scorePercentage = total ? Math.round((correct / total) * 100) : 0;
+
+      // Feed the real gap-analysis engine with what was actually
+      // demonstrated, grouped by curriculum (see lib/competencyTopics.js --
+      // /learning/assessment takes one curriculum_slug per call). Framed
+      // honestly as an approximation in routes/competency_quiz.py's own
+      // docstring: this is demonstrated quiz performance sent through the
+      // self_ratings channel, not a real self-report.
+      if (officerProfile?.player_id) {
+        const slugs = new Set(selectedTopics.map((t) => t.curriculumSlug));
+        await Promise.all(
+          Array.from(slugs).map((slug) => {
+            const ratingsForSlug = Object.fromEntries(
+              Object.entries(competencyScores)
+                .filter(([id]) => selectedTopics.some((t) => t.curriculumSlug === slug && byTopicHasCompetency(byTopic, id)))
+                .map(([id, score]) => [id, score.level])
+            );
+            if (Object.keys(ratingsForSlug).length === 0) return null;
+            return learning.assess(officerProfile.player_id, slug, ratingsForSlug).catch((cause) => {
+              console.warn('[quiz] Could not persist assessment for', slug, cause.message);
+            });
+          })
+        );
       }
 
-      dimensionScores[q.dimensionKey] = {
-        name: q.dimension,
-        isCorrect,
-        level: isCorrect ? 4 : 2,
-        target: 4,
-      };
-    });
-
-    const scorePercentage = Math.round(
-      (correct / questions.length) * 100
-    );
-
-    return {
-      total: questions.length,
-      correct,
-      scorePercentage,
-      dimensionScores,
-      congruence: Math.min(95, Math.max(45, scorePercentage)),
-    };
+      setResults({
+        total,
+        correct,
+        scorePercentage,
+        congruence: Math.min(95, Math.max(45, scorePercentage)),
+        gradedByItemId,
+        competencyScores: Object.values(competencyScores),
+      });
+      setIsSubmitted(true);
+    } catch (cause) {
+      console.warn('[quiz] Could not grade the quiz:', cause.message);
+      setIsTimerRunning(true);
+    } finally {
+      setSubmittingQuiz(false);
+    }
   };
 
-  const results = isSubmitted ? calculateResults() : null;
+  // topic_id -> whether any of its answered items landed in this
+  // competency_id (used only to route self_ratings to the right curriculum).
+  function byTopicHasCompetency(byTopic, competencyId) {
+    return Object.keys(byTopic).some((topicId) =>
+      questions.some((q) => q.topic_id === topicId && q.competency_id === competencyId)
+    );
+  }
 
   // ============================================================
   // FINISH QUIZ
@@ -383,11 +258,40 @@ export default function CompetencyQuizPage({
         total: results.total,
         percentage: results.scorePercentage,
         congruence: results.congruence,
-        dimensionLevels: results.dimensionScores,
+        dimensionLevels: results.competencyScores,
         testedAt: new Date().toISOString(),
       },
     });
   };
+
+  // ============================================================
+  // LOADING / ERROR
+  // ============================================================
+
+  if (loadingQuestions) {
+    return (
+      <div className="min-h-screen w-full bg-[#f7f8fc] flex items-center justify-center px-4">
+        <p className="text-sm text-[#555d6d] font-mono">Preparing your competency assessment…</p>
+      </div>
+    );
+  }
+
+  if (loadError || questions.length === 0) {
+    return (
+      <div className="min-h-screen w-full bg-[#f7f8fc] flex flex-col items-center justify-center gap-4 px-4">
+        <p className="text-sm text-[#b3261e] font-mono text-center">
+          {loadError || 'No questions are available for the selected specialization yet.'}
+        </p>
+        <button
+          type="button"
+          onClick={onBackToProfile}
+          className="px-4 py-2.5 rounded-xl border border-[#dfe2eb] text-[#00236f] text-xs font-semibold hover:bg-[#f5f6fa]"
+        >
+          Back to profile
+        </button>
+      </div>
+    );
+  }
 
   // ============================================================
   // UI
@@ -543,13 +447,13 @@ export default function CompetencyQuizPage({
                     </span>
 
                     <span className="px-2.5 py-1 rounded-lg bg-[#fff1e7] text-[#904d00] font-mono text-[10px] font-bold">
-                      {currentQ.dimension}
+                      {currentQ.competency_label}
                     </span>
 
                   </div>
 
-                  <span className="font-mono text-[10px] text-[#8a8f9d]">
-                    {currentQ.code}
+                  <span className="font-mono text-[10px] text-[#8a8f9d] uppercase">
+                    {currentQ.difficulty}
                   </span>
 
                 </div>
@@ -581,9 +485,10 @@ export default function CompetencyQuizPage({
 
                     <span>
                       <span className="font-semibold text-[#626977]">
-                        Citation:
+                        Source:
                       </span>{' '}
-                      {currentQ.citation}
+                      {currentQ.doc_id}
+                      {currentQ.locator ? ` — ${currentQ.locator}` : ''}
                     </span>
                   </div>
 
@@ -593,15 +498,16 @@ export default function CompetencyQuizPage({
 
                 <div className="space-y-2.5">
 
-                  {currentQ.options.map((opt) => {
+                  {currentQ.options.map((optionText, optionIndex) => {
                     const isSelected =
-                      selectedAnswers[currentQ.id] === opt.id;
+                      selectedAnswers[currentQ.item_id] === optionIndex;
+                    const letter = String.fromCharCode(65 + optionIndex);
 
                     return (
                       <button
-                        key={opt.id}
+                        key={optionIndex}
                         type="button"
-                        onClick={() => handleSelectOption(opt.id)}
+                        onClick={() => handleSelectOption(optionIndex)}
                         className={`group w-full text-left p-3.5 sm:p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-start gap-3 ${
                           isSelected
                             ? 'bg-[#eef1ff] border-[#00236f] shadow-[0_3px_12px_rgba(0,35,111,0.08)]'
@@ -632,7 +538,7 @@ export default function CompetencyQuizPage({
                               : 'bg-white text-[#687080] border border-[#e1e4eb] group-hover:border-[#b7bdc9]'
                           }`}
                         >
-                          {opt.id}
+                          {letter}
                         </div>
 
                         {/* TEXT */}
@@ -644,7 +550,7 @@ export default function CompetencyQuizPage({
                               : 'text-[#252c3c]'
                           }`}
                         >
-                          {opt.text}
+                          {optionText}
                         </span>
 
                       </button>
@@ -652,28 +558,6 @@ export default function CompetencyQuizPage({
                   })}
 
                 </div>
-
-                {/* EXPLANATION */}
-
-                {showExplanation && (
-                  <div className="mt-4 p-4 rounded-xl bg-[#f7f8fc] border border-[#dfe2eb]">
-
-                    <div className="flex items-center gap-2 text-xs font-bold text-[#00236f] mb-2">
-                      <div className="w-6 h-6 rounded-lg bg-[#e8ecff] flex items-center justify-center">
-                        <Info size={14} strokeWidth={2.2} />
-                      </div>
-
-                      <span>
-                        Official Gazette Statistical Standard
-                      </span>
-                    </div>
-
-                    <p className="text-[11px] text-[#606777] leading-6 font-mono">
-                      {currentQ.explanation}
-                    </p>
-
-                  </div>
-                )}
 
                 {/* NAVIGATION */}
 
@@ -689,18 +573,6 @@ export default function CompetencyQuizPage({
                     >
                       <ArrowLeft size={14} />
                       Previous
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowExplanation(!showExplanation)
-                      }
-                      className="px-3.5 py-2.5 rounded-xl bg-[#f5f6fb] text-[#00236f] text-[11px] font-mono font-semibold hover:bg-[#e9edff] transition-all cursor-pointer"
-                    >
-                      {showExplanation
-                        ? 'Hide Rationale'
-                        : 'View Rationale'}
                     </button>
 
                   </div>
@@ -722,10 +594,11 @@ export default function CompetencyQuizPage({
                     <button
                       type="button"
                       onClick={handleSubmitQuiz}
-                      className="bg-[#904d00] hover:bg-[#733d00] text-white px-5 py-2.5 rounded-xl text-[11px] font-bold font-mono transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                      disabled={submittingQuiz}
+                      className="bg-[#904d00] hover:bg-[#733d00] text-white px-5 py-2.5 rounded-xl text-[11px] font-bold font-mono transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <BadgeCheck size={16} />
-                      Submit Assessment
+                      {submittingQuiz ? 'Grading…' : 'Submit Assessment'}
                     </button>
 
                   )}
@@ -772,16 +645,13 @@ export default function CompetencyQuizPage({
                       idx === currentQuestionIndex;
 
                     const isAnswered =
-                      selectedAnswers[q.id] !== undefined;
+                      selectedAnswers[q.item_id] !== undefined;
 
                     return (
                       <button
-                        key={q.id}
+                        key={q.item_id}
                         type="button"
-                        onClick={() => {
-                          setShowExplanation(false);
-                          setCurrentQuestionIndex(idx);
-                        }}
+                        onClick={() => setCurrentQuestionIndex(idx)}
                         className={`relative py-3 px-3 rounded-xl text-[11px] font-mono font-bold transition-all flex items-center justify-between cursor-pointer ${
                           isCurrent
                             ? 'bg-[#00236f] text-white shadow-md'
@@ -981,7 +851,7 @@ export default function CompetencyQuizPage({
                     </h3>
 
                     <p className="text-[10px] text-[#858b98] font-mono mt-0.5">
-                      Across 6 MoSPI Dimensions
+                      Across {results.competencyScores.length} Competency Dimensions
                     </p>
 
                   </div>
@@ -992,16 +862,23 @@ export default function CompetencyQuizPage({
 
                   {questions.map((q) => {
 
-                    const isCorrect =
-                      selectedAnswers[q.id] === q.correctAnswer;
-
+                    const graded = results.gradedByItemId[q.item_id];
+                    const isCorrect = Boolean(graded?.correct);
                     const assignedLevel = isCorrect
                       ? 'Level 4 / 5'
                       : 'Level 2 / 5';
+                    const selectedIndex = selectedAnswers[q.item_id];
+                    const selectedLetter =
+                      selectedIndex !== undefined
+                        ? String.fromCharCode(65 + selectedIndex)
+                        : 'Skipped';
+                    const correctLetter = graded
+                      ? String.fromCharCode(65 + graded.correct_index)
+                      : '';
 
                     return (
                       <div
-                        key={q.id}
+                        key={q.item_id}
                         className={`p-4 rounded-xl border transition-all ${
                           isCorrect
                             ? 'bg-[#f1fbf9] border-[#b8e4dc]'
@@ -1012,7 +889,7 @@ export default function CompetencyQuizPage({
                         <div className="flex items-start justify-between gap-2 mb-3">
 
                           <span className="font-bold text-[11px] text-[#172033] leading-5">
-                            {q.dimension}
+                            {q.competency_label}
                           </span>
 
                           <span
@@ -1047,7 +924,7 @@ export default function CompetencyQuizPage({
                             </span>
 
                             <span className="text-[#333a49]">
-                              {selectedAnswers[q.id] || 'Skipped'}
+                              {selectedLetter}
                             </span>
                           </div>
 
@@ -1062,7 +939,7 @@ export default function CompetencyQuizPage({
                             >
                               {isCorrect
                                 ? 'Correct response'
-                                : `Correct answer: ${q.correctAnswer}`}
+                                : `Correct answer: ${correctLetter}`}
                             </span>
 
                           </div>
@@ -1111,8 +988,8 @@ export default function CompetencyQuizPage({
                   <strong>
                     {officerProfile?.designation}
                   </strong>
-                  ), the sovereign inference engine has generated
-                  an initial vector congruence of{' '}
+                  ), this baseline places your initial vector
+                  congruence at{' '}
                   <strong className="text-[#00236f]">
                     {results.congruence}%
                   </strong>{' '}
@@ -1126,29 +1003,29 @@ export default function CompetencyQuizPage({
 
                 <ul className="space-y-2 text-[10px] text-[#252c3c] font-mono">
 
-                  <li className="flex gap-2">
-                    <span className="text-[#005147]">✓</span>
-                    <span>
-                      NSSO Sampling & Weighting modules have been
-                      added to your iGOT prerequisite pathways.
-                    </span>
-                  </li>
-
-                  <li className="flex gap-2">
-                    <span className="text-[#005147]">✓</span>
-                    <span>
-                      PySpark and Large-Scale Wrangling cluster
-                      practice scenarios staged in Adaptive Practice.
-                    </span>
-                  </li>
-
-                  <li className="flex gap-2">
-                    <span className="text-[#005147]">✓</span>
-                    <span>
-                      DPDP Act 2023 Statutory Compliance badge
-                      logged in your official dossier.
-                    </span>
-                  </li>
+                  {results.competencyScores
+                    .slice()
+                    .sort((a, b) => a.level - b.level)
+                    .map((score) => (
+                      <li key={score.competency_id} className="flex gap-2">
+                        <span
+                          className={
+                            score.level >= 3
+                              ? 'text-[#005147]'
+                              : 'text-[#904d00]'
+                          }
+                        >
+                          {score.level >= 3 ? '✓' : '△'}
+                        </span>
+                        <span>
+                          {score.competency_label}: {score.correct}/{score.total} correct
+                          {' '}(Level {score.level} / 5) —{' '}
+                          {score.level >= 3
+                            ? 'demonstrated on this baseline.'
+                            : 'flagged as a gap for your learning pathway.'}
+                        </span>
+                      </li>
+                    ))}
 
                 </ul>
 

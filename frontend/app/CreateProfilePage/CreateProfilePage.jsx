@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import { learning } from '@/lib/api/client';
+import { COMPETENCY_TOPICS, TOPIC_BY_LABEL } from '@/lib/competencyTopics';
 
 export default function CreateProfilePage({
   initialProfile,
@@ -53,14 +55,13 @@ export default function CreateProfilePage({
   const [specializations, setSpecializations] =
     useState(
       initialProfile?.specialization || [
-        'Sampling Design',
-        'Econometric Forecasting',
-        'PySpark & Distributed SQL',
+        COMPETENCY_TOPICS[0].label,
       ]
     );
 
   const [validationError, setValidationError] =
     useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const designationOptions = [
     {
@@ -124,32 +125,16 @@ export default function CreateProfilePage({
     'Computer Centre & Sovereign Cloud Infrastructure — New Delhi',
   ];
 
-  const domainSpecialtyList = [
-    {
-      id: 'sampling',
-      label: 'NSSO Sampling Design & Weighting',
-    },
-    {
-      id: 'econometrics',
-      label: 'Econometric Forecasting & Time-Series',
-    },
-    {
-      id: 'pyspark',
-      label: 'PySpark & Large-Scale SQL Wrangling',
-    },
-    {
-      id: 'dpdp',
-      label: 'DPDP Act 2023 & Sovereign Cloud Security',
-    },
-    {
-      id: 'dist_ml',
-      label: 'Distributed ML & Imputation Systems',
-    },
-    {
-      id: 'dsa',
-      label: 'Algorithms & Graph Theory (DSA)',
-    },
-  ];
+  // Real backend topics only (lib/competencyTopics.js) -- each one has
+  // actual, source-cited questions behind it (routes/competency_quiz.py).
+  // Earlier versions of this list included specialties like "PySpark" and
+  // "Algorithms & Graph Theory" that had no real quiz content at all behind
+  // them; picking one of those would have silently produced fabricated or
+  // empty results, which is exactly what this project's own culture forbids.
+  const domainSpecialtyList = COMPETENCY_TOPICS.map((topic) => ({
+    id: topic.id,
+    label: topic.label,
+  }));
 
   const handleDesignationChange = (newDesig) => {
     setDesignation(newDesig);
@@ -197,7 +182,30 @@ export default function CreateProfilePage({
       .toUpperCase();
   };
 
-  const handleSubmit = (e) => {
+  // Best-effort mapping from this form's free-text fields to
+  // models.learning.LearnerProfile's real schema (backend/schemas/learning.py)
+  // -- this form collects richer cadre-specific context than that schema
+  // models, so this is a reasonable approximation, not a lossless mapping.
+  function parseYearsExperience(text) {
+    const match = /(\d+)/.exec(text || '');
+    return match ? Number(match[1]) : 0;
+  }
+
+  function deriveExperienceLevel(designationLabel) {
+    const seniorityByBand = {
+      'Junior Statistical Officer (JSO)': 'beginner',
+      'Statistical Research Fellow': 'beginner',
+      'Senior Statistical Officer (SSO)': 'intermediate',
+      'Assistant Director': 'intermediate',
+      'Deputy Director': 'advanced',
+      'Data Science & Big Data Specialist': 'advanced',
+      'Joint Director': 'expert',
+      'Director — National Accounts': 'expert',
+    };
+    return seniorityByBand[designationLabel] || 'intermediate';
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setValidationError('');
 
@@ -242,6 +250,8 @@ export default function CreateProfilePage({
     const updatedProfile = {
       name: name.trim(),
       email: email.trim(),
+      player_id: initialProfile?.player_id,
+      username: initialProfile?.username,
       cadreId: cadreId.trim(),
       designation,
       division,
@@ -255,6 +265,39 @@ export default function CreateProfilePage({
       isRegistered: true,
       registeredAt: new Date().toISOString(),
     };
+
+    // Persist to the real backend profile so /academy, the gap-analysis
+    // engine and this player's record all see the same data -- not just
+    // this component's local state. Best-effort: if the player_id is
+    // missing (shouldn't happen once login is wired up) or the backend call
+    // fails, still proceed to the quiz rather than blocking a demo flow on
+    // a network hiccup; the quiz itself only needs player_id, which we
+    // already have from login.
+    if (updatedProfile.player_id) {
+      setSubmitting(true);
+      try {
+        await learning.updateProfile(updatedProfile.player_id, {
+          designation,
+          department: division,
+          job_role: specializations.join(', '),
+          current_assignment: `${division} (Cadre ID: ${cadreId.trim()})`,
+          educational_qualifications: '',
+          years_experience: parseYearsExperience(yearsOfService),
+          previous_trainings: [],
+          career_goal: targetBand,
+          preferred_language: 'English',
+          experience_level: deriveExperienceLevel(designation),
+          target_domains: Array.from(
+            new Set(specializations.map((label) => TOPIC_BY_LABEL[label]?.curriculumSlug).filter(Boolean))
+          ),
+        });
+      } catch (cause) {
+        // Non-fatal -- see comment above.
+        console.warn('[profile] Could not persist to the backend, continuing anyway:', cause.message);
+      } finally {
+        setSubmitting(false);
+      }
+    }
 
     if (onSaveAndProceedToQuiz) {
       onSaveAndProceedToQuiz(updatedProfile);
@@ -689,9 +732,10 @@ export default function CreateProfilePage({
 
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-[#00236f] px-6 py-3 text-xs font-bold text-white shadow-[0_6px_18px_rgba(0,35,111,0.18)] transition hover:bg-[#00358f] sm:w-auto"
+                  disabled={submitting}
+                  className="w-full rounded-xl bg-[#00236f] px-6 py-3 text-xs font-bold text-white shadow-[0_6px_18px_rgba(0,35,111,0.18)] transition hover:bg-[#00358f] sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Save Profile & Take Baseline Quiz
+                  {submitting ? 'Saving…' : 'Save Profile & Take Baseline Quiz'}
                 </button>
 
               </div>

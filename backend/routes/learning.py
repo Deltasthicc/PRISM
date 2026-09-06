@@ -14,6 +14,7 @@ from routes.learning_competency import (
 from routes.learning_content import create_quiz, list_quizzes, router as content_router
 from routes.learning_integration import get_integration_status, router as integration_router
 from routes.learning_profile import get_profile, router as profile_router, upsert_profile
+from routes.competency_quiz import router as competency_quiz_router
 
 router = APIRouter()
 router.include_router(profile_router)
@@ -21,6 +22,7 @@ router.include_router(competency_router)
 router.include_router(content_router)
 router.include_router(integration_router)
 router.include_router(analytics_router)
+router.include_router(competency_quiz_router)
 
 __all__ = [
     "admin_overview",

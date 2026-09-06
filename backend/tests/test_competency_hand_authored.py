@@ -1,5 +1,15 @@
-"""Hand-transcribed MCQs for the two scanned UPSC page-image documents that
-services.competency_docs.extract_document_text() cannot read automatically.
+"""Hand-transcribed/hand-authored MCQs layered on top of the document corpus.
+
+Two different reasons a doc_id ends up here, both covered below:
+1. The two scanned UPSC page-image PDFs, which
+   services.competency_docs.extract_document_text() cannot read automatically
+   at all (no embedded text layer) -- these are verbatim transcriptions.
+2. A handful of real, text-extractable corpus documents (dpdp_act_2023,
+   niti_ai_strategy, cpi_manual_2010) chosen for the live competency-quiz
+   route's reliability: quiz_from_document() depends on a live network fetch
+   per request, which is a real risk for a demo; these hand-authored items
+   guarantee every quiz topic has fast, offline-capable, still genuinely
+   sourced content regardless of network conditions.
 
 Network is never required -- these are pure in-repo data, unlike
 test_competency_role_docs.py's one live-fetch test.
@@ -22,6 +32,8 @@ KNOWN_COMPETENCIES = {
 }
 
 UPSC_DOC_IDS = {"upsc_csm26_statistics_p1", "upsc_csm26_statistics_p2"}
+RELIABILITY_DOC_IDS = {"dpdp_act_2023", "niti_ai_strategy", "cpi_manual_2010"}
+ALL_HAND_AUTHORED_DOC_IDS = UPSC_DOC_IDS | RELIABILITY_DOC_IDS
 
 
 def test_both_upsc_documents_are_registered_in_the_corpus():
@@ -37,10 +49,11 @@ def test_upsc_documents_carry_an_extraction_note_explaining_the_scanned_gap():
         assert "hand_authored_questions" in record["extraction_note"]
 
 
-def test_hand_authored_doc_ids_matches_the_scanned_upsc_documents():
+def test_hand_authored_doc_ids_covers_scanned_docs_and_reliability_docs():
     # Confirms the hand-authored path exists precisely for the documents that
-    # need it, not some other subset.
-    assert hand_authored_doc_ids() == UPSC_DOC_IDS
+    # need it (scanned) or that the quiz route deliberately pins for
+    # reliability -- not some arbitrary, unbounded subset.
+    assert hand_authored_doc_ids() == ALL_HAND_AUTHORED_DOC_IDS
 
 
 @pytest.mark.parametrize("doc_id", sorted(UPSC_DOC_IDS))
@@ -52,7 +65,7 @@ def test_every_item_references_a_real_corpus_document(doc_id):
 
 
 def test_every_item_has_a_valid_shape():
-    for doc_id in UPSC_DOC_IDS:
+    for doc_id in ALL_HAND_AUTHORED_DOC_IDS:
         for item in questions_for_doc(doc_id):
             assert len(item["options"]) == 4
             assert len(set(item["options"])) == 4, f"{item['item_id']}: duplicate options"
@@ -63,6 +76,19 @@ def test_every_item_has_a_valid_shape():
             )
             assert len(item["explanation"]) > 20
             assert len(item["source_excerpt"]) > 10
+
+
+def test_answer_index_is_not_degenerate_across_the_whole_bank():
+    # Regression guard: every item was originally hand-written with the
+    # correct option listed first (answer_index == 0 for all 21 items before
+    # a deterministic per-item shuffle fixed it), which would have let an
+    # "always pick the first option" strategy score 100% on any of these
+    # quizzes -- a real flaw a competency assessment cannot have. This does
+    # not require a perfectly uniform distribution, just that no single
+    # index accounts for every item.
+    all_items = [item for doc_id in ALL_HAND_AUTHORED_DOC_IDS for item in questions_for_doc(doc_id)]
+    indexes = {item["answer_index"] for item in all_items}
+    assert len(indexes) > 1, "every item has the same answer_index -- the bank is guessable"
 
 
 def test_no_duplicate_item_ids():
@@ -111,7 +137,7 @@ def test_quiz_from_hand_authored_rejects_unknown_doc_id():
 
 
 def test_quiz_from_hand_authored_rejects_a_known_doc_with_no_hand_authored_items():
-    # niti_ai_strategy is real (in the corpus) but has no hand-authored items --
+    # sif_guideline is real (in the corpus) but has no hand-authored items --
     # must fail closed, not silently return an empty quiz.
     with pytest.raises(DocumentUnavailable):
-        quiz_from_hand_authored("niti_ai_strategy")
+        quiz_from_hand_authored("sif_guideline")

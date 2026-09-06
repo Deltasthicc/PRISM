@@ -3,11 +3,15 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { useAuthStore } from '@/store/useAuthStore';
 import CreateProfilePage from '../CreateProfilePage/CreateProfilePage';
 import CompetencyQuizPage from '../CompetencyQuizPage/CompetencyQuizPage';
+import { COMPETENCY_TOPICS } from '@/lib/competencyTopics';
 
 export default function LoginPage() {
   const router = useRouter();
+  const authLogin = useAuthStore((s) => s.login);
+  const authRegister = useAuthStore((s) => s.register);
 
   // login → profile → quiz
   const [currentStep, setCurrentStep] = useState('login');
@@ -18,11 +22,29 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  // Demo login: this is a placeholder page with no real credential check --
+  // any non-empty email/password combination is accepted, matching this
+  // project's actual auth model right now (backend DISABLE_AUTH grants every
+  // request full access; see routes/authorization.py). What *does* need to
+  // be real is the player_id behind it: the email is used as a stable
+  // backend username so /stats, /academy and the competency quiz below all
+  // have a genuine player record to read and write, instead of the previous
+  // flow which only ever set local React state and never touched the real
+  // auth store -- that mismatch (useRequireAuth() always seeing no player)
+  // was the actual cause of the login loop.
+  async function resolveRealPlayer(usernameSeed) {
+    const username = usernameSeed.trim().toLowerCase();
+    let ok = await authLogin(username);
+    if (!ok) ok = await authRegister(username);
+    return ok ? useAuthStore.getState().player : null;
+  }
 
   /*
    * LOGIN
    */
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoginError('');
 
@@ -31,14 +53,20 @@ export default function LoginPage() {
       return;
     }
 
-    /*
-     * Demo authenticated user.
-     *
-     * Replace this with your real authentication logic later.
-     */
+    setSubmitting(true);
+    const realPlayer = await resolveRealPlayer(email);
+    setSubmitting(false);
+
+    if (!realPlayer) {
+      setLoginError('Could not reach the backend. Please try again.');
+      return;
+    }
+
     const loggedInProfile = {
       name: 'Dr. Rajesh Sharma',
       email: email.trim(),
+      player_id: realPlayer.player_id,
+      username: realPlayer.username,
       cadreId: 'IND-88219',
       designation: 'Assistant Director',
       division: 'CSO Analytics & National Accounts',
@@ -47,11 +75,7 @@ export default function LoginPage() {
       yearsOfService: '5-10 years',
       targetBand: 'Director — National Accounts (Band 4)',
       phone: '+91 98101 23456',
-      specialization: [
-        'Sampling Design',
-        'Econometric Forecasting',
-        'PySpark & Distributed SQL',
-      ],
+      specialization: COMPETENCY_TOPICS.slice(0, 3).map((topic) => topic.label),
       avatarInitials: 'RS',
       isRegistered: false,
     };
@@ -247,9 +271,10 @@ export default function LoginPage() {
               {/* Login */}
               <button
                 type="submit"
-                className="w-full rounded-xl bg-[#00236f] px-5 py-3 text-xs font-bold text-white shadow-[0_6px_18px_rgba(0,35,111,0.18)] transition hover:bg-[#00358f]"
+                disabled={submitting}
+                className="w-full rounded-xl bg-[#00236f] px-5 py-3 text-xs font-bold text-white shadow-[0_6px_18px_rgba(0,35,111,0.18)] transition hover:bg-[#00358f] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In
+                {submitting ? 'Signing in…' : 'Sign In'}
               </button>
 
             </form>
@@ -266,16 +291,28 @@ export default function LoginPage() {
             {/* Profile Setup */}
             <button
               type="button"
-              onClick={() => {
+              disabled={submitting}
+              onClick={async () => {
                 /*
-                 * If the user hasn't logged in yet,
-                 * create the basic profile object so
-                 * CreateProfilePage has initial values.
+                 * This shortcut skips the login form entirely, but it must
+                 * still resolve to a real backend player -- same reasoning
+                 * as handleLogin above. Uses whatever email the user may
+                 * have already typed, or a generated demo identity otherwise.
                  */
                 if (!officerProfile) {
+                  setSubmitting(true);
+                  const seed = email.trim() || `demo-officer-${Date.now()}`;
+                  const realPlayer = await resolveRealPlayer(seed);
+                  setSubmitting(false);
+                  if (!realPlayer) {
+                    setLoginError('Could not reach the backend. Please try again.');
+                    return;
+                  }
                   setOfficerProfile({
                     name: 'Dr. Rajesh Sharma',
-                    email: email.trim(),
+                    email: seed,
+                    player_id: realPlayer.player_id,
+                    username: realPlayer.username,
                     cadreId: 'IND-88219',
                     designation: 'Assistant Director',
                     division:
@@ -299,7 +336,7 @@ export default function LoginPage() {
 
                 setCurrentStep('profile');
               }}
-              className="w-full rounded-xl border border-[#dfe2eb] bg-white px-5 py-3 text-xs font-semibold text-[#00236f] transition hover:border-[#bfc7df] hover:bg-[#f8f9ff]"
+              className="w-full rounded-xl border border-[#dfe2eb] bg-white px-5 py-3 text-xs font-semibold text-[#00236f] transition hover:border-[#bfc7df] hover:bg-[#f8f9ff] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Profile Setup
             </button>

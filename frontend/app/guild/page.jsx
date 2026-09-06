@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Play, RotateCcw, Cloud, Download, Terminal, CircleHelp, Database, CircleCheck, PartyPopper } from 'lucide-react';
+import { Play, RotateCcw, Cloud, Download, Terminal, CircleHelp, Database, CircleCheck, PartyPopper, Award } from 'lucide-react';
 
 export default function AdaptivePracticeDsaQuest({ onNavigate = () => {} } = {}) {
   const [selectedLang, setSelectedLang] = useState('Python 3.11 (Pyodide)');
@@ -136,7 +136,7 @@ export default function AdaptivePracticeDsaQuest({ onNavigate = () => {} } = {})
 
         {toastMessage && (
           <div className="px-4 py-2.5 bg-[#dce1ff] text-[#00164e] rounded-lg text-xs font-mono flex items-center gap-2 border border-[#b6c4ff] shadow-sm animate-in fade-in duration-200">
-            <span className="material-symbols-outlined text-[18px] text-[#00236f]">military_tech</span>
+            <Award size={18} className="text-[#00236f]" />
             <span>{toastMessage}</span>
           </div>
         )}

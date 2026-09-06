@@ -1,15 +1,33 @@
 'use client';
 
-import { useAuthStore } from '@/store/useAuthStore';
+import { usePathname } from 'next/navigation';
 
-/** Reserves space for NavBar's fixed two-row height only while it's actually
- * rendered (NavBar hides itself when unauthenticated -- see NavBar.jsx) --
- * otherwise /login and /register would carry a large empty gap at the top. */
+import NavBar from '@/components/NavBar';
+import Footer from '@/components/Footer';
+
 export default function MainShell({ children }) {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const pathname = usePathname();
+
+  // Login should have NO navbar, footer, or the 180px top spacing.
+  const isLoginPage = pathname === '/login';
+
+  if (isLoginPage) {
+    return (
+      <main className="w-full">
+        {children}
+      </main>
+    );
+  }
+
   return (
-    <main className={`max-w-6xl mx-auto px-4 py-6 ${isAuthenticated ? 'pt-[180px]' : ''}`}>
-      {children}
-    </main>
+    <>
+      <NavBar />
+
+      <main className="max-w-6xl mx-auto px-4 py-6 pt-[180px]">
+        {children}
+      </main>
+
+      <Footer />
+    </>
   );
 }

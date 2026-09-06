@@ -1,87 +1,319 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuthStore } from '@/store/useAuthStore';
 
-// The shared Render-hosted Keycloak spins down after periods of no traffic,
-// and a cold boot has been measured taking several minutes. Without this,
-// a cold-start login just sits on "Signing in..." with no explanation --
-// which reads as a broken/looping login rather than a slow one. This nudges
-// in only once the wait is already unusual for a warm instance.
-const SLOW_LOGIN_HINT_MS = 8000;
+import CreateProfilePage from '../CreateProfilePage/CreateProfilePage';
+import CompetencyQuizPage from '../CompetencyQuizPage/CompetencyQuizPage';
 
 export default function LoginPage() {
   const router = useRouter();
-  const login = useAuthStore((s) => s.login);
-  const error = useAuthStore((s) => s.error);
-  const clearError = useAuthStore((s) => s.clearError);
-  const [username, setUsername] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [slowHint, setSlowHint] = useState(false);
-  const slowHintTimer = useRef(null);
 
-  useEffect(() => () => clearTimeout(slowHintTimer.current), []);
+  // login → profile → quiz
+  const [currentStep, setCurrentStep] = useState('login');
 
-  async function handleSubmit(e) {
+  // Stores the profile throughout the workflow
+  const [officerProfile, setOfficerProfile] = useState(null);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  /*
+   * LOGIN
+   */
+  const handleLogin = (e) => {
     e.preventDefault();
-    clearError();
-    setSubmitting(true);
-    setSlowHint(false);
-    slowHintTimer.current = setTimeout(() => setSlowHint(true), SLOW_LOGIN_HINT_MS);
-    const ok = await login(username);
-    clearTimeout(slowHintTimer.current);
-    setSlowHint(false);
-    setSubmitting(false);
-    if (ok) router.push('/academy');
+    setLoginError('');
+
+    if (!email.trim() || !password.trim()) {
+      setLoginError('Please enter your email and password.');
+      return;
+    }
+
+    /*
+     * Demo authenticated user.
+     *
+     * Replace this with your real authentication logic later.
+     */
+    const loggedInProfile = {
+      name: 'Dr. Rajesh Sharma',
+      email: email.trim(),
+      cadreId: 'IND-88219',
+      designation: 'Assistant Director',
+      division: 'CSO Analytics & National Accounts',
+      cadreStream: 'Indian Statistical Service (ISS)',
+      cadre: 'Cadre Band 3',
+      yearsOfService: '5-10 years',
+      targetBand: 'Director — National Accounts (Band 4)',
+      phone: '+91 98101 23456',
+      specialization: [
+        'Sampling Design',
+        'Econometric Forecasting',
+        'PySpark & Distributed SQL',
+      ],
+      avatarInitials: 'RS',
+      isRegistered: false,
+    };
+
+    setOfficerProfile(loggedInProfile);
+
+    // After login → Profile Setup
+    setCurrentStep('profile');
+  };
+
+  /*
+   * PROFILE SETUP → BASELINE QUIZ
+   */
+  const handleProfileComplete = (profile) => {
+    setOfficerProfile(profile);
+
+    // Immediately move to competency baseline quiz
+    setCurrentStep('quiz');
+  };
+
+  /*
+   * QUIZ COMPLETE → DASHBOARD
+   */
+  const handleQuizComplete = (completedProfile) => {
+    setOfficerProfile(completedProfile);
+
+    /*
+     * The quiz component already adds:
+     *
+     * quizResults: {
+     *   score,
+     *   total,
+     *   percentage,
+     *   congruence,
+     *   dimensionLevels,
+     *   testedAt
+     * }
+     *
+     * Now send the completed profile to the dashboard.
+     */
+
+    // Optional: persist the completed profile
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        'officerProfile',
+        JSON.stringify(completedProfile)
+      );
+    }
+
+    router.push('/stats');
+  };
+
+  /*
+   * ============================================================
+   * STEP 2 — PROFILE SETUP
+   * ============================================================
+   */
+  if (currentStep === 'profile') {
+    return (
+      <CreateProfilePage
+        initialProfile={officerProfile}
+        onBackToLogin={() => {
+          setCurrentStep('login');
+        }}
+        onSaveAndProceedToQuiz={handleProfileComplete}
+      />
+    );
   }
 
+  /*
+   * ============================================================
+   * STEP 3 — COMPETENCY BASELINE QUIZ
+   * ============================================================
+   */
+  if (currentStep === 'quiz') {
+    return (
+      <CompetencyQuizPage
+        officerProfile={officerProfile}
+        onBackToProfile={() => {
+          setCurrentStep('profile');
+        }}
+        onBackToLogin={() => {
+          setCurrentStep('login');
+        }}
+        onCompleteQuizAndLaunchDashboard={
+          handleQuizComplete
+        }
+      />
+    );
+  }
+
+  /*
+   * ============================================================
+   * STEP 1 — LOGIN
+   * ============================================================
+   */
   return (
-    <div className="flex justify-center pt-16">
-      <div className="w-full max-w-sm bg-white border border-[#c5c5d3]/40 rounded-xl shadow-sm p-6">
-        <h1 className="font-sans text-lg font-bold text-[#00236f] mb-1 text-center">Sign in</h1>
-        <p className="font-sans text-sm text-[#757682] mb-6 text-center">
-          Username only for now — no password yet.
-        </p>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <label className="flex flex-col gap-1.5">
-            <span className="font-sans text-xs font-semibold text-[#444651]">Username</span>
-            <input
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              autoComplete="username"
-              autoFocus
-              className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f]"
-            />
-          </label>
-          {error && (
-            <p className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2">
-              {error}
-            </p>
-          )}
-          {submitting && slowHint && (
-            <p className="font-sans text-sm text-[#00236f] bg-[#eef1fb] border border-[#c5d0f5] rounded-lg px-3 py-2">
-              Still working — the sign-in service can take a few minutes to wake up after being idle. No need to retry, this should finish on its own.
-            </p>
-          )}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-2 font-sans text-sm font-semibold px-4 py-2.5 rounded-lg bg-[#00236f] text-white hover:bg-[#001a54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {submitting ? 'Signing in…' : 'Sign in'}
-          </button>
-        </form>
-        <p className="font-sans text-sm text-[#757682] text-center mt-5">
-          New here?{' '}
-          <Link href="/register" className="text-[#00236f] font-medium hover:underline">
-            Create an account
-          </Link>
-        </p>
+    <main className="min-h-screen bg-[#f7f8fc] px-4 py-8 sm:px-6">
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+
+        <div className="w-full max-w-md">
+
+          {/* LOGIN CARD */}
+          <div className="rounded-2xl border border-[#dfe2eb] bg-white p-6 shadow-sm sm:p-8">
+
+            {/* Header */}
+            <div className="mb-7">
+
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#757987]">
+                MoSPI Skill Intelligence
+              </p>
+
+              <h1 className="text-2xl font-bold tracking-tight text-[#00236f]">
+                Officer Login
+              </h1>
+
+              <p className="mt-2 text-xs leading-5 text-[#707382]">
+                Sign in to access your competency profile,
+                baseline assessment, and personalized learning
+                pathway.
+              </p>
+
+            </div>
+
+            {/* Error */}
+            {loginError && (
+              <div className="mb-5 rounded-xl border border-[#ffc8c3] bg-[#fff4f2] p-3 text-xs text-[#93000a]">
+                {loginError}
+              </div>
+            )}
+
+            {/* Login Form */}
+            <form
+              onSubmit={handleLogin}
+              className="space-y-5"
+            >
+
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-1.5 block text-[10px] font-bold text-[#343846]"
+                >
+                  Official Email Address
+                </label>
+
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
+                  placeholder="rajesh.sharma@mospi.gov.in"
+                  className="w-full rounded-xl border border-[#dfe2eb] bg-[#fafbfc] px-3 py-3 text-xs text-[#202536] outline-none transition hover:border-[#cdd2df] hover:bg-white focus:border-[#00236f] focus:bg-white focus:ring-4 focus:ring-[#00236f]/5"
+                  required
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <div className="mb-1.5 flex items-center justify-between">
+
+                  <label
+                    htmlFor="password"
+                    className="text-[10px] font-bold text-[#343846]"
+                  >
+                    Password
+                  </label>
+
+                  <button
+                    type="button"
+                    className="text-[10px] font-semibold text-[#00236f] hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+
+                </div>
+
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
+                  placeholder="Enter your password"
+                  className="w-full rounded-xl border border-[#dfe2eb] bg-[#fafbfc] px-3 py-3 text-xs text-[#202536] outline-none transition hover:border-[#cdd2df] hover:bg-white focus:border-[#00236f] focus:bg-white focus:ring-4 focus:ring-[#00236f]/5"
+                  required
+                />
+              </div>
+
+              {/* Login */}
+              <button
+                type="submit"
+                className="w-full rounded-xl bg-[#00236f] px-5 py-3 text-xs font-bold text-white shadow-[0_6px_18px_rgba(0,35,111,0.18)] transition hover:bg-[#00358f]"
+              >
+                Sign In
+              </button>
+
+            </form>
+
+            {/* Divider */}
+            <div className="my-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-[#edf0f5]" />
+              <span className="text-[9px] font-semibold uppercase tracking-wide text-[#999ca8]">
+                New officer
+              </span>
+              <div className="h-px flex-1 bg-[#edf0f5]" />
+            </div>
+
+            {/* Profile Setup */}
+            <button
+              type="button"
+              onClick={() => {
+                /*
+                 * If the user hasn't logged in yet,
+                 * create the basic profile object so
+                 * CreateProfilePage has initial values.
+                 */
+                if (!officerProfile) {
+                  setOfficerProfile({
+                    name: 'Dr. Rajesh Sharma',
+                    email: email.trim(),
+                    cadreId: 'IND-88219',
+                    designation: 'Assistant Director',
+                    division:
+                      'CSO Analytics & National Accounts',
+                    cadreStream:
+                      'Indian Statistical Service (ISS)',
+                    cadre: 'Cadre Band 3',
+                    yearsOfService: '5-10 years',
+                    targetBand:
+                      'Director — National Accounts (Band 4)',
+                    phone: '+91 98101 23456',
+                    specialization: [
+                      'Sampling Design',
+                      'Econometric Forecasting',
+                      'PySpark & Distributed SQL',
+                    ],
+                    avatarInitials: 'RS',
+                    isRegistered: false,
+                  });
+                }
+
+                setCurrentStep('profile');
+              }}
+              className="w-full rounded-xl border border-[#dfe2eb] bg-white px-5 py-3 text-xs font-semibold text-[#00236f] transition hover:border-[#bfc7df] hover:bg-[#f8f9ff]"
+            >
+              Profile Setup
+            </button>
+
+          </div>
+
+          {/* Footer text */}
+          <p className="mt-5 text-center text-[9px] leading-4 text-[#858895]">
+            Secure officer authentication and competency
+            assessment workflow
+          </p>
+
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

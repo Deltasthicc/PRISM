@@ -7,6 +7,22 @@ const CONFIDENCE_TONE = {
   moderate: { bg: 'bg-[#dce1ff]/30', text: 'text-[#00236f]', border: 'border-[#b6c4ff]' },
 };
 
+const CONFIDENCE_KEY = { none: 'confidenceNone', low: 'confidenceLow', moderate: 'confidenceModerate' };
+const PRIORITY_KEY = {
+  unassessed: 'priorityUnassessed',
+  critical: 'priorityCritical',
+  high: 'priorityHigh',
+  medium: 'priorityMedium',
+  maintain: 'priorityMaintain',
+};
+const EVIDENCE_TYPE_KEY = {
+  reviewer: 'evidenceReviewer',
+  diagnostic: 'evidenceDiagnostic',
+  observed_practice: 'evidenceObservedPractice',
+  provider_imported: 'evidenceProviderImported',
+  self_report: 'evidenceSelfReport',
+};
+
 // Real gap-analysis rationale for one competency (backend/services/learning_engine.py
 // analyse_competencies()) -- every value here is a real field from that response, not
 // invented ("Survey History"/"Proctored Quiz"/self-appraisal percentages in an earlier
@@ -24,7 +40,7 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
           <span
             className={`px-2 py-0.5 rounded font-mono text-[11px] font-semibold border ${confidenceTone.bg} ${confidenceTone.text} ${confidenceTone.border}`}
           >
-            {rationale.confidence} {t('rationale.confidenceSuffix')}
+            {t(`enums.${CONFIDENCE_KEY[rationale.confidence] || 'confidenceNone'}`)} {t('rationale.confidenceSuffix')}
           </span>
         </div>
         <span className="font-mono text-xs text-[#757682]">
@@ -56,7 +72,9 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
             {rationale.gap.toFixed(1)}
           </span>
           <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">{t('rationale.gapLevels')}</p>
-          <span className="font-mono text-xs text-[#757682] block mt-1">{rationale.priority}</span>
+          <span className="font-mono text-xs text-[#757682] block mt-1">
+            {t(`enums.${PRIORITY_KEY[rationale.priority] || 'priorityUnassessed'}`)}
+          </span>
         </div>
 
         <div className={`p-3 rounded-lg border ${confidenceTone.bg} ${confidenceTone.border}`}>
@@ -65,7 +83,11 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
           </span>
           <p className="font-sans text-xs text-[#131b2e] font-semibold mt-0.5">{t('rationale.evidenceSources')}</p>
           <span className="font-mono text-xs text-[#757682] block mt-1">
-            {rationale.evidenceSources.length ? rationale.evidenceSources.join(', ') : t('rationale.noneRecordedYet')}
+            {rationale.evidenceSources.length
+              ? rationale.evidenceSources
+                  .map((source) => (EVIDENCE_TYPE_KEY[source] ? t(`enums.${EVIDENCE_TYPE_KEY[source]}`) : source))
+                  .join(', ')
+              : t('rationale.noneRecordedYet')}
           </span>
         </div>
       </div>
@@ -92,7 +114,7 @@ export const InferenceRationaleCard = ({ dimension, onViewLearningPathway }) => 
                 title={record.detail || undefined}
                 className="px-2 py-0.5 rounded bg-[#ffffff] border border-[#c5c5d3]/30 text-[#131b2e] font-medium shadow-2xs"
               >
-                {record.evidenceType.replace(/_/g, ' ')}
+                {EVIDENCE_TYPE_KEY[record.evidenceType] ? t(`enums.${EVIDENCE_TYPE_KEY[record.evidenceType]}`) : record.evidenceType.replace(/_/g, ' ')}
                 {record.value != null ? ` (${record.value.toFixed(1)})` : ''}
               </span>
             ))

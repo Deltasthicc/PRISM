@@ -105,6 +105,25 @@ export const TRANSLATIONS = {
       loadFailed: 'The academy could not be loaded.',
       retry: 'Retry',
     },
+    // Display labels ONLY for backend enum values (confidence/priority/
+    // evidence_type) -- the raw English enum string is still what drives
+    // styling/lookup logic client-side (e.g. CONFIDENCE_TONE[rationale.
+    // confidence]); only what's shown to the reader is translated here.
+    enums: {
+      confidenceNone: 'none',
+      confidenceLow: 'low',
+      confidenceModerate: 'moderate',
+      priorityUnassessed: 'unassessed',
+      priorityCritical: 'critical',
+      priorityHigh: 'high',
+      priorityMedium: 'medium',
+      priorityMaintain: 'maintain',
+      evidenceReviewer: 'reviewer',
+      evidenceDiagnostic: 'diagnostic',
+      evidenceObservedPractice: 'observed practice',
+      evidenceProviderImported: 'provider-imported',
+      evidenceSelfReport: 'self-report',
+    },
     stats: {
       completeProfile: 'complete your profile',
       curriculumLabel: 'Curriculum:',
@@ -321,6 +340,21 @@ export const TRANSLATIONS = {
       loadingAcademy: 'आपकी अकादमी तैयार हो रही है…',
       loadFailed: 'अकादमी लोड नहीं हो सकी।',
       retry: 'पुनः प्रयास करें',
+    },
+    enums: {
+      confidenceNone: 'कोई नहीं',
+      confidenceLow: 'निम्न',
+      confidenceModerate: 'मध्यम',
+      priorityUnassessed: 'अमूल्यांकित',
+      priorityCritical: 'गंभीर',
+      priorityHigh: 'उच्च',
+      priorityMedium: 'मध्यम',
+      priorityMaintain: 'बनाए रखें',
+      evidenceReviewer: 'समीक्षक',
+      evidenceDiagnostic: 'निदान',
+      evidenceObservedPractice: 'देखा गया अभ्यास',
+      evidenceProviderImported: 'प्रदाता-आयातित',
+      evidenceSelfReport: 'स्व-रिपोर्ट',
     },
     stats: {
       completeProfile: 'अपनी प्रोफ़ाइल पूरी करें',

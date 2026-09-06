@@ -10,6 +10,13 @@ import PixelButton from '@/components/ui/PixelButton';
 import PixelPanel from '@/components/ui/PixelPanel';
 
 const PRIORITY_TONE = { critical: 'blood', high: 'ember', medium: 'gold', maintain: 'arcane', unknown: 'stone' };
+const PRIORITY_KEY = {
+  unassessed: 'priorityUnassessed',
+  critical: 'priorityCritical',
+  high: 'priorityHigh',
+  medium: 'priorityMedium',
+  maintain: 'priorityMaintain',
+};
 
 export default function AdminPage() {
   const { ready } = useRequireAuth();
@@ -87,7 +94,7 @@ export default function AdminPage() {
             )}
             {Object.entries(data.gap_priorities).map(([priority, count]) => (
               <PixelBadge key={priority} tone={PRIORITY_TONE[priority] || 'stone'}>
-                {priority}: {count}
+                {t(`enums.${PRIORITY_KEY[priority] || 'priorityUnassessed'}`)}: {count}
               </PixelBadge>
             ))}
           </div>

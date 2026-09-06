@@ -208,3 +208,150 @@ draft ──[auto checks pass]──> auto_checked ──[expert sign-off]──
   - `injection_defense_rate` (Threshold: $\ge 0.95$)
   - `grading_agreement` (Threshold: $\ge 0.80$)
   - `question_groundedness` (Threshold: $1.00$)
+
+---
+
+## 7. Local Conversational Voice Streaming Contract (`/ai/voice/stream`)
+
+* **Endpoint:** `WebSocket /ai/voice/stream`
+* **Consumer:** Lane 1 (Voice UI) / Local Conversational Assistants
+* **Status:** **STAGE 7 IMPLEMENTED (Authenticated WebSocket + RBAC Integration)**
+* **Zero Persistence Guarantee:** All raw audio buffers, synthesized speech chunks, and bearer tokens remain strictly in memory; zero audio files or credentials are written to disk.
+
+### 7.1 Lifecycle & Authenticated Handshake Negotiation
+
+Authentication integrates directly with the repository's authoritative security architecture (`get_current_subject`, `resolve_bound_principal`, and `require_deployment_tenant`). Tokens in URL query parameters (`?token=...`) are strictly prohibited and never processed.
+
+#### Handshake Authentication Mechanisms
+Clients authenticate through one of three mechanisms:
+1. **HTTP Upgrade Header:**
+   Standard `Authorization: Bearer <token>` header during the WebSocket handshake upgrade.
+2. **Initial Auth Frame:**
+   First message sent over WebSocket:
+   ```json
+   {
+     "type": "auth",
+     "token": "<bearer_token>"
+   }
+   ```
+3. **Combined Start Frame:**
+   First message sent over WebSocket with inline credentials:
+   ```json
+   {
+     "type": "start",
+     "token": "<bearer_token>",
+     "sample_rate": 16000,
+     "channels": 1,
+     "format": "pcm_s16le"
+   }
+   ```
+
+#### Server-Derived Principal & RBAC Enforcement
+* **Identity Resolution:**
+  - Token is verified against OIDC / bearer verification pipelines to resolve `SubjectIdentity`.
+  - Identity is bound against database principal storage to resolve `BoundPrincipal`.
+  - Valid tenant scope is enforced via `require_deployment_tenant(principal)`.
+  - Immutable `AccessContext` is constructed strictly server-side:
+    - `tenant_id = principal.tenant_scope`
+    - `user_id = principal.player_id or principal.subject.subject_id`
+    - `roles = tuple(principal.roles)`
+* **Anti-Spoofing & Client Override Protection:**
+  - Any client-provided `user_id`, `player_id`, `tenant_id`, or `roles` in payload frames are strictly ignored and discarded.
+  - The session's RAG retrieval and tool executions are hard-scoped to the derived `tenant_id` and authorized `roles`.
+* **Rejection & Termination:**
+  - Unauthenticated connections, expired/invalid tokens, unbound principals, or cross-tenant scope mismatches fail closed.
+  - WebSocket is closed with code `1008` (Policy Violation) and clear rejection reason (`AUTHENTICATION_REQUIRED`, `INVALID_CREDENTIALS`, `EXPIRED_CREDENTIALS`, `TENANT_SCOPE_REQUIRED`, `ACCESS_DENIED`).
+
+#### Handshake Sequence
+1. **Client Connection:** Client connects to `wss://.../ai/voice/stream` (TLS-encrypted in production; unencrypted `ws` protocol is restricted strictly to local developer testing).
+2. **Authentication / Start Negotiation:** Client provides credentials via header or initial frame, and specifies audio format (16000 Hz, 1 channel, `pcm_s16le`).
+3. **Server Ready (Server $\to$ Client):**
+   ```json
+   {
+     "type": "ready",
+     "session_id": "uuid-v4",
+     "user_id": "resolved-user-id",
+     "tenant_id": "resolved-tenant-id",
+     "roles": ["student", "player"],
+     "sample_rate": 16000,
+     "channels": 1,
+     "format": "pcm_s16le"
+   }
+   ```
+
+### 7.2 Full-Duplex Audio & Control Framing
+
+* **Audio Ingestion:** Client streams binary WebSocket frames of raw 16-bit little-endian PCM at 16,000 Hz.
+* **VAD Events (Server $\to$ Client):**
+  - Speech Onset: `{"type": "speech_start", "timestamp_ms": 192.0}`
+  - Speech Offset: `{"type": "speech_end", "timestamp_ms": 1400.0, "duration_ms": 1208.0}`
+* **Turn Processing Events (Server $\to$ Client):**
+  - STT Transcription:
+    ```json
+    {
+      "type": "transcript",
+      "text": "What are primary sampling units?",
+      "duration_ms": 1208.0,
+      "processing_time_ms": 320.5,
+      "real_time_factor": 0.265,
+      "generation_id": 1
+    }
+    ```
+  - Assistant RAG Result:
+    ```json
+    {
+      "type": "assistant",
+      "status": "supported",
+      "answer": "The primary sampling units are revenue villages in rural areas.",
+      "citations": [ { "...": "Citation object" } ],
+      "generation_id": 1
+    }
+    ```
+  - Incremental Audio Chunks:
+    Each audio chunk is preceded immediately by a small JSON metadata frame, followed by a binary PCM audio frame:
+    ```json
+    {
+      "type": "audio_chunk",
+      "chunk_index": 0,
+      "generation_id": 1,
+      "sample_rate": 22050,
+      "channels": 1,
+      "sample_width": 2,
+      "duration_ms": 1450.0,
+      "time_to_chunk_ms": 180.2
+    }
+    ```
+    *(Binary frame with raw PCM bytes follows)*
+  - Turn Complete:
+    ```json
+    {
+      "type": "turn_complete",
+      "generation_id": 1,
+      "status": "success",
+      "timing": {
+        "stt_duration_ms": 320.5,
+        "assistant_duration_ms": 150.2,
+        "tts_time_to_first_audio_ms": 180.2,
+        "tts_total_duration_ms": 520.1,
+        "total_speech_end_to_first_audio_ms": 650.9,
+        "total_turn_duration_ms": 990.8,
+        "cancellation_latency_ms": 0.0
+      }
+    }
+    ```
+
+### 7.3 Client Control Messages (Client $\to$ Server)
+
+* **Flush Speech Buffer:** `{"type": "flush"}` (forces completion of active speech segment and launches turn).
+* **Manual Interrupt:** `{"type": "interrupt"}` (cooperatively cancels active processing or playback).
+
+### 7.4 Barge-In & Cooperative Cancellation Semantics
+
+* When the client sends speech PCM frames while the assistant is speaking (`SPEAKING` state), the server evaluates VAD onset with hysteresis debounce.
+* Upon speech onset detection:
+  1. Active background generation task is cooperatively cancelled.
+  2. In-flight and queued TTS audio chunks are dropped.
+  3. Server emits `{"type": "interrupt", "generation_id": N}` to notify client to halt local speaker output.
+  4. Server emits `{"type": "speech_start", "timestamp_ms": ...}` and begins accumulating the new user utterance.
+  5. The interrupted generation is discarded and not committed to conversational context.
+

@@ -27,9 +27,11 @@ def issue(topic_id: str, count: int = 5) -> dict:
     return response.json()
 
 
-def answer_key(topic_id: str) -> dict[str, int]:
+def answer_key(topic_id: str) -> dict[str, dict]:
+    """Maps item_id -> the raw hand-authored item, so callers can branch on
+    question_type rather than assuming every item is an MCQ."""
     return {
-        item["item_id"]: item["answer_index"]
+        item["item_id"]: item
         for competency_id in TOPICS[topic_id]["competency_ids"]
         for item in questions_for_competency(competency_id)
     }
@@ -39,13 +41,18 @@ def submit_payload(issued: dict, *, correct: bool, player_id: str | None = None)
     key = answer_key(issued["topic_id"])
     answers = []
     for question in issued["questions"]:
-        expected = key[question["item_id"]]
-        answers.append(
-            {
-                "item_id": question["item_id"],
-                "selected_index": expected if correct else (expected + 1) % 4,
-            }
-        )
+        item = key[question["item_id"]]
+        if item.get("question_type", "mcq") == "mcq":
+            expected = item["answer_index"]
+            answers.append(
+                {
+                    "item_id": question["item_id"],
+                    "selected_index": expected if correct else (expected + 1) % 4,
+                }
+            )
+        else:
+            answer_text = item["accepted_answers"][0] if correct else "definitely-not-the-right-answer"
+            answers.append({"item_id": question["item_id"], "answer_text": answer_text})
     return {
         "attempt_id": issued["attempt_id"],
         "topic_id": issued["topic_id"],
@@ -80,10 +87,11 @@ def test_questions_are_bounded_balanced_ordered_and_do_not_leak_answers():
     assert difficulties == sorted(difficulties)
     for question in data["questions"]:
         assert set(question) == {
-            "item_id", "question", "options", "competency_id", "competency_label",
+            "item_id", "question", "question_type", "options", "competency_id", "competency_label",
             "difficulty", "doc_id", "locator", "item_status",
         }
         assert question["item_status"] == "DRAFT"
+        assert question["question_type"] == "mcq"
         assert len(question["options"]) == 4
 
 

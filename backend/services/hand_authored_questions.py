@@ -22,22 +22,44 @@ an authorized reviewer checks the source, key, difficulty and competency tag.
 Nothing here is model-generated. generation_mode is always
 "hand-transcribed" -- distinct from "gemini-grounded" and
 "extractive-fallback" -- so a caller can never mistake this for either.
+
+Two item shapes coexist, selected by "question_type":
+- "mcq" (the original, and the default when the field is omitted for
+  backward compatibility with the first 21 items): "options" (exactly 4)
+  and "answer_index" (0-3).
+- "fill_in_blank": "accepted_answers" (list[str], at least one), each
+  compared to the learner's submitted text after normalization (see
+  normalize_fill_in_blank_answer() below) so trivial case/whitespace/
+  punctuation differences don't fail a correct answer.
 """
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from services.competency_docs import DocumentUnavailable, get_document
 
 QUESTIONS_PATH = Path(__file__).resolve().parent.parent / "data" / "hand_authored_questions.json"
 
-_REQUIRED_FIELDS = {
+_COMMON_REQUIRED_FIELDS = {
     "item_id", "doc_id", "competency_id", "difficulty", "bloom_level",
-    "locator", "source_excerpt", "question", "options", "answer_index", "explanation",
+    "locator", "source_excerpt", "question", "explanation",
 }
+_MCQ_REQUIRED_FIELDS = {"options", "answer_index"}
+_FILL_IN_BLANK_REQUIRED_FIELDS = {"accepted_answers"}
+_QUESTION_TYPES = {"mcq", "fill_in_blank"}
 
 _questions_cache: list[dict] | None = None
+
+
+def normalize_fill_in_blank_answer(text: str) -> str:
+    """Case/whitespace/punctuation-insensitive comparison key. Deliberately
+    simple (no stemming/fuzzy matching) -- a fill-in-the-blank item's
+    accepted_answers list should already enumerate the reasonable exact
+    phrasings (e.g. both "GDP" and "gross domestic product")."""
+    collapsed = " ".join(text.strip().lower().split())
+    return re.sub(r"[.,;:!?'\"]+$", "", collapsed)
 
 
 def _all_questions() -> list[dict]:
@@ -47,6 +69,7 @@ def _all_questions() -> list[dict]:
             payload = json.load(handle)
         questions = payload["questions"]
         for item in questions:
+            item.setdefault("question_type", "mcq")
             _validate_hand_authored_item(item)
         item_ids = [item["item_id"] for item in questions]
         if len(item_ids) != len(set(item_ids)):
@@ -62,13 +85,23 @@ def _validate_hand_authored_item(item: dict) -> None:
     """Fail loudly at load time, not silently at serve time, if an entry is
     malformed -- same "never disguise a bad item" posture as
     ai/quiz_engine.py's validate_question_item()."""
-    missing = _REQUIRED_FIELDS - item.keys()
+    question_type = item.get("question_type", "mcq")
+    if question_type not in _QUESTION_TYPES:
+        raise ValueError(f"{item.get('item_id')}: question_type must be one of {_QUESTION_TYPES}")
+    type_fields = _MCQ_REQUIRED_FIELDS if question_type == "mcq" else _FILL_IN_BLANK_REQUIRED_FIELDS
+    missing = (_COMMON_REQUIRED_FIELDS | type_fields) - item.keys()
     if missing:
         raise ValueError(f"hand_authored_questions.json item {item.get('item_id')!r} missing fields: {missing}")
-    if len(item["options"]) != 4:
-        raise ValueError(f"{item['item_id']}: options must have exactly 4 entries")
-    if not 0 <= item["answer_index"] < 4:
-        raise ValueError(f"{item['item_id']}: answer_index out of range")
+    if question_type == "mcq":
+        if len(item["options"]) != 4:
+            raise ValueError(f"{item['item_id']}: options must have exactly 4 entries")
+        if not 0 <= item["answer_index"] < 4:
+            raise ValueError(f"{item['item_id']}: answer_index out of range")
+    else:
+        if not item["accepted_answers"] or not all(isinstance(a, str) and a.strip() for a in item["accepted_answers"]):
+            raise ValueError(f"{item['item_id']}: accepted_answers must be a non-empty list of non-empty strings")
+        if "_____" not in item["question"]:
+            raise ValueError(f"{item['item_id']}: fill_in_blank question must contain a '_____' blank marker")
     if item["difficulty"] not in {"easy", "medium", "hard"}:
         raise ValueError(f"{item['item_id']}: difficulty must be easy|medium|hard")
     # get_document() raising here (unknown doc_id) is exactly the failure mode
@@ -117,8 +150,10 @@ def quiz_from_hand_authored(doc_id: str, *, count: int | None = None, difficulty
     questions = [
         {
             "question": item["question"],
-            "options": item["options"],
-            "answer_index": item["answer_index"],
+            "question_type": item["question_type"],
+            "options": item.get("options"),
+            "answer_index": item.get("answer_index"),
+            "accepted_answers": item.get("accepted_answers"),
             "explanation": item["explanation"],
             "source_excerpt": item["source_excerpt"],
             "competency": item["competency_id"],

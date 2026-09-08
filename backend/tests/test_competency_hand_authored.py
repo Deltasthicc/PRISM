@@ -67,9 +67,13 @@ def test_every_item_references_a_real_corpus_document(doc_id):
 def test_every_item_has_a_valid_shape():
     for doc_id in ALL_HAND_AUTHORED_DOC_IDS:
         for item in questions_for_doc(doc_id):
-            assert len(item["options"]) == 4
-            assert len(set(item["options"])) == 4, f"{item['item_id']}: duplicate options"
-            assert 0 <= item["answer_index"] < 4
+            if item.get("question_type", "mcq") == "mcq":
+                assert len(item["options"]) == 4
+                assert len(set(item["options"])) == 4, f"{item['item_id']}: duplicate options"
+                assert 0 <= item["answer_index"] < 4
+            else:
+                assert item["accepted_answers"]
+                assert "_____" in item["question"]
             assert item["difficulty"] in {"easy", "medium", "hard"}
             assert item["competency_id"] in KNOWN_COMPETENCIES, (
                 f"{item['item_id']}: competency_id {item['competency_id']!r} is not in services.curricula.CURRICULA"
@@ -87,7 +91,7 @@ def test_answer_index_is_not_degenerate_across_the_whole_bank():
     # not require a perfectly uniform distribution, just that no single
     # index accounts for every item.
     all_items = [item for doc_id in ALL_HAND_AUTHORED_DOC_IDS for item in questions_for_doc(doc_id)]
-    indexes = {item["answer_index"] for item in all_items}
+    indexes = {item["answer_index"] for item in all_items if item.get("question_type", "mcq") == "mcq"}
     assert len(indexes) > 1, "every item has the same answer_index -- the bank is guessable"
 
 
@@ -124,8 +128,8 @@ def test_quiz_from_hand_authored_returns_the_same_shape_as_quiz_from_document():
     assert quiz["question_count"] == len(quiz["questions"])
     for question in quiz["questions"]:
         assert set(question) == {
-            "question", "options", "answer_index", "explanation",
-            "source_excerpt", "competency", "bloom_level",
+            "question", "question_type", "options", "answer_index", "accepted_answers",
+            "explanation", "source_excerpt", "competency", "bloom_level",
         }
 
 
@@ -154,3 +158,77 @@ def test_quiz_from_hand_authored_rejects_a_known_doc_with_no_hand_authored_items
     # must fail closed, not silently return an empty quiz.
     with pytest.raises(DocumentUnavailable):
         quiz_from_hand_authored("sif_guideline")
+
+
+def test_at_least_one_fill_in_blank_item_exists_and_is_well_formed():
+    fill_in_blank_items = [
+        item
+        for doc_id in ALL_HAND_AUTHORED_DOC_IDS
+        for item in questions_for_doc(doc_id)
+        if item.get("question_type") == "fill_in_blank"
+    ]
+    assert fill_in_blank_items, "expected at least one real fill_in_blank item in the bank"
+    for item in fill_in_blank_items:
+        assert "_____" in item["question"]
+        assert all(isinstance(a, str) and a.strip() for a in item["accepted_answers"])
+        assert "options" not in item and "answer_index" not in item
+
+
+@pytest.mark.parametrize(
+    ("submitted", "accepted", "expected"),
+    [
+        ("confidentiality", ["confidentiality"], True),
+        ("Confidentiality", ["confidentiality"], True),
+        ("  confidentiality.  ", ["confidentiality"], True),
+        ("CONFIDENTIALITY!", ["confidentiality"], True),
+        ("integrity", ["confidentiality"], False),
+        ("gross domestic product", ["gdp", "gross domestic product"], True),
+    ],
+)
+def test_normalize_fill_in_blank_answer_matches_case_whitespace_punctuation_insensitively(
+    submitted, accepted, expected
+):
+    from services.hand_authored_questions import normalize_fill_in_blank_answer
+
+    normalized_accepted = {normalize_fill_in_blank_answer(a) for a in accepted}
+    assert (normalize_fill_in_blank_answer(submitted) in normalized_accepted) == expected
+
+
+def test_validate_hand_authored_item_rejects_fill_in_blank_without_blank_marker():
+    from services.hand_authored_questions import _validate_hand_authored_item
+
+    bad_item = {
+        "item_id": "bad_fitb_no_marker",
+        "doc_id": "dpdp_act_2023",
+        "competency_id": "dl_data_privacy",
+        "question_type": "fill_in_blank",
+        "difficulty": "easy",
+        "bloom_level": "remember",
+        "locator": "test",
+        "source_excerpt": "irrelevant for this test",
+        "question": "This question has no blank marker in it.",
+        "accepted_answers": ["something"],
+        "explanation": "test",
+    }
+    with pytest.raises(ValueError, match="blank marker"):
+        _validate_hand_authored_item(bad_item)
+
+
+def test_validate_hand_authored_item_rejects_fill_in_blank_with_empty_accepted_answers():
+    from services.hand_authored_questions import _validate_hand_authored_item
+
+    bad_item = {
+        "item_id": "bad_fitb_no_answers",
+        "doc_id": "dpdp_act_2023",
+        "competency_id": "dl_data_privacy",
+        "question_type": "fill_in_blank",
+        "difficulty": "easy",
+        "bloom_level": "remember",
+        "locator": "test",
+        "source_excerpt": "irrelevant for this test",
+        "question": "This has a _____ marker but no accepted answers.",
+        "accepted_answers": [],
+        "explanation": "test",
+    }
+    with pytest.raises(ValueError, match="accepted_answers"):
+        _validate_hand_authored_item(bad_item)

@@ -33,7 +33,7 @@ from models.governance import EvidenceRecord
 from routes.learning_common import player_or_404
 from security.audit import record_audit_event
 from services.curricula import CURRICULA
-from services.hand_authored_questions import questions_for_competency
+from services.hand_authored_questions import normalize_fill_in_blank_answer, questions_for_competency
 
 router = APIRouter(prefix="/learning/competency-quiz", tags=["Competency Quiz"])
 
@@ -174,13 +174,18 @@ async def list_topics() -> list[TopicSummary]:
 
 
 class QuizQuestionOut(BaseModel):
-    """Never includes answer_index/explanation/source_excerpt -- those only
-    reach the client after /submit, once they can no longer change an answer
-    based on seeing them."""
+    """Never includes answer_index/accepted_answers/explanation/
+    source_excerpt -- those only reach the client after /submit, once they
+    can no longer change an answer based on seeing them.
+
+    `options` is populated only for question_type="mcq"; a "fill_in_blank"
+    item's `question` text itself contains the "_____" blank marker and the
+    client renders a text input instead of an option list."""
 
     item_id: str
     question: str
-    options: list[str]
+    question_type: str = "mcq"
+    options: list[str] | None = None
     competency_id: str
     competency_label: str
     difficulty: str
@@ -217,7 +222,8 @@ async def get_quiz_questions(
         QuizQuestionOut(
             item_id=item["item_id"],
             question=item["question"],
-            options=item["options"],
+            question_type=item.get("question_type", "mcq"),
+            options=item.get("options"),
             competency_id=item["competency_id"],
             competency_label=_COMPETENCY_LABELS.get(item["competency_id"], item["competency_id"]),
             difficulty=item["difficulty"],
@@ -235,8 +241,14 @@ async def get_quiz_questions(
 
 
 class AnswerIn(BaseModel):
+    """Exactly one of selected_index (mcq) / answer_text (fill_in_blank)
+    must be set, matching the item's question_type -- checked in
+    submit_quiz() against the item actually issued, not trusted from the
+    client alone."""
+
     item_id: str
-    selected_index: int = Field(ge=0, le=3)
+    selected_index: int | None = Field(default=None, ge=0, le=3)
+    answer_text: str | None = Field(default=None, max_length=500)
 
 
 class SubmitRequest(BaseModel):
@@ -249,9 +261,12 @@ class SubmitRequest(BaseModel):
 class GradedAnswer(BaseModel):
     item_id: str
     competency_id: str
+    question_type: str = "mcq"
     correct: bool
-    selected_index: int
-    correct_index: int
+    selected_index: int | None = None
+    correct_index: int | None = None
+    submitted_text: str | None = None
+    correct_answer_display: str | None = None
     explanation: str
     source_excerpt: str
     doc_id: str
@@ -320,20 +335,45 @@ async def submit_quiz(
                 status_code=422,
                 detail=f"Item {answer.item_id!r} does not belong to topic {body.topic_id!r}",
             )
-        is_correct = answer.selected_index == item["answer_index"]
-        graded.append(
-            GradedAnswer(
-                item_id=item["item_id"],
-                competency_id=item["competency_id"],
-                correct=is_correct,
-                selected_index=answer.selected_index,
-                correct_index=item["answer_index"],
-                explanation=item["explanation"],
-                source_excerpt=item["source_excerpt"],
-                doc_id=item["doc_id"],
-                locator=item["locator"],
+        question_type = item.get("question_type", "mcq")
+        if question_type == "mcq":
+            if answer.selected_index is None:
+                raise HTTPException(status_code=422, detail=f"Item {item['item_id']!r} requires selected_index")
+            is_correct = answer.selected_index == item["answer_index"]
+            graded.append(
+                GradedAnswer(
+                    item_id=item["item_id"],
+                    competency_id=item["competency_id"],
+                    question_type=question_type,
+                    correct=is_correct,
+                    selected_index=answer.selected_index,
+                    correct_index=item["answer_index"],
+                    explanation=item["explanation"],
+                    source_excerpt=item["source_excerpt"],
+                    doc_id=item["doc_id"],
+                    locator=item["locator"],
+                )
             )
-        )
+        else:
+            if not answer.answer_text or not answer.answer_text.strip():
+                raise HTTPException(status_code=422, detail=f"Item {item['item_id']!r} requires answer_text")
+            submitted_normalized = normalize_fill_in_blank_answer(answer.answer_text)
+            accepted_normalized = {normalize_fill_in_blank_answer(a) for a in item["accepted_answers"]}
+            is_correct = submitted_normalized in accepted_normalized
+            graded.append(
+                GradedAnswer(
+                    item_id=item["item_id"],
+                    competency_id=item["competency_id"],
+                    question_type=question_type,
+                    correct=is_correct,
+                    submitted_text=answer.answer_text,
+                    correct_answer_display=item["accepted_answers"][0],
+                    explanation=item["explanation"],
+                    source_excerpt=item["source_excerpt"],
+                    doc_id=item["doc_id"],
+                    locator=item["locator"],
+                )
+            )
         by_competency.setdefault(item["competency_id"], []).append(is_correct)
 
     total = len(graded)

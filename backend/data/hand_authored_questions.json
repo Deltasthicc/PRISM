@@ -380,6 +380,19 @@
       ],
       "answer_index": 3,
       "explanation": "The statement's point is about the *scale of dedicated strategic attention* AI deserves -- calling it a 'once-in-a-generation phenomenon' means it warrants a strategy built specifically for it, not one treated as a peripheral extension of prior technology-transition policy. It is not arguing against learning from history in general (option B overreaches the claim), nor does it say anything about private-sector participation or infrastructure sequencing."
+    },
+    {
+      "item_id": "ha_dpdp_breach_confidentiality_blank",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Digital Personal Data Protection Act, 2023, definitions section, clause (u)",
+      "source_excerpt": "\"personal data breach\" means any unauthorised processing of personal data or accidental disclosure, acquisition, sharing, use, alteration, destruction or loss of access to personal data, that compromises the confidentiality, integrity or availability of personal data;",
+      "question": "Fill in the blank using the DPDP Act 2023's own definition: a 'personal data breach' is any unauthorised processing, disclosure, acquisition, alteration, destruction, or loss of access to personal data that compromises its _____, integrity, or availability.",
+      "accepted_answers": ["confidentiality"],
+      "explanation": "The Act's clause (u) defines a personal data breach as compromising one of three properties of the data: confidentiality, integrity, or availability -- the same CIA triad used broadly in information security, not a DPDP-specific coinage."
     }
   ]
 }

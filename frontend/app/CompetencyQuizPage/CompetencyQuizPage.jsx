@@ -145,6 +145,24 @@ export default function CompetencyQuizPage({
     });
   };
 
+  // Fill-in-the-blank items store their answer as trimmed text under the
+  // same selectedAnswers map (keyed by item_id) as MCQ option indices --
+  // handleSubmitQuiz branches on currentQ.question_type to know which shape
+  // to send. An empty/whitespace-only draft is treated as "not answered
+  // yet" so answeredCount/progress stay accurate.
+  const handleTextAnswerChange = (itemId, text) => {
+    if (isSubmitted) return;
+    setSelectedAnswers((prev) => {
+      const next = { ...prev };
+      if (text.trim()) {
+        next[itemId] = text;
+      } else {
+        delete next[itemId];
+      }
+      return next;
+    });
+  };
+
   // ============================================================
   // NEXT / PREVIOUS
   // ============================================================
@@ -182,10 +200,11 @@ export default function CompetencyQuizPage({
           attemptId: q.attempt_id,
           answers: [],
         });
-        group.answers.push({
-          item_id: q.item_id,
-          selected_index: selectedAnswers[q.item_id],
-        });
+        group.answers.push(
+          q.question_type === 'fill_in_blank'
+            ? { item_id: q.item_id, answer_text: selectedAnswers[q.item_id] }
+            : { item_id: q.item_id, selected_index: selectedAnswers[q.item_id] }
+        );
       });
 
       const topicResults = await Promise.all(
@@ -486,8 +505,24 @@ export default function CompetencyQuizPage({
 
                 </div>
 
-                {/* OPTIONS */}
+                {/* ANSWER INPUT -- fill-in-the-blank gets a text field, MCQ gets options */}
 
+                {currentQ.question_type === 'fill_in_blank' ? (
+                  <div className="pt-1">
+                    <label htmlFor="fill-in-blank-answer" className="sr-only">
+                      Your answer
+                    </label>
+                    <input
+                      id="fill-in-blank-answer"
+                      type="text"
+                      autoComplete="off"
+                      value={selectedAnswers[currentQ.item_id] || ''}
+                      onChange={(event) => handleTextAnswerChange(currentQ.item_id, event.target.value)}
+                      placeholder="Type the missing word or phrase…"
+                      className="w-full px-4 py-3.5 rounded-xl border border-[#dfe2eb] bg-[#fbfcfe] text-sm text-[#151c2d] outline-none transition focus:border-[#00236f] focus:bg-white focus:ring-4 focus:ring-[#00236f]/5"
+                    />
+                  </div>
+                ) : (
                 <div
                   className="space-y-2.5"
                   role="radiogroup"
@@ -557,6 +592,7 @@ export default function CompetencyQuizPage({
                   })}
 
                 </div>
+                )}
 
                 {/* NAVIGATION */}
 
@@ -881,13 +917,17 @@ export default function CompetencyQuizPage({
 
                     const graded = results.gradedByItemId[q.item_id];
                     const isCorrect = Boolean(graded?.correct);
-                    const selectedIndex = selectedAnswers[q.item_id];
-                    const selectedLetter =
-                      selectedIndex !== undefined
-                        ? String.fromCharCode(65 + selectedIndex)
+                    const isFillInBlank = q.question_type === 'fill_in_blank';
+                    const selectedValue = selectedAnswers[q.item_id];
+                    const answerGivenDisplay = isFillInBlank
+                      ? selectedValue || 'Skipped'
+                      : selectedValue !== undefined
+                        ? String.fromCharCode(65 + selectedValue)
                         : 'Skipped';
-                    const correctLetter = graded
-                      ? String.fromCharCode(65 + graded.correct_index)
+                    const correctAnswerDisplay = graded
+                      ? isFillInBlank
+                        ? graded.correct_answer_display
+                        : String.fromCharCode(65 + graded.correct_index)
                       : '';
 
                     return (
@@ -936,7 +976,7 @@ export default function CompetencyQuizPage({
                             </span>
 
                             <span className="text-[#333a49]">
-                              {selectedLetter}
+                              {answerGivenDisplay}
                             </span>
                           </div>
 
@@ -951,7 +991,7 @@ export default function CompetencyQuizPage({
                             >
                               {isCorrect
                                 ? 'Correct response'
-                                : `Correct answer: ${correctLetter}`}
+                                : `Correct answer: ${correctAnswerDisplay}`}
                             </span>
 
                           </div>

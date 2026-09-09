@@ -102,7 +102,7 @@ export default function IntegrationRegistry() {
           </div>
         </div>
 
-        {/* Module 3: Adaptive DSA practice */}
+        {/* Module 3: DSA sandbox */}
         <div className="bg-white rounded-xl p-5 shadow-sm border border-[#c5c5d3]/30 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[#eaedff] mb-3">
@@ -110,23 +110,25 @@ export default function IntegrationRegistry() {
                 <div className="w-8 h-8 rounded-lg bg-[#89f5e7] text-[#00312c] flex items-center justify-center font-bold">
                   <Gamepad2 className="w-[18px] h-[18px]" />
                 </div>
-                <h3 className="text-base font-bold text-[#00236f]">Adaptive DSA Practice</h3>
+                <h3 className="text-base font-bold text-[#00236f]">DSA Sandbox</h3>
               </div>
-              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#89f5e7] text-[#00201d] font-bold">
-                CLIENT-SIDE MOCKUP
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#c7f5c9] text-[#0d3b12] font-bold">
+                REAL EXECUTION
               </span>
             </div>
             <p className="text-xs text-[#444651] mb-4 leading-relaxed">
-              A code-runner practice UI. Test results shown here are placeholder local state, not
-              a real sandboxed execution backend yet.
+              A real code-runner: every submission executes on Judge0, an isolated external
+              sandbox, and a solved problem writes real practice evidence into the same
+              competency scoring the Prerequisite Pathways map reads. Visible only to learners
+              who selected DSA Fundamentals.
             </p>
           </div>
           <div className="flex items-center justify-between pt-2 border-t border-[#eaedff]">
             <Link
-              href="/guild"
+              href="/dsa-sandbox"
               className="text-[#00236f] hover:underline text-xs font-semibold flex items-center gap-1"
             >
-              <span>Open adaptive practice</span>
+              <span>Open the DSA sandbox</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

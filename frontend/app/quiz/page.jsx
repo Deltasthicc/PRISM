@@ -28,7 +28,7 @@ export default function SourceQuizGenerator() {
   const [isResynthesizing, setIsResynthesizing] = useState(false);
   const [pdfToast, setPdfToast] = useState('');
 
-  const onNavigate = () => router.push('/guild');
+  const onNavigate = () => router.push('/dsa-sandbox');
   const onOpenModal = () => {
     setPdfToast('Design-intent mockup -- no real bounded PDF viewer exists for this prototype yet.');
     setTimeout(() => setPdfToast(''), 3500);

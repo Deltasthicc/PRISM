@@ -36,7 +36,9 @@ Every API call in the app goes through `lib/api/client.js`. No component, page, 
 - **BossFight** (`/boss/[dungeonId]`) — same combat loop, bigger HP pool, questions rotate across
   every competency in that domain.
 - **StatSheet** (`/stats`) — per-topic accuracy mapped to RPG stats (see `lib/statMap.js`).
-- **Guild** (`/guild`) — join a raid party, see member topic-lanes and shared boss HP.
+- **DSA Sandbox** (`/dsa-sandbox`) — real problems, real Judge0 code execution, visible only to
+  learners who selected DSA Fundamentals. A solved problem writes real accuracy evidence for that
+  topic, the same evidence the dungeon map and competency pathway read.
 - **Leaderboard** (`/leaderboard`) — polls every 5s, highlights your row.
 - **AI Core dashboard** (`/dashboard`) — the judge-facing panel: live knowledge graph (React Flow,
   same layout function as the dungeon map on purpose), RL difficulty history and NLP score history

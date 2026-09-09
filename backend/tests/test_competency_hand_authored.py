@@ -32,7 +32,24 @@ KNOWN_COMPETENCIES = {
 }
 
 UPSC_DOC_IDS = {"upsc_csm26_statistics_p1", "upsc_csm26_statistics_p2"}
-RELIABILITY_DOC_IDS = {"dpdp_act_2023", "niti_ai_strategy", "cpi_manual_2010"}
+# Every other doc_id the hand-authored bank cites, across all four curricula --
+# each is a real, hash-verified corpus document (see data/document_corpus.json)
+# with genuine transcribed/quoted content, not a "reliability pick" of just a
+# few anymore now that the bank covers DSA (GATE), Official Statistics,
+# Public Policy, and Digital Literacy broadly.
+RELIABILITY_DOC_IDS = {
+    "dpdp_act_2023", "niti_ai_strategy", "cpi_manual_2010",
+    "gate2024_cs1", "gate2024_cs2", "gate2026_cs1", "gate2026_cs2",
+    "census2011_houselisting", "ndap_vision", "mdds_health",
+    "national_geospatial_policy", "nas_sources_methods", "nssta_calendar",
+    "nqaf_cocsso", "plfs_metadata_compliance", "sdg_nif_2026", "nmds_2",
+    "ndsap_impl", "apisetu_definitions", "manual_asi_2008",
+    "upsc_csp2023_gs1", "darpg_sevottam", "ccs_conduct_rules_1964",
+    "niti_founding_resolution", "dmeo_pmgsy_eval", "aspirational_districts_pib",
+    "pib_finance_commission_xv", "pib_mission_karmayogi",
+    "it_act_2000", "i4c_cyber_hygiene", "niti_responsible_ai",
+    "pib_dpi_2026", "gi_cloud_roadmap", "nielit_ccc_syllabus",
+}
 ALL_HAND_AUTHORED_DOC_IDS = UPSC_DOC_IDS | RELIABILITY_DOC_IDS
 
 

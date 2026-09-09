@@ -61,11 +61,11 @@ def submit_payload(issued: dict, *, correct: bool, player_id: str | None = None)
     }
 
 
-def test_topics_are_five_honest_nonempty_bank_slices():
+def test_topics_are_honest_nonempty_bank_slices():
     response = client.get("/learning/competency-quiz/topics")
     assert response.status_code == 200
     topics = response.json()
-    assert len(topics) == 5
+    assert len(topics) == len(TOPICS)
     assert {topic["topic_id"] for topic in topics} == set(TOPICS)
     for topic in topics:
         assert topic["question_count"] >= 2

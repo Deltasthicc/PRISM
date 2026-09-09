@@ -104,95 +104,50 @@ function accuracyMap(player) {
   );
 }
 
-function damageDealtMap(player) {
-  return Object.fromEntries(
-    (player.accuracy_history || []).map((entry) => [entry.topic, entry.damage_dealt ?? 0])
-  );
-}
-
-// A topic counts as "proven" (satisfies downstream prerequisites) either of
-// two ways: the accuracy ratchet (mastered, or currently above the unlock
-// threshold), or having actually cleared that topic's own room -- enough
-// cumulative damage to drop its boss to 0 HP (room.enemy_count, repurposed
-// as the boss's total HP pool). Without the second path, a player who
-// clears a room via a rough patch mixed into an otherwise-winning run (60%
-// rolling accuracy, since recent_accuracy is a last-5 window, not a
-// room-clear measure) would find downstream rooms still locked even though
-// the room's villain is dead and the victory screen already fired.
-function provenMap(player, rooms) {
-  const damageDealt = damageDealtMap(player);
-  const bossMaxHpByTopic = Object.fromEntries((rooms || []).map((r) => [r.topic, r.enemy_count]));
-  return Object.fromEntries(
-    (player.accuracy_history || []).map((entry) => {
-      const accuracyProven = Boolean(entry.mastered) || entry.recent_accuracy > 0.65;
-      const required = bossMaxHpByTopic[entry.topic];
-      const cleared = typeof required === 'number' && required > 0 && damageDealt[entry.topic] >= required;
-      return [entry.topic, accuracyProven || cleared];
-    })
-  );
-}
-
-function normalizeDungeon(dungeon, player) {
-  const accuracies = accuracyMap(player);
-  const damageDealt = damageDealtMap(player);
-  const proven = provenMap(player, dungeon.rooms);
-  const rooms = (dungeon.rooms || []).filter((room) => room.topic in TOPIC_GRAPH).map((room) => {
-    const recentAccuracy = accuracies[room.topic] ?? 0;
-    // The map tile's percentage is room-clear progress (cumulative damage
-    // dealt vs. the boss's HP pool), not rolling accuracy -- a player who
-    // finishes a room expects to see it read as done, and recent_accuracy
-    // (a last-5-answers window) doesn't reliably reach 100% just because
-    // the boss actually died.
-    const completion = room.enemy_count > 0
-      ? Math.min(1, (damageDealt[room.topic] ?? 0) / room.enemy_count)
-      : 0;
-    const prerequisites = TOPIC_GRAPH[room.topic] || [];
-    const isUnlocked = prerequisites.every((topic) => proven[topic]);
-    let status = 'unlocked';
-    if (!isUnlocked) status = 'locked';
-    // A fully-cleared room always reads as gold/"mastered", regardless of
-    // rolling accuracy -- otherwise a room a player just beat could still
-    // show the same teal "in progress" border as one they haven't touched.
-    else if (completion >= 1) status = 'mastered';
-    else if (recentAccuracy >= 0.9) status = 'mastered';
-    else if (recentAccuracy > 0 && recentAccuracy < 0.5) status = 'weak';
-
-    return {
-      ...room,
-      label: TOPIC_LABELS[room.topic] || room.topic,
-      status,
-      recent_accuracy: recentAccuracy,
-      completion,
-      prerequisites,
-    };
-  });
-  const candidates = rooms.filter((room) => room.status !== 'locked' && !room.is_boss);
-  const nextRoom = candidates.sort((a, b) => a.recent_accuracy - b.recent_accuracy)[0];
-
+// Real, per-player room status now comes straight from the backend (see
+// backend/routes/game.py::_annotate_rooms_for_player, returned whenever
+// GET /game/dungeon/{id} is called with a player_id) -- generalized to every
+// seeded curriculum, not just the DSA dungeon the old TOPIC_GRAPH-only
+// client-side heuristic here used to support. This is now a thin passthrough
+// that just names the fields the map UI expects; labels are resolved by the
+// caller (frontend/app/dungeon/page.jsx) from the matching curriculum's
+// competency list, not baked in here.
+function normalizeDungeon(dungeon) {
   return {
     dungeon_id: dungeon.dungeon_id,
     name: dungeon.name,
     domain: dungeon.domain,
-    rooms,
-    next_topic: nextRoom?.topic ?? null,
-    boss_unlocked: Object.keys(TOPIC_GRAPH).every((topic) => proven[topic]),
+    curriculum_slug: dungeon.curriculum_slug ?? null,
+    rooms: (dungeon.rooms || []).map((room) => ({
+      ...room,
+      status: room.status ?? (room.is_unlocked ? 'unlocked' : 'locked'),
+      recent_accuracy: room.recent_accuracy ?? 0,
+      completion: room.completion ?? 0,
+    })),
+    next_topic: dungeon.next_topic ?? null,
+    boss_unlocked: Boolean(dungeon.boss_unlocked),
   };
 }
 
 async function startDungeonSession(requestedDungeonId) {
-  // Keyed on a fixed name, not requestedDungeonId: getDungeon('') and
-  // enterRoom()'s no-session fallback can both call this for the same
-  // player at nearly the same time and must collapse into one session.
-  return dedupe('session-start', async () => {
+  // Keyed on the actual dungeon being requested, not a fixed name: switching
+  // curricula (each with its own dungeon_id) must start its own session
+  // rather than collapsing into whichever dungeon happened to be active.
+  // getDungeon('') and enterRoom()'s no-session fallback intentionally both
+  // resolve to the same 'session-start:' key so concurrent calls for the
+  // *same* implied dungeon still collapse into one request.
+  return dedupe(`session-start:${requestedDungeonId || 'default'}`, async () => {
     const player = await currentPlayer();
     let dungeon;
     try {
-      dungeon = await request(`/game/dungeon/${requestedDungeonId}`);
+      dungeon = await request(`/game/dungeon/${requestedDungeonId}?player_id=${encodeURIComponent(player.player_id)}`);
     } catch (error) {
       if (error.code !== 404) throw error;
       const available = await request('/game/dungeons');
       if (!available.length) throw new Error('No dungeon has been seeded.');
-      dungeon = await request(`/game/dungeon/${available[0].dungeon_id}`);
+      dungeon = await request(
+        `/game/dungeon/${available[0].dungeon_id}?player_id=${encodeURIComponent(player.player_id)}`
+      );
     }
 
     const session = await request('/game/session/start', {
@@ -202,7 +157,7 @@ async function startDungeonSession(requestedDungeonId) {
     live.sessionId = session.session_id;
     live.dungeon = dungeon;
     persistLiveState();
-    return normalizeDungeon(dungeon, player);
+    return normalizeDungeon(dungeon);
   });
 }
 
@@ -250,13 +205,18 @@ export const game = {
   // map a curriculum slug (services/curricula.py) to its "START QUEST" link.
   listDungeons: () => request('/game/dungeons'),
 
-  enterRoom: async (topic) => {
+  enterRoom: async (topic, dungeonId) => {
     // Each call to enterRoom(topic) triggers a real (potentially multi-second)
     // Gemini question-generation round trip -- collapse duplicate concurrent
     // calls for the same topic into one.
     return dedupe(`enterRoom:${topic}`, async () => {
       hydrateLiveState();
-      if (!live.sessionId || !live.dungeon) await startDungeonSession('');
+      // With one dungeon per curriculum now live (not just DSA), a cached
+      // session from a previously-viewed curriculum must not be reused for a
+      // different one -- that would silently fight the wrong domain's rooms.
+      const needsNewSession =
+        !live.sessionId || !live.dungeon || (dungeonId && live.dungeon.dungeon_id !== dungeonId);
+      if (needsNewSession) await startDungeonSession(dungeonId || '');
       const room =
         topic === 'boss'
           ? live.dungeon.rooms.find((candidate) => candidate.is_boss)

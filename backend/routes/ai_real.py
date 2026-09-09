@@ -29,16 +29,15 @@ from models.question import Question
 from models.submission import AnswerSubmission
 from routes.authorization import (
     require_deployment_tenant_dependency,
+    require_own_player,
     require_own_player_dependency,
     require_permission_dependency,
     require_principal,
 )
 from security.rbac import (
-    AuthorizationError,
     BoundPrincipal,
     Permission,
     permissions_for,
-    scoped_to_own_player,
 )
 from services.knowledge_graph import TOPIC_GRAPH, get_next_topic, get_weak_topics
 
@@ -100,11 +99,11 @@ async def generate_question(
 ):
     """Generate a unique question using Gemini."""
     player_id = body.get("player_id")
+    # A bare scoped_to_own_player(...) call has no demo-mode bypass -- see
+    # require_own_player's docstring for why that unconditionally 403s in
+    # this app's only supported login flow without it.
     if player_id:
-        try:
-            scoped_to_own_player(principal, player_id)
-        except AuthorizationError as exc:
-            raise HTTPException(status_code=403, detail="Access denied") from exc
+        require_own_player(principal, player_id)
 
     topic = body.get("topic", "arrays")
     difficulty = body.get("difficulty", "medium")
@@ -246,11 +245,11 @@ async def next_difficulty(
 ):
     """Determine next difficulty using RL epsilon-greedy bandit."""
     player_id = body.get("player_id")
+    # A bare scoped_to_own_player(...) call has no demo-mode bypass -- see
+    # require_own_player's docstring for why that unconditionally 403s in
+    # this app's only supported login flow without it.
     if player_id:
-        try:
-            scoped_to_own_player(principal, player_id)
-        except AuthorizationError as exc:
-            raise HTTPException(status_code=403, detail="Access denied") from exc
+        require_own_player(principal, player_id)
 
     accuracy_history = body.get("accuracy_history", {})
     topic = body.get("topic", "")
@@ -282,11 +281,11 @@ async def next_topic(
 ):
     """Route to weakest unlocked topic using knowledge graph."""
     player_id = body.get("player_id")
+    # A bare scoped_to_own_player(...) call has no demo-mode bypass -- see
+    # require_own_player's docstring for why that unconditionally 403s in
+    # this app's only supported login flow without it.
     if player_id:
-        try:
-            scoped_to_own_player(principal, player_id)
-        except AuthorizationError as exc:
-            raise HTTPException(status_code=403, detail="Access denied") from exc
+        require_own_player(principal, player_id)
 
     accuracy_history = body.get("accuracy_history", {})
     next_t = get_next_topic(accuracy_history)

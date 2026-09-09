@@ -15,6 +15,14 @@ class RoomResponse(BaseModel):
     is_boss: bool
     is_unlocked: bool
     order_index: int
+    # Populated only when GET /game/dungeon/{id} is called with a `player_id`
+    # -- real per-player status (see game.py::_annotate_rooms_for_player),
+    # generalized from the old DSA-only client-side heuristic in
+    # frontend/lib/api/client.js to every seeded curriculum.
+    unlocked_for_player: Optional[bool] = None
+    recent_accuracy: Optional[float] = None
+    completion: Optional[float] = None
+    status: Optional[str] = None  # "locked" | "unlocked" | "weak" | "mastered"
 
 
 class DungeonResponse(BaseModel):
@@ -25,6 +33,8 @@ class DungeonResponse(BaseModel):
     domain: str
     curriculum_slug: Optional[str] = None
     rooms: List[RoomResponse] = Field(default_factory=list)
+    boss_unlocked: Optional[bool] = None
+    next_topic: Optional[str] = None
 
 
 class SessionStartRequest(BaseModel):

@@ -156,3 +156,24 @@ def require_own_player_dependency(
         return principal
 
     return dependency
+
+
+def require_own_player(principal: BoundPrincipal, player_id: str) -> None:
+    """Enforce own-player object scope for handlers where `player_id` can't
+    be a literal path parameter (it arrives in a request body or as a query
+    parameter instead), so `require_own_player_dependency` doesn't apply.
+
+    This must stay in sync with that dependency's own `_DEMO_AUTH_DISABLED`
+    check: a bare `scoped_to_own_player` call has no such bypass, and
+    `_demo_principal()` always sets `player_id=None`, so every one of these
+    handlers would unconditionally 403 in demo mode without it -- which is
+    the app's only supported login flow today (the frontend's demo
+    username-only login never mints or attaches a bearer token at all, see
+    lib/api/client.js's `auth` module).
+    """
+    if _DEMO_AUTH_DISABLED:
+        return
+    try:
+        scoped_to_own_player(principal, player_id)
+    except AuthorizationError as exc:
+        _raise_forbidden(exc)

@@ -4,8 +4,11 @@ import Link from 'next/link';
 import { Gamepad2 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 
-// Shown in place of Quest-mode-only routes (dungeon, guild) when a learner
-// navigates there directly without having opted in via the NavBar toggle.
+// Shown in place of Quest-mode-only routes (the boss fight and per-topic
+// combat screens) when a learner navigates there directly without having
+// opted in via the NavBar toggle. The dungeon map itself and the guild page
+// are deliberately NOT gated (see NavBar.jsx) -- only the actual AI-judged
+// fights are quest-mode-only.
 // Quest mode is preserved as an explicit opt-in per the team's decision
 // (SIH26101_MASTER_CHECKLIST.md) rather than the default experience -- this
 // component is that boundary, not a redirect, so a learner always

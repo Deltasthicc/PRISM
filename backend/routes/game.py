@@ -5,6 +5,7 @@ import os
 import uuid
 import random
 import httpx
+from typing import Optional
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func
@@ -19,7 +20,7 @@ from models.question import Question
 from models.submission import AnswerSubmission
 from models.accuracy_history import AccuracyHistory
 from models.guild import Guild
-from routes.authorization import require_own_player_dependency, require_permission_dependency
+from routes.authorization import require_own_player, require_own_player_dependency, require_permission_dependency
 from schemas.player import PlayerCreate
 from schemas.dungeon import (
     DungeonResponse, SessionStartRequest, SessionStartResponse,
@@ -38,7 +39,7 @@ from services.heroes import (
     HEROES, DEFAULT_HERO_ID, POWERUP_MAX_USES_PER_WINDOW, POWERUP_WINDOW_HOURS, hero_or_default,
 )
 from services.monsters import monster_name_for
-from security.rbac import AuthorizationError, BoundPrincipal, Permission, scoped_to_own_player
+from security.rbac import BoundPrincipal, Permission
 
 router = APIRouter(prefix="/game", tags=["Game"])
 
@@ -58,10 +59,11 @@ JUDGE_PARTIAL_THRESHOLD = float(os.getenv("JUDGE_PARTIAL_THRESHOLD", "0.30"))
 
 
 def _require_body_player(principal: BoundPrincipal, player_id: str) -> None:
-    try:
-        scoped_to_own_player(principal, player_id)
-    except AuthorizationError as exc:
-        raise HTTPException(status_code=403, detail="Access denied") from exc
+    # Thin alias kept so every existing call site below reads unchanged;
+    # the real (demo-mode-aware) check lives in routes/authorization.py so
+    # it can't drift from require_own_player_dependency's own bypass again --
+    # see that function's docstring for why the bypass is required at all.
+    require_own_player(principal, player_id)
 
 
 def _require_guild_member(principal: BoundPrincipal, guild: Guild, db: Session) -> None:
@@ -386,15 +388,25 @@ async def list_dungeons(
 @router.get("/dungeon/{dungeon_id}", response_model=DungeonResponse)
 async def get_dungeon(
     dungeon_id: str,
+    player_id: Optional[str] = None,
     db: Session = Depends(get_db),
     principal: BoundPrincipal = Depends(
         require_permission_dependency(Permission.PLAYER_SELF_READ)
     ),
 ):
-    """Return a dungeon and its rooms."""
+    """Return a dungeon and its rooms.
+
+    When `player_id` is given, also annotate every room with that player's
+    real unlock/progress status (see `_annotate_rooms_for_player`) -- the map
+    UI (frontend/app/dungeon/page.jsx) renders this directly instead of
+    recomputing a parallel, DSA-only lock heuristic client-side.
+    """
     dungeon = db.query(Dungeon).filter(Dungeon.dungeon_id == dungeon_id).first()
     if not dungeon:
         raise HTTPException(status_code=404, detail="Dungeon not found")
+    if player_id:
+        _require_body_player(principal, player_id)
+        _annotate_rooms_for_player(db, dungeon, player_id)
     return dungeon
 
 
@@ -784,6 +796,46 @@ def _is_room_unlocked_for_player(
     if prerequisites is None:
         return False
     return all(is_proven(topic) for topic in prerequisites)
+
+
+def _annotate_rooms_for_player(db: Session, dungeon: Dungeon, player_id: str) -> None:
+    """Mutate `dungeon`'s in-memory Room objects with this player's real,
+    live status -- the same rule `_is_room_unlocked_for_player` already
+    enforces at room-entry time, applied to every room in the map at once so
+    the frontend never has to reimplement it. Unlike the old client-side
+    heuristic (frontend/lib/api/client.js's `normalizeDungeon`, now removed),
+    this works for every seeded curriculum, not only the DSA dungeon.
+    """
+    histories = db.query(AccuracyHistory).filter(AccuracyHistory.player_id == player_id).all()
+    accuracy_by_topic = {h.topic: h.recent_accuracy or 0.0 for h in histories}
+    damage_by_topic = {h.topic: h.damage_dealt or 0 for h in histories}
+
+    for room in dungeon.rooms:
+        unlocked = _is_room_unlocked_for_player(db, player_id, room, dungeon.dungeon_id)
+        recent_accuracy = accuracy_by_topic.get(room.topic, 0.0)
+        completion = (
+            min(1.0, damage_by_topic.get(room.topic, 0) / room.enemy_count)
+            if room.enemy_count > 0 else 0.0
+        )
+        room.unlocked_for_player = unlocked
+        room.recent_accuracy = recent_accuracy
+        room.completion = completion
+        if not unlocked:
+            status = "locked"
+        elif completion >= 1 or recent_accuracy >= 0.9:
+            status = "mastered"
+        elif 0 < recent_accuracy < 0.5:
+            status = "weak"
+        else:
+            status = "unlocked"
+        room.status = status
+
+    boss_room = next((r for r in dungeon.rooms if r.is_boss), None)
+    dungeon.boss_unlocked = bool(boss_room and boss_room.unlocked_for_player)
+
+    next_candidates = [r for r in dungeon.rooms if not r.is_boss and r.unlocked_for_player]
+    next_room = min(next_candidates, key=lambda r: r.recent_accuracy) if next_candidates else None
+    dungeon.next_topic = next_room.topic if next_room else None
 
 
 # ─── Next Topic Routing (Knowledge Graph AI) ───

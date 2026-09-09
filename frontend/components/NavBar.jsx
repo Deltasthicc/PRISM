@@ -3,9 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { User, LogOut, Gamepad2 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { learning } from '@/lib/api/client';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function NavBar() {
@@ -16,13 +18,28 @@ export default function NavBar() {
   const setPreferredMode = useAuthStore((s) => s.setPreferredMode);
   const { t } = useLanguage();
 
+  // Only fetched to decide whether the DSA Sandbox tab shows at all -- per
+  // the "not all users will have DSA" requirement, a learner who hasn't
+  // picked dsa-fundamentals in their profile shouldn't see an entry point
+  // for it. Cheap: this profile fetch shares its cache (same queryKey) with
+  // every other page that already calls learning.getProfile.
+  const { data: profileData } = useQuery({
+    queryKey: ['learning-profile', player?.player_id],
+    queryFn: () => learning.getProfile(player.player_id),
+    enabled: isAuthenticated && !!player,
+  });
+  const hasDsaFundamentals = Boolean(
+    profileData?.profile?.target_domains?.includes('dsa-fundamentals')
+  );
+
   if (!isAuthenticated) return null;
 
   // Quest mode (character/boss fights/leaderboard) is an explicit opt-in,
   // off by default (models/enums.py's LearningMode, player.preferred_mode).
-  // Prerequisite Pathways and Adaptive Practice are NOT part of that gate --
+  // Prerequisite Pathways and the DSA Sandbox are NOT part of that gate --
   // the toggle is a placeholder for now and doesn't change their
-  // availability; both nav tabs always show.
+  // availability; both nav tabs always show (DSA Sandbox is instead gated
+  // on the learner having picked dsa-fundamentals, above).
   const questModeOn = player?.preferred_mode === 'quest';
   const navTabs = [
     { href: '/dungeon', label: t('nav.prerequisitePathways'), hasDot: false },
@@ -31,7 +48,9 @@ export default function NavBar() {
       label: t('nav.sourceQuizGenerator'),
       hasDot: false,
     },
-    { href: '/guild', label: t('nav.adaptivePractice'), hasDot: false },
+    ...(hasDsaFundamentals
+      ? [{ href: '/dsa-sandbox', label: t('nav.dsaSandbox'), hasDot: false }]
+      : []),
     {
       href: '/integration-registry',
       label: t('nav.integrationRegistry'),

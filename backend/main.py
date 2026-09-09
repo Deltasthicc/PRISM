@@ -31,6 +31,7 @@ from models.learning import LearnerProfile, CompetencyAssessment, LearningMateri
 from models.governance import RoleTarget, EvidenceRecord, SourceVersion, AuditEvent
 from models.identity import IdentityBinding
 from models.question_bank import QuestionBankItem, QuestionBankAttempt
+from models.dsa_submission import DsaSubmission
 
 
 @asynccontextmanager

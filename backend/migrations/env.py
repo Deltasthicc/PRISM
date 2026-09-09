@@ -9,6 +9,7 @@ from db.database import Base, SQLALCHEMY_DATABASE_URL
 from models import (
     accuracy_history,
     dungeon,
+    dsa_submission,
     governance,
     guild,
     identity,
@@ -23,6 +24,7 @@ from models import (
 _REGISTERED_MODEL_MODULES = (
     accuracy_history,
     dungeon,
+    dsa_submission,
     governance,
     guild,
     identity,

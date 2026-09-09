@@ -19,7 +19,8 @@ RETIRE_AUDIT_DELETE_REJECTION_REVISION = "4631f204d4ba"
 MEASURED_INDEXES_REVISION = "6564595b3466"
 QUESTION_BANK_REVISION = "c29341762ab8"
 LEARNER_PROFILE_FULL_NAME_REVISION = "a1b2c3d4e5f6"
-HEAD_REVISION = LEARNER_PROFILE_FULL_NAME_REVISION
+DSA_SUBMISSIONS_REVISION = "d2e3f4a5b6c7"
+HEAD_REVISION = DSA_SUBMISSIONS_REVISION
 GOVERNANCE_TABLES = {
     "audit_events",
     "evidence_records",
@@ -69,7 +70,8 @@ def test_full_migration_chain_upgrades_and_downgrades_fresh_database(tmp_path):
     assert GOVERNANCE_TABLES <= names
     assert IDENTITY_TABLES <= names
     assert QUESTION_BANK_TABLES <= names
-    assert len(names) == 20
+    assert "dsa_submissions" in names
+    assert len(names) == 21
 
     _run_alembic(database_url, "downgrade", "base")
     assert inspect(engine).get_table_names() == ["alembic_version"]

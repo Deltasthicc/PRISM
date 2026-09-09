@@ -434,4 +434,16 @@ export const learning = {
         ...(playerId ? { player_id: playerId } : {}),
       },
     }),
+
+  // Real code execution (routes/dsa_sandbox.py -> a real Judge0 instance --
+  // never run in-process). Solving a problem here writes real evidence into
+  // the same AccuracyHistory rows /dungeon's room-unlock logic and
+  // /stats's competency pathway both already read.
+  getDsaSandboxProblems: () => request('/learning/dsa-sandbox/problems'),
+
+  submitDsaSandbox: (playerId, problemId, code) =>
+    request('/learning/dsa-sandbox/submit', {
+      method: 'POST',
+      body: { player_id: playerId, problem_id: problemId, code },
+    }),
 };

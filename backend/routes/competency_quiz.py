@@ -42,7 +42,7 @@ router = APIRouter(prefix="/learning/competency-quiz", tags=["Competency Quiz"])
 TOPICS: dict[str, dict] = {
     "statistical_foundations": {
         "label": "Statistical Foundations & Sampling Design",
-        "competency_ids": ["os_statistical_foundations", "os_sampling_design"],
+        "competency_ids": ["os_statistical_foundations", "os_sampling_design", "os_survey_design"],
         "curriculum_slug": "official-statistics",
     },
     "data_quality": {

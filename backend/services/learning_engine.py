@@ -188,6 +188,17 @@ def analyse_competencies(
     if unknown:
         raise ValueError(f"Ratings contain competencies outside this curriculum: {', '.join(unknown)}")
 
+    # measured_scores deliberately gets no such check, unlike self_ratings/
+    # evidence: routes/learning_common.py's measured_scores() returns a
+    # player's FULL cross-curriculum AccuracyHistory snapshot (DSA rooms,
+    # every other domain's topics, "boss::<slug>" entries, all of it) and
+    # every call site hands that same full dict to analyse_competencies()
+    # regardless of which curriculum_slug is being analysed -- silently
+    # ignoring a key outside `allowed` (via the plain .get() below) is that
+    # filtering step, not a defect to close. Validating it here would 422 any
+    # player who has practiced more than one domain, on every pathway/
+    # assessment call for either one.
+
     # Bound to its own name: `evidence` is reused below as the per-competency
     # explanation string, and rebinding the parameter would corrupt it on the
     # next loop iteration.

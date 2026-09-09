@@ -111,7 +111,7 @@ export default function AdminPage() {
               <div key={provider} className="border-b border-[#c5c5d3]/40 pb-2">
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-xs text-[#131b2e] uppercase">{provider}</span>
-                  <Badge tone={status.mode === 'configured' ? 'accent' : 'warning'}>{status.mode}</Badge>
+                  <Badge tone={status.mode === 'LIVE' ? 'accent' : 'warning'}>{status.mode}</Badge>
                 </div>
                 <p className="font-sans text-sm text-[#757682] mt-1">{status.detail}</p>
               </div>

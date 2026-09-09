@@ -82,6 +82,7 @@ def test_questions_are_bounded_balanced_ordered_and_do_not_leak_answers():
     assert {question["competency_id"] for question in data["questions"]} == {
         "os_statistical_foundations",
         "os_sampling_design",
+        "os_survey_design",
     }
     difficulties = [DIFFICULTY_ORDER[question["difficulty"]] for question in data["questions"]]
     assert difficulties == sorted(difficulties)
@@ -128,7 +129,16 @@ def test_submit_grades_and_ranks_without_calling_it_self_assessment():
     assert [score["rank"] for score in body["competency_scores"]] == list(
         range(1, len(body["competency_scores"]) + 1)
     )
-    assert all(score["confidence"] == "low" for score in body["competency_scores"])
+    # dl_ai_literacy still has only one real question, so one attempt keeps it
+    # at "low" confidence; os_ml has since gained several more real questions
+    # (services/ps02_coverage.py's weakest-covered technical competency, now
+    # backed by NITI Aayog's National Strategy for AI), so a 5-question draw
+    # genuinely pulls enough os_ml evidence to earn a higher confidence tier --
+    # that is the correct behavior, not a regression, so this assertion tracks
+    # the real evidence count rather than a stale "everything stays low" claim.
+    scores_by_competency = {score["competency_id"]: score for score in body["competency_scores"]}
+    assert scores_by_competency["dl_ai_literacy"]["confidence"] == "low"
+    assert scores_by_competency["os_ml"]["confidence"] in {"moderate", "high"}
 
 
 def test_submit_requires_exact_issued_set_and_rejects_duplicate_and_cross_topic():

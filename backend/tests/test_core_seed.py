@@ -16,6 +16,7 @@ import db.seed as seed_module
 from db.database import Base
 from models.accuracy_history import AccuracyHistory  # noqa: F401 -- relationship target
 from models.dungeon import Dungeon, Room
+from models.governance import RoleTarget
 from models.guild import Guild  # noqa: F401 -- relationship target
 from models.player import Player
 from models.question import Question  # noqa: F401 -- relationship target
@@ -91,4 +92,60 @@ def test_seed_curricula_dungeons_is_idempotent_on_rerun(seeded_session_factory):
     session = seeded_session_factory()
     names = [d.name for d in session.query(Dungeon).all()]
     assert len(names) == len(set(names))  # no duplicate dungeon names from the second run
+    session.close()
+
+
+def test_seed_role_targets_populates_every_override_row(seeded_session_factory):
+    """Regression guard for the exact gap this seeder closes: without it,
+    services/role_target_resolver.py (what every real HTTP route calls) never
+    finds a match and every learner silently gets curriculum-default targets
+    regardless of designation/job_role/department/current_assignment, even
+    though services/role_targets.py's ROLE_TARGET_OVERRIDES and the whole
+    precedence policy are fully implemented."""
+    from services.role_targets import ROLE_TARGET_OVERRIDES
+
+    seed_module.seed_role_targets()
+
+    session = seeded_session_factory()
+    rows = session.query(RoleTarget).all()
+    expected_count = sum(len(targets) for targets in ROLE_TARGET_OVERRIDES.values())
+    assert len(rows) == expected_count
+
+    by_key = {(row.role, row.competency_id): row for row in rows}
+    for role, targets in ROLE_TARGET_OVERRIDES.items():
+        for competency_id, target_level in targets.items():
+            row = by_key[(role, competency_id)]
+            assert row.target_level == target_level
+            assert row.source == "internal-prototype"
+            assert row.approved_by is None
+    session.close()
+
+
+def test_seed_role_targets_is_idempotent_on_rerun(seeded_session_factory):
+    seed_module.seed_role_targets()
+    seed_module.seed_role_targets()
+
+    session = seeded_session_factory()
+    rows = session.query(RoleTarget).all()
+    keys = [(row.role, row.competency_id) for row in rows]
+    assert len(keys) == len(set(keys))  # no duplicate rows from the second run
+    session.close()
+
+
+def test_role_target_resolver_finds_seeded_rows_for_a_real_designation(seeded_session_factory):
+    """End-to-end: the DB-backed resolver (the path every real route calls)
+    must actually find what this seeder writes -- not just "a row exists,"
+    but the exact resolver a learner's profile flows through in production."""
+    from services.role_target_resolver import resolve_role_targets
+
+    seed_module.seed_role_targets()
+
+    session = seeded_session_factory()
+    targets = resolve_role_targets(session, "official-statistics", job_role="Statistical Officer")
+    assert targets["os_statistical_foundations"]["target_level"] == 4.0
+    assert targets["os_statistical_foundations"]["source"] == "internal-prototype"
+    assert targets["os_statistical_foundations"]["matched_field"] == "job_role"
+    # A competency with no override for this role still gets a complete map
+    # entry, just via the curriculum-default fallback.
+    assert targets["os_visualization"]["source"] == "curriculum-default"
     session.close()

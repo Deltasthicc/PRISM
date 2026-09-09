@@ -1,7 +1,7 @@
 {
   "corpus_version": "prototype-v1",
-  "verified_on": "2026-09-06",
-  "total_documents": 23,
+  "verified_on": "2026-09-09",
+  "total_documents": 49,
   "note": "Every document was downloaded, hashed and text-extracted on verified_on. sha256 is of the exact bytes retrieved from url on that date.",
   "documents": [
     {
@@ -279,7 +279,8 @@
       "source_id": "SRC-01",
       "category": "statistical",
       "competency_ids": [
-        "os_official_statistics"
+        "os_official_statistics",
+        "os_statistical_programming"
       ],
       "url": "https://mospi.gov.in/sites/default/files/main_menu/training/Training%20Calendar%20of%20NSSTA%20for%20FY%202021-22.pdf",
       "sha256": "daf9b6fe4108b4aad2daca6b5f441814c83e3474373bd3b52e4ca22829b09ec1",
@@ -419,6 +420,485 @@
       "link_status": "verified-file",
       "verified_on": "2026-09-06",
       "extraction_note": "Scanned bilingual (Hindi/English) page-image PDF, no embedded text layer -- pypdf.extract_text() returns 0 characters on every page (confirmed 2026-09-06). extract_document_text() correctly raises DocumentUnavailable for this doc_id ('may be a scanned document needing OCR'); do not expect quiz_from_document() to work here without an OCR step this corpus does not yet have. See services/hand_authored_questions.py for MCQs hand-transcribed directly from these page images by human review instead of automatic extraction."
+    },
+    {
+      "doc_id": "gate2026_cs1",
+      "title": "GATE 2026 Computer Science & Information Technology (CS1) Question Paper",
+      "publisher": "GATE (National Coordination Board), organized by IIT Guwahati",
+      "source_id": "SRC-38",
+      "category": "technical",
+      "competency_ids": [
+        "arrays",
+        "linked_lists",
+        "stacks_queues",
+        "binary_search_tree",
+        "heaps",
+        "recursion",
+        "trees",
+        "graphs",
+        "dynamic_programming",
+        "sorting_algorithms"
+      ],
+      "url": "https://gate2026.iitg.ac.in/doc/download/2026/QPs/CS1.pdf",
+      "sha256": "ccfa649cdb671e2ac777b266a3eba7729f902122ec5cd3553fef01dac409ed96",
+      "bytes": 2455522,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 46
+    },
+    {
+      "doc_id": "gate2026_cs2",
+      "title": "GATE 2026 Computer Science & Information Technology (CS2) Question Paper",
+      "publisher": "GATE (National Coordination Board), organized by IIT Guwahati",
+      "source_id": "SRC-39",
+      "category": "technical",
+      "competency_ids": [
+        "stacks_queues",
+        "recursion",
+        "binary_search_tree",
+        "graphs",
+        "dynamic_programming",
+        "sorting_algorithms"
+      ],
+      "url": "https://gate2026.iitg.ac.in/doc/download/2026/QPs/CS2.pdf",
+      "sha256": "5016950bc4e5c96676fb526e3247bab243a3dde422b6cb40a8531cc9b45f36ff",
+      "bytes": 2905404,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 42
+    },
+    {
+      "doc_id": "gate2024_cs1",
+      "title": "GATE 2024 Computer Science & Information Technology (CS1) Question Paper",
+      "publisher": "GATE (National Coordination Board), organized by IISc Bengaluru",
+      "source_id": "SRC-40",
+      "category": "technical",
+      "competency_ids": [
+        "arrays",
+        "recursion",
+        "binary_search_tree",
+        "heaps",
+        "graphs"
+      ],
+      "url": "https://gate2024.iisc.ac.in/wp-content/uploads/2024/CS124S5.pdf",
+      "sha256": "18cf9ac15c01bdbf9d767c7a402d63234a28ae91c8ec227090ba5a5fdef121dd",
+      "bytes": 834514,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 36
+    },
+    {
+      "doc_id": "gate2024_cs2",
+      "title": "GATE 2024 Computer Science & Information Technology (CS2) Question Paper",
+      "publisher": "GATE (National Coordination Board), organized by IISc Bengaluru",
+      "source_id": "SRC-41",
+      "category": "technical",
+      "competency_ids": [
+        "arrays",
+        "stacks_queues",
+        "binary_search_tree",
+        "graphs"
+      ],
+      "url": "https://gate2024.iisc.ac.in/wp-content/uploads/2024/CS224S6.pdf",
+      "sha256": "b5012f2e7da399f4129e9ac5c1713493e3374ba9c9d30d600383dc535b3b5072",
+      "bytes": 886167,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 40
+    },
+    {
+      "doc_id": "census2011_houselisting",
+      "title": "Census of India 2011 -- Instruction Manual for Houselisting and Housing Census",
+      "publisher": "Office of the Registrar General & Census Commissioner, Ministry of Home Affairs",
+      "source_id": "SRC-42",
+      "category": "statistical",
+      "competency_ids": [
+        "os_data_collection"
+      ],
+      "url": "https://censusindia.gov.in/nada/index.php/catalog/43487/download/47193/IM_HL_English_2011.pdf",
+      "sha256": "d65175f3282d9fb6f38bd3571fe97967a1fb8199500a65c59c8f3fa42b3b2840",
+      "bytes": 4763787,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 80
+    },
+    {
+      "doc_id": "ndap_vision",
+      "title": "National Data and Analytics Platform: Vision Document",
+      "publisher": "NITI Aayog",
+      "source_id": "SRC-43",
+      "category": "technical",
+      "competency_ids": [
+        "os_visualization",
+        "os_big_data",
+        "dl_data_literacy",
+        "pa_data_storytelling"
+      ],
+      "url": "https://www.niti.gov.in/sites/default/files/2020-01/Vision_Document_30_Jan.pdf",
+      "sha256": "fdab1803a20887c0a3fa215db94bef89428d784e99971937a74b9fca685b8760",
+      "bytes": 2978519,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 12
+    },
+    {
+      "doc_id": "mdds_health",
+      "title": "Metadata and Data Standards (MDDS) -- Health Domain, Part I Overview Report",
+      "publisher": "Ministry of Electronics and Information Technology",
+      "source_id": "SRC-44",
+      "category": "technical",
+      "competency_ids": [
+        "os_data_management_sql"
+      ],
+      "url": "https://egovstandards.gov.in/sites/default/files/2021-07/Part%20I%20MDDS%20Overview%20Report_0.pdf",
+      "sha256": "b75d0c9278cb8e2affce92f46cbf4867d05e528716b7b1faa70890b23b84ad8a",
+      "bytes": 2116714,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 38
+    },
+    {
+      "doc_id": "national_geospatial_policy",
+      "title": "National Geospatial Policy, 2022",
+      "publisher": "Department of Science & Technology, Government of India",
+      "source_id": "SRC-45",
+      "category": "statistical",
+      "competency_ids": [
+        "os_gis"
+      ],
+      "url": "https://dst.gov.in/sites/default/files/National%20Geospatial%20Policy.pdf",
+      "sha256": "cd237d67ad32d5b4ee8d5fd5c5fcfe679d6d1e2eb9fcc41bb40a6281b4f80b0c",
+      "bytes": 1675799,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 24
+    },
+    {
+      "doc_id": "darpg_sevottam",
+      "title": "Guidelines for Designing and Implementing SEVOTTAM Compliant Citizen's/Client's Charter & Grievance Redress Mechanism",
+      "publisher": "Department of Administrative Reforms and Public Grievances (DARPG)",
+      "source_id": "SRC-46",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_governance_foundations",
+        "pa_communication",
+        "pa_program_management"
+      ],
+      "url": "https://darpg.gov.in/sites/default/files/Sevottam_RFD_Guidelines_August_2010.pdf",
+      "sha256": "2906c400d1637bfc288e0b735c82de8bd8f36759f97c864afc67fe87269fba4a",
+      "bytes": 1299125,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 57
+    },
+    {
+      "doc_id": "ccs_conduct_rules_1964",
+      "title": "Central Civil Services (Conduct) Rules, 1964 (as amended upto 31.12.2014)",
+      "publisher": "Department of Personnel & Training, Government of India",
+      "source_id": "SRC-47",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_ethics",
+        "pa_decision_making"
+      ],
+      "url": "https://www.iisermohali.ac.in/files/pdf/Administration/Manuals/CCS_Conduct_Rules_1964_Updated_27Feb15-0-DOPT.pdf",
+      "sha256": "88bc44ea94fe59cb221cfab0ff4da1679c83e014b26e50fb6e18aab8da98c5b1",
+      "bytes": 728968,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 21
+    },
+    {
+      "doc_id": "niti_founding_resolution",
+      "title": "Cabinet Secretariat Resolution dated 1 January 2015 (constituting NITI Aayog)",
+      "publisher": "Cabinet Secretariat, Government of India",
+      "source_id": "SRC-48",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_governance_foundations",
+        "pa_policy_design",
+        "pa_monitoring_evaluation"
+      ],
+      "url": "https://www.niti.gov.in/sites/default/files/2022-11/Cabinet_Secretariat_Resolution_dated_01-01-2015.pdf",
+      "sha256": "458bd9a4835cfafa956a59576531d126aa768c839efb95d5e61be93c15a3ba18",
+      "bytes": 437271,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 4
+    },
+    {
+      "doc_id": "dmeo_pmgsy_eval",
+      "title": "A Quick Concurrent Evaluation of Pradhan Mantri Gram Sadak Yojana (PMGSY) -- Executive Summary",
+      "publisher": "Programme Evaluation Organisation (now DMEO), NITI Aayog",
+      "source_id": "SRC-49",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_impact_evaluation",
+        "pa_monitoring_evaluation"
+      ],
+      "url": "https://dmeo.gov.in/sites/default/files/2019-10/Evaluation%20Study%20on%20Pradhan%20Mantri%20Gram%20Sadak%20Yojana%20(PMGSY)%20-%20Executive%20Summary.pdf",
+      "sha256": "dc90f5d7b3e4a47b260f9aa9eaf472d3119c8b3da4c46b5458df2bd0c2b759c2",
+      "bytes": 178175,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 13
+    },
+    {
+      "doc_id": "aspirational_districts_pib",
+      "title": "Transformation of Aspirational Districts Programme -- Backgrounder",
+      "publisher": "Press Information Bureau (NITI Aayog)",
+      "source_id": "SRC-50",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_program_management"
+      ],
+      "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2022/jan/doc2022153401.pdf",
+      "sha256": "c647e95442b8a1efa5ad1d1da2ad390d2877262c903ead83ff07e5385b0f540d",
+      "bytes": 1778708,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 10
+    },
+    {
+      "doc_id": "it_act_2000",
+      "title": "The Information Technology Act, 2000 (No. 21 of 2000)",
+      "publisher": "Ministry of Law, Justice and Company Affairs (Legislative Department) / hosted by CCA, MeitY",
+      "source_id": "SRC-51",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_digital_signatures"
+      ],
+      "url": "https://cca.gov.in/sites/files/pdf/ACT/ACT2000.pdf",
+      "sha256": "4e0dd7be87cebd3e5f8cb966a5f973361a4f37f49073ad8aa3436cba501f5514",
+      "bytes": 115758,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 50
+    },
+    {
+      "doc_id": "i4c_cyber_hygiene",
+      "title": "Cyber Hygiene for Cyber Space -- Dos & Don'ts (Basic)",
+      "publisher": "Indian Cyber Crime Coordination Centre (I4C), Ministry of Home Affairs",
+      "source_id": "SRC-52",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_cyber_hygiene"
+      ],
+      "url": "https://i4c.mha.gov.in/theme/resources/Cyber%20Hygiene%20for%20Cyber%20Space%20-%20Dos-Donts-Basic%20English%20Manual.pdf",
+      "sha256": "11c72f7afafbaff703c8f3999640c064774f000645686a22791ee240ad281256",
+      "bytes": 11189583,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 40
+    },
+    {
+      "doc_id": "niti_responsible_ai",
+      "title": "Responsible AI #AIForAll -- Approach Document for India, Part 1: Principles for Responsible AI",
+      "publisher": "NITI Aayog",
+      "source_id": "SRC-53",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_responsible_ai"
+      ],
+      "url": "https://www.niti.gov.in/sites/default/files/2021-02/Responsible-AI-22022021.pdf",
+      "sha256": "381272dfa3b7a098a98df31adad95a32b3b7d182eb1ef8b21ec4873ae9c70254",
+      "bytes": 3502689,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 64
+    },
+    {
+      "doc_id": "nielit_ccc_syllabus",
+      "title": "Syllabus: Course on Computer Concepts (CCC)",
+      "publisher": "NIELIT, Ministry of Electronics & Information Technology",
+      "source_id": "SRC-54",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_digital_foundations",
+        "dl_collaboration",
+        "dl_spreadsheets"
+      ],
+      "url": "https://www.nielit.gov.in/sites/default/files/ccc_syllabus_0.pdf",
+      "sha256": "eef013a5111d4120e74b6d2c0a053a94aa82a478319be05e2a06074a4419a96d",
+      "bytes": 52640,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 6,
+      "extraction_note": "Live URL currently returns an error page on nielit.gov.in (confirmed 2026-09-09); content verified via the Wayback Machine snapshot of this exact URL: http://web.archive.org/web/20251118220827/https://www.nielit.gov.in/sites/default/files/ccc_syllabus_0.pdf -- sha256/bytes/pages below are of that archived copy."
+    },
+    {
+      "doc_id": "gi_cloud_roadmap",
+      "title": "GI Cloud (Meghraj) Adoption and Implementation Roadmap",
+      "publisher": "Department of Electronics and IT (now MeitY)",
+      "source_id": "SRC-55",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_government_cloud"
+      ],
+      "url": "https://www.meity.gov.in/writereaddata/files/GI-Cloud%20Adoption%20and%20Implementation%20Roadmap(1)_0.pdf",
+      "sha256": "1c56585cbed056096b22a8c38a717f2c2924c945500bd1719ce01086bf2b39c9",
+      "bytes": 712074,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 51,
+      "extraction_note": "Live URL currently 404s on meity.gov.in (confirmed 2026-09-09); content verified via the Wayback Machine snapshot of this exact URL: http://web.archive.org/web/20240521050549/https://www.meity.gov.in/writereaddata/files/GI-Cloud%20Adoption%20and%20Implementation%20Roadmap(1)_0.pdf -- sha256/bytes/pages below are of that archived copy."
+    },
+    {
+      "doc_id": "pib_dpi_2026",
+      "title": "India's Digital Public Infrastructure",
+      "publisher": "Press Information Bureau",
+      "source_id": "SRC-56",
+      "category": "digital_governance",
+      "competency_ids": [
+        "dl_digital_public_infrastructure"
+      ],
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2235812",
+      "sha256": "de8d5110911095870cd4249a069cd33d5df155ec0e6d6706a88bbb941e5742cf",
+      "bytes": 427450,
+      "content_type": "text/html",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 1
+    },
+    {
+      "doc_id": "pib_mission_karmayogi",
+      "title": "Cabinet approves 'Mission Karmayogi' -- National Programme for Civil Services Capacity Building (NPCSCB)",
+      "publisher": "Press Information Bureau (Cabinet)",
+      "source_id": "SRC-57",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_leadership",
+        "pa_change_management"
+      ],
+      "url": "https://pib.gov.in/Pressreleaseshare.aspx?PRID=1650633",
+      "sha256": "084795715fd146a91362369c02235691dbea1cf90f3ae80acd54d5eeb0cbbaee",
+      "bytes": 44386,
+      "content_type": "text/html",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 1
+    },
+    {
+      "doc_id": "pib_finance_commission_xv",
+      "title": "The Report of the Fifteenth Finance Commission for 2021-26 -- Key Highlights",
+      "publisher": "Press Information Bureau (Ministry of Finance)",
+      "source_id": "SRC-58",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_public_finance"
+      ],
+      "url": "https://pib.gov.in/PressReleasePage.aspx?PRID=1693868",
+      "sha256": "93963fb6a1fddc837aa8f746543e3979268d6fa510f4658d4ee072faf85630ae",
+      "bytes": 249319,
+      "content_type": "text/html",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 1
+    },
+    {
+      "doc_id": "upsc_csp2023_gs1",
+      "title": "Civil Services (Preliminary) Examination, 2023 -- General Studies Paper I",
+      "publisher": "Union Public Service Commission",
+      "source_id": "SRC-59",
+      "category": "behavioural_managerial",
+      "competency_ids": [
+        "pa_governance_foundations",
+        "pa_public_finance",
+        "pa_decision_making"
+      ],
+      "url": "https://upsc.gov.in/sites/default/files/QP_CS_Pre_Exam_2023_280523.pdf",
+      "sha256": "14281f205282431f668c23ba0f79952b500255d81f7d4a9ea2b27c84cf99e7e2",
+      "bytes": 6947922,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09",
+      "pages": 48
+    },
+    {
+      "doc_id": "nmds_2",
+      "title": "National Metadata Standard (NMDS) 2.0",
+      "publisher": "MoSPI",
+      "source_id": "SRC-60",
+      "category": "statistical",
+      "competency_ids": [
+        "os_metadata_standards"
+      ],
+      "url": "https://www.mospi.gov.in/sites/default/files/National_Metadata_Standard_6122023.pdf",
+      "sha256": "729cfba37e1f52706705770166229b3c38144f5db465f9f134496f7c7d8a2c53",
+      "bytes": 772019,
+      "pages": 17,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09"
+    },
+    {
+      "doc_id": "manual_asi_2008",
+      "title": "Manual on Annual Survey of Industries (ASI)",
+      "publisher": "Central Statistical Organisation, MoSPI",
+      "source_id": "SRC-61",
+      "category": "statistical",
+      "competency_ids": [
+        "os_industrial_statistics"
+      ],
+      "url": "https://mospi.gov.in/sites/default/files/publication_reports/manual_asi_2008.pdf",
+      "sha256": "90a975d4343cd1e807fca5f857ba3db2583d303b2bf92280b4559616f7024c84",
+      "bytes": 1601480,
+      "pages": 38,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09"
+    },
+    {
+      "doc_id": "apisetu_definitions",
+      "title": "Policy on Open APIs for Government of India -- Definitions",
+      "publisher": "Ministry of Electronics and Information Technology (APISetu)",
+      "source_id": "SRC-62",
+      "category": "technical",
+      "competency_ids": [
+        "os_apis_interoperability"
+      ],
+      "url": "https://docs.apisetu.gov.in/document-central/api-policy/Definitions.html",
+      "sha256": "886d5e5a1f2cad496a8347033664c1be8d746d61905c62f91082588976e3e4d2",
+      "bytes": 44332,
+      "pages": 1,
+      "content_type": "text/html",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09"
+    },
+    {
+      "doc_id": "plfs_metadata_compliance",
+      "title": "Compliance of Metadata of Periodic Labour Force Survey (PLFS)",
+      "publisher": "National Statistical Office, MoSPI",
+      "source_id": "SRC-63",
+      "category": "statistical",
+      "competency_ids": [
+        "os_labour_statistics"
+      ],
+      "url": "https://www.mospi.gov.in/sites/default/files/Compliance_of_Metadata_of_Periodic_Labour_Force_Survey_(PLFS)Updated.pdf",
+      "sha256": "3b9c43d07ffb2ec4e7a048d956233427ccdf1a25351457e337251e714f5d70a6",
+      "bytes": 208702,
+      "pages": 6,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-09"
     }
   ]
 }

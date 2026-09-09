@@ -63,6 +63,96 @@ TOPICS: dict[str, dict] = {
         "competency_ids": ["os_ml", "dl_ai_literacy"],
         "curriculum_slug": "digital-literacy",
     },
+    # DSA -- GATE-sourced (see data/hand_authored_questions.json); no topic
+    # for binary_search, which has zero verified questions so far.
+    "linear_structures": {
+        "label": "Arrays, Linked Lists & Stacks/Queues",
+        "competency_ids": ["arrays", "linked_lists", "stacks_queues"],
+        "curriculum_slug": "dsa-fundamentals",
+    },
+    "recursion_and_sorting": {
+        "label": "Recursion & Sorting Algorithms",
+        "competency_ids": ["recursion", "sorting_algorithms"],
+        "curriculum_slug": "dsa-fundamentals",
+    },
+    "trees_and_heaps": {
+        "label": "Trees, Binary Search Trees & Heaps",
+        "competency_ids": ["trees", "binary_search_tree", "heaps"],
+        "curriculum_slug": "dsa-fundamentals",
+    },
+    "graphs_and_dp": {
+        "label": "Graphs & Dynamic Programming",
+        "competency_ids": ["graphs", "dynamic_programming"],
+        "curriculum_slug": "dsa-fundamentals",
+    },
+    # Official Statistics -- expanded coverage
+    "data_collection_and_surveys": {
+        "label": "Data Collection & Official Statistics",
+        "competency_ids": ["os_data_collection", "os_official_statistics"],
+        "curriculum_slug": "official-statistics",
+    },
+    "data_technology": {
+        "label": "Visualization, GIS, Big Data & Statistical Programming",
+        "competency_ids": ["os_visualization", "os_gis", "os_big_data", "os_statistical_programming", "os_data_management_sql"],
+        "curriculum_slug": "official-statistics",
+    },
+    "national_accounts_and_sectoral": {
+        "label": "National Accounts, Labour & Industrial Statistics",
+        "competency_ids": ["os_national_accounts", "os_labour_statistics", "os_industrial_statistics"],
+        "curriculum_slug": "official-statistics",
+    },
+    "open_data_and_standards": {
+        "label": "SDG Indicators, Metadata & Open Data Standards",
+        "competency_ids": ["os_sdg_indicators", "os_metadata_standards", "os_apis_interoperability", "os_open_data"],
+        "curriculum_slug": "official-statistics",
+    },
+    # Public Policy -- all new coverage
+    "governance_and_policy": {
+        "label": "Governance Foundations & Policy Design",
+        "competency_ids": ["pa_governance_foundations", "pa_policy_design"],
+        "curriculum_slug": "public-policy",
+    },
+    "public_finance": {
+        "label": "Public Finance",
+        "competency_ids": ["pa_public_finance"],
+        "curriculum_slug": "public-policy",
+    },
+    "program_delivery": {
+        "label": "Program Management, Monitoring & Impact Evaluation",
+        "competency_ids": ["pa_program_management", "pa_monitoring_evaluation", "pa_impact_evaluation"],
+        "curriculum_slug": "public-policy",
+    },
+    "ethics_and_conduct": {
+        "label": "Ethics & Decision-Making",
+        "competency_ids": ["pa_ethics", "pa_decision_making"],
+        "curriculum_slug": "public-policy",
+    },
+    "leadership_and_change": {
+        "label": "Leadership, Change Management & Communication",
+        "competency_ids": ["pa_leadership", "pa_change_management", "pa_communication", "pa_data_storytelling"],
+        "curriculum_slug": "public-policy",
+    },
+    # Digital Literacy -- expanded coverage
+    "cyber_hygiene_and_signatures": {
+        "label": "Cyber Hygiene & Digital Signatures",
+        "competency_ids": ["dl_cyber_hygiene", "dl_digital_signatures"],
+        "curriculum_slug": "digital-literacy",
+    },
+    "responsible_ai_and_dpi": {
+        "label": "Responsible AI & Digital Public Infrastructure",
+        "competency_ids": ["dl_responsible_ai", "dl_digital_public_infrastructure"],
+        "curriculum_slug": "digital-literacy",
+    },
+    "digital_office_skills": {
+        "label": "Digital Foundations, Collaboration & Spreadsheets",
+        "competency_ids": ["dl_digital_foundations", "dl_collaboration", "dl_spreadsheets", "dl_data_literacy"],
+        "curriculum_slug": "digital-literacy",
+    },
+    "government_cloud": {
+        "label": "Government Cloud (GI Cloud / MeghRaj)",
+        "competency_ids": ["dl_government_cloud"],
+        "curriculum_slug": "digital-literacy",
+    },
 }
 
 _DIFFICULTY_ORDER = {"easy": 0, "medium": 1, "hard": 2}

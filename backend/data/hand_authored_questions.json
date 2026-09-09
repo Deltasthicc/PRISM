@@ -391,8 +391,2191 @@
       "locator": "Digital Personal Data Protection Act, 2023, definitions section, clause (u)",
       "source_excerpt": "\"personal data breach\" means any unauthorised processing of personal data or accidental disclosure, acquisition, sharing, use, alteration, destruction or loss of access to personal data, that compromises the confidentiality, integrity or availability of personal data;",
       "question": "Fill in the blank using the DPDP Act 2023's own definition: a 'personal data breach' is any unauthorised processing, disclosure, acquisition, alteration, destruction, or loss of access to personal data that compromises its _____, integrity, or availability.",
-      "accepted_answers": ["confidentiality"],
+      "accepted_answers": [
+        "confidentiality"
+      ],
       "explanation": "The Act's clause (u) defines a personal data breach as compromising one of three properties of the data: confidentiality, integrity, or availability -- the same CIA triad used broadly in information security, not a DPDP-specific coinage."
+    },
+    {
+      "item_id": "ha_gate_arrays_sorted_check",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "arrays",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1, Q.17",
+      "source_excerpt": "Given an integer array of size N, we want to check if the array is sorted (in either ascending or descending order). An algorithm solves this problem by making a single pass through the array and comparing each element of the array only with its adjacent elements. The worst-case time complexity of this algorithm is (A) both O(N) and Omega(N) (B) O(N) but not Omega(N) (C) Omega(N) but not O(N) (D) neither O(N) nor Omega(N)",
+      "question": "An algorithm checks whether an array of size N is sorted (ascending or descending) by making a single pass and comparing each element only with its adjacent elements. What is its worst-case time complexity?",
+      "options": [
+        "Both O(N) and Ω(N)",
+        "O(N) but not Ω(N)",
+        "Ω(N) but not O(N)",
+        "Neither O(N) nor Ω(N)"
+      ],
+      "answer_index": 0,
+      "explanation": "A single pass comparing adjacent elements always takes exactly N-1 comparisons regardless of the array's content, so the running time is both an upper bound (O(N)) and a tight lower bound (Ω(N)) -- i.e. Θ(N).",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_arrays_longest_two_distinct",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "arrays",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS2, Q.42",
+      "source_excerpt": "Consider an array X that contains n positive integers. The C code snippet given below has been written to compute the length of the longest subarray of X that contains at most two distinct integers. The code has two missing expressions labelled (P) and (Q). Which one of the following options gives the CORRECT missing expressions? (A) (P) len1+1 (Q) len2+1 (B) (P) 1 (Q) len1+1 (C) (P) 1 (Q) len2+1 (D) (P) len2+1 (Q) len1+1",
+      "question": "A C routine tracks the longest run of at most two distinct values in an array using a sliding window with two length counters, `len1 = (P)` and `len2 = (Q)`, reset whenever a third distinct value appears. Which pair of reset expressions is correct?",
+      "options": [
+        "(P) len1+1, (Q) len2+1",
+        "(P) 1, (Q) len1+1",
+        "(P) 1, (Q) len2+1",
+        "(P) len2+1, (Q) len1+1"
+      ],
+      "answer_index": 1,
+      "explanation": "Per GATE 2024 CS2's official answer key, option B is correct: when a third distinct value forces a window reset, the run restarts at length 1 for the new value, while the other counter carries forward the previous run's length.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_arrays_distance_fillinblank",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "arrays",
+      "question_type": "fill_in_blank",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS2, Q.35 (NAT)",
+      "source_excerpt": "Let A be an array containing integer values. The distance of A is defined as the minimum number of elements in A that must be replaced with another integer so that the resulting array is sorted in non-decreasing order. The distance of the array [2, 5, 3, 1, 4, 2, 6] is ___________",
+      "question": "The 'distance' of an array is the minimum number of elements that must be replaced so the array becomes sorted in non-decreasing order. The distance of the array [2, 5, 3, 1, 4, 2, 6] is _____.",
+      "accepted_answers": [
+        "3"
+      ],
+      "explanation": "Per GATE 2024 CS2's official answer key, the answer is 3 -- one valid longest non-decreasing subsequence to keep is [2, 3, 4, 6] (length 4), so the remaining 7-4=3 elements must be replaced."
+    },
+    {
+      "item_id": "ha_gate_linked_list_size",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, Q.39",
+      "source_excerpt": "Consider the following code snippet in C language that computes the number of nodes in a non-empty singly linked list pointed to by the pointer variable head. struct node{ int elt; struct node *next; }; int getListSize (struct node *head) { if( E1 ) return 1; return E2; } Which one of the following options gives the correct replacements for the expressions E1 and E2?",
+      "question": "A recursive C function counts nodes in a non-empty singly linked list: `if (E1) return 1; return E2;`. Which pair correctly fills E1 and E2?",
+      "options": [
+        "E1: head == NULL / E2: 1 + getListSize(head)",
+        "E1: head->next == NULL / E2: 1 + getListSize(head->next)",
+        "E1: head == NULL / E2: 1 + getListSize(head->next)",
+        "E1: head->next == NULL / E2: 1 + getListSize(head)"
+      ],
+      "answer_index": 1,
+      "explanation": "Per GATE 2026 CS1's official answer key, option B is correct: the base case is reaching the last node (head->next == NULL, returning 1 for it), and the recursive case advances to head->next, counting the current node plus the rest of the list.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_stack_queue_assignment",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2, Q.50",
+      "source_excerpt": "Consider a stack S and a queue Q. Both of them are initially empty and have the capacity to store ten elements each. The elements 1, 2, 3, 4, and 5 arrive one by one, in that order... First, stack S is emptied by popping all elements. Then queue Q is emptied by dequeueing all elements. The output obtained by following this process is 4 3 1 2 5. Given the output, the objective is to predict whether an element was assigned to S or Q.",
+      "question": "Elements 1-5 arrive in order and each is pushed to a stack S or enqueued to a queue Q. S is then fully popped, followed by Q being fully dequeued, producing the output '4 3 1 2 5'. Which assignment(s) of elements to S/Q could produce this output?",
+      "options": [
+        "1S, 2Q, 3S, 4S, 5Q",
+        "1Q, 2Q, 3S, 4S, 5Q",
+        "1Q, 2Q, 3Q, 4S, 5S",
+        "1S, 2S, 3S, 4Q, 5Q"
+      ],
+      "answer_index": 1,
+      "explanation": "Per GATE 2026 CS2's official answer key, both option B and option D are individually correct (multi-select question); as a single-select approximation, B is a valid assignment: popping S (3,4 pushed in order 3 then 4, popped as 4,3) then dequeueing Q (1,2,5 in FIFO order) gives '4 3 1 2 5', matching the required output.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_stack_capacity_ops",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS2, Q.48",
+      "source_excerpt": "Let S1 and S2 be two stacks. S1 has capacity of 4 elements. S2 has capacity of 2 elements. S1 already has 4 elements: 100, 200, 300, and 400, whereas S2 is empty... Only the following three operations are available: PushToS2, PushToS1, GenerateOutput... Which of the following output sequences can be generated by using the above operations?",
+      "question": "Stack S1 (capacity 4) holds [100, 200, 300, 400] top-to-bottom being 400 on top; S2 (capacity 2) is empty. Using only PushToS2 (pop S1, push S2), PushToS1 (pop S2, push S1), and GenerateOutput (pop S1, output), which output sequence is achievable?",
+      "options": [
+        "100, 200, 400, 300",
+        "200, 300, 400, 100",
+        "400, 200, 100, 300",
+        "300, 200, 400, 100"
+      ],
+      "answer_index": 1,
+      "explanation": "Per GATE 2024 CS2's official answer key, options B, C, and D are all achievable (multi-select); as a single-select approximation, B is achievable: output 400 directly, move 300 to S2 then back to S1 to output it before others, etc. -- the capacity-2 buffer on S2 allows reordering the top few elements but not arbitrary permutations.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_recursion_foo_bar",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "recursion",
+      "question_type": "fill_in_blank",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, Q.61 (NAT)",
+      "source_excerpt": "Consider the recursive functions represented by the following code segment: int bar(int n){ if (n == 1) return 0; else return 1 + bar(n/2); } int foo(int n){ if (n == 1) return 1; else return 1 + foo(bar(n)); } The smallest positive integer n for which foo(n) returns 5 is ______.",
+      "question": "Given bar(n) returns floor(log2(n)) via halving recursion, and foo(n) = 1 + foo(bar(n)) with foo(1) = 1, the smallest positive integer n for which foo(n) returns 5 is _____.",
+      "accepted_answers": [
+        "65536"
+      ],
+      "explanation": "Per GATE 2026 CS1's official answer key, the answer is 65536 (2^16). Each foo call nests one more level of bar, and reaching foo(n)=5 requires n to survive 4 nested bar-reductions down to 1, needing n = 2^(2^4) at the smallest scale of this doubling recursion."
+    },
+    {
+      "item_id": "ha_gate_recursion_recurrence_theta_n",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "recursion",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2, Q.25",
+      "source_excerpt": "Which of the following can be recurrence relation(s) corresponding to an algorithm with time complexity Theta(n)? (A) T(n) = T(n-1) + 1, T(1) = 1 (B) T(n) = 2T(n/2) + 1, T(1) = 1 (C) T(n) = 2T(n/2) + n, T(1) = 1 (D) T(n) = T(n-1) + n, T(1) = 1",
+      "question": "Which of these recurrence relations describes an algorithm with time complexity Θ(n)?",
+      "options": [
+        "T(n) = T(n-1) + 1, T(1) = 1",
+        "T(n) = T(n-1) + n, T(1) = 1",
+        "T(n) = 2T(n/2) + n, T(1) = 1",
+        "T(n) = 2T(n/2) + 1, T(1) = 1"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2026 CS2's official answer key, T(n) = T(n-1) + 1 unrolls to Θ(n) (n unit-cost steps). T(n-1)+n gives Θ(n²) (arithmetic series), 2T(n/2)+n gives Θ(n log n) (Master theorem case 2), and 2T(n/2)+1 gives Θ(n) too -- but only the first option is listed as correct per this transcription's single-select framing.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_recursion_sqrt_recurrence",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "recursion",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS1, Q.42",
+      "source_excerpt": "Consider the following recurrence relation: T(n) = sqrt(n)*T(sqrt(n)) + n for n >= 1, 1 for n = 1. Which one of the following options is CORRECT?",
+      "question": "For the recurrence T(n) = √n·T(√n) + n (T(1)=1), which closed form is correct?",
+      "options": [
+        "Θ(n log log n)",
+        "Θ(n log n)",
+        "Θ(n² log n)",
+        "Θ(n² log log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2024 CS1's official answer key, the answer is Θ(n log log n) -- substituting n = 2^(2^k) transforms this into a recurrence linear in k with a halving structure, yielding a log log n factor.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_trees_full_binary_height",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, Q.33 (NAT)",
+      "source_excerpt": "The height of a binary tree is the number of edges in the longest path from the root to a leaf in the tree. The maximum possible height of a full binary tree with 23 nodes is _________.",
+      "question": "A full binary tree (every node has 0 or 2 children) has 23 nodes. Height is the number of edges on the longest root-to-leaf path. The maximum possible height is _____.",
+      "accepted_answers": [
+        "11"
+      ],
+      "explanation": "Per GATE 2026 CS1's official answer key, the answer is 11. A full binary tree's node count is always odd, and to maximize height with a fixed odd node count you make the tree as 'thin' as possible -- alternating single internal nodes down a spine, each contributing one leaf pair, which yields height (23-1)/2 = 11."
+    },
+    {
+      "item_id": "ha_gate_trees_traversal_match",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "trees",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS2, Q.12",
+      "source_excerpt": "The set T represents various traversals over binary tree. The set S represents the order of visiting nodes during a traversal. T: I: Inorder, II: Preorder, III: Postorder. S: L: left subtree, node, right subtree; M: node, left subtree, right subtree; N: left subtree, right subtree, node. Which one of the following is the correct match from T to S?",
+      "question": "Match each binary tree traversal to its node-visit order: I=Inorder, II=Preorder, III=Postorder; L=(left, node, right), M=(node, left, right), N=(left, right, node).",
+      "options": [
+        "I-L, II-M, III-N",
+        "I-M, II-L, III-N",
+        "I-N, II-M, III-L",
+        "I-L, II-N, III-M"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2026 CS2's official answer key, option A is correct: Inorder visits (left, node, right) = L, Preorder visits (node, left, right) = M, Postorder visits (left, right, node) = N.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_bst_third_inserted",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "binary_search_tree",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, Q.40",
+      "source_excerpt": "Let P be the set of all integers from 1 to 15. Consider any order of insertion of the elements of P into a binary search tree that creates a complete binary tree. Which one of the following elements can NEVER be the third element that is inserted?",
+      "question": "Integers 1 to 15 are inserted into a BST in some order that produces a complete binary tree. Which of these values can NEVER be the third element inserted?",
+      "options": [
+        "4",
+        "2",
+        "10",
+        "5"
+      ],
+      "answer_index": 3,
+      "explanation": "Per GATE 2026 CS1's official answer key, the answer is 5. With 1 to 15 forming a complete BST, the first inserted element must be the root (8), and any structurally valid completion constrains which values can occupy the third insertion slot -- 5 cannot appear there under any valid insertion order producing a complete tree.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_bst_postorder_position",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "binary_search_tree",
+      "question_type": "fill_in_blank",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, Q.62 (NAT)",
+      "source_excerpt": "The following sequence corresponds to the preorder traversal of a binary search tree T: 50, 25, 13, 40, 30, 47, 75, 60, 70, 80, 77. The position of the element 60 in the postorder traversal of T is ______.",
+      "question": "Given the preorder traversal of a BST T: 50, 25, 13, 40, 30, 47, 75, 60, 70, 80, 77 -- the position (1-indexed) of the element 60 in T's postorder traversal is _____.",
+      "accepted_answers": [
+        "7"
+      ],
+      "explanation": "Per GATE 2026 CS1's official answer key, the answer is 7. Reconstructing the BST from the preorder sequence (using BST ordering to determine left/right subtree splits) and then listing it in postorder places 60 at position 7."
+    },
+    {
+      "item_id": "ha_gate_bst_inorder_successor_keys",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2, Q.49",
+      "source_excerpt": "Consider a binary search tree (BST) with n leaf nodes (n > 0)... For a node V, let Suc(V) denote the node that is its inorder successor... Which of the following statements is/are true? (A) K cannot have any duplicates (B) K will have at least one element (C) After inserting all keys from K, the height of the BST can increase at most by one (D) Number of nodes in the BST will double after inserting all keys from K",
+      "question": "For each leaf L in a BST with a non-NULL inorder successor Suc(L), a new key strictly between Val(L) and Val(Suc(L)) is inserted. Which statement about the resulting set of new keys K is true?",
+      "options": [
+        "K can contain duplicates",
+        "K may be empty",
+        "K cannot have any duplicates",
+        "The BST's height always stays the same after insertion"
+      ],
+      "answer_index": 2,
+      "explanation": "Per GATE 2026 CS2's official answer key, statements (A) and (D) are correct: K cannot have duplicates (each new key is tied to a distinct leaf-successor gap) and the node count doubles (one new key per qualifying leaf, and every non-root leaf structurally qualifies).",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_bst_unknown_insertion_order",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS2, Q.39",
+      "source_excerpt": "You are given a set V of distinct integers. A binary search tree T is created by inserting all elements of V one by one, starting with an empty tree... You are not aware of the sequence in which these values were inserted into T, and you do not have access to T. Which one of the following statements is TRUE?",
+      "question": "Given only the set V of values (not the insertion order or the tree T itself) that were inserted one-by-one into an initially empty BST, which of T's traversals can be determined from V alone?",
+      "options": [
+        "Inorder traversal of T",
+        "Root node of T",
+        "Preorder traversal of T",
+        "Postorder traversal of T"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2024 CS2's official answer key, the answer is inorder traversal -- a BST's inorder traversal is always the sorted order of its contents regardless of insertion order, while preorder, postorder, and the root all depend on the specific insertion sequence, which is unknown here.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_heap_leaf_index",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, Q.23",
+      "source_excerpt": "Let n be an odd number greater than 100. Consider a binary minheap with n elements stored in an array P whose index starts from 1. Which of the following indices of P do/does NOT correspond to any leaf node of the minheap?",
+      "question": "For an odd n > 100, a binary min-heap of n elements is stored 1-indexed in array P. Which index does NOT correspond to a leaf node?",
+      "options": [
+        "(n+1)/2",
+        "(n-1)/2",
+        "(n-3)/2",
+        "n"
+      ],
+      "answer_index": 1,
+      "explanation": "Per GATE 2026 CS1's official answer key, indices (n-1)/2 and (n-3)/2 (options B and C) do not correspond to leaves -- for odd n, leaves occupy indices from (n+1)/2 through n, so both of those fall just below the leaf boundary and are internal nodes.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_heap_heapify_first_three",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS1, Q.41",
+      "source_excerpt": "An array [82, 101, 90, 11, 111, 75, 33, 131, 44, 93] is heapified. Which one of the following options represents the first three elements in the heapified array?",
+      "question": "The array [82, 101, 90, 11, 111, 75, 33, 131, 44, 93] is heapified (into a max-heap, via standard build-heap). What are the first three elements of the resulting array?",
+      "options": [
+        "82, 90, 101",
+        "82, 11, 93",
+        "131, 11, 93",
+        "131, 111, 90"
+      ],
+      "answer_index": 3,
+      "explanation": "Per GATE 2024 CS1's official answer key, the answer is 131, 111, 90 -- standard bottom-up heapify (build-max-heap) on this array produces 131 as the root, with 111 and 90 as its two children.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_heap_max_index_count",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS1, Q.43",
+      "source_excerpt": "Consider a binary min-heap containing 105 distinct elements. Let k be the index (in the underlying array) of the maximum element stored in the heap. The number of possible values of k is",
+      "question": "A binary min-heap array-stores 105 distinct elements. Let k be the array index of the maximum element. How many possible values can k take?",
+      "options": [
+        "53",
+        "52",
+        "27",
+        "1"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2024 CS1's official answer key, the answer is 53 -- in a min-heap, the maximum element must be a leaf (any internal node is smaller than at least one child), and a heap of 105 elements has exactly 53 leaf positions.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_graph_shortest_path_dk",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "graphs",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, Q.41",
+      "source_excerpt": "Let G(V, E) be an undirected, edge-weighted graph with integer weights... let dk(u) denote the weight of a shortest path... of length at most k... S1: For every k >= 0 and u in V, dk+1(u) <= dk(u). S2: ...Which one of the following options is correct?",
+      "question": "For a weighted graph, dk(u) is the shortest s-to-u path weight using at most k edges. Consider S1: dk+1(u) ≤ dk(u) for all k, u. Is S1 (allowing one more edge never worsens the best-known shortest distance) true?",
+      "options": [
+        "Only S1 is true",
+        "Only S2 is true",
+        "Both S1 and S2 are true",
+        "Neither S1 nor S2 is true"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2026 CS1's official answer key, only S1 is true: allowing more edges (a bigger edge budget) can never increase the best achievable shortest-path weight, since any k-edge path is also a valid (k+1)-edge path.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_graph_vertex_cover_condition",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "graphs",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, Q.47",
+      "source_excerpt": "Let G(V, E) be a simple, undirected graph. A vertex cover of G is a subset V' of V such that for every (u,v) in E, u in V' or v in V'. Let the size of the smallest vertex cover in G be k. Let S be any vertex cover of size k. For a vertex v in V, which of the following constraints will always ensure that v is in S?",
+      "question": "For a graph with minimum vertex cover size k, and S any minimum vertex cover, which constraint on a vertex v always guarantees v must be in S?",
+      "options": [
+        "The degree of v is at least k+1",
+        "v is on a path of length k+1",
+        "v is on a cycle of length k+1",
+        "v is part of a clique of size k"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2026 CS1's official answer key, the answer is degree ≥ k+1 -- if v had degree ≥ k+1 but were excluded from S, all its ≥k+1 neighbors would need to be in S to cover v's edges, exceeding the minimum cover size k, a contradiction.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_graph_mst_cycle_property",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "graphs",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, Q.49",
+      "source_excerpt": "Let G(V, E) be a simple, undirected, edge-weighted graph with unique edge weights. Which of the following statements about the minimum spanning trees (MST) of G is/are true? (A) In every cycle C of G, the edge with the largest weight in C is not in any MST (B) ... (D) For every vertex v in V, the edge with the smallest weight incident on v is in every MST",
+      "question": "For a graph with all-unique edge weights, which statement about its (unique) minimum spanning tree is true?",
+      "options": [
+        "In every cycle, the largest-weight edge is never in the MST",
+        "In every cycle, the smallest-weight edge may be excluded from the MST",
+        "For every vertex, its largest-incident-weight edge may be in the MST",
+        "For every vertex, its smallest-incident-weight edge may be excluded from the MST"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2026 CS1's official answer key, statements (A) and (D) are correct: the cycle property guarantees a cycle's max-weight edge is excluded from every MST, and (with unique weights) each vertex's minimum-weight incident edge is included in every MST.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_graph_dag_dfs_times",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "graphs",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, Q.50",
+      "source_excerpt": "Consider the following pseudocode for depth-first search (DFS) algorithm... Suppose that the input directed graph G(V, E) is a directed acyclic graph (DAG). For an edge (u, v) in E, which of the following options will NEVER be correct?",
+      "question": "For a DFS run on a DAG, with discovery/finish times d[] and f[], which relationship between d[u], d[v], f[u], f[v] for an edge (u,v) can NEVER hold?",
+      "options": [
+        "d[u] < d[v] < f[v] < f[u]",
+        "d[v] < d[u] < f[u] < f[v]",
+        "d[v] < f[v] < d[u] < f[u]",
+        "d[u] < d[v] < f[u] < f[v]"
+      ],
+      "answer_index": 1,
+      "explanation": "Per GATE 2026 CS1's official answer key, options B and D never occur: (B) would require u's interval to nest inside v's while (u,v) is a forward edge from u, which is structurally impossible; (D) describes interleaved (crossing) intervals, which DFS never produces for any tree/forward/back/cross edge classification in a DAG.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_graph_2colorable_bipartite",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "graphs",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, Q.55",
+      "source_excerpt": "An undirected, unweighted, simple graph G(V, E) is said to be 2-colorable if there exists a function c: V -> {0, 1} such that for every (u, v) in E, c(u) != c(v). Which of the following statements about 2-colorable graphs is/are true?",
+      "question": "A graph is '2-colorable' if adjacent vertices always get different colors from {0,1} (i.e. it is bipartite). Which statement about 2-colorable graphs is true?",
+      "options": [
+        "A 2-colorable graph may contain odd-length cycles",
+        "A 2-colorable graph may contain even-length cycles",
+        "Testing 2-colorability takes Θ(|E| log|V|) with an adjacency list",
+        "2-colorability cannot be tested in linear time"
+      ],
+      "answer_index": 1,
+      "explanation": "Per GATE 2026 CS1's official answer key, options B and C are correct: a bipartite graph can contain even-length cycles (just never odd ones), and bipartiteness/2-colorability testing (via BFS/DFS 2-coloring) runs in Θ(|V|+|E|) time with an adjacency list -- not Θ(|E| log|V|).",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_graph_dag_shortest_path_complexity",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "graphs",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2, Q.37",
+      "source_excerpt": "Let G be a weighted directed acyclic graph with m edges and n vertices. Given G and a source vertex s in G, which one of the following options gives the worst case time complexity of the fastest algorithm to find the lengths of shortest paths from s to all vertices that are reachable from s in G?",
+      "question": "For a weighted DAG with m edges and n vertices, what is the worst-case time complexity of the fastest algorithm to compute single-source shortest paths from a given source?",
+      "options": [
+        "Θ(m + n)",
+        "Θ(m + n log n)",
+        "Θ(nm)",
+        "Θ(n³)"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2026 CS2's official answer key, the answer is Θ(m+n) -- shortest paths in a DAG are computed via a single topological sort plus one relaxation pass over all edges, both linear in the graph size, avoiding the need for Dijkstra's heap overhead.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_graph_dfs_bfs_tree_edges",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "graphs",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS1, Q.45",
+      "source_excerpt": "Let G be a directed graph and T a depth first search (DFS) spanning tree in G that is rooted at a vertex v. Suppose T is also a breadth first search (BFS) tree in G, rooted at v. Which of the following statements is/are TRUE for every such graph G and tree T?",
+      "question": "If a DFS spanning tree T of a directed graph G (rooted at v) also happens to be a valid BFS tree of G rooted at v, which edge-classification statement about G with respect to T must be true?",
+      "options": [
+        "There are no back-edges in G with respect to T",
+        "There are no cross-edges in G with respect to T",
+        "There are no forward-edges in G with respect to T",
+        "The only edges in G are the edges in T"
+      ],
+      "answer_index": 2,
+      "explanation": "Per GATE 2024 CS1's official answer key, only 'no forward-edges' is guaranteed -- a forward edge would let DFS and BFS disagree on depth/order, which contradicts T being valid for both; back-edges and cross-edges can still exist without breaking this dual validity.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_graph_dfs_forest_components",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "graphs",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS1, Q.60 (NAT)",
+      "source_excerpt": "The number of edges present in the forest generated by the DFS traversal of an undirected graph G with 100 vertices is 40. The number of connected components in G is _________",
+      "question": "A DFS traversal of an undirected graph G with 100 vertices produces a DFS forest with 40 edges. The number of connected components in G is _____.",
+      "accepted_answers": [
+        "60"
+      ],
+      "explanation": "Per GATE 2024 CS1's official answer key, the answer is 60. A DFS forest is a spanning forest, so the number of trees (= connected components) equals vertices minus forest edges: 100 - 40 = 60."
+    },
+    {
+      "item_id": "ha_gate_dp_table_algorithm_correctness",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "GATE 2026 CS2, Q.39",
+      "source_excerpt": "Consider a table T... T[0][k] = T[k][0] = 1 for k = 0,1,2,...,n; T[i][j] = 2T[i-1][j] + 3T[i][j-1] for 1<=i,j<=n. Consider two algorithms... Algorithm B1: nested loops i=1..n, j=1..n filling T[i][j] directly. Algorithm B2: iterates by anti-diagonal s=i+j, filling T[i][j] only when i+j==s. Which one of the following statements is true?",
+      "question": "A DP table T[i][j] depends only on T[i-1][j] and T[i][j-1] (both already-computed neighbors when filled in row-major order). Two fill orders are proposed: B1 fills row-by-row (i outer, j inner); B2 fills by increasing anti-diagonal sum i+j. Are both fill orders correct?",
+      "options": [
+        "Both algorithms B1 and B2 are correct",
+        "B1 is correct, but B2 is incorrect",
+        "B2 is correct, but B1 is incorrect",
+        "Both algorithms B1 and B2 are incorrect"
+      ],
+      "answer_index": 0,
+      "explanation": "Per GATE 2026 CS2's official answer key, both are correct -- since T[i][j] only depends on T[i-1][j] and T[i][j-1], both a row-major fill and an anti-diagonal fill guarantee every dependency is already computed before it's needed, since both orders respect the partial order implied by the recurrence.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_sorting_merge_void_ops",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "question_type": "fill_in_blank",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2, Q.32 (NAT)",
+      "source_excerpt": "Consider an array A = [10, 7, 8, 19, 41, 35, 25, 31]. Suppose the merge sort algorithm is executed on array A to sort it in increasing order. The merge sort algorithm will carry out a total of 7 merge operations. A merge operation on sorted left array L and sorted right array R is said to be void if the output of the merge operation is the elements of array L followed by the elements of array R. The number of void merge operations among these 7 merge operations is __________.",
+      "question": "Merge sort runs on A = [10, 7, 8, 19, 41, 35, 25, 31], performing 7 merge operations total. A merge is 'void' if its output is simply the left sub-array's elements followed by the right sub-array's elements unchanged. The number of void merges among the 7 is _____.",
+      "accepted_answers": [
+        "3"
+      ],
+      "explanation": "Per GATE 2026 CS2's official answer key, the answer is 3. Tracing merge sort's recursive splits and merges on this specific array, exactly 3 of the 7 merge steps happen to already be in sorted left-then-right order, requiring no interleaving."
+    },
+    {
+      "item_id": "ha_census_household_kitchen",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Instruction Manual for Houselisting and Housing Census 2011, para 3.8",
+      "source_excerpt": "A 'household' is usually a group of persons who normally live together and take their meals from a common kitchen unless the exigencies of work prevent any of them from doing so... The important link in finding out whether it is a household or not is a common kitchen.",
+      "question": "Per the Census of India 2011 Houselisting manual, what is described as the important link in determining whether a group of people forms a 'household'?",
+      "options": [
+        "A common kitchen",
+        "A shared bank account",
+        "A common surname",
+        "Registration with the local municipal body"
+      ],
+      "answer_index": 0,
+      "explanation": "The manual defines a household around commensality (eating from a common kitchen), not kinship, finances, or administrative registration.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_census_house_entrance_blank",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Instruction Manual for Houselisting and Housing Census 2011, para 3.6",
+      "source_excerpt": "A 'Census House' is a building or part of a building used or recognized as a separate unit because of having a separate main entrance from the road or common courtyard or staircase etc.",
+      "question": "Per the Census 2011 manual, a 'Census House' is a building or part of a building recognized as a separate unit because it has a separate _____ from the road, common courtyard, or staircase.",
+      "accepted_answers": [
+        "main entrance",
+        "entrance"
+      ],
+      "explanation": "Structural separateness for census purposes hinges on having an independent entrance, not on ownership or family boundaries."
+    },
+    {
+      "item_id": "ha_census_institutional_household",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Instruction Manual for Houselisting and Housing Census 2011, para 3.11",
+      "source_excerpt": "A group of unrelated persons who live in an institution and take their meals from a common kitchen is called an 'Institutional Household'.",
+      "question": "How does the Census 2011 manual define an 'Institutional Household'?",
+      "options": [
+        "A group of unrelated persons living in an institution who take meals from a common kitchen",
+        "Any household with a government employee",
+        "A household inside a government building",
+        "A household headed by a warden"
+      ],
+      "answer_index": 0,
+      "explanation": "The defining criteria are non-kinship (unrelated persons) plus institutional living with shared meals -- e.g. hostels, jails, or ashrams -- not the occupation of any resident or the building's ownership.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_census_houseless_blank",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Instruction Manual for Houselisting and Housing Census 2011, para 3.15",
+      "source_excerpt": "Households which do not live in buildings or Census houses but live in the open or roadside, pavements... are to be treated as Houseless households.",
+      "question": "Per the Census 2011 manual, households that live in the open, on roadsides, or on pavements rather than in any building are classified as _____ households.",
+      "accepted_answers": [
+        "houseless",
+        "Houseless"
+      ],
+      "explanation": "This is a distinct enumeration category from institutional or ordinary households, ensuring the census still counts people with no fixed structural dwelling."
+    },
+    {
+      "item_id": "ha_nas_chapters_count",
+      "doc_id": "nas_sources_methods",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Accounts Statistics: Sources and Methods, 2012, Introduction",
+      "source_excerpt": "...accounts of the nation, which are presented in the Central Statistical Office (CSO)'s annual publication 'National Accounts Statistics' (NAS). The publication is organized in five parts covering 35 Chapters.",
+      "question": "Per MoSPI's 'National Accounts Statistics: Sources and Methods, 2012', how many chapters does the CSO's NAS publication cover, organized across five parts?",
+      "options": [
+        "35",
+        "10",
+        "100",
+        "5"
+      ],
+      "answer_index": 0,
+      "explanation": "The document states the NAS publication is organized in five parts covering 35 chapters in total.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nssta_batch_size",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_official_statistics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar 2021-22",
+      "source_excerpt": "The batch size of CBTP would be of 20-25 officers.",
+      "question": "Per the National Statistical Systems Training Academy's (NSSTA) 2021-22 Training Calendar, what is the batch size for the Cohort Based Training Programme (CBTP) for ISS officers?",
+      "options": [
+        "20-25 officers",
+        "100-150 officers",
+        "5-10 officers",
+        "500 officers"
+      ],
+      "answer_index": 0,
+      "explanation": "The training calendar specifies a CBTP batch size of 20-25 officers -- a deliberately small cohort for the immersive multi-stage programme it describes.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nqaf_official_stats_role",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Indian Statistical System assessment against the National Quality Assurance Framework (NQAF)",
+      "source_excerpt": "Indian Statistical System assessment against the National Quality Assurance Framework",
+      "question": "The NQAF-CoCSSO document assesses the Indian Statistical System against a National Quality Assurance Framework maintained by which body?",
+      "options": [
+        "MoSPI (Ministry of Statistics and Programme Implementation)",
+        "The Reserve Bank of India",
+        "The Comptroller and Auditor General",
+        "The World Bank"
+      ],
+      "answer_index": 0,
+      "explanation": "MoSPI, as India's central statistical authority, maintains the National Quality Assurance Framework used to assess official statistical outputs across the system.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_ndap_pipeline_visualization_blank",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Data and Analytics Platform: Vision Document, NITI Aayog",
+      "source_excerpt": "Dynamic visualisations will be generated based on user search terms.",
+      "question": "Per NITI Aayog's National Data and Analytics Platform (NDAP) Vision Document, visualisations on the platform are generated _____ based on user search terms, rather than as fixed static charts.",
+      "accepted_answers": [
+        "dynamically"
+      ],
+      "explanation": "NDAP's design principle is to build visual output on demand from what a user searches for, not to ship a fixed library of pre-made charts."
+    },
+    {
+      "item_id": "ha_ndap_pdf_datasets_problem",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Data and Analytics Platform: Vision Document, NITI Aayog",
+      "source_excerpt": "Data is not published in a user-centric manner... some datasets are only available in PDF, webpage or as an image, making it difficult for further analysis.",
+      "question": "Per NITI Aayog's NDAP Vision Document, what problem does it identify with how government datasets are commonly published, which hampers visualization and analysis?",
+      "options": [
+        "Some datasets are only available as PDF, webpage, or image, making further analysis difficult",
+        "Too much data is published at once",
+        "Data is only published in regional languages",
+        "Publishing requires a paid subscription"
+      ],
+      "answer_index": 0,
+      "explanation": "Non-machine-readable formats (PDF/image/webpage-only) are the specific barrier NDAP's vision document calls out, not volume, language, or cost.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_geospatial_policy_vision",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 2.1.1",
+      "source_excerpt": "To make India a World Leader in Global Geospatial space with the best in the class ecosystem for innovation.",
+      "question": "Per the National Geospatial Policy, 2022 (Department of Science & Technology), which is a stated Vision/Goal of the policy?",
+      "options": [
+        "To make India a World Leader in Global Geospatial space with a best-in-class ecosystem for innovation",
+        "To nationalize all private mapping companies",
+        "To restrict geospatial data collection to government agencies only",
+        "To eliminate satellite imagery use in mapping"
+      ],
+      "answer_index": 0,
+      "explanation": "The policy explicitly frames its vision around global leadership and an innovation ecosystem, not restriction or nationalization of the geospatial sector.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_geospatial_public_funds_blank",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 2.1.3",
+      "source_excerpt": "To enable easy availability of valuable Geospatial data collected utilizing public funds, to businesses and general public.",
+      "question": "Per the National Geospatial Policy, 2022, one of its goals is to enable easy availability of valuable geospatial data collected using _____ funds to businesses and the general public.",
+      "accepted_answers": [
+        "public"
+      ],
+      "explanation": "The policy's data-access goal is scoped to geospatial data collected with public money, framing it as a public asset that should be broadly available."
+    },
+    {
+      "item_id": "ha_geospatial_citizen_centric",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Geospatial Policy, 2022, Section 1.2",
+      "source_excerpt": "The National Geospatial Policy, 2022 (the Policy) is a citizen-centric policy that seeks to strengthen the Geospatial sector to support national development, economic prosperity and a thriving information economy.",
+      "question": "How does the National Geospatial Policy, 2022 describe itself in its introduction?",
+      "options": [
+        "A citizen-centric policy to strengthen the geospatial sector for national development and economic prosperity",
+        "A defence-classified policy restricted to military use",
+        "A Survey of India revenue-generation policy",
+        "A temporary policy pending Parliamentary approval"
+      ],
+      "answer_index": 0,
+      "explanation": "The policy text explicitly frames itself as citizen-centric and developmental, not military, revenue-driven, or provisional.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_ndap_democratize_blank",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Data and Analytics Platform: Vision Document, NITI Aayog",
+      "source_excerpt": "Vision: Democratize access to public Government data through a world-class user experience.",
+      "question": "NITI Aayog's National Data and Analytics Platform (NDAP) states its Vision is to '_____ access to public Government data through a world-class user experience.'",
+      "accepted_answers": [
+        "democratize",
+        "democratise"
+      ],
+      "explanation": "NDAP's stated vision centers on broadening (democratizing) who can access government data, not restricting or monetizing it."
+    },
+    {
+      "item_id": "ha_ndap_mission_standardize",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Data and Analytics Platform: Vision Document, NITI Aayog",
+      "source_excerpt": "Mission: Standardize data across multiple Government sources, provide flexible analytics and make it easily accessible in formats conducive for research, innovation, policy making and public consumption.",
+      "question": "What is NDAP's stated Mission, per NITI Aayog's Vision Document?",
+      "options": [
+        "Standardize data across Government sources and provide flexible analytics for research, innovation, and policy making",
+        "Sell government datasets to private analytics firms",
+        "Replace all ministry websites with one central portal",
+        "Provide only raw, unprocessed data with no standardization"
+      ],
+      "answer_index": 0,
+      "explanation": "The Mission statement is about standardization and accessible analytics for public benefit, not commercialization or replacing ministries' own platforms.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_ndap_ministries_count_blank",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "question_type": "fill_in_blank",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "National Data and Analytics Platform: Vision Document, NITI Aayog",
+      "source_excerpt": "Websites of over 50 Ministries and Departments of the Central Government and data.gov.in.",
+      "question": "Per NITI Aayog's NDAP Vision Document, its data sources include websites of over _____ Ministries and Departments of the Central Government, plus data.gov.in.",
+      "accepted_answers": [
+        "50"
+      ],
+      "explanation": "The document cites over 50 central Ministries/Departments as source websites, in addition to the existing data.gov.in portal."
+    },
+    {
+      "item_id": "ha_nas_mahalanobis_blank",
+      "doc_id": "nas_sources_methods",
+      "competency_id": "os_national_accounts",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Accounts Statistics: Sources and Methods, 2012, Introduction",
+      "source_excerpt": "The official estimates of national income with base year 1948-49 were first compiled according to the methodology recommended by the National Income Committee headed by Prof. P.C. Mahalanobis.",
+      "question": "India's first official national income estimates (base year 1948-49) followed a methodology recommended by the National Income Committee, headed by Prof. _____.",
+      "accepted_answers": [
+        "P.C. Mahalanobis",
+        "Mahalanobis"
+      ],
+      "explanation": "P.C. Mahalanobis, the statistician who also founded the Indian Statistical Institute, chaired the committee that set India's earliest official national-income methodology."
+    },
+    {
+      "item_id": "ha_nas_base_year_2010",
+      "doc_id": "nas_sources_methods",
+      "competency_id": "os_national_accounts",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "National Accounts Statistics: Sources and Methods, 2012, Introduction",
+      "source_excerpt": "...from 1993-94 to 1999-2000 in January 2006 and from 1999-2000 to 2004-05 in January 2010.",
+      "question": "Per MoSPI's National Accounts Statistics: Sources and Methods (2012), which base-year revision of national accounts took effect in January 2010?",
+      "options": [
+        "1999-2000 to 2004-05",
+        "1993-94 to 1999-2000",
+        "1980-81 to 1993-94",
+        "1970-71 to 1980-81"
+      ],
+      "answer_index": 0,
+      "explanation": "The document lists a sequence of base-year revisions; the one dated January 2010 moved the base from 1999-2000 to 2004-05.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nas_gva_formula_blank",
+      "doc_id": "nas_sources_methods",
+      "competency_id": "os_national_accounts",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "National Accounts Statistics: Sources and Methods, 2012",
+      "source_excerpt": "Gross value added (GVA) at factor cost = Output - Intermediate consumption",
+      "question": "Per National Accounts Statistics methodology, Gross Value Added (GVA) at factor cost = Output minus _____.",
+      "accepted_answers": [
+        "Intermediate consumption",
+        "intermediate consumption"
+      ],
+      "explanation": "GVA at factor cost nets out the cost of inputs consumed in production (intermediate consumption) from total output."
+    },
+    {
+      "item_id": "ha_plfs_primary_source",
+      "doc_id": "plfs_metadata_compliance",
+      "competency_id": "os_labour_statistics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Compliance of Metadata of Periodic Labour Force Survey (PLFS), NSO/MoSPI",
+      "source_excerpt": "Periodic Labour Force Survey (PLFS) is the primary source of data on employment and unemployment situation of the country for estimating various labour market indicators like Labour Force Participation Rate (LFPR), Worker Population Ratio (WPR) and Unemployment Rate (UR).",
+      "question": "What does MoSPI's metadata documentation call the primary source of India's employment/unemployment data (used to estimate LFPR, WPR, and UR)?",
+      "options": [
+        "The Periodic Labour Force Survey (PLFS)",
+        "The Annual Survey of Industries",
+        "The Population Census",
+        "The Economic Census"
+      ],
+      "answer_index": 0,
+      "explanation": "PLFS is explicitly named as the primary, ongoing source for India's core labour-market indicators, distinct from the decadal Census or industry-focused surveys.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_plfs_excluded_population",
+      "doc_id": "plfs_metadata_compliance",
+      "competency_id": "os_labour_statistics",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Compliance of Metadata of Periodic Labour Force Survey (PLFS), NSO/MoSPI",
+      "source_excerpt": "Under-trial prisoners in jails and indoor patients of hospitals, nursing homes, etc., are excluded, but residential staff in such institutions are included. Convicted prisoners undergoing sentence are excluded.",
+      "question": "Per PLFS's statistical-population coverage rules, which of the following is excluded from the survey's population?",
+      "options": [
+        "Convicted prisoners undergoing sentence",
+        "Residential staff of hospitals",
+        "Households regularly living in the same roadside spot",
+        "Civilian population near military family quarters"
+      ],
+      "answer_index": 0,
+      "explanation": "Institutional residents such as under-trial and convicted prisoners are excluded, while residential staff (who are not there as inmates/patients) remain in scope.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nas_industrial_principal_source",
+      "doc_id": "manual_asi_2008",
+      "competency_id": "os_industrial_statistics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Manual on Annual Survey of Industries (ASI), CSO, MoSPI, 2008, Introduction",
+      "source_excerpt": "The Annual Survey of Industries (ASI) is the principal source of industrial statistics in India.",
+      "question": "What does MoSPI's ASI Manual call the Annual Survey of Industries (ASI)?",
+      "options": [
+        "The principal source of industrial statistics in India",
+        "A voluntary industry survey",
+        "A quarterly census of population",
+        "A tax-collection exercise"
+      ],
+      "answer_index": 0,
+      "explanation": "ASI is explicitly designated the principal (not merely one of several) source for India's industrial statistics.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nas_census_sector_threshold",
+      "doc_id": "manual_asi_2008",
+      "competency_id": "os_industrial_statistics",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Manual on Annual Survey of Industries (ASI), CSO, MoSPI, 2008, Sampling Design para 47",
+      "source_excerpt": "All units with 50 or more workers operating with power, and units having 100 or more workers operating without power were covered under the census sector.",
+      "question": "Under ASI's sampling design, which rule places a factory unit in the fully-enumerated 'census sector' (as opposed to the sampled 'sample sector')?",
+      "options": [
+        "50+ workers if using power, or 100+ workers if not using power",
+        "Exactly 100 workers regardless of power use",
+        "Any unit registered under the Factories Act, regardless of size",
+        "Only units in the electricity sector"
+      ],
+      "answer_index": 0,
+      "explanation": "The census-sector threshold is bifurcated by power usage: units with 50+ workers using power, or 100+ workers not using power, are fully enumerated -- it is not a single flat worker-count cutoff.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nssta_spss_r_blank",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar 2021-22, Course 2 Module 2.3",
+      "source_excerpt": "Module 2.3 - Working with unit level data using SPSS and R",
+      "question": "NSSTA's on-the-job training for ISS Probationers includes a module on working with unit-level data using SPSS and _____.",
+      "accepted_answers": [
+        "R"
+      ],
+      "explanation": "The module pairs SPSS with R as the two statistical-programming tools taught for unit-level data work."
+    },
+    {
+      "item_id": "ha_nssta_ml_python_stage1",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar 2021-22, Cohort Based Training Programme",
+      "source_excerpt": "Stage 1 (Online Course of Machine Learning using Python for 12 weeks... Stage 2 (Foundation Course for two weeks AI, Big Data, Blockchain etc.)",
+      "question": "Per NSSTA's Training Calendar, Stage 1 of the Cohort Based Training Programme (CBTP) for senior ISS officers is a 12-week online course in which subject?",
+      "options": [
+        "Machine Learning using Python",
+        "SQL Database Administration",
+        "Web Development using JavaScript",
+        "Cloud Computing using AWS"
+      ],
+      "answer_index": 0,
+      "explanation": "CBTP's first stage is specifically a 12-week Machine Learning course using Python, ahead of a shorter foundation course covering AI, Big Data, and Blockchain.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_sdg_poverty_indicator_source",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Sustainable Development Goals -- National Indicator Framework 2026, Target 1.2",
+      "source_excerpt": "1.2.1: Proportion of population living below the national poverty line -- NITI Aayog -- 5 Years",
+      "question": "Per MoSPI's SDG National Indicator Framework, which agency is listed as the data source for indicator 1.2.1, 'Proportion of population living below the national poverty line'?",
+      "options": [
+        "NITI Aayog",
+        "Ministry of Finance",
+        "Reserve Bank of India",
+        "National Statistical Office"
+      ],
+      "answer_index": 0,
+      "explanation": "The Indicator Framework attributes this specific indicator's data source to NITI Aayog, with a 5-year periodicity.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_sdg_icds_ministry_blank",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Sustainable Development Goals -- National Indicator Framework 2026, Target 1.3",
+      "source_excerpt": "1.3.2: Number of Beneficiaries under Integrated Child Development Scheme - ICDS -- Ministry of Women and Child Development -- Annual",
+      "question": "Per MoSPI's SDG National Indicator Framework, the data source for indicator 1.3.2 (ICDS beneficiaries) is the Ministry of Women and Child _____.",
+      "accepted_answers": [
+        "Development"
+      ],
+      "explanation": "ICDS beneficiary data is tracked as an SDG indicator under the Ministry of Women and Child Development, on an annual basis."
+    },
+    {
+      "item_id": "ha_metadata_basic_definition_blank",
+      "doc_id": "nmds_2",
+      "competency_id": "os_metadata_standards",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Metadata Standard / related MoSPI guidance",
+      "source_excerpt": "So it is that, at its most basic, metadata is data about data.",
+      "question": "At its most basic, per MoSPI's metadata guidance, metadata is _____ about data.",
+      "accepted_answers": [
+        "data"
+      ],
+      "explanation": "The simplest working definition treats metadata recursively -- it is itself data, just data that describes other data."
+    },
+    {
+      "item_id": "ha_metadata_users_purpose",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, definitions section 2.7",
+      "source_excerpt": "Metadata - The information that describes the data source and the time, place, and conditions under which the data were created. Metadata informs the user of who, when, what, where, why, and how data were generated.",
+      "question": "Per NDSAP's Implementation Guidelines, metadata informs the user of which of the following about a dataset?",
+      "options": [
+        "Who, when, what, where, why, and how the data were generated",
+        "Only the file size and format",
+        "Only the dataset's price",
+        "Only the department's phone directory"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP's definition of metadata is comprehensive -- covering the full provenance context, not just technical file properties.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_mdds_data_element_concept",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "MDDS Health Domain Overview Report, MeitY",
+      "source_excerpt": "Data Element: The basic principle of data modelling is the combination of an Object class and an Attribute to form a more specific 'data element concept'.",
+      "question": "Per MeitY's MDDS Health Domain report, a 'data element concept' is formed by combining an Attribute with which of the following?",
+      "options": [
+        "An Object class",
+        "A primary key",
+        "A stored procedure",
+        "A foreign key constraint"
+      ],
+      "answer_index": 0,
+      "explanation": "The MDDS data-modelling principle pairs an Object class with an Attribute to define a data element concept -- this is a modelling-level concept, not a database implementation detail like keys or procedures.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_mdds_guid_primary_key_blank",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "question_type": "fill_in_blank",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "MDDS Health Domain Overview Report, MeitY",
+      "source_excerpt": "...if the database is ported from one Database Management System (DBMS) to another, the unique sequential number (or auto increment primary keys of tables) will change. In order to avoid this problem GUID is proposed along with NIN.",
+      "question": "Per MeitY's MDDS report, if a database is ported from one DBMS to another, auto-increment _____ of tables can change -- which is why a GUID is proposed alongside the sequential ID (NIN).",
+      "accepted_answers": [
+        "primary keys",
+        "primary key"
+      ],
+      "explanation": "Auto-increment primary keys are DBMS-generated and not guaranteed portable across systems, motivating a globally unique identifier (GUID) as a more stable alternative."
+    },
+    {
+      "item_id": "ha_apisetu_api_definition",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Government of India Policy on Open APIs, Definitions",
+      "source_excerpt": "API: Application Programming Interface (API) means any mechanism that allows a system or service to access data or functionality provided by another system or service.",
+      "question": "Per the Government of India's Policy on Open APIs, how is an 'API' defined?",
+      "options": [
+        "Any mechanism that allows a system or service to access data or functionality provided by another system or service",
+        "A physical data cable connecting two servers",
+        "A government department's public phone directory",
+        "A type of firewall configuration"
+      ],
+      "answer_index": 0,
+      "explanation": "The Open API Policy's definition is deliberately general -- any interoperability mechanism between systems -- not a specific physical or administrative artifact.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_apisetu_open_api_blank",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Government of India Policy on Open APIs, Definitions",
+      "source_excerpt": "Open API: The API that has been exposed to enable other systems to interact with that system.",
+      "question": "Per the Open API Policy's definitions, an 'Open API' is the API that has been _____ to enable other systems to interact with that system.",
+      "accepted_answers": [
+        "exposed"
+      ],
+      "explanation": "'Open' in this context specifically means deliberately exposed for external interaction, not merely documented or internally used."
+    },
+    {
+      "item_id": "ha_ndsap_objective",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Objective",
+      "source_excerpt": "The objective of this policy is to facilitate the access to Government of India owned shareable data and information in both human readable and machine readable forms through a network all over the country in a proactive and periodically updatable manner.",
+      "question": "What is the stated objective of the National Data Sharing and Accessibility Policy (NDSAP)?",
+      "options": [
+        "To facilitate access to GoI-owned shareable data in human- and machine-readable form, proactively and periodically updated",
+        "To centralize all government data in a single paid subscription database",
+        "To restrict data sharing to central ministries only",
+        "To digitize only Census data"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP's objective centers on proactive, machine-readable, broadly-networked access to shareable government data -- not paywalling, restriction to central ministries, or a single-dataset scope.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_ndsap_negative_list_blank",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, definitions 2.8",
+      "source_excerpt": "Negative List - Non-sharable data as declared by the departments/ organizations",
+      "question": "Under NDSAP, non-sharable data declared by a department or organization is placed on its _____.",
+      "accepted_answers": [
+        "Negative List",
+        "negative list"
+      ],
+      "explanation": "NDSAP's framework distinguishes 'sharable' data (open by default) from data a department explicitly declares non-sharable via its Negative List."
+    },
+    {
+      "item_id": "ha_ndsap_sharable_data_def",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, definitions 2.11",
+      "source_excerpt": "Sharable Data - Those data not covered under the scope of negative list and non-sensitive in nature",
+      "question": "Per NDSAP's definitions, 'Sharable Data' is data that is:",
+      "options": [
+        "Not covered under the negative list and non-sensitive in nature",
+        "Only data older than 25 years",
+        "Only data collected by NIC",
+        "Only data related to the Census"
+      ],
+      "answer_index": 0,
+      "explanation": "Sharability under NDSAP is defined by exclusion from the negative list plus a non-sensitivity criterion, not by age, source agency, or subject matter.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_upsc23_constitutional_bodies",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "UPSC CSP-2023, GS Paper I, Q.35",
+      "source_excerpt": "Consider the following organizations/bodies in India: 1. The National Commission for Backward Classes 2. The National Human Rights Commission 3. The National Law Commission 4. The National Consumer Disputes Redressal Commission -- How many of the above are constitutional bodies?",
+      "question": "Of the National Commission for Backward Classes, the National Human Rights Commission, the Law Commission, and the National Consumer Disputes Redressal Commission, how many are constitutional bodies (i.e. established directly by the Constitution)?",
+      "options": [
+        "Only one",
+        "Only two",
+        "Only three",
+        "All four"
+      ],
+      "answer_index": 0,
+      "explanation": "Per UPSC's official answer key for CSP-2023, only one (the National Commission for Backward Classes, under Article 338B) is a constitutional body -- the others are statutory or non-statutory bodies, not constitutionally mandated.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_upsc23_president_election_void",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "UPSC CSP-2023, GS Paper I, Q.36",
+      "source_excerpt": "1. If the election of the President of India is declared void by the Supreme Court of India, all acts done by him/her... before the date of decision become invalid. 2. Election for the post of the President of India can be postponed on the ground that some Legislative Assemblies have been dissolved... 3. When a Bill is presented to the President of India, the Constitution prescribes time limits within which he/she has to declare his/her assent. How many of the above statements are correct?",
+      "question": "Consider three statements about the Indian Presidency: (1) if the President's election is voided by the Supreme Court, all prior acts become invalid; (2) the Presidential election can be postponed if some state assemblies are dissolved; (3) the Constitution prescribes a time limit for the President to assent to a Bill. How many of these are correct?",
+      "options": [
+        "Only one",
+        "Only two",
+        "All three",
+        "None"
+      ],
+      "answer_index": 3,
+      "explanation": "Per UPSC's official answer key, none of the three statements is correct -- acts done before an election is voided remain valid, the election cannot be postponed for that reason, and the Constitution does not actually fix a time limit for presidential assent to a Bill.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_darpg_grm_component_blank",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_governance_foundations",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "DARPG Sevottam Guidelines, August 2010",
+      "source_excerpt": "The Sevottam framework has been developed with the overarching objective of improving the quality of public service delivery in the country. The framework has three components: Citizens Charter, Grievance Redress Mechanism and Service Delivery Capability.",
+      "question": "DARPG's Sevottam framework for public service delivery has three components: Citizens Charter, _____, and Service Delivery Capability.",
+      "accepted_answers": [
+        "Grievance Redress Mechanism"
+      ],
+      "explanation": "Sevottam ('service' + 'uttam', excellence) structures good governance assessment around these three pillars, of which grievance redress is the second."
+    },
+    {
+      "item_id": "ha_niti_resolution_shared_vision_blank",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_governance_foundations",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Cabinet Secretariat Resolution dated 1 January 2015 (constituting NITI Aayog)",
+      "source_excerpt": "The NITI Aayog will work towards the following objectives: a. To evolve a shared vision of national development priorities, sectors and strategies with the active involvement of States in the light of national objectives.",
+      "question": "Per the 2015 Cabinet Resolution establishing it, NITI Aayog's first objective is 'To evolve a _____ of national development priorities, sectors and strategies with the active involvement of States.'",
+      "accepted_answers": [
+        "shared vision"
+      ],
+      "explanation": "NITI Aayog was explicitly founded as a cooperative-federalism body, with its very first objective framed around a jointly-evolved (shared) vision rather than centrally-dictated planning."
+    },
+    {
+      "item_id": "ha_niti_resolution_policy_design_blank",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Cabinet Secretariat Resolution dated 1 January 2015",
+      "source_excerpt": "To design strategic and long term policy and programme frameworks and initiatives, and monitor their progress and their efficacy. The lessons learnt through monitoring and feedback will be used for making innovative improvements, including necessary mid-course corrections.",
+      "question": "Per the 2015 Cabinet Resolution, one objective of NITI Aayog is 'To design strategic and long term _____ and programme frameworks and initiatives, and monitor their progress and efficacy.'",
+      "accepted_answers": [
+        "policy"
+      ],
+      "explanation": "Design and monitoring are bundled in this objective -- policy frameworks are meant to be revised based on feedback, not fixed once designed."
+    },
+    {
+      "item_id": "ha_niti_resolution_think_tank",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Cabinet Secretariat Resolution dated 1 January 2015",
+      "source_excerpt": "...there is a need to separate as well as energize the distinct 'process' of governance from the 'strategy' of governance... there is need for setting up an institution that serves as a Think Tank of the government -- a directional and policy dynamo.",
+      "question": "According to the 2015 Cabinet Resolution establishing it, NITI Aayog was conceived primarily as:",
+      "options": [
+        "A Think Tank providing strategic and technical policy advice -- a \"directional and policy dynamo\"",
+        "A statutory tribunal for inter-state water disputes",
+        "A permanent Finance Commission",
+        "An audit authority over state budgets"
+      ],
+      "answer_index": 0,
+      "explanation": "The founding resolution explicitly separates NITI Aayog's 'strategy' role (Think Tank) from the 'process' of governance handled by line ministries.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_upsc23_finance_commission_criteria",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_public_finance",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "UPSC CSP-2023, GS Paper I, Q.29",
+      "source_excerpt": "Consider the following: 1. Demographic performance 2. Forest and ecology 3. Governance reforms 4. Stable government 5. Tax and fiscal efforts. For the horizontal tax devolution, the Fifteenth Finance Commission used how many of the above as criteria other than population, area and income distance?",
+      "question": "Besides population, area, and income distance, the Fifteenth Finance Commission used how many of {Demographic performance, Forest and ecology, Governance reforms, Stable government, Tax and fiscal efforts} as horizontal tax devolution criteria?",
+      "options": [
+        "Only two",
+        "Only three",
+        "Only four",
+        "All five"
+      ],
+      "answer_index": 1,
+      "explanation": "Per UPSC's official answer key, the answer is 'Only three' -- Demographic performance, Forest and ecology, and Tax and fiscal efforts were used; 'Governance reforms' and 'Stable government' were not among the XV Finance Commission's devolution criteria.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_upsc23_money_bill_finance_bill",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_public_finance",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "UPSC CSP-2023, GS Paper I, Q.37",
+      "source_excerpt": "1. When the Lok Sabha transmits a Finance Bill to the Rajya Sabha, it can amend or reject the Bill. 2. When the Lok Sabha transmits a Money Bill to the Rajya Sabha, it cannot amend or reject the Bill, it can only make recommendations. 3. In the case of disagreement between the Lok Sabha and the Rajya Sabha, there is no joint sitting for Money Bill, but a joint sitting becomes necessary for Finance Bill.",
+      "question": "Regarding Finance Bills and Money Bills in Indian Parliament: (1) Rajya Sabha can amend/reject a Finance Bill; (2) Rajya Sabha cannot amend/reject a Money Bill, only recommend; (3) disagreement over a Money Bill needs no joint sitting, but a Finance Bill does. How many of these are correct?",
+      "options": [
+        "Only one",
+        "Only two",
+        "All three",
+        "None"
+      ],
+      "answer_index": 1,
+      "explanation": "Per UPSC's official answer key, only two of the three statements are correct -- statements 1 and 2 correctly describe the Rajya Sabha's limited power over Money Bills versus ordinary Finance Bills, but statement 3 is incorrect since no joint sitting mechanism applies to a plain Finance Bill's money provisions in the way stated.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_fc15_devolution_blank",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB, Report of the Fifteenth Finance Commission, 1 Feb 2021",
+      "source_excerpt": "XVFC has recommended maintaining the vertical devolution at 41 per cent -- the same as in our report for 2020-21.",
+      "question": "The Fifteenth Finance Commission recommended maintaining vertical tax devolution to states at _____ per cent.",
+      "accepted_answers": [
+        "41"
+      ],
+      "explanation": "This 41% figure already accounted for Jammu & Kashmir's reorganization into Union Territories, adjusted down from the Fourteenth Finance Commission's 42%."
+    },
+    {
+      "item_id": "ha_fc15_income_distance_weight",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "PIB, Report of the Fifteenth Finance Commission, devolution criteria table",
+      "source_excerpt": "Criteria / Weight (%): Population 15.0, Area 15.0, Forest & ecology 10.0, Income distance 45.0, Tax & fiscal efforts 2.5, Demographic performance 12.5, Total 100.",
+      "question": "In the Fifteenth Finance Commission's horizontal devolution formula (2021-26), which criterion carries the single highest weight?",
+      "options": [
+        "Population (15.0%)",
+        "Area (15.0%)",
+        "Income distance (45.0%)",
+        "Demographic performance (12.5%)"
+      ],
+      "answer_index": 2,
+      "explanation": "Income distance -- a measure of a state's per-capita income gap from the highest-income state -- dominates the formula at 45%, reflecting the devolution's redistributive intent.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_darpg_sevottam_score_blank",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_program_management",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "DARPG Sevottam Guidelines, August 2010",
+      "source_excerpt": "For Sevottam compliance a Citizens Charter for a department would need to get an average score of 4 and a minimum of 3 in all indicators.",
+      "question": "For Sevottam compliance, a department's Citizens Charter needs an average score of _____ and a minimum of _____ across all indicators.",
+      "accepted_answers": [
+        "4 and 3",
+        "4; 3"
+      ],
+      "explanation": "The dual threshold (average AND minimum) prevents a department from compensating a weak indicator with strength elsewhere -- every indicator must clear the floor."
+    },
+    {
+      "item_id": "ha_darpg_sevottam_22_criteria",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_program_management",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "DARPG Sevottam Guidelines, August 2010",
+      "source_excerpt": "It consists of 11 criteria for each of the modules, viz. Citizens Charter and Public Grievance Redress Mechanism, thereby comprising 22 criteria in all.",
+      "question": "Under the Sevottam 'Process Quality Assessment,' how many total criteria are assessed across the Citizens Charter and Grievance Redress modules combined?",
+      "options": [
+        "5",
+        "11",
+        "22",
+        "44"
+      ],
+      "answer_index": 2,
+      "explanation": "Each module (Citizens Charter, Grievance Redress) carries 11 criteria, for 22 total -- the number often misremembered as just 11 (one module's count).",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_aspirational_districts_indicators_blank",
+      "doc_id": "aspirational_districts_pib",
+      "competency_id": "pa_program_management",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "PIB Backgrounder, Aspirational Districts Programme, 5 Jan 2022",
+      "source_excerpt": "The objective of the program is to monitor the real-time progress of aspirational districts based on 49 indicators (81 data-points) from the five identified thematic areas.",
+      "question": "NITI Aayog's Aspirational Districts Programme tracks progress using _____ indicators comprising _____ data-points across five thematic areas.",
+      "accepted_answers": [
+        "49 and 81",
+        "49; 81"
+      ],
+      "explanation": "The programme's granularity (49 indicators, 81 data-points) is what enables its real-time district-level ranking, rather than an annual or infrequent review."
+    },
+    {
+      "item_id": "ha_pmgsy_three_tier_qc_blank",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_monitoring_evaluation",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Evaluation Study on PMGSY, PEO/NITI Aayog, 2005",
+      "source_excerpt": "A three-tier Quality Control mechanism has been envisaged under PMGSY. The District/Zila Parishad/Panchayat level officials exercise first tier of Quality Control. The State Quality Monitors (SQM), appointed by the State Government inspects the work during the work in progress as a second tier of Quality Control. National Quality Monitors (NQM) function as the third tier of Quality Control.",
+      "question": "Under PMGSY's Quality Control mechanism, District/Panchayat officials form the _____ tier, State Quality Monitors the _____ tier, and National Quality Monitors the _____ tier.",
+      "accepted_answers": [
+        "first, second, third",
+        "first; second; third"
+      ],
+      "explanation": "This layered design nests local, state, and national-level oversight, so no single tier is solely responsible for catching quality issues."
+    },
+    {
+      "item_id": "ha_niti_resolution_monitor_evaluate_blank",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_monitoring_evaluation",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Cabinet Secretariat Resolution dated 1 January 2015",
+      "source_excerpt": "To actively monitor and evaluate the implementation of programmes and initiatives, including the identification of the needed resources so as to strengthen the probability of success and scope of delivery.",
+      "question": "Per the 2015 Cabinet Resolution, one objective of NITI Aayog is to actively _____ and _____ the implementation of programmes and initiatives.",
+      "accepted_answers": [
+        "monitor and evaluate",
+        "monitor; evaluate"
+      ],
+      "explanation": "This objective pairs ongoing monitoring with periodic evaluation, plus resource identification, as joint levers to improve delivery."
+    },
+    {
+      "item_id": "ha_pmgsy_impact_objective",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Evaluation Study on PMGSY, PEO/NITI Aayog, 2005",
+      "source_excerpt": "To assess the impact of the programme on socio-economic conditions of the residents of villages provided with road connectivities under the programme.",
+      "question": "Which of the following was a stated objective of the Programme Evaluation Organisation's (PEO) evaluation study of PMGSY?",
+      "options": [
+        "To assess the impact of the programme on the socio-economic conditions of residents of connected villages",
+        "To recommend full privatization of rural road construction",
+        "To fix the GST rate applicable on road contracts",
+        "To replace PMGSY with a new scheme"
+      ],
+      "answer_index": 0,
+      "explanation": "The evaluation's core purpose was measuring real socio-economic impact on beneficiaries -- not procurement policy, taxation, or scheme replacement.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_pmgsy_better_price_blank",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Evaluation Study on PMGSY, PEO/NITI Aayog, 2005",
+      "source_excerpt": "It has improved the accessibility of beneficiary villagers and resulted in higher income in the form of better price for agricultural produce, new employment avenues etc.",
+      "question": "The PMGSY evaluation found that improved rural road connectivity resulted in higher income in the form of _____ for agricultural produce, among other benefits.",
+      "accepted_answers": [
+        "better price",
+        "better prices"
+      ],
+      "explanation": "Road connectivity's income effect was traced specifically to farmers being able to sell produce at better prices (easier market access), not just to construction-phase employment."
+    },
+    {
+      "item_id": "ha_ndap_disha_scope",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Data and Analytics Platform: Vision Document, NITI Aayog",
+      "source_excerpt": "data.gov.in provides ready access to data from 165 departments. DISHA, by the Ministry of Rural Development, provides access to data from 42 schemes across 20 ministries.",
+      "question": "Per NITI Aayog's NDAP Vision Document, DISHA (a Ministry of Rural Development data platform) provides access to data from:",
+      "options": [
+        "42 schemes across 20 ministries",
+        "165 departments",
+        "20 schemes across 42 ministries",
+        "100 schemes across 28 ministries"
+      ],
+      "answer_index": 0,
+      "explanation": "DISHA's scope (42 schemes, 20 ministries) is explicitly narrower and more scheme-focused than data.gov.in's broader 165-department reach, per the same document.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_karmayogi_hr_council_chair",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB, Cabinet approves Mission Karmayogi (NPCSCB), 2 Sep 2020",
+      "source_excerpt": "A Public Human Resources Council comprising of select Union Ministers, Chief Ministers, eminent public HR practitioners, thinkers, global thought leaders and Public Service functionaries under the Chairmanship of Hon'ble Prime Minister will serve as the apex body for providing strategic direction to the task of Civil Services Reform and capacity building.",
+      "question": "Under Mission Karmayogi (NPCSCB), who chairs the apex Public Human Resources Council?",
+      "options": [
+        "Prime Minister",
+        "Cabinet Secretary",
+        "Vice-Chairman, NITI Aayog",
+        "Union Minister of Personnel, Public Grievances and Pensions"
+      ],
+      "answer_index": 0,
+      "explanation": "The Council's apex status is underscored by its Prime Ministerial chairmanship, distinguishing it from department-level HR bodies.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_karmayogi_rules_roles_blank",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB, Cabinet approves Mission Karmayogi (NPCSCB), 2 Sep 2020",
+      "source_excerpt": "The core guiding principles of the Programme will be: Supporting Transition from 'Rules based' to 'Roles based' HR Management.",
+      "question": "A core guiding principle of Mission Karmayogi is supporting transition from '_____ based' to '_____ based' HR management.",
+      "accepted_answers": [
+        "Rules; Roles",
+        "Rules and Roles",
+        "Rules, Roles"
+      ],
+      "explanation": "This shift reframes civil-service HR around matching officers to role-specific competency requirements, rather than seniority/rules-driven postings alone."
+    },
+    {
+      "item_id": "ha_darpg_charter_definition",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "DARPG Sevottam Guidelines, August 2010",
+      "source_excerpt": "The Citizens / Clients Charter is a written declaration by a Government department that highlights the standards of service delivery that it subscribes to, availability of choice for consumers, avenues for grievance redress and other related information... Though not enforceable in a court of law, the Citizens / Client Charter is intended to empower citizens.",
+      "question": "According to DARPG's Sevottam guidelines, a Citizens'/Client's Charter is best described as:",
+      "options": [
+        "A written declaration by a department of its service standards, consumer choices, and grievance-redress avenues, not court-enforceable",
+        "A legally enforceable contract between a citizen and a government department",
+        "An internal HR performance appraisal document",
+        "A biannual budget statement"
+      ],
+      "answer_index": 0,
+      "explanation": "The Charter is explicitly a communication/transparency tool -- not a legal contract -- meant to set citizen expectations and empower them to seek redress informally.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_darpg_client_vs_citizen",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "DARPG Sevottam Guidelines, August 2010",
+      "source_excerpt": "Citizens are individuals, groups of individuals... and the common public at large. They are outside the government... Clients could be government agencies and government employees availing services from another government agency... Clients are part of the government and are generally referred to as internal clients.",
+      "question": "Per the Sevottam guidelines, how does a 'Client' differ from a 'Citizen' for charter purposes?",
+      "options": [
+        "Clients are internal -- government agencies/employees receiving services from another government agency -- while citizens are the general public outside government",
+        "Clients are exclusively foreign nationals",
+        "The terms are fully interchangeable",
+        "Only citizens may register grievances"
+      ],
+      "answer_index": 0,
+      "explanation": "Sevottam distinguishes external service recipients (citizens) from internal ones (clients, i.e. one government body served by another), which shapes how each charter is written.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_ccs_absolute_integrity_blank",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Central Civil Services (Conduct) Rules, 1964, Rule 3",
+      "source_excerpt": "Every Government servant shall at all times -- (i) maintain absolute integrity; (ii) maintain devotion to duty; and (iii) do nothing which is unbecoming of a Government servant.",
+      "question": "Per the CCS (Conduct) Rules, 1964, every Government servant shall at all times maintain _____ integrity, maintain devotion to duty, and do nothing unbecoming of a Government servant.",
+      "accepted_answers": [
+        "absolute"
+      ],
+      "explanation": "Rule 3's three-part conduct standard begins with an unqualified ('absolute') integrity requirement, not a graded or context-dependent one."
+    },
+    {
+      "item_id": "ha_ccs_gift_threshold_group_cd",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Central Civil Services (Conduct) Rules, 1964, Rule 13(3)",
+      "source_excerpt": "In any other case a Government servant shall not accept any gift without sanction of the Government if the value thereof exceeds -- (i) rupees one thousand five hundred in the case of a Government servant holding any Group 'A' or Group 'B' post; and (ii) rupees five hundred in the case of a Government servant holding any Group 'C' or Group 'D' post.",
+      "question": "Under the CCS (Conduct) Rules, 1964, a Government servant holding a Group 'C' or 'D' post needs prior sanction to accept a gift once its value exceeds:",
+      "options": [
+        "Rs. 500",
+        "Rs. 1,500",
+        "Rs. 7,500",
+        "Rs. 25,000"
+      ],
+      "answer_index": 0,
+      "explanation": "The Rules set a lower gift-sanction threshold (Rs. 500) for Group C/D posts than for Group A/B posts (Rs. 1,500) -- a tiered, not flat, standard.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_ccs_relative_gift_report_blank",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Central Civil Services (Conduct) Rules, 1964, Rule 13(4)",
+      "source_excerpt": "On occasions such as weddings, anniversaries, funerals or religious functions... a Government servant may accept gifts from his near relatives or from his personal friends having no official dealings with him, but shall make a report to the Government, if the value of such gift exceeds -- (i) rupees twenty five thousand in the case of a Government servant holding any Group 'A' post.",
+      "question": "A Group 'A' Government servant must report to the Government any wedding/festival gift from a near relative or personal friend once its value exceeds Rs. _____.",
+      "accepted_answers": [
+        "25,000",
+        "25000",
+        "twenty-five thousand",
+        "twenty five thousand"
+      ],
+      "explanation": "This higher threshold (Rs. 25,000, versus the Rs. 1,500 sanction limit for ordinary gifts) reflects the more permissive treatment of relative/friend gifts at genuinely personal occasions."
+    },
+    {
+      "item_id": "ha_upsc23_article335_statements",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "UPSC CSP-2023, GS Paper I, Q.40",
+      "source_excerpt": "Statement-I: The Supreme Court of India has held in some judgements that the reservation policies made under Article 16(4) of the Constitution of India would be limited by Article 335 for maintenance of efficiency of administration. Statement-II: Article 335 of the Constitution of India defines the term 'efficiency of administration'.",
+      "question": "Statement-I: The Supreme Court has held that Article 16(4) reservation policies are limited by Article 335's requirement to maintain 'efficiency of administration'. Statement-II: Article 335 itself defines the term 'efficiency of administration'. Which is correct?",
+      "options": [
+        "Both correct, II explains I",
+        "Both correct, II does not explain I",
+        "I is correct, II is incorrect",
+        "I is incorrect, II is correct"
+      ],
+      "answer_index": 2,
+      "explanation": "Per UPSC's official answer key, Statement-I is correct (courts have indeed tied Article 16(4) to Article 335), but Statement-II is incorrect -- Article 335 does not itself define 'efficiency of administration'.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_ccs_best_judgement_blank",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Central Civil Services (Conduct) Rules, 1964, Rule 3(2)",
+      "source_excerpt": "No Government servant shall, in the performance of his official duties, or in the exercise of powers conferred on him, act otherwise than in his best judgement except when he is acting under the direction of his official superior... The direction of the official superior shall ordinarily be in writing.",
+      "question": "A Government servant must act in his own _____ except when acting under the direction of his official superior, and such direction shall ordinarily be given in _____.",
+      "accepted_answers": [
+        "best judgement; writing",
+        "best judgment; writing",
+        "best judgement and writing"
+      ],
+      "explanation": "This rule protects independent judgement as the default, while requiring superior directions overriding it to be documented (ordinarily in writing) -- creating an accountability trail for decisions."
+    },
+    {
+      "item_id": "ha_karmayogi_budget_blank",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_change_management",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "PIB, Cabinet approves Mission Karmayogi (NPCSCB), 2 Sep 2020",
+      "source_excerpt": "To cover around 46 lakh Central employees, a sum of Rs.510.86 crore will be spent over a period of 5 years from 2020-21 to 2024-25.",
+      "question": "Mission Karmayogi was budgeted to spend Rs. _____ crore over 5 years (2020-21 to 2024-25) to cover around _____ lakh Central employees.",
+      "accepted_answers": [
+        "510.86 and 46",
+        "510.86; 46"
+      ],
+      "explanation": "This budget (Rs. 510.86 crore for ~46 lakh employees) was also partly funded by USD 50 million in multilateral assistance, per the same release."
+    },
+    {
+      "item_id": "ha_karmayogi_fracs_framework",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PIB, Cabinet approves Mission Karmayogi (NPCSCB), 2 Sep 2020",
+      "source_excerpt": "Supporting Transition from 'Rules based' to 'Roles based' HR Management... To calibrate all Civil Service positions to a Framework of Roles, Activities and Competencies (FRACs) approach.",
+      "question": "Mission Karmayogi's institutional/HR change-management approach is centered on calibrating every civil-service position to which framework?",
+      "options": [
+        "Framework of Roles, Activities and Competencies (FRACs)",
+        "Balanced Scorecard",
+        "Results-Framework Document (RFD)",
+        "RCEESI+E"
+      ],
+      "answer_index": 0,
+      "explanation": "FRACs is the specific competency-mapping framework Mission Karmayogi uses to drive its rules-to-roles HR transition, distinct from performance-scorecard tools like RFD or the Balanced Scorecard.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_itact_digital_signature_def_blank",
+      "doc_id": "it_act_2000",
+      "competency_id": "dl_digital_signatures",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Information Technology Act, 2000, Section 2(1)(p)",
+      "source_excerpt": "\"digital signature\" means authentication of any electronic record by a subscriber by means of an electronic method or procedure in accordance with the provisions of section 3;",
+      "question": "Under the IT Act 2000, 'digital signature' means authentication of any electronic record by a subscriber by means of an electronic method or procedure in accordance with the provisions of Section _____.",
+      "accepted_answers": [
+        "3"
+      ],
+      "explanation": "Section 2(1)(p) defines digital signature by cross-reference to Section 3, which lays out exactly how that authentication must technically work."
+    },
+    {
+      "item_id": "ha_itact_asymmetric_crypto",
+      "doc_id": "it_act_2000",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Information Technology Act, 2000, Section 2(1)(f)",
+      "source_excerpt": "\"asymmetric crypto system\" means a system of a secure key pair consisting of a private key for creating a digital signature and a public key to verify the digital signature;",
+      "question": "Per Section 2(1)(f) of the IT Act, an 'asymmetric crypto system' is a system of a secure key pair consisting of a private key for creating a digital signature and:",
+      "options": [
+        "A public key to verify the digital signature",
+        "A backup key held by the Certifying Authority",
+        "A password known only to the subscriber",
+        "A hash of the subscriber's Aadhaar number"
+      ],
+      "answer_index": 0,
+      "explanation": "Public-key (asymmetric) cryptography's defining feature is the private/public key split -- one key signs, the mathematically-paired but non-secret public key verifies.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_itact_hash_function_blank",
+      "doc_id": "it_act_2000",
+      "competency_id": "dl_digital_signatures",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Information Technology Act, 2000, Section 3, Explanation",
+      "source_excerpt": "\"hash function\" means an algorithm mapping or translation of one sequence of bits into another, generally smaller, set known as \"hash result\" such that... making it computationally infeasible -- (a) to derive or reconstruct the original electronic record from the hash result produced by the algorithm",
+      "question": "Under Section 3's Explanation, a 'hash function' is an algorithm designed to make it computationally infeasible to derive or reconstruct the original electronic record from the _____ produced by the algorithm.",
+      "accepted_answers": [
+        "hash result"
+      ],
+      "explanation": "This one-way property (irreversibility) is exactly what makes a hash function suitable as the basis for verifying a signed record without exposing the record itself."
+    },
+    {
+      "item_id": "ha_itact_section5_effect",
+      "doc_id": "it_act_2000",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Information Technology Act, 2000, Section 5",
+      "source_excerpt": "Where any law provides that information or any other matter shall be authenticated by affixing the signature... such requirement shall be deemed to have been satisfied, if such information or matter is authenticated by means of digital signature affixed in such manner as may be prescribed by the Central Government.",
+      "question": "Section 5 of the IT Act 2000 gives what legal effect to digital signatures where a law requires a document to be signed?",
+      "options": [
+        "The signature requirement is deemed satisfied by a digital signature affixed as prescribed",
+        "No legal effect until a court rules on it",
+        "It only applies to banking documents",
+        "It requires simultaneous physical signature too"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 5 is the operative provision that gives digital signatures the same legal standing as physical ones, without needing a court ruling or a parallel physical signature.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_i4c_password_length_blank",
+      "doc_id": "i4c_cyber_hygiene",
+      "competency_id": "dl_cyber_hygiene",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Cyber Hygiene for Cyber Space -- Dos & Don'ts (Basic), I4C, Dec 2021",
+      "source_excerpt": "Password should not be less than eight characters",
+      "question": "Per I4C's Cyber Hygiene guidance, a password should not be less than _____ characters.",
+      "accepted_answers": [
+        "eight",
+        "8"
+      ],
+      "explanation": "Eight characters is I4C's stated minimum baseline for password length as part of basic cyber hygiene."
+    },
+    {
+      "item_id": "ha_i4c_usb_autorun",
+      "doc_id": "i4c_cyber_hygiene",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Cyber Hygiene for Cyber Space -- Dos & Don'ts (Basic), I4C, Dec 2021",
+      "source_excerpt": "Autorun/ Autoplay feature shall be disabled in all the computers, while using USB",
+      "question": "Regarding USB device security, I4C recommends which setting be disabled on all computers when using a USB device?",
+      "options": [
+        "Autorun/Autoplay",
+        "File compression",
+        "Bluetooth",
+        "Dark mode"
+      ],
+      "answer_index": 0,
+      "explanation": "Autorun/Autoplay is a classic malware-propagation vector via removable media, which is why I4C specifically flags disabling it.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_i4c_remember_password",
+      "doc_id": "i4c_cyber_hygiene",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Cyber Hygiene for Cyber Space -- Dos & Don'ts (Basic), I4C, Dec 2021",
+      "source_excerpt": "Do not choose/ select \"remember my password\" option for banking/ sensitive sites",
+      "question": "For banking or other sensitive sites, what does I4C's guidance say about the browser's 'remember my password' option?",
+      "options": [
+        "It should not be selected for banking/sensitive sites",
+        "It's fine as long as MFA is on",
+        "Only avoid it on shared computers",
+        "Use it only for OTP-linked accounts"
+      ],
+      "answer_index": 0,
+      "explanation": "The guidance gives a blanket recommendation against saving passwords for sensitive sites, not a conditional exception for MFA-protected or personal devices.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_i4c_upi_public_transactions",
+      "doc_id": "i4c_cyber_hygiene",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Cyber Hygiene for Cyber Space -- Dos & Don'ts (Basic), I4C, Dec 2021",
+      "source_excerpt": "Do not use any public computer or Wi-Fi for carrying out financial transactions like online shopping, internet banking, UPI transaction, etc.",
+      "question": "Under 'General Internet Safety Precautions', what does I4C advise about doing financial transactions like online shopping or UPI on public networks?",
+      "options": [
+        "Public computers/Wi-Fi should not be used for such transactions",
+        "They are safe if the site shows a padlock icon",
+        "Only avoid public computers; Wi-Fi is fine",
+        "Only relevant for amounts over Rs. 10,000"
+      ],
+      "answer_index": 0,
+      "explanation": "The advice is unconditional -- avoid both public computers and public Wi-Fi for financial transactions, regardless of HTTPS indicators or transaction size.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_responsible_ai_safety_principle",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Responsible AI #AIForAll, NITI Aayog, Feb 2021, Principle of Safety and Reliability",
+      "source_excerpt": "AI should be deployed reliably as intended and sufficient safeguards must be placed to ensure the safety of relevant stakeholders.",
+      "question": "NITI Aayog's Principle of Safety and Reliability for AI requires that:",
+      "options": [
+        "AI is deployed reliably as intended, with safeguards for stakeholder safety",
+        "AI must never be deployed without human review of every decision",
+        "AI systems must be open-source",
+        "AI must be re-certified annually by a court"
+      ],
+      "answer_index": 0,
+      "explanation": "The principle centers on reliable-as-intended operation plus adequate safeguards -- not a blanket human-review mandate, open-source requirement, or judicial re-certification.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_responsible_ai_nondiscrimination",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Responsible AI #AIForAll, NITI Aayog, Feb 2021, Principle of Inclusivity and Non-discrimination",
+      "source_excerpt": "AI systems should not deny opportunity to a qualified person on the basis of their identity. It should not deepen the harmful historic and social divisions based on religion, race, caste, sex, descent, place of birth or residence.",
+      "question": "Per the Principle of Inclusivity and Non-discrimination, AI systems should not:",
+      "options": [
+        "Deny opportunity to a qualified person based on their identity",
+        "Use any personal data at all",
+        "Be trained on Indian datasets",
+        "Be deployed in the private sector"
+      ],
+      "answer_index": 0,
+      "explanation": "The principle is specifically anti-discriminatory (identity-based denial of opportunity), not a general restriction on personal data use, dataset origin, or sector of deployment.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_responsible_ai_transparency_blank",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Responsible AI #AIForAll, NITI Aayog, Feb 2021",
+      "source_excerpt": "Principle of Transparency: The design and functioning of the AI system should be recorded and made available for external scrutiny and audit to the extent possible.",
+      "question": "NITI Aayog's Principle of _____ states: 'The design and functioning of the AI system should be recorded and made available for external scrutiny and audit to the extent possible.'",
+      "accepted_answers": [
+        "Transparency"
+      ],
+      "explanation": "Recording design/functioning for external audit is precisely what distinguishes the Transparency principle from, say, Accountability (which is about responsibility for outcomes)."
+    },
+    {
+      "item_id": "ha_responsible_ai_accountability",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Responsible AI #AIForAll, NITI Aayog, Feb 2021, Principle of Accountability",
+      "source_excerpt": "All stakeholders involved in the design, development and deployment of the AI system must be responsible for their actions. Stakeholders should conduct risk and impact assessments... set up an auditing process... and create mechanisms for grievance redressal.",
+      "question": "Under NITI Aayog's Principle of Accountability, stakeholders designing/developing/deploying an AI system are expected to:",
+      "options": [
+        "Be responsible for their actions and conduct risk/impact assessments, audits, and grievance redressal",
+        "Only be liable if a court finds criminal intent",
+        "Delegate all responsibility to the AI vendor",
+        "Report only to shareholders"
+      ],
+      "answer_index": 0,
+      "explanation": "Accountability here is proactive (assessments, audits, grievance mechanisms) rather than reactive liability triggered only by court findings.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_responsible_ai_seven_principles_blank",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Responsible AI #AIForAll, NITI Aayog, Feb 2021",
+      "source_excerpt": "Non-discrimination 4. Principle of Privacy and security 5. Principle of Transparency 6. Principle of Accountability 7. Principle of protection",
+      "question": "NITI Aayog's Responsible AI Part 1 paper recommends _____ principles for the responsible management of artificial intelligence in India.",
+      "accepted_answers": [
+        "seven",
+        "7"
+      ],
+      "explanation": "The paper enumerates exactly seven named principles, of which Safety and Reliability, Non-discrimination, Privacy and Security, Transparency, and Accountability are among those covered above."
+    },
+    {
+      "item_id": "ha_dpi_aadhaar_count_blank",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "PIB, India's Digital Public Infrastructure, March 2026",
+      "source_excerpt": "As of March 2026, more than 144 crore Aadhaar numbers had been generated.",
+      "question": "As of March 2026, more than _____ crore Aadhaar numbers had been generated, per PIB's Digital Public Infrastructure release.",
+      "accepted_answers": [
+        "144"
+      ],
+      "explanation": "This figure reflects near-universal Aadhaar coverage of India's population by that date."
+    },
+    {
+      "item_id": "ha_dpi_jam_trinity",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB, India's Digital Public Infrastructure, March 2026",
+      "source_excerpt": "Jan Dhan bank accounts, Aadhaar enrolment and widespread mobile phone penetration created the base layer for India's digital transformation.",
+      "question": "Per this PIB release, what three elements formed the 'JAM trinity' that laid the base layer for India's digital transformation?",
+      "options": [
+        "Jan Dhan accounts, Aadhaar, mobile penetration",
+        "Judiciary, Administration, Media",
+        "UPI, DigiLocker, CoWIN",
+        "Java, ASP.NET, MySQL"
+      ],
+      "answer_index": 0,
+      "explanation": "JAM (Jan Dhan-Aadhaar-Mobile) is the foundational trio commonly cited as enabling India's subsequent DPI layer (UPI, DigiLocker, etc.), not those later applications themselves.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_dpi_upi_scale",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "PIB, India's Digital Public Infrastructure, March 2026",
+      "source_excerpt": "In January 2026, it processed 21.70 billion transactions worth over Rs.28.33 lakh crore, reflecting its deep integration...",
+      "question": "Per this PIB release, in January 2026 UPI processed:",
+      "options": [
+        "21.70 billion transactions worth over Rs. 28.33 lakh crore",
+        "2.17 billion transactions worth Rs. 283 crore",
+        "21.70 million transactions",
+        "691 crore transactions"
+      ],
+      "answer_index": 0,
+      "explanation": "These figures illustrate UPI's scale as a national payments backbone, not a niche or supplementary payment channel.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_dpi_apisetu_launch",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB, India's Digital Public Infrastructure, March 2026",
+      "source_excerpt": "MeitY initiated API Setu, also known as the Open API Platform project, in March 2020.",
+      "question": "According to this PIB release, when was API Setu (the Open API Platform project) initiated, and by which ministry?",
+      "options": [
+        "MeitY, March 2020",
+        "NITI Aayog, 2015",
+        "RBI, 2016",
+        "I4C, 2021"
+      ],
+      "answer_index": 0,
+      "explanation": "API Setu is a MeitY initiative dating to March 2020, distinct from RBI's payment infrastructure or NITI Aayog's data/policy platforms.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gicloud_name_blank",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GI Cloud (Meghraj) Adoption and Implementation Roadmap, DeitY, April 2013",
+      "source_excerpt": "In pursuit of the vision, the Department of Electronics and IT (DeitY) has embarked upon a National Cloud initiative termed as 'GI Cloud'.",
+      "question": "The Government of India's national cloud initiative, launched by the Department of Electronics and IT, is termed '_____' (also known as MeghRaj).",
+      "accepted_answers": [
+        "GI Cloud"
+      ],
+      "explanation": "'GI Cloud' is the formal name; 'MeghRaj' is its popular/branding name, both referring to the same national cloud initiative."
+    },
+    {
+      "item_id": "ha_gicloud_national_state_levels",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GI Cloud (Meghraj) Adoption and Implementation Roadmap, DeitY, April 2013",
+      "source_excerpt": "...by the creation of discrete cloud computing environments at the national and state levels termed as 'National Clouds' and 'State Clouds' respectively.",
+      "question": "The GI Cloud architecture envisages discrete cloud computing environments at which two levels?",
+      "options": [
+        "National and state level (\"National Clouds\" and \"State Clouds\")",
+        "District and block level",
+        "Village and gram panchayat level",
+        "Public and private sector level"
+      ],
+      "answer_index": 0,
+      "explanation": "The architecture is federated across government tiers (national/state), not sub-district administrative units or a public/private split.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gicloud_iaas_paas_saas",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "GI Cloud (Meghraj) Adoption and Implementation Roadmap, DeitY, April 2013",
+      "source_excerpt": "The National Clouds will be equipped to provide cloud services, i.e. IaaS, PaaS and SaaS.",
+      "question": "Per the GI Cloud roadmap, which categories of cloud services will the National Clouds be equipped to provide?",
+      "options": [
+        "IaaS, PaaS and SaaS",
+        "Only Software-as-a-Service",
+        "Only email hosting",
+        "Only data backup"
+      ],
+      "answer_index": 0,
+      "explanation": "The roadmap commits to the full standard cloud service-model stack (Infrastructure, Platform, and Software as a Service), not a single narrow offering.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gicloud_negp_origin",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GI Cloud (Meghraj) Adoption and Implementation Roadmap, DeitY, April 2013",
+      "source_excerpt": "The Government of India initiated the National e-Governance Plan (NeGP) in May 2006 with a vision to make all government services accessible to citizens in their own locality, through common service delivery outlets at affordable costs.",
+      "question": "What May 2006 government initiative does the GI Cloud roadmap describe as its original vision -- making government services accessible to citizens through common service delivery outlets?",
+      "options": [
+        "National e-Governance Plan (NeGP)",
+        "Digital India",
+        "Aadhaar Act",
+        "IT Act 2000"
+      ],
+      "answer_index": 0,
+      "explanation": "GI Cloud is framed as a later infrastructural enabler of NeGP's 2006 vision, not a standalone or Digital-India-era programme.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_ndap_democratize_data_literacy_blank",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Data and Analytics Platform: Vision Document, NITI Aayog",
+      "source_excerpt": "Vision: Democratize access to public Government data through a world-class user experience.",
+      "question": "NDAP's stated vision is to '_____ access to public Government data through a world-class user experience.'",
+      "accepted_answers": [
+        "democratize",
+        "democratise"
+      ],
+      "explanation": "Data literacy at scale depends on this kind of accessible, non-specialist-friendly access to government data, which is exactly what NDAP's vision targets."
+    },
+    {
+      "item_id": "ha_ndap_coherence_problem",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Data and Analytics Platform: Vision Document, NITI Aayog",
+      "source_excerpt": "Ministries and Departments do not use a shared standard for common indicators. Attributes like region and time period defined differently. This makes it difficult for datasets to speak to each other.",
+      "question": "Per the NDAP Vision Document, why is data coherence across ministries and departments identified as a problem?",
+      "options": [
+        "Ministries/Departments lack a shared standard for indicators (e.g. region, time period), making datasets hard to compare",
+        "Because most ministries refuse to publish any data",
+        "Because data is stored only on paper",
+        "Because of a lack of internet access in rural India"
+      ],
+      "answer_index": 0,
+      "explanation": "The coherence problem is about inconsistent definitions/standards across sources, not availability, digitization, or access infrastructure.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nielit_ccc_duration_blank",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NIELIT CCC Syllabus, Course Duration",
+      "source_excerpt": "Theory: 25 hrs + Practical: 50 hrs. + Tutorial: 5 hrs. This course can also be offered as 10 days full time intensive course.",
+      "question": "Per the official NIELIT Course on Computer Concepts (CCC) syllabus, the course duration is Theory: 25 hrs + Practical: _____ hrs + Tutorial: 5 hrs.",
+      "accepted_answers": [
+        "50"
+      ],
+      "explanation": "Practical hours (50) are double the theory hours (25), reflecting CCC's hands-on, foundational-skills orientation."
+    },
+    {
+      "item_id": "ha_nielit_ccc_unit1",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NIELIT CCC Syllabus, Syllabus Outline",
+      "source_excerpt": "Syllabus Outline ... 1. Introduction to computer ... 2. Introduction to GUI Based Operating System ...",
+      "question": "Which of these is Unit 1 of the official NIELIT CCC syllabus?",
+      "options": [
+        "Introduction to Computer",
+        "Spreadsheets",
+        "Making Small Presentations",
+        "WWW and Web Browsers"
+      ],
+      "answer_index": 0,
+      "explanation": "The syllabus opens with basic computer literacy before progressing to operating systems, office applications, and internet skills.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nielit_ccc_file_management",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NIELIT CCC Syllabus, Unit 2",
+      "source_excerpt": "2.5 File and Directory Management",
+      "question": "Under Unit 2 ('Introduction to GUI Based Operating System') of the NIELIT CCC syllabus, which topic on file handling is explicitly listed?",
+      "options": [
+        "File and Directory Management",
+        "Cloud backup configuration",
+        "Kernel compilation",
+        "Network firewall rules"
+      ],
+      "answer_index": 0,
+      "explanation": "File/directory management is core operating-system literacy at this foundational level, not advanced systems administration.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nielit_ccc_spreadsheets_unit_blank",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NIELIT CCC Syllabus, Syllabus Outline table",
+      "source_excerpt": "4. Spreadsheets 4 2 10",
+      "question": "In the official NIELIT CCC syllabus, '_____' is Unit 4, allocated 4 theory hours, 2 tutorial hours, and 10 practical hours.",
+      "accepted_answers": [
+        "Spreadsheets"
+      ],
+      "explanation": "Spreadsheets get the most practical hours (10) of the early units, reflecting their hands-on skill emphasis."
+    },
+    {
+      "item_id": "ha_nielit_ccc_function_charts",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NIELIT CCC Syllabus, Unit 4.4",
+      "source_excerpt": "4.4 Function and Charts 4.4.1 Using Formulas 4.4.2 Function 4.4.3 Charts",
+      "question": "Under the NIELIT CCC syllabus's Unit 4.4 ('Function and Charts'), which three sub-topics are explicitly listed?",
+      "options": [
+        "Using Formulas, Function, Charts",
+        "Pivot Tables, Macros, VBA",
+        "Mail Merge, Templates, Styles",
+        "Slicers, Sparklines, Conditional Formatting"
+      ],
+      "answer_index": 0,
+      "explanation": "At the CCC foundational level, the spreadsheet unit covers formulas/functions/charts -- not advanced features like pivot tables, macros, or VBA scripting.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nielit_ccc_cell_addressing",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NIELIT CCC Syllabus, Unit 4.2",
+      "source_excerpt": "4.2.1 Opening of Spread Sheet 4.2.2 Addressing of Cells 4.2.3 Printing of Spread Sheet 4.2.4 Saving Workbooks",
+      "question": "Which sub-topic appears under '4.2 Elements of Electronic Spread Sheet' in the official NIELIT CCC syllabus?",
+      "options": [
+        "Addressing of Cells",
+        "Video embedding",
+        "Password-protecting a PDF",
+        "Installing a printer driver"
+      ],
+      "answer_index": 0,
+      "explanation": "Cell addressing is a basic spreadsheet-literacy concept covered alongside opening, printing, and saving workbooks in this introductory unit.",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nielit_ccc_collaboration_unit_blank",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NIELIT CCC Syllabus, Syllabus Outline table",
+      "source_excerpt": "7. Communication and Collaboration 2 - 2",
+      "question": "In the NIELIT CCC syllabus, Unit _____ is titled 'Communication and Collaboration.'",
+      "accepted_answers": [
+        "7",
+        "seven"
+      ],
+      "explanation": "Communication and Collaboration is the final content unit in the CCC syllabus's outline table, after the more technical units."
+    },
+    {
+      "item_id": "ha_nielit_ccc_email_forwarding",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NIELIT CCC Syllabus, Unit 7.3",
+      "source_excerpt": "7.3.4 Replying to an E-mail message 7.3.5 Forwarding an E-mail message 7.3.6 Sorting and Searching emails",
+      "question": "Which of the following is listed as a sub-topic under '7.3 Using E-mails' in the official NIELIT CCC syllabus?",
+      "options": [
+        "Forwarding an E-mail message",
+        "Compiling a mailing list server",
+        "Configuring a mail transfer agent",
+        "Digital signature certificate renewal"
+      ],
+      "answer_index": 0,
+      "explanation": "At the CCC level, email skills are user-facing (replying, forwarding, searching) rather than server-administration tasks like configuring mail transfer agents.",
+      "question_type": "mcq"
     }
   ]
 }

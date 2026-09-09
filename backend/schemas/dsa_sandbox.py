@@ -12,18 +12,21 @@ class DsaProblemOut(BaseModel):
     title: str
     prompt: str
     starter_code: str
+    starter_code_by_language: dict[str, str]
     test_case_count: int
     sample_input: list
 
 
 class DsaProblemsResponse(BaseModel):
     problems: list[DsaProblemOut]
+    languages: dict[str, str]
 
 
 class DsaSubmitRequest(BaseModel):
     player_id: str
     problem_id: str
     code: str = Field(..., min_length=1, max_length=20000)
+    language: str = "python"
 
 
 class DsaTestFailure(BaseModel):

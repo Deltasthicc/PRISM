@@ -23,7 +23,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, JSON, String
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, Integer, JSON, String
 from db.database import Base
 
 
@@ -135,5 +135,14 @@ class GeneratedQuiz(Base):
     language = Column(String, default="English")
     questions = Column(JSON, default=list)
     generation_mode = Column(String, default="extractive-fallback")
+
+    # Denormalized best-attempt summary from routes/learning_content.py's
+    # POST /learning/quiz/{quiz_id}/submit -- deliberately NOT written into
+    # AccuracyHistory/the real competency vector, since a generated quiz's
+    # `competency` field is free text from the model or the extractive
+    # fallback, not a real curriculum competency_id (see services/curricula.py).
+    # This is a real, honest score for this one quiz, not curriculum evidence.
+    best_score = Column(Float, nullable=True)
+    last_attempted_at = Column(DateTime(timezone=True), nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

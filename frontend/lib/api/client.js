@@ -415,6 +415,20 @@ export const learning = {
 
   listQuizzes: (playerId) => request(`/learning/quiz/${playerId}`),
 
+  getQuiz: (quizId, playerId) =>
+    request(`/learning/quiz/detail/${quizId}?player_id=${encodeURIComponent(playerId)}`),
+
+  // Scores a real attempt at a previously generated quiz -- time+difficulty
+  // weighted (services/quiz_scoring.py), deliberately NOT written into the
+  // curriculum competency vector (see schemas.learning.QuizSubmitResponse's
+  // docstring): a generated quiz's `competency` field is free text, not a
+  // real competency_id.
+  submitGeneratedQuiz: (quizId, playerId, answers) =>
+    request(`/learning/quiz/${quizId}/submit`, {
+      method: 'POST',
+      body: { player_id: playerId, answers },
+    }),
+
   getAdminOverview: (uiLang = 'en') => request(`/learning/admin/overview?lang=${uiLang}`),
 
   // Real, source-cited competency quiz (routes/competency_quiz.py) -- see
@@ -441,9 +455,9 @@ export const learning = {
   // /stats's competency pathway both already read.
   getDsaSandboxProblems: () => request('/learning/dsa-sandbox/problems'),
 
-  submitDsaSandbox: (playerId, problemId, code) =>
+  submitDsaSandbox: (playerId, problemId, code, language = 'python') =>
     request('/learning/dsa-sandbox/submit', {
       method: 'POST',
-      body: { player_id: playerId, problem_id: problemId, code },
+      body: { player_id: playerId, problem_id: problemId, code, language },
     }),
 };

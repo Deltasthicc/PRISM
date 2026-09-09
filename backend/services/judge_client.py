@@ -15,6 +15,8 @@ import os
 import httpx
 from dotenv import load_dotenv
 
+from services.dsa_lang_gen import LANGUAGES, DEFAULT_LANGUAGE
+
 load_dotenv()
 
 JUDGE0_BASE_URL = os.getenv("JUDGE0_BASE_URL", "https://ce.judge0.com").rstrip("/")
@@ -23,7 +25,9 @@ JUDGE0_API_HOST = os.getenv("JUDGE0_API_HOST")  # RapidAPI-hosted instances need
 
 # Confirmed against Judge0 CE's live /languages endpoint at build time --
 # see the DSA sandbox PR description for how this was verified, not guessed.
-PYTHON_LANGUAGE_ID = 71  # "Python (3.8.1)"
+# services/dsa_lang_gen.py owns the language -> Judge0 ID mapping since the
+# harness generator and the judge client must always agree on it.
+PYTHON_LANGUAGE_ID = LANGUAGES["python"]["judge0_id"]  # "Python (3.8.1)" -- kept for backward compat
 
 # Real wall-clock ceiling for one Judge0 round trip: the sandbox itself
 # enforces a much shorter CPU-time limit (cpu_time_limit below); this is
@@ -63,13 +67,24 @@ _INTERNAL_ERROR = 13
 _EXEC_FORMAT_ERROR = 14
 
 
-async def run_test_case(source_code: str, stdin: str, expected_output: str) -> dict:
+async def run_test_case(
+    source_code: str, stdin: str, expected_output: str, language: str = DEFAULT_LANGUAGE
+) -> dict:
     """Run one test case against Judge0 and return a normalized verdict:
     {status, stdout, stderr, compile_output, time, passed}.
 
     `status` is one of: accepted, wrong_answer, compile_error, runtime_error,
     time_limit_exceeded, judge_unavailable.
+
+    `language` must be one of services.dsa_lang_gen.LANGUAGES' keys; compiled
+    languages (Java/C++/C#) get a longer cpu_time_limit since Judge0 counts
+    compilation time against it too.
     """
+    if language not in LANGUAGES:
+        raise ValueError(f"unsupported language: {language!r}")
+    language_id = LANGUAGES[language]["judge0_id"]
+    cpu_time_limit = 5 if language in ("python", "javascript") else 10
+
     headers = {"Content-Type": "application/json"}
     if JUDGE0_API_KEY:
         headers["X-RapidAPI-Key"] = JUDGE0_API_KEY
@@ -83,12 +98,12 @@ async def run_test_case(source_code: str, stdin: str, expected_output: str) -> d
             headers=headers,
             json={
                 "source_code": source_code,
-                "language_id": PYTHON_LANGUAGE_ID,
+                "language_id": language_id,
                 "stdin": stdin,
                 "expected_output": expected_output,
                 # Real limits, not a formality -- an infinite loop or a fork
                 # bomb must fail fast, not hang the judge or this request.
-                "cpu_time_limit": 5,
+                "cpu_time_limit": cpu_time_limit,
                 "memory_limit": 128000,
             },
         )

@@ -47,6 +47,7 @@ import routes.dsa_sandbox as dsa_sandbox_routes
 from routes.authorization import require_principal
 from routes.dsa_sandbox import router as dsa_sandbox_router
 from security.rbac import BoundPrincipal
+from services import dsa_lang_gen
 from services.dsa_problems import PROBLEMS
 
 
@@ -92,7 +93,7 @@ def _mock_judge(monkeypatch, results):
     """results: a list of per-call return dicts, consumed in order."""
     calls = iter(results)
 
-    async def fake_run_test_case(source_code, stdin, expected_output):
+    async def fake_run_test_case(source_code, stdin, expected_output, language="python"):
         return next(calls)
 
     monkeypatch.setattr(dsa_sandbox_routes, "run_test_case", fake_run_test_case)
@@ -103,13 +104,22 @@ def test_problem_bank_covers_every_dsa_topic_with_real_test_cases():
     client = TestClient(_app(db, None))
     response = client.get("/learning/dsa-sandbox/problems")
     assert response.status_code == 200
-    problems = response.json()["problems"]
+    body = response.json()
+    problems = body["problems"]
     assert len(problems) == len(PROBLEMS)
     topics = {p["competency_id"] for p in problems}
     assert topics == {p["competency_id"] for p in PROBLEMS}
+    assert set(body["languages"]) == set(dsa_lang_gen.LANGUAGES)
     for problem in problems:
         assert problem["test_case_count"] >= 3
         assert "def solve" in problem["starter_code"]
+        # Every advertised language must have real, generated starter code
+        # -- not just Python.
+        assert set(problem["starter_code_by_language"]) == set(dsa_lang_gen.LANGUAGES)
+        assert "solve" in problem["starter_code_by_language"]["java"].lower()
+        assert "solve" in problem["starter_code_by_language"]["cpp"].lower()
+        assert "solve" in problem["starter_code_by_language"]["csharp"].lower()
+        assert "solve" in problem["starter_code_by_language"]["javascript"].lower()
         # The public view must never leak expected_output/full test cases.
         assert "expected_output" not in problem
         assert "test_cases" not in problem
@@ -151,6 +161,60 @@ def test_accepted_submission_persists_and_updates_accuracy_history(monkeypatch):
     assert acc.recent_accuracy == 1.0
 
 
+def test_accepted_submission_in_non_python_language_persists_language(monkeypatch):
+    db = _db()
+    player_id = _make_player(db)
+    client = TestClient(_app(db, _principal(player_id)))
+    problem = PROBLEMS[0]
+    _mock_judge(monkeypatch, [{"status": "accepted", "stdout": "ok", "stderr": None,
+                               "compile_output": None, "time": "0.01", "passed": True}
+                              for _ in problem["test_cases"]])
+
+    java_code = dsa_lang_gen.starter_code("java", problem)
+    response = client.post(
+        "/learning/dsa-sandbox/submit",
+        json={
+            "player_id": player_id,
+            "problem_id": problem["id"],
+            "code": java_code,
+            "language": "java",
+        },
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "accepted"
+
+    submission = db.query(DsaSubmission).filter(
+        DsaSubmission.submission_id == body["submission_id"]
+    ).first()
+    assert submission.language == "java"
+
+
+def test_submit_with_unknown_language_falls_back_to_python(monkeypatch):
+    db = _db()
+    player_id = _make_player(db)
+    client = TestClient(_app(db, _principal(player_id)))
+    problem = PROBLEMS[0]
+    _mock_judge(monkeypatch, [{"status": "accepted", "stdout": "ok", "stderr": None,
+                               "compile_output": None, "time": "0.01", "passed": True}
+                              for _ in problem["test_cases"]])
+
+    response = client.post(
+        "/learning/dsa-sandbox/submit",
+        json={
+            "player_id": player_id,
+            "problem_id": problem["id"],
+            "code": "def solve(*a): pass",
+            "language": "not-a-real-language",
+        },
+    )
+    assert response.status_code == 200
+    submission = db.query(DsaSubmission).filter(
+        DsaSubmission.submission_id == response.json()["submission_id"]
+    ).first()
+    assert submission.language == "python"
+
+
 def test_wrong_answer_stops_at_first_failure_and_still_records_evidence(monkeypatch):
     db = _db()
     player_id = _make_player(db)
@@ -188,7 +252,7 @@ def test_judge_unavailable_returns_503_and_does_not_record_evidence(monkeypatch)
     client = TestClient(_app(db, _principal(player_id)))
     problem = PROBLEMS[0]
 
-    async def fake_run_test_case(source_code, stdin, expected_output):
+    async def fake_run_test_case(source_code, stdin, expected_output, language="python"):
         raise dsa_sandbox_routes.JudgeUnavailableError("boom")
 
     monkeypatch.setattr(dsa_sandbox_routes, "run_test_case", fake_run_test_case)

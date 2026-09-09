@@ -1,18 +1,27 @@
 """A small, original DSA problem bank for the sandbox
-(routes/dsa_sandbox.py). One problem per topic in services/curricula.py's
-"dsa-fundamentals" curriculum / the legacy TOPIC_GRAPH
-(services/knowledge_graph.py) -- deliberately not verbatim LeetCode
-questions (copyright), but the same classic pattern per topic, written from
-scratch, with real, hand-verified test cases.
+(routes/dsa_sandbox.py). At least one problem per topic in
+services/curricula.py's "dsa-fundamentals" curriculum / the legacy
+TOPIC_GRAPH (services/knowledge_graph.py) -- deliberately not verbatim
+LeetCode questions (copyright), but the same classic pattern per topic,
+written from scratch, with real, hand-verified test cases.
 
-Every problem follows one uniform judging protocol so a single harness
-(HARNESS below) works for all of them: the learner's submission must define
-a function named exactly `solve`; test input arrives as
-`{"args": [...]}` JSON on stdin, and the harness prints
-`json.dumps(solve(*args))` -- so `expected_output` for each test case is
-just `json.dumps(expected)`. This keeps every test case an exact-string
-Judge0 comparison (see services/judge_client.py) instead of needing custom
+Every problem follows one uniform judging protocol so a single harness per
+language (services/dsa_lang_gen.py's PY_HARNESS/JS_HARNESS/build_harness())
+works for all of them: the learner's submission must define a function
+named exactly `solve` (or, for the statically-typed languages, a `Solution`
+class with a `solve`/`Solve` method); test input arrives as a bare JSON
+array `[...]` of the arguments on stdin, and the harness prints the JSON
+result with compact separators -- so `expected_output` for each test case
+is `json.dumps(expected, separators=(",", ":"))`, matching every language's
+compact output exactly. This keeps every test case an exact-string Judge0
+comparison (see services/judge_client.py) instead of needing custom
 per-problem diffing logic.
+
+Each problem also carries `arg_types`/`param_names`/`return_type` metadata,
+consumed by services/dsa_lang_gen.py to generate the equivalent starter code
+and judge harness for Java, C++, C# and JavaScript -- see that module's
+docstring for the full design (Judge0 has no JSON library on Java/C++/C#,
+so those three carry a small hand-verified minimal JSON parser instead).
 
 Tree/BST problems represent the tree as a LeetCode-style level-order array
 (missing children as `null`/None) rather than requiring the learner to
@@ -21,18 +30,18 @@ to build whatever internal structure it wants from that array.
 """
 import json
 
-HARNESS = (
-    "\n\nimport sys, json\n"
-    "_data = json.loads(sys.stdin.read())\n"
-    "print(json.dumps(solve(*_data[\"args\"])))\n"
-)
+from services import dsa_lang_gen
 
 
 def _case(args: list, expected) -> dict:
+    # Compact separators (no space after ',' or ':') so this matches the
+    # compact output every other language's hand-rolled JSON stringifier
+    # produces (see services/dsa_lang_gen.py) -- Judge0 does an exact-string
+    # comparison against expected_output.
     return {
         "args": args,
-        "stdin": json.dumps({"args": args}),
-        "expected_output": json.dumps(expected),
+        "stdin": json.dumps(args, separators=(",", ":")),
+        "expected_output": json.dumps(expected, separators=(",", ":")),
     }
 
 
@@ -43,6 +52,9 @@ PROBLEMS = [
         "topic_label": "Arrays",
         "difficulty": "easy",
         "title": "Pair Sum Indices",
+        "param_names": ["nums", "target"],
+        "arg_types": ["int[]", "int"],
+        "return_type": "int[]",
         "prompt": (
             "Given a list of integers `nums` and an integer `target`, return the "
             "indices `[i, j]` (with `i < j`) of the two numbers that add up to "
@@ -65,6 +77,9 @@ PROBLEMS = [
         "topic_label": "Linked Lists",
         "difficulty": "easy",
         "title": "Middle of the List",
+        "param_names": ["values"],
+        "arg_types": ["int[]"],
+        "return_type": "int",
         "prompt": (
             "A singly linked list is given as a plain list of its node values, "
             "`values`. Using the classic slow/fast-pointer idea (don't just index "
@@ -89,6 +104,9 @@ PROBLEMS = [
         "topic_label": "Stacks & Queues",
         "difficulty": "easy",
         "title": "Balanced Brackets",
+        "param_names": ["s"],
+        "arg_types": ["str"],
+        "return_type": "bool",
         "prompt": (
             "Given a string `s` containing only the characters `()[]{}`, return "
             "True if every bracket is properly closed and nested, False otherwise."
@@ -111,6 +129,9 @@ PROBLEMS = [
         "topic_label": "Binary Search",
         "difficulty": "easy",
         "title": "Find in Sorted Array",
+        "param_names": ["nums", "target"],
+        "arg_types": ["int[]", "int"],
+        "return_type": "int",
         "prompt": (
             "Given a sorted list of distinct integers `nums` and an integer "
             "`target`, return the index of `target` in `nums`, or -1 if it isn't "
@@ -134,6 +155,9 @@ PROBLEMS = [
         "topic_label": "Recursion",
         "difficulty": "medium",
         "title": "Ways to Climb",
+        "param_names": ["n"],
+        "arg_types": ["int"],
+        "return_type": "int",
         "prompt": (
             "A staircase has `n` steps. From any step you may advance 1 or 2 "
             "steps at a time. Return the number of distinct ways to reach the "
@@ -157,6 +181,9 @@ PROBLEMS = [
         "topic_label": "Trees",
         "difficulty": "medium",
         "title": "Sum at Level",
+        "param_names": ["level_order", "level_index"],
+        "arg_types": ["nullable_int[]", "int"],
+        "return_type": "int",
         "prompt": (
             "A binary tree is given as a level-order array `level_order`, the "
             "same convention LeetCode uses: read left to right, top to bottom, "
@@ -182,6 +209,9 @@ PROBLEMS = [
         "topic_label": "Binary Search Trees",
         "difficulty": "medium",
         "title": "Validate BST",
+        "param_names": ["level_order"],
+        "arg_types": ["nullable_int[]"],
+        "return_type": "bool",
         "prompt": (
             "A binary tree is given as a level-order array `level_order` (same "
             "convention as the Trees problem: null = missing child). Return True "
@@ -206,6 +236,9 @@ PROBLEMS = [
         "topic_label": "Heaps",
         "difficulty": "medium",
         "title": "Kth Largest Element",
+        "param_names": ["nums", "k"],
+        "arg_types": ["int[]", "int"],
+        "return_type": "int",
         "prompt": (
             "Given a list of integers `nums` and an integer `k`, return the "
             "k-th largest element (k=1 means the largest). A heap-based "
@@ -229,6 +262,9 @@ PROBLEMS = [
         "topic_label": "Graphs",
         "difficulty": "hard",
         "title": "Shortest Path Length",
+        "param_names": ["adjacency", "start", "end"],
+        "arg_types": ["int[][]", "int", "int"],
+        "return_type": "int",
         "prompt": (
             "An unweighted, undirected graph is given as an adjacency list "
             "`adjacency` (a list of lists; `adjacency[i]` holds the neighbors of "
@@ -253,6 +289,9 @@ PROBLEMS = [
         "topic_label": "Dynamic Programming",
         "difficulty": "hard",
         "title": "Max Non-Adjacent Sum",
+        "param_names": ["nums"],
+        "arg_types": ["int[]"],
+        "return_type": "int",
         "prompt": (
             "Given a list of non-negative integers `nums`, return the maximum "
             "sum achievable by choosing a subset of elements such that no two "
@@ -275,6 +314,9 @@ PROBLEMS = [
         "topic_label": "Sorting Algorithms",
         "difficulty": "easy",
         "title": "Kth Smallest After Sort",
+        "param_names": ["nums", "k"],
+        "arg_types": ["int[]", "int"],
+        "return_type": "int",
         "prompt": (
             "Given a list of integers `nums` and an integer `k` (1-indexed), "
             "return the k-th smallest element once `nums` is sorted."
@@ -288,6 +330,82 @@ PROBLEMS = [
             _case([[5, 3, 8, 1, 9, 2], 3], 3),
             _case([[7, 7, 7], 2], 7),
             _case([[10, 1], 1], 1),
+        ],
+    },
+    {
+        "id": "arrays_move_zeroes",
+        "competency_id": "arrays",
+        "topic_label": "Arrays",
+        "difficulty": "easy",
+        "title": "Move Zeroes",
+        "param_names": ["nums"],
+        "arg_types": ["int[]"],
+        "return_type": "int[]",
+        "prompt": (
+            "Given a list of integers `nums`, return a new list with every 0 "
+            "moved to the end, while preserving the relative order of the "
+            "non-zero elements."
+        ),
+        "starter_code": (
+            "def solve(nums):\n"
+            "    # Return nums with every 0 moved to the end, non-zero order preserved.\n"
+            "    pass\n"
+        ),
+        "test_cases": [
+            _case([[0, 1, 0, 3, 12]], [1, 3, 12, 0, 0]),
+            _case([[0, 0, 1]], [1, 0, 0]),
+            _case([[4, 2, 1]], [4, 2, 1]),
+        ],
+    },
+    {
+        "id": "graphs_has_cycle",
+        "competency_id": "graphs",
+        "topic_label": "Graphs",
+        "difficulty": "medium",
+        "title": "Detect a Cycle",
+        "param_names": ["adjacency"],
+        "arg_types": ["int[][]"],
+        "return_type": "bool",
+        "prompt": (
+            "A directed graph is given as an adjacency list `adjacency` (a "
+            "list of lists; `adjacency[i]` holds the nodes `i` has an edge "
+            "to). Return True if the graph contains a cycle, False otherwise."
+        ),
+        "starter_code": (
+            "def solve(adjacency):\n"
+            "    # adjacency[i] = list of nodes with an edge from node i.\n"
+            "    # Return True if the directed graph contains a cycle.\n"
+            "    pass\n"
+        ),
+        "test_cases": [
+            _case([[[1], [2], [0]]], True),
+            _case([[[1], [2], []]], False),
+            _case([[[1, 2], [], []]], False),
+        ],
+    },
+    {
+        "id": "dynamic_programming_longest_increasing_subsequence",
+        "competency_id": "dynamic_programming",
+        "topic_label": "Dynamic Programming",
+        "difficulty": "hard",
+        "title": "Longest Increasing Subsequence",
+        "param_names": ["nums"],
+        "arg_types": ["int[]"],
+        "return_type": "int",
+        "prompt": (
+            "Given a list of integers `nums`, return the length of the "
+            "longest strictly increasing subsequence (elements need not be "
+            "contiguous)."
+        ),
+        "starter_code": (
+            "def solve(nums):\n"
+            "    # Return the length of the longest strictly increasing subsequence.\n"
+            "    pass\n"
+        ),
+        "test_cases": [
+            _case([[10, 9, 2, 5, 3, 7, 101, 18]], 4),
+            _case([[0, 1, 0, 3, 2, 3]], 4),
+            _case([[7, 7, 7, 7]], 1),
         ],
     },
 ]
@@ -307,6 +425,9 @@ def public_problem(problem: dict) -> dict:
         "title": problem["title"],
         "prompt": problem["prompt"],
         "starter_code": problem["starter_code"],
+        "starter_code_by_language": {
+            lang: dsa_lang_gen.starter_code(lang, problem) for lang in dsa_lang_gen.LANGUAGES
+        },
         "test_case_count": len(problem["test_cases"]),
         "sample_input": problem["test_cases"][0]["args"],
     }

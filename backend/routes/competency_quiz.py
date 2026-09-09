@@ -34,6 +34,8 @@ from routes.learning_common import player_or_404
 from security.audit import record_audit_event
 from services.curricula import CURRICULA
 from services.hand_authored_questions import normalize_fill_in_blank_answer, questions_for_competency
+from services.quiz_scoring import pace_label as _pace_label
+from services.quiz_scoring import time_factor as _time_factor
 
 router = APIRouter(prefix="/learning/competency-quiz", tags=["Competency Quiz"])
 
@@ -168,28 +170,6 @@ _DIFFICULTY_ORDER = {"easy": 0, "medium": 1, "hard": 2}
 # only adjusts *how confidently* a correct-answer streak is reported, within
 # a +-15% band, so a fast wrong answer is never scored better than a slow
 # right one, and a slow correct answer never drops out of its accuracy tier.
-_EXPECTED_SECONDS = {"easy": 20, "medium": 40, "hard": 75}
-_TIME_FACTOR_MIN = 0.85
-_TIME_FACTOR_MAX = 1.10
-
-
-def _time_factor(difficulty: str, time_taken_ms: int | None) -> float:
-    """1.0 (neutral) if no timing was reported; otherwise a bounded ratio of
-    expected-to-actual time, so answering faster than the reference nudges
-    the factor above 1.0 and answering slower nudges it below."""
-    if not time_taken_ms or time_taken_ms <= 0:
-        return 1.0
-    expected_ms = _EXPECTED_SECONDS[difficulty] * 1000
-    ratio = expected_ms / time_taken_ms
-    return max(_TIME_FACTOR_MIN, min(_TIME_FACTOR_MAX, ratio))
-
-
-def _pace_label(time_factor: float) -> str:
-    if time_factor >= 1.03:
-        return "faster"
-    if time_factor <= 0.92:
-        return "slower"
-    return "typical"
 MAX_QUESTIONS_PER_TOPIC = 10
 ATTEMPT_TTL_SECONDS = 30 * 60
 MAX_ACTIVE_ATTEMPTS = 1_000

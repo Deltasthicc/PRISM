@@ -149,6 +149,51 @@ def test_attempt_is_single_use():
     assert client.post("/learning/competency-quiz/submit", json=payload).status_code == 409
 
 
+def test_fast_correct_answers_score_at_least_as_high_as_untimed():
+    # data_privacy has exactly one competency (dl_data_privacy) with exactly
+    # 3 real questions, so count=3 guarantees evidence_count == 3 for it --
+    # the >=3 threshold "high" confidence requires.
+    issued = issue("data_privacy", 3)
+    payload = submit_payload(issued, correct=True)
+    for answer in payload["answers"]:
+        answer["time_taken_ms"] = 1000  # far faster than any difficulty's reference time
+    body = client.post("/learning/competency-quiz/submit", json=payload).json()
+    for score in body["competency_scores"]:
+        assert score["avg_time_factor"] >= 1.0
+        assert score["provisional_level"] == 5.0  # still capped at the max, never exceeds it
+        assert score["confidence"] == "high"
+
+
+def test_slow_correct_answers_reduce_confidence_but_not_below_a_reasonable_floor():
+    issued = issue("data_privacy", 3)
+    payload = submit_payload(issued, correct=True)
+    for answer in payload["answers"]:
+        answer["time_taken_ms"] = 10 * 60 * 1000  # far slower than any difficulty's reference time
+    body = client.post("/learning/competency-quiz/submit", json=payload).json()
+    for score in body["competency_scores"]:
+        assert score["avg_time_factor"] == pytest.approx(0.85, abs=0.01)
+        assert 4.0 <= score["provisional_level"] < 5.0  # nudged down, but accuracy still dominates
+        assert score["confidence"] == "moderate"  # never "low" just for being slow while still correct
+
+
+def test_fast_wrong_answers_do_not_score_above_zero():
+    issued = issue("statistical_foundations", 5)
+    fast_wrong = submit_payload(issued, correct=False)
+    for answer in fast_wrong["answers"]:
+        answer["time_taken_ms"] = 500  # answering instantly does not rescue a wrong answer
+    body = client.post("/learning/competency-quiz/submit", json=fast_wrong).json()
+    assert all(score["provisional_level"] == 0.0 for score in body["competency_scores"])
+
+
+def test_missing_timing_data_scores_exactly_as_before():
+    issued = issue("statistical_foundations", 5)
+    payload = submit_payload(issued, correct=True)
+    body = client.post("/learning/competency-quiz/submit", json=payload).json()
+    for score in body["competency_scores"]:
+        assert score["avg_time_factor"] == 1.0
+        assert score["provisional_level"] == 5.0
+
+
 def test_submission_persists_separate_diagnostic_evidence_and_audit(tmp_path):
     engine = create_engine(
         f"sqlite:///{tmp_path / 'quiz.db'}", connect_args={"check_same_thread": False}
@@ -180,7 +225,7 @@ def test_submission_persists_separate_diagnostic_evidence_and_audit(tmp_path):
         assert body["persisted_as_diagnostic_evidence"] is True
         records = db.query(EvidenceRecord).filter_by(player_id=player.player_id).all()
         assert len(records) == len(body["competency_scores"])
-        assert {record.evidence_type for record in records} == {"diagnostic"}
+        assert {record.evidence_type for record in records} == {"observed_practice"}
         assert all('\"provisional\":true' in record.detail for record in records)
         assert db.query(AuditEvent).filter_by(action="competency_quiz.submit").count() == 1
     finally:

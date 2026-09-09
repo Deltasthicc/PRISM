@@ -35,6 +35,7 @@ class LearnerProfile(Base):
     profile_id = Column(String, primary_key=True, default=generate_uuid)
     player_id = Column(String, ForeignKey("players.player_id"), nullable=False, unique=True, index=True)
 
+    full_name = Column(String, default="")
     designation = Column(String, default="")
     department = Column(String, default="")
     job_role = Column(String, default="")

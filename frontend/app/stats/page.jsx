@@ -98,6 +98,13 @@ export default function StatsPage() {
   });
 
   const profile = profileData?.profile;
+  const displayName = profile?.full_name || player?.username || '';
+  const initials = displayName
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('') || '?';
   const curricula = curriculaData?.curricula || [];
   const targetSlugs = profile?.target_domains?.length ? profile.target_domains : curricula.map((c) => c.slug);
   const activeSlug = selectedSlug || targetSlugs[0] || curricula[0]?.slug;
@@ -131,10 +138,10 @@ export default function StatsPage() {
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-xl bg-[#00236f] text-white flex items-center justify-center font-bold text-base shrink-0 shadow-sm">
-              {player.username.slice(0, 2).toUpperCase()}
+              {initials}
             </div>
             <div className="flex flex-col">
-              <h2 className="font-sans text-base text-[#00236f] font-bold">{player.username}</h2>
+              <h2 className="font-sans text-base text-[#00236f] font-bold">{displayName}</h2>
               <span className="font-sans text-xs text-[#444651] mt-0.5">
                 {profile?.designation || t('stats.designationNotSet')} · {profile?.department || t('stats.departmentNotSet')}
                 {' — '}

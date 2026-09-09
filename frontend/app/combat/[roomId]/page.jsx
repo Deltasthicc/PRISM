@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useGameStore } from '@/store/useGameStore';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -16,16 +16,24 @@ import VillainSprite from '@/components/VillainSprite';
 import PowerupButton from '@/components/PowerupButton';
 import PixelSprite from '@/components/PixelSprite';
 import QuestModeGate from '@/components/QuestModeGate';
+import { monsterForTopic } from '@/lib/sprites/monsterSprites';
 import { heroOrDefault, queuedPowerupText } from '@/lib/sprites/heroSprites';
 
 const VERDICT_TONE = { correct: 'arcane', partial: 'gold', incorrect: 'blood' };
-const BOSS_TOPIC = 'boss';
 
-export default function BossFightPage() {
+function CombatForm() {
   const { ready } = useRequireAuth();
-  const router = useRouter();
   const params = useParams();
-  const dungeonId = params.dungeonId;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const topic = params.roomId;
+  // The map page (app/dungeon/page.jsx) passes both along so this page never
+  // has to re-derive them: `dungeon` pins the right curriculum's session
+  // (see game.enterRoom's dungeonId guard in lib/api/client.js), `label` is
+  // the real competency name from that curriculum's own data, since
+  // TOPIC_LABELS only ever covered the 11 DSA topics.
+  const dungeonId = searchParams.get('dungeon') || undefined;
+  const label = searchParams.get('label') || topic;
 
   const player = useAuthStore((s) => s.player);
   const spendHintToken = useAuthStore((s) => s.spendHintToken);
@@ -52,14 +60,14 @@ export default function BossFightPage() {
   const floatTimeoutsRef = useRef([]);
 
   useEffect(() => {
-    if (ready) enterRoom(BOSS_TOPIC, dungeonId);
+    if (ready && topic) enterRoom(topic, dungeonId);
     return () => resetCombat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, dungeonId]);
+  }, [ready, topic, dungeonId]);
 
   useEffect(() => {
     if (!lastResult) return;
-    fetchMe();
+    fetchMe(); // resync level/xp/hint_tokens after the backend updates them
     const id = Date.now();
     const text =
       lastResult.verdict === 'correct'
@@ -84,33 +92,26 @@ export default function BossFightPage() {
   if (!ready) return null;
   if (player?.preferred_mode !== 'quest') return <QuestModeGate />;
 
-  if (submitError && !currentQuestion) {
-    return (
-      <div className="max-w-xl mx-auto text-center mt-10">
-        <p className="font-body text-blood text-lg">{submitError}</p>
-        <PixelButton className="mt-4" onClick={() => router.push('/dungeon')}>
-          BACK TO THE DUNGEON
-        </PixelButton>
-      </div>
-    );
-  }
-
   if (enteringRoom && !currentQuestion) {
     return (
-      <p className="font-body text-ember text-center mt-10 animate-flicker">
-        The dungeon shakes. The Big-O Devourer awakens…
+      <p className="font-body text-arcane text-center mt-10 animate-flicker">
+        {monsterForTopic(topic).name} of {label} stirs… generating a challenge.
       </p>
     );
   }
 
-  if (!currentQuestion || !combat) return null;
+  if (!currentQuestion || !combat) {
+    return <p className="font-body text-blood text-center mt-10">{submitError || 'No active fight.'}</p>;
+  }
 
-  // See the equivalent note in app/combat/[roomId]/page.jsx: the client-side
-  // HP pool and the backend's actual clear condition are independent and can
-  // disagree, so trust whichever says the fight is over first.
-  const bossDefeated = combat.enemyHp <= 0 || Boolean(lastResult?.dungeon_completed);
+  // The enemy's HP pool (client-side, scaled by player level/damage) and the
+  // backend's actual room-clear condition (N correct answers) are computed
+  // independently and can disagree — trust whichever says the fight is over
+  // first, so the victory screen isn't stuck behind a HP bar that never
+  // reaches zero for a high-level player against a large enemy pool.
+  const enemyDefeated = combat.enemyHp <= 0 || Boolean(lastResult?.room_cleared);
   const playerDefeated = combat.playerHp <= 0;
-  const fightOver = bossDefeated || playerDefeated;
+  const fightOver = enemyDefeated || playerDefeated;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -121,10 +122,10 @@ export default function BossFightPage() {
 
   async function handleContinue() {
     setAnswer('');
-    await enterRoom(BOSS_TOPIC, dungeonId);
+    await enterRoom(topic, dungeonId);
   }
 
-  function handleVictory() {
+  async function handleClaimVictory() {
     resetCombat();
     router.push('/dungeon');
   }
@@ -140,24 +141,21 @@ export default function BossFightPage() {
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-5">
-      <div className="text-center">
-        <h1 className="font-display text-sm text-ember">BOSS ENCOUNTER</h1>
-        <p className="font-body text-parchment-dim">Every question pulls from a different topic. Stay sharp.</p>
-      </div>
-
-      <PixelPanel className="border-ember">
+      <PixelPanel variant="arcane">
         <div className="flex justify-between items-center mb-2">
-          <span className="font-display text-[10px] text-ember">THE BIG-O DEVOURER</span>
+          <span className="font-display text-[10px] text-ember">{combat.enemyName}</span>
           <div className="flex items-center gap-2">
-            <PixelBadge tone="ember">{currentQuestion.difficulty}</PixelBadge>
+            <PixelBadge tone={combat.enemyName.includes('Devourer') ? 'ember' : 'arcane'}>
+              {currentQuestion.difficulty}
+            </PixelBadge>
             <PixelBadge tone="gold">up to {currentQuestion.max_damage} DMG</PixelBadge>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <VillainSprite topic="boss" hitKey={lastResult?.submission_id} defeated={bossDefeated} size={88} />
+          <VillainSprite topic={topic} hitKey={lastResult?.submission_id} defeated={enemyDefeated} />
           <div className="flex-1 relative">
             <DamageNumber items={floats} />
-            <HealthBar current={combat.enemyHp} max={combat.enemyHpMax} label="BOSS" kind="enemy" />
+            <HealthBar current={combat.enemyHp} max={combat.enemyHpMax} label="ENEMY" kind="enemy" />
           </div>
         </div>
       </PixelPanel>
@@ -196,7 +194,9 @@ export default function BossFightPage() {
 
       <PixelPanel>
         <p className="font-body text-xl text-parchment leading-relaxed">{currentQuestion.question}</p>
-        {hintRevealed && <p className="font-body text-arcane mt-3 text-base">💡 {currentQuestion.hint}</p>}
+        {hintRevealed && (
+          <p className="font-body text-arcane mt-3 text-base">💡 {currentQuestion.hint}</p>
+        )}
         <div className="mt-3">
           <HintToken
             tokensRemaining={player.hint_tokens}
@@ -210,16 +210,17 @@ export default function BossFightPage() {
       {!fightOver && !lastResult && (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <PixelInput
-            id="boss-answer"
+            id="answer"
             label="YOUR ANSWER"
             textarea
             rows={4}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
+            placeholder="Explain your answer — paraphrasing is fine, the judge reads for meaning."
             disabled={submitting}
           />
-          <PixelButton type="submit" variant="primary" disabled={submitting || !answer.trim()}>
-            {submitting ? 'THE JUDGE CONSIDERS…' : 'STRIKE'}
+          <PixelButton type="submit" disabled={submitting || !answer.trim()}>
+            {submitting ? 'THE JUDGE CONSIDERS…' : 'ATTACK'}
           </PixelButton>
         </form>
       )}
@@ -229,30 +230,38 @@ export default function BossFightPage() {
           <PixelBadge tone={VERDICT_TONE[lastResult.verdict]}>{lastResult.verdict.toUpperCase()}</PixelBadge>
           <p className="font-body text-lg mt-2">{lastResult.feedback}</p>
           <PixelButton variant="ghost" className="mt-4" onClick={handleContinue}>
-            CONTINUE
+            CONTINUE FIGHT
           </PixelButton>
         </PixelPanel>
       )}
 
-      {bossDefeated && (
+      {enemyDefeated && (
         <PixelPanel variant="arcane">
-          <h2 className="font-display text-sm text-gold mb-2">THE DUNGEON FALLS SILENT</h2>
-          <p className="font-body text-lg">You&apos;ve cleared the dungeon. The Devourer dissolves into data.</p>
-          <PixelButton variant="gold" className="mt-4" onClick={handleVictory}>
-            CLAIM VICTORY
+          <h2 className="font-display text-sm text-gold mb-2">VICTORY</h2>
+          <p className="font-body text-lg">{lastResult?.feedback}</p>
+          <PixelButton variant="gold" className="mt-4" onClick={handleClaimVictory}>
+            RETURN TO THE DUNGEON
           </PixelButton>
         </PixelPanel>
       )}
 
       {playerDefeated && (
         <PixelPanel>
-          <h2 className="font-display text-sm text-blood mb-2">THE DEVOURER PREVAILS — FOR NOW</h2>
-          <p className="font-body text-lg">Retreat, sharpen your weak topics, and return stronger.</p>
+          <h2 className="font-display text-sm text-blood mb-2">YOU HAVE FALLEN</h2>
+          <p className="font-body text-lg">The wraith overwhelms you. Retreat and heal before trying again.</p>
           <PixelButton variant="danger" className="mt-4" onClick={handleRetreat}>
             RETREAT
           </PixelButton>
         </PixelPanel>
       )}
     </div>
+  );
+}
+
+export default function CombatPage() {
+  return (
+    <Suspense fallback={null}>
+      <CombatForm />
+    </Suspense>
   );
 }

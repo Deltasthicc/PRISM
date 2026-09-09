@@ -7,10 +7,10 @@ from sqlalchemy.orm import Session
 
 from db.database import get_db
 from models.learning import GeneratedQuiz, LearningMaterial
-from routes.authorization import require_own_player_dependency, require_permission_dependency
+from routes.authorization import require_own_player, require_own_player_dependency, require_permission_dependency
 from routes.learning_common import player_or_404
 from schemas.learning import QuizResponse
-from security.rbac import BoundPrincipal, Permission, scoped_to_own_player
+from security.rbac import BoundPrincipal, Permission
 from services.content_ingestion import ContentExtractionError, MAX_UPLOAD_BYTES, extract_text
 from services.quiz_generator import generate_quiz as _service_generate_quiz
 
@@ -43,10 +43,12 @@ async def create_quiz(
         require_permission_dependency(Permission.CONTENT_DRAFT_CREATE)
     ),
 ):
-    try:
-        scoped_to_own_player(principal, player_id)
-    except PermissionError as exc:
-        raise HTTPException(status_code=403, detail="Access denied") from exc
+    # require_own_player_dependency doesn't apply here: player_id arrives as
+    # a multipart Form field, not a path parameter. Was a bare
+    # scoped_to_own_player(...) call with no demo-mode bypass -- since this
+    # app's only login flow relies on DISABLE_AUTH's demo mode (see
+    # require_own_player's docstring), this endpoint 403'd unconditionally.
+    require_own_player(principal, player_id)
     player_or_404(db, player_id)
     content = await file.read(MAX_UPLOAD_BYTES + 1)
     try:

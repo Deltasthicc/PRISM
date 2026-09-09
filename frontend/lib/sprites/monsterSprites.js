@@ -42,7 +42,22 @@ export const TOPIC_MONSTER = {
 
 export const BOSS_MONSTER = 'dragon';
 
+const NON_DSA_MONSTER_POOL = Object.keys(TOPIC_MONSTER);
+
+// Non-DSA curricula (official-statistics, public-policy, digital-literacy)
+// have no hand-drawn villain of their own -- rather than always reusing the
+// same "Index Wraith" for every one of their rooms, pick a deterministic
+// (same topic -> same monster, every load) reuse from the 11 existing DSA
+// designs, purely for visual variety. This is flavor only; it carries no
+// competency-data meaning, unlike everything else on the dungeon map.
+function fallbackMonsterId(topic) {
+  let hash = 0;
+  for (let i = 0; i < topic.length; i += 1) hash = (hash * 31 + topic.charCodeAt(i)) >>> 0;
+  return NON_DSA_MONSTER_POOL[hash % NON_DSA_MONSTER_POOL.length];
+}
+
 export function monsterForTopic(topic) {
-  const id = topic === 'boss' ? BOSS_MONSTER : TOPIC_MONSTER[topic];
+  if (topic === 'boss' || topic.startsWith('boss::')) return MONSTERS[BOSS_MONSTER];
+  const id = TOPIC_MONSTER[topic] || fallbackMonsterId(topic);
   return MONSTERS[id] || MONSTERS.arrays;
 }

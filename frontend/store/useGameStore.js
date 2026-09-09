@@ -33,10 +33,10 @@ export const useGameStore = create((set, get) => ({
     }
   },
 
-  async enterRoom(topic) {
+  async enterRoom(topic, dungeonId) {
     set({ enteringRoom: true, lastResult: null, hintRevealed: false, submitError: null });
     try {
-      const q = await game.enterRoom(topic);
+      const q = await game.enterRoom(topic, dungeonId);
       set({
         currentQuestion: q,
         combat: {

@@ -62,7 +62,7 @@ export const COMPETENCY_TOPICS = [
   },
   {
     id: 'national_accounts_and_sectoral',
-    label: 'National Accounts, Labour & Industrial Statistics',
+    label: 'National Accounts, Labour, Industrial & Agricultural Statistics',
     curriculumSlug: 'official-statistics',
   },
   {

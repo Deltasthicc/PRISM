@@ -38,7 +38,6 @@ export default function AcademyHub() {
   const { t, language } = useLanguage();
   const [profile, setProfile] = useState(EMPTY_PROFILE);
   const [selectedSlug, setSelectedSlug] = useState('official-statistics');
-  const [quiz, setQuiz] = useState(null);
   const [working, setWorking] = useState('');
   const [error, setError] = useState('');
 
@@ -86,33 +85,6 @@ export default function AcademyHub() {
         previous_trainings: Array.isArray(profile.previous_trainings) ? profile.previous_trainings : [],
       });
       setProfile({ ...EMPTY_PROFILE, ...result.profile });
-    } catch (cause) {
-      setError(cause.message);
-    } finally {
-      setWorking('');
-    }
-  }
-
-  async function createQuiz(event) {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const file = form.get('learning_file');
-    if (!(file instanceof File) || !file.size) {
-      setError('Choose a .txt, .md, .pdf, or .docx learning file first.');
-      return;
-    }
-    setWorking('quiz');
-    setError('');
-    setQuiz(null);
-    try {
-      setQuiz(await learning.generateQuiz({
-        playerId: player.player_id,
-        title: form.get('title'),
-        difficulty: form.get('difficulty'),
-        language: form.get('language'),
-        questionCount: Number(form.get('question_count')),
-        file,
-      }));
     } catch (cause) {
       setError(cause.message);
     } finally {
@@ -232,40 +204,11 @@ export default function AcademyHub() {
           <FileQuestion className="text-[#00236f]" size={18} aria-hidden="true" />
           <h2 className="font-sans text-base font-bold text-[#00236f]">{t('academy.section4Heading')}</h2>
         </div>
-        <p className="font-sans text-sm text-[#757682] mb-4">{t('academy.section4Body')}</p>
-        <form onSubmit={createQuiz} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input id="quiz-title" name="title" label={t('academy.quizTitleLabel')} required defaultValue="My learning material quiz" />
-          <Input
-            key={language}
-            id="quiz-language"
-            name="language"
-            label={t('academy.outputLanguageLabel')}
-            required
-            defaultValue={language === 'hi' ? 'Hindi' : 'English'}
-          />
-          <label className="flex flex-col gap-1.5">
-            <span className="font-sans text-xs font-semibold text-[#444651]">{t('academy.difficultyLabel')}</span>
-            <select name="difficulty" defaultValue="mixed" className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f]">
-              <option value="foundation">{t('academy.difficultyFoundation')}</option>
-              <option value="intermediate">{t('academy.difficultyIntermediate')}</option>
-              <option value="advanced">{t('academy.difficultyAdvanced')}</option>
-              <option value="mixed">{t('academy.difficultyMixed')}</option>
-            </select>
-          </label>
-          <Input id="question-count" name="question_count" label={t('academy.questionCountLabel')} type="number" min="3" max="10" defaultValue="5" />
-          <label className="md:col-span-2 flex flex-col gap-1.5">
-            <span className="font-sans text-xs font-semibold text-[#444651]">{t('academy.learningMaterialLabel')}</span>
-            <input name="learning_file" type="file" required accept=".txt,.md,.pdf,.docx" className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 file:bg-[#00236f] file:text-white file:border-0 file:rounded-md file:px-3 file:py-1.5 file:mr-3" />
-          </label>
-          <div className="md:col-span-2">
-            <Button type="submit" variant="accent" disabled={working === 'quiz'}>
-              {working === 'quiz' ? t('academy.generatingButton') : t('academy.generateQuizButton')}
-            </Button>
-          </div>
-        </form>
+        <p className="font-sans text-sm text-[#757682] mb-5">{t('academy.section4Body')}</p>
+        <Link href="/quiz" className={`${LINK_BUTTON_CLASS} bg-[#00236f] text-white hover:bg-[#001a54]`}>
+          {t('nav.sourceQuizGenerator')}
+        </Link>
       </Panel>
-
-      {quiz && <QuizPreview quiz={quiz} />}
     </div>
   );
 }
@@ -276,34 +219,6 @@ function Capability({ icon: Icon, title, body }) {
       <Icon className="text-[#00236f] mb-2" size={20} aria-hidden="true" />
       <h2 className="font-sans text-sm font-semibold text-[#131b2e]">{title}</h2>
       <p className="font-sans text-sm text-[#757682] mt-2">{body}</p>
-    </Panel>
-  );
-}
-
-function QuizPreview({ quiz }) {
-  return (
-    <Panel>
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="font-sans text-base font-bold text-[#00236f]">{quiz.title}</h2>
-        <Badge tone="accent">{quiz.generation_mode}</Badge>
-        <Badge tone="default">{quiz.language}</Badge>
-      </div>
-      <ol className="flex flex-col gap-5 mt-5">
-        {quiz.questions.map((question, questionIndex) => (
-          <li key={`${question.question}-${questionIndex}`} className="border border-[#c5c5d3]/40 rounded-lg bg-[#f2f3ff] p-4">
-            <p className="font-sans text-sm font-semibold text-[#131b2e]">{questionIndex + 1}. {question.question}</p>
-            <ol className="font-sans text-sm text-[#444651] mt-3 grid gap-1">
-              {question.options.map((option, optionIndex) => (
-                <li key={option} className={optionIndex === question.answer_index ? 'text-[#00236f] font-medium' : ''}>
-                  {String.fromCharCode(65 + optionIndex)}. {option}{optionIndex === question.answer_index ? ' ✓' : ''}
-                </li>
-              ))}
-            </ol>
-            <p className="font-sans text-sm text-[#131b2e] mt-3">{question.explanation}</p>
-            <blockquote className="font-sans text-sm text-[#757682] border-l-4 border-[#fe932c] pl-3 mt-2">Source: {question.source_excerpt}</blockquote>
-          </li>
-        ))}
-      </ol>
     </Panel>
   );
 }

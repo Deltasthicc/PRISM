@@ -97,8 +97,11 @@ TOPICS: dict[str, dict] = {
         "curriculum_slug": "official-statistics",
     },
     "national_accounts_and_sectoral": {
-        "label": "National Accounts, Labour & Industrial Statistics",
-        "competency_ids": ["os_national_accounts", "os_labour_statistics", "os_industrial_statistics"],
+        "label": "National Accounts, Labour, Industrial & Agricultural Statistics",
+        "competency_ids": [
+            "os_national_accounts", "os_labour_statistics", "os_industrial_statistics",
+            "os_agricultural_statistics",
+        ],
         "curriculum_slug": "official-statistics",
     },
     "open_data_and_standards": {

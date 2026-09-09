@@ -130,6 +130,7 @@ export const TRANSLATIONS = {
       learningMaterialLabel: 'Learning material',
       generateQuizButton: 'Generate quiz',
       generatingButton: 'Generating & validating…',
+      chooseFileError: 'Choose a .txt, .md, .pdf, or .docx learning file first.',
       loadingAcademy: 'Preparing your academy…',
       loadFailed: 'The academy could not be loaded.',
       retry: 'Retry',
@@ -247,6 +248,15 @@ export const TRANSLATIONS = {
       stderr: 'Error output',
       judgeUnavailable: 'The judge is unreachable. Try again.',
       passedCount: 'passed',
+    },
+    quizGeneratorPage: {
+      heading: 'Source Quiz Generator',
+      subtitle:
+        'Upload up to 5 MB in TXT, Markdown, PDF, or DOCX. Every generated answer includes a source excerpt; ungrounded model output is rejected. Without a configured model key, the deterministic fallback retains source wording and uses an English question template.',
+      historyHeading: 'Your generated quizzes',
+      historyEmpty: 'No quizzes generated yet — the one you make above will show up here.',
+      historyLoadFailed: 'Could not load your quiz history.',
+      questionsSuffix: 'questions',
     },
     admin: {
       loading: 'Loading aggregate overview…',
@@ -419,6 +429,7 @@ export const TRANSLATIONS = {
       learningMaterialLabel: 'शिक्षण सामग्री',
       generateQuizButton: 'प्रश्नोत्तरी बनाएं',
       generatingButton: 'बनाया और सत्यापित हो रहा है…',
+      chooseFileError: 'पहले एक .txt, .md, .pdf, या .docx शिक्षण फ़ाइल चुनें।',
       loadingAcademy: 'आपकी अकादमी तैयार हो रही है…',
       loadFailed: 'अकादमी लोड नहीं हो सकी।',
       retry: 'पुनः प्रयास करें',
@@ -531,6 +542,15 @@ export const TRANSLATIONS = {
       stderr: 'त्रुटि आउटपुट',
       judgeUnavailable: 'जज उपलब्ध नहीं है। पुनः प्रयास करें।',
       passedCount: 'पास हुए',
+    },
+    quizGeneratorPage: {
+      heading: 'स्रोत प्रश्नोत्तरी जनरेटर',
+      subtitle:
+        'TXT, Markdown, PDF, या DOCX में 5 MB तक अपलोड करें। हर उत्पन्न उत्तर में एक स्रोत उद्धरण शामिल होता है; बिना आधार वाला मॉडल आउटपुट अस्वीकार कर दिया जाता है। बिना कॉन्फ़िगर की गई मॉडल कुंजी के, नियतात्मक फ़ॉलबैक स्रोत की शब्दावली बनाए रखता है और अंग्रेज़ी प्रश्न टेम्पलेट का उपयोग करता है।',
+      historyHeading: 'आपकी बनाई गई प्रश्नोत्तरियाँ',
+      historyEmpty: 'अभी तक कोई प्रश्नोत्तरी नहीं बनाई गई — ऊपर बनाई गई प्रश्नोत्तरी यहां दिखाई देगी।',
+      historyLoadFailed: 'आपकी प्रश्नोत्तरी इतिहास लोड नहीं हो सका।',
+      questionsSuffix: 'प्रश्न',
     },
     admin: {
       loading: 'समग्र सारांश लोड हो रहा है…',

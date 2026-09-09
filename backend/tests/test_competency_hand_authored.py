@@ -136,6 +136,37 @@ def test_questions_for_competency_matches_manual_count():
     assert all(item["competency_id"] == "os_statistical_foundations" for item in stats_foundations)
 
 
+def test_every_competency_quiz_topic_competency_has_real_questions():
+    """Regression guard for the exact gap this test was added to catch:
+    os_agricultural_statistics was a real competency (services/curricula.py)
+    mapped into no competency-quiz topic and backed by zero questions -- a
+    learner could never be quizzed on it at all, and nothing failed. Every
+    competency_id referenced by any routes.competency_quiz.TOPICS entry must
+    have at least one real (hand-authored or document-derived) question, so
+    a future competency added to a topic without matching content fails
+    loudly here instead of silently.
+    """
+    from routes.competency_quiz import TOPICS
+
+    referenced = {
+        competency_id
+        for topic in TOPICS.values()
+        for competency_id in topic["competency_ids"]
+    }
+    missing = sorted(
+        competency_id for competency_id in referenced
+        if not questions_for_competency(competency_id)
+    )
+    assert not missing, f"competencies mapped into a quiz topic with zero questions: {missing}"
+
+
+def test_agricultural_statistics_has_real_sourced_questions():
+    agri = questions_for_competency("os_agricultural_statistics")
+    assert len(agri) >= 2
+    assert all(item["competency_id"] == "os_agricultural_statistics" for item in agri)
+    assert all(item["doc_id"] in ALL_HAND_AUTHORED_DOC_IDS for item in agri)
+
+
 def test_quiz_from_hand_authored_returns_the_same_shape_as_quiz_from_document():
     quiz = quiz_from_hand_authored("upsc_csm26_statistics_p1")
     assert quiz["generation_mode"] == "hand-transcribed"

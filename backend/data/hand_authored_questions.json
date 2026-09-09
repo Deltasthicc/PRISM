@@ -2576,6 +2576,57 @@
       "answer_index": 0,
       "explanation": "At the CCC level, email skills are user-facing (replying, forwarding, searching) rather than server-administration tasks like configuring mail transfer agents.",
       "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_nssta_spss_blank",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar 2021-22, Course 2 Module 2.3",
+      "source_excerpt": "Module 2.3 - Working with unit level data using SPSS and R",
+      "question": "NSSTA's on-the-job training for ISS Probationers includes a module on working with unit-level data using _____ and R.",
+      "accepted_answers": [
+        "SPSS"
+      ],
+      "explanation": "The same module (2.3) pairs SPSS with R as the two statistical-programming tools taught for unit-level data work -- this item tests the other half of that pairing from the companion item testing 'R'."
+    },
+    {
+      "item_id": "ha_sdg_nif_agri_cce_blank",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_agricultural_statistics",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "SDG National Indicator Framework 2026, Indicator 2.3.1 metadata (extracted pages 7-26 of 166)",
+      "source_excerpt": "Indicator 2.3.1: Agriculture productivity of wheat and rice\nData Source Ministry Ministry of Agriculture and Farmers' Welfare\nDescription of Indicator  Productivity of Major Agricultural Crops\nComputation Based on Crop Cutting Experiments (CCEs)\nUnit of measurement Kg per hectare",
+      "question": "Per the SDG National Indicator Framework's metadata for Indicator 2.3.1 (agricultural productivity of wheat and rice), the productivity of major crops is computed based on _____.",
+      "accepted_answers": [
+        "Crop Cutting Experiments",
+        "Crop Cutting Experiments (CCEs)",
+        "CCEs"
+      ],
+      "explanation": "The indicator's own computation method, as documented in the framework's metadata, is Crop Cutting Experiments (CCEs) -- the standard field method for estimating crop yield per unit area in India's agricultural statistics system."
+    },
+    {
+      "item_id": "ha_sdg_nif_agri_net_sown_area_mcq",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_agricultural_statistics",
+      "question_type": "mcq",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "SDG National Indicator Framework 2026, Indicator 2.4.1 metadata (extracted pages 7-26 of 166)",
+      "source_excerpt": "Indicator 2.4.1: Proportion of Net Sown Area to Cultivable land\nDescription of Indicator Net Sown Area/Cultivable land.\nComputation Numerator: Total Net Sown Area\nDenominator: Total Cultivable Land\nUnit of measurement Thousand Hectare",
+      "question": "Per the SDG National Indicator Framework's Indicator 2.4.1, 'Proportion of Net Sown Area to Cultivable Land' is computed as which ratio?",
+      "options": [
+        "Total Net Sown Area ÷ Total Cultivable Land",
+        "Total Cultivable Land ÷ Total Net Sown Area",
+        "Total Net Sown Area ÷ Total Geographical Area",
+        "Total Irrigated Area ÷ Total Net Sown Area"
+      ],
+      "answer_index": 0,
+      "explanation": "The indicator's own documented computation is numerator = Total Net Sown Area, denominator = Total Cultivable Land -- a direct area-based ratio, not one referencing geographical or irrigated area."
     }
   ]
 }

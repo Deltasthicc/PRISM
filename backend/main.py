@@ -88,9 +88,10 @@ async def lifespan(app: FastAPI):
     # migration-managed database doesn't silently receive a synthetic player
     # and curriculum content unless that's explicitly asked for.
     if should_seed_demo_data():
-        from db.seed import seed_database, seed_curricula_dungeons
+        from db.seed import seed_database, seed_curricula_dungeons, seed_role_targets
         seed_database()
         seed_curricula_dungeons()
+        seed_role_targets()
         print("Seeded synthetic demo data (SEED_DEMO_DATA resolved to true).")
     else:
         print(

@@ -9,6 +9,8 @@ section's Lane 3 acceptance evidence: "Every competency/target has source,
 authoring status and version." This lets a future domain reviewer approve
 one anchor at a time without a data-model change.
 """
+import pytest
+
 from services.behavioral_anchors import (
     ANCHORED_CURRICULUM,
     BEHAVIORAL_ANCHORS,
@@ -117,6 +119,21 @@ def test_analyse_competencies_includes_anchor_records_for_official_statistics():
 def test_analyse_competencies_omits_anchors_outside_coverage():
     result = analyse_competencies("dsa-fundamentals", {"arrays": 4.0}, {}, "expert")
     assert ANCHORED_CURRICULUM != "dsa-fundamentals"
+    assert all(r["observed_anchor"] is None for r in result["competencies"])
+    assert all(r["target_anchor"] is None for r in result["competencies"])
+
+
+@pytest.mark.parametrize("curriculum_slug", ["public-policy", "digital-literacy"])
+def test_analyse_competencies_omits_anchors_for_other_unanchored_curricula(curriculum_slug):
+    # dsa-fundamentals was the only curriculum this file exercised end-to-end
+    # through analyse_competencies -- public-policy and digital-literacy are
+    # just as unanchored (ANCHORED_CURRICULUM covers only official-statistics,
+    # and only 9 of its 21 competencies at that), but nothing actually ran the
+    # engine against them before this, so a real regression there had nothing
+    # to fail against.
+    assert ANCHORED_CURRICULUM != curriculum_slug
+    result = analyse_competencies(curriculum_slug, {}, {}, "beginner")
+    assert result["competencies"]
     assert all(r["observed_anchor"] is None for r in result["competencies"])
     assert all(r["target_anchor"] is None for r in result["competencies"])
 

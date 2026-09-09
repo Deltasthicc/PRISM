@@ -236,6 +236,59 @@ def seed_curricula_dungeons():
         db.close()
 
 
+def seed_role_targets():
+    """Materialize services.role_targets.ROLE_TARGET_OVERRIDES as real
+    `role_targets` DB rows, so services/role_target_resolver.py (the path
+    every real HTTP route actually calls) can find them.
+
+    Without this, `resolve_role_targets()` always falls through to
+    `curriculum_default_target()` -- the in-memory demonstration set in
+    role_targets.py is real and correct, but nothing had ever written it into
+    the table the live routes query, so a learner's designation/job_role/
+    department/current_assignment never changed their target at runtime
+    despite the resolver, the model and the precedence policy all being
+    fully implemented (SIH26101_MASTER_CHECKLIST.md section 4.1). Deriving
+    these rows FROM `ROLE_TARGET_OVERRIDES` (not a second hand-typed table)
+    means the in-memory and DB-backed paths can never silently drift apart --
+    the two already share behind-the-scenes via `role_candidates()`, and now
+    they share their one source of the actual target numbers too.
+
+    Every row is written honestly as `source="internal-prototype"`,
+    `approved_by=None` (assurance PROVISIONAL) -- this is still a
+    team-authored demonstration set, not an MoSPI/CBC-approved target,
+    exactly as role_targets.py's own docstring requires.
+    """
+    from models.governance import RoleTarget
+    from services.role_targets import FRAMEWORK_VERSION, ROLE_TARGET_OVERRIDES
+
+    db = SessionLocal()
+    try:
+        created = 0
+        for role, targets in ROLE_TARGET_OVERRIDES.items():
+            for competency_id, target_level in targets.items():
+                existing = (
+                    db.query(RoleTarget)
+                    .filter(RoleTarget.role == role, RoleTarget.competency_id == competency_id)
+                    .first()
+                )
+                if existing:
+                    continue
+                db.add(RoleTarget(
+                    framework_version=FRAMEWORK_VERSION,
+                    role=role,
+                    competency_id=competency_id,
+                    target_level=target_level,
+                    source="internal-prototype",
+                    approved_by=None,
+                ))
+                created += 1
+        if created:
+            db.commit()
+            print(f"Seeded {created} role_targets row(s) from ROLE_TARGET_OVERRIDES.")
+    finally:
+        db.close()
+
+
 if __name__ == "__main__":
     seed_database()
     seed_curricula_dungeons()

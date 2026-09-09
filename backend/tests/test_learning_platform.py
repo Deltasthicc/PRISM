@@ -97,6 +97,60 @@ def test_pathway_orders_prerequisites_before_dependents():
         assert order["os_data_collection"] < order["os_sampling_design"]
 
 
+# Before this, every analyse_competencies() call in the whole test suite
+# (this file's own tests, the golden fixtures, behavioral-anchor tests) used
+# "official-statistics" -- public-policy and digital-literacy had real
+# competencies, real prerequisite graphs and real target_levels in
+# services/curricula.py, but nothing had ever run the engine against them
+# end to end, so a real regression specific to either curriculum had nothing
+# to fail against.
+@pytest.mark.parametrize(
+    ("curriculum_slug", "self_ratings", "measured", "known_competency"),
+    [
+        ("public-policy", {"pa_governance_foundations": 3.0}, {"pa_governance_foundations": 4.0}, "pa_governance_foundations"),
+        ("digital-literacy", {"dl_digital_foundations": 2.0}, {"dl_digital_foundations": 3.0}, "dl_digital_foundations"),
+    ],
+)
+def test_analyse_competencies_blends_measured_and_self_score_for_other_curricula(
+    curriculum_slug, self_ratings, measured, known_competency
+):
+    result = analyse_competencies(
+        curriculum_slug, self_ratings, measured, experience_level="advanced"
+    )
+    row = next(r for r in result["competencies"] if r["competency_id"] == known_competency)
+    expected = measured[known_competency] * 0.65 + self_ratings[known_competency] * 0.35
+    assert row["observed_level"] == pytest.approx(expected, abs=0.01)
+    assert "65%" in row["evidence"]
+
+
+def test_pathway_orders_prerequisites_before_dependents_for_public_policy():
+    result = analyse_competencies("public-policy", {}, {}, "beginner")
+    order = {step["competency_id"]: step["step"] for step in result["pathway"]}
+    # pa_impact_evaluation depends on pa_monitoring_evaluation, which depends
+    # on both pa_policy_design and pa_public_finance, which both depend on
+    # pa_governance_foundations -- every link in that chain must hold.
+    if "pa_impact_evaluation" in order and "pa_monitoring_evaluation" in order:
+        assert order["pa_monitoring_evaluation"] < order["pa_impact_evaluation"]
+    if "pa_monitoring_evaluation" in order and "pa_policy_design" in order:
+        assert order["pa_policy_design"] < order["pa_monitoring_evaluation"]
+    if "pa_policy_design" in order and "pa_governance_foundations" in order:
+        assert order["pa_governance_foundations"] < order["pa_policy_design"]
+
+
+def test_pathway_orders_prerequisites_before_dependents_for_digital_literacy():
+    result = analyse_competencies("digital-literacy", {}, {}, "beginner")
+    order = {step["competency_id"]: step["step"] for step in result["pathway"]}
+    # dl_digital_public_infrastructure depends on both dl_government_cloud and
+    # dl_data_privacy, and dl_data_privacy itself depends on dl_cyber_hygiene,
+    # which depends on dl_digital_foundations -- a real multi-level chain.
+    if "dl_digital_public_infrastructure" in order and "dl_data_privacy" in order:
+        assert order["dl_data_privacy"] < order["dl_digital_public_infrastructure"]
+    if "dl_data_privacy" in order and "dl_cyber_hygiene" in order:
+        assert order["dl_cyber_hygiene"] < order["dl_data_privacy"]
+    if "dl_cyber_hygiene" in order and "dl_digital_foundations" in order:
+        assert order["dl_digital_foundations"] < order["dl_cyber_hygiene"]
+
+
 def test_experience_level_caps_the_pathway_target_below_role_target():
     result = analyse_competencies("official-statistics", {}, {}, "beginner")
     # ML for Official Statistics has a role target of 5; a beginner's cap is 3.
@@ -124,9 +178,47 @@ def test_integration_status_reports_fallback_without_configured_env(monkeypatch)
     import services.learning_catalog as catalog_module
     importlib.reload(catalog_module)
     status = catalog_module.integration_status()
-    assert status["igot"]["mode"] == "catalog-fallback"
-    assert status["nssta"]["mode"] == "catalog-fallback"
+    assert status["igot"]["mode"] == "CATALOGUE"
+    assert status["nssta"]["mode"] == "CATALOGUE"
     importlib.reload(catalog_module)  # restore normal state for any later test
+
+
+def test_integration_status_never_reports_live_from_env_var_presence_alone(monkeypatch):
+    """docs/contracts/provider-adapter.md's own rule: an environment variable
+    alone must never imply LIVE, only a successful authenticated capability
+    check does. Mocks health_check() to fail (no real network dependency in
+    this test) with IGOT_API_BASE_URL still set, proving the reported mode
+    is decided by the check's outcome, not by the variable being present."""
+    import services.learning_catalog as catalog_module
+    from integrations.provider import ProviderResult
+
+    monkeypatch.setenv("IGOT_API_BASE_URL", "https://example.invalid")
+    monkeypatch.setattr(
+        catalog_module.LiveHTTPProviderAdapter,
+        "health_check",
+        lambda self: ProviderResult("ERROR", {"error": "connection refused"}),
+    )
+    status = catalog_module.integration_status()
+    assert status["igot"]["mode"] == "CATALOGUE"
+    assert "health check" in status["igot"]["detail"].lower()
+
+
+def test_integration_status_reports_live_when_health_check_succeeds(monkeypatch):
+    """The other half of the same rule: a real, successful health check
+    (not just an env var) is what earns LIVE. Mocks the adapter's
+    health_check() rather than depending on real network access in a test."""
+    import services.learning_catalog as catalog_module
+    from integrations.provider import ProviderResult
+
+    monkeypatch.setenv("IGOT_API_BASE_URL", "https://example.invalid")
+    monkeypatch.setattr(
+        catalog_module.LiveHTTPProviderAdapter,
+        "health_check",
+        lambda self: ProviderResult("LIVE", {"capabilities": ["search_catalogue"]}),
+    )
+    status = catalog_module.integration_status()
+    assert status["igot"]["mode"] == "LIVE"
+    assert "live" in status["igot"]["detail"].lower()
 
 
 # ─── content_ingestion.py ───

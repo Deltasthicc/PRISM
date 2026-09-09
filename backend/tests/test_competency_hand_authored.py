@@ -49,6 +49,8 @@ RELIABILITY_DOC_IDS = {
     "pib_finance_commission_xv", "pib_mission_karmayogi",
     "it_act_2000", "i4c_cyber_hygiene", "niti_responsible_ai",
     "pib_dpi_2026", "gi_cloud_roadmap", "nielit_ccc_syllabus",
+    "plfs_2017_18", "cpi_imputation", "sif_guideline", "nas_state_district",
+    "cca_dsc_interop", "certin_govt_entities", "cbc_kqf",
 }
 ALL_HAND_AUTHORED_DOC_IDS = UPSC_DOC_IDS | RELIABILITY_DOC_IDS
 
@@ -202,10 +204,11 @@ def test_quiz_from_hand_authored_rejects_unknown_doc_id():
 
 
 def test_quiz_from_hand_authored_rejects_a_known_doc_with_no_hand_authored_items():
-    # sif_guideline is real (in the corpus) but has no hand-authored items --
-    # must fail closed, not silently return an empty quiz.
+    # cpi_faq_2024 is real (in the corpus) but has no hand-authored items --
+    # must fail closed, not silently return an empty quiz. (sif_guideline
+    # used to be this test's example; it now has real items of its own.)
     with pytest.raises(DocumentUnavailable):
-        quiz_from_hand_authored("sif_guideline")
+        quiz_from_hand_authored("cpi_faq_2024")
 
 
 def test_at_least_one_fill_in_blank_item_exists_and_is_well_formed():

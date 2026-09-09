@@ -317,7 +317,8 @@
       "category": "statistical",
       "competency_ids": [
         "os_sdg_indicators",
-        "os_metadata_standards"
+        "os_metadata_standards",
+        "os_agricultural_statistics"
       ],
       "url": "https://www.mospi.gov.in/uploads/publications_reports/publications_reports1782719243840_1f31af3d-72ef-43f0-8038-c029553699f3_SDG_NIF_2026_(along_with_metadata).pdf",
       "sha256": "9d60c27e204b97e31e916833f63e6d4a50807b44c1eda2da36239d0d4d98149a",

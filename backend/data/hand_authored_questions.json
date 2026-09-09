@@ -2627,6 +2627,453 @@
       ],
       "answer_index": 0,
       "explanation": "The indicator's own documented computation is numerator = Total Net Sown Area, denominator = Total Cultivable Land -- a direct area-based ratio, not one referencing geographical or irrigated area."
+    },
+    {
+      "item_id": "ha_plfs_sample_design_stratified_mcq",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Chapter One, Section 1.3 'Sample Design of PLFS', p.3",
+      "source_excerpt": "A stratified multi-stage design was adopted for PLFS. The first stage units (FSU) were the Urban Frame Survey (UFS) blocks in urban areas and 2011 Population Census villages (Panchayat wards for Kerala) in rural areas. The ultimate stage units (USU) were households.",
+      "question": "What overall sample design did the Periodic Labour Force Survey (PLFS) 2017-18 adopt, and what were its First Stage Units (FSU)?",
+      "options": [
+        "Simple random sampling of households directly from the Census 2011 household list",
+        "A stratified multi-stage design, with Urban Frame Survey blocks (urban) and Census 2011 villages (rural) as the First Stage Units",
+        "Cluster sampling of entire districts, with each district treated as one first-stage unit",
+        "Systematic sampling of households at a fixed interval down a single all-India frame"
+      ],
+      "answer_index": 1,
+      "explanation": "PLFS used a stratified multi-stage design: the First Stage Units (FSU) were Urban Frame Survey (UFS) blocks in urban areas and 2011 Population Census villages (Panchayat wards for Kerala) in rural areas, with households as the Ultimate Stage Units."
+    },
+    {
+      "item_id": "ha_plfs_rotational_panel_visits_mcq",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Chapter One, Section 1.3.1 'Sample Design of PLFS', p.3",
+      "source_excerpt": "A rotational panel sampling design has been used in urban areas. In this rotational panel scheme each selected household in urban areas is visited four times - in the beginning with first visit schedule and thrice periodically later with revisit schedule.",
+      "question": "Under PLFS's rotational panel sampling design in urban areas, how many times is each selected household visited in total?",
+      "options": [
+        "Once only, with a single first-visit schedule",
+        "Twice: one first-visit and one revisit schedule",
+        "Four times: one first-visit schedule and three later revisit schedules",
+        "Twelve times, once every month for a year"
+      ],
+      "answer_index": 2,
+      "explanation": "PLFS used a rotational panel design only in urban areas: each selected urban household is visited four times in total -- an initial first-visit schedule, followed by three periodic revisit schedules. Rural samples had no revisit at all."
+    },
+    {
+      "item_id": "ha_plfs_ufs_ppswr_mcq",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Chapter One, Section 1.3.5 'Sample Design of PLFS', p.3-4",
+      "source_excerpt": "Urban FSUs were selected by probability proportional to size with replacement (PPSWR) scheme, size being the number of households in the UFS block.",
+      "question": "In PLFS, urban First Stage Units (UFS blocks) were selected using which method, and what defined the 'size' measure for that method?",
+      "options": [
+        "Simple random sampling without replacement, with each block equally likely regardless of size",
+        "Probability proportional to size with replacement (PPSWR), with size measured by the number of households in the UFS block",
+        "Judgment sampling by field supervisors familiar with each block",
+        "Probability proportional to size, with size measured by the block's total land area"
+      ],
+      "answer_index": 1,
+      "explanation": "Urban FSUs (UFS blocks) were selected by probability proportional to size with replacement (PPSWR), where 'size' was defined as the number of households in that UFS block -- larger blocks (more households) had a proportionally higher chance of selection."
+    },
+    {
+      "item_id": "ha_plfs_second_stage_srswor_blank",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Chapter One, Section 1.3.5 'Sample Design of PLFS', p.4",
+      "source_excerpt": "A total of 8 households were selected from each sample village/block for canvassing the detailed schedule. The sample households from each of the second stage strata were selected by SRSWOR.",
+      "question": "In PLFS, 8 households were selected from each sample village/block, drawn from each second-stage stratum by _____ (a sampling method abbreviated using the initials S, R, S, W, O, R).",
+      "accepted_answers": [
+        "SRSWOR",
+        "simple random sampling without replacement"
+      ],
+      "explanation": "Within each selected village/UFS block, households in each of the second-stage strata were selected by Simple Random Sampling Without Replacement (SRSWOR) -- the final stage of PLFS's stratified multi-stage design."
+    },
+    {
+      "item_id": "ha_plfs_rural_quarterly_coverage_mcq",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "Chapter One, Section 1.3.1 'Sample Design of PLFS', p.3",
+      "source_excerpt": "For rural areas, in each quarter of the survey period, 25% FSUs of annual allocation were covered.",
+      "question": "In PLFS's rural sample, what fraction of the annual First Stage Unit (FSU) allocation was surveyed in each quarter of the survey period?",
+      "options": [
+        "100% -- the full rural sample was revisited every quarter",
+        "50% of the annual allocation",
+        "25% of the annual allocation",
+        "10% of the annual allocation"
+      ],
+      "answer_index": 2,
+      "explanation": "Unlike the revisited urban rotational panel, rural FSUs were not revisited; instead, 25% of the annual rural FSU allocation was surveyed in each of the four quarters, together covering the full annual allocation across the year."
+    },
+    {
+      "item_id": "ha_nqaf_four_categories_mcq",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Assessment of the Indian Statistical System w.r.t the NQAF checklist, slide 1",
+      "source_excerpt": "The template covers all aspects related to (A) Managing the statistical system, (B) Managing the institutional environment, (C) Managing statistical processes and (D) Managing statistical outputs.",
+      "question": "The UN's National Quality Assurance Framework (NQAF) template organizes its 19 quality statements into how many broad categories, and what do they cover?",
+      "options": [
+        "Two categories: Inputs and Outputs",
+        "Four categories: managing the statistical system, the institutional environment, statistical processes, and statistical outputs",
+        "Three categories: Planning, Collection, and Dissemination",
+        "Five categories, one per stage of the generic statistical business process"
+      ],
+      "answer_index": 1,
+      "explanation": "NQAF's template covers four broad categories: (A) Managing the statistical system, (B) Managing the institutional environment, (C) Managing statistical processes, and (D) Managing statistical outputs -- together spanning 19 statements of quality and 250 quality elements."
+    },
+    {
+      "item_id": "ha_nqaf_quality_elements_blank",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_data_quality",
+      "question_type": "fill_in_blank",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "Assessment of the Indian Statistical System w.r.t the NQAF checklist, slide 1",
+      "source_excerpt": "The framework is a template consists of 19 statements of quality with 250 quality elements and its supporting documents",
+      "question": "The UN's NQAF template consists of 19 statements of quality broken down into a total of _____ quality elements.",
+      "accepted_answers": [
+        "250",
+        "250 quality elements"
+      ],
+      "explanation": "NQAF's 19 quality statements are further broken down into 250 individual quality elements, which the Indian Statistical System's own self-assessment scored as 43.4% 'Yes', 7.2% 'No', and 49.4% 'Partially True'."
+    },
+    {
+      "item_id": "ha_sif_baseline_report_contents_mcq",
+      "doc_id": "sif_guideline",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Guidelines for Development of SDGs SIF, Section G, para 11, p.5",
+      "source_excerpt": "MoSPI released the first Sustainable Development Goals National Indicator Framework Baseline Report 2015-16. The Report contains Data Snapshot, metadata, definitions, computation formulae, data including sources, unit of measurement and periodicity.",
+      "question": "What does MoSPI's SDG National Indicator Framework (NIF) Baseline Report 2015-16 contain for each indicator?",
+      "options": [
+        "Only the raw data values, with no accompanying documentation",
+        "A Data Snapshot, metadata, definitions, computation formulae, data sources, unit of measurement, and periodicity",
+        "A ranking of States by performance on that indicator, with no metadata",
+        "Only the international SDG target text, without any India-specific data"
+      ],
+      "answer_index": 1,
+      "explanation": "The NIF Baseline Report 2015-16 documents each indicator comprehensively: a data snapshot, metadata, definitions, computation formulae, data sources, unit of measurement, and periodicity -- providing the benchmark against which SDG progress is tracked."
+    },
+    {
+      "item_id": "ha_sif_state_alignment_blank",
+      "doc_id": "sif_guideline",
+      "competency_id": "os_metadata_standards",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Guidelines for Development of SDGs SIF, Section I, para 18, p.6",
+      "source_excerpt": "State Indicator Framework to be in sync with National Indicator Framework: Scientifically work out the Statistical Indicators which may be used for measuring the success and outcomes of various Government Schemes that have been mapped to SDGs.",
+      "question": "Per MoSPI's SIF guidelines, although each State develops its own State Indicator Framework independently, one guiding principle requires it to stay in sync with the _____ Indicator Framework at the national level.",
+      "accepted_answers": [
+        "National",
+        "national"
+      ],
+      "explanation": "Guiding Principle 18 requires the State Indicator Framework to remain in sync with the National Indicator Framework (NIF) for the same goals and targets, even though states have flexibility to adapt indicators to local priorities."
+    },
+    {
+      "item_id": "ha_cpi_imputation_nonfood_formula_mcq",
+      "doc_id": "cpi_imputation",
+      "competency_id": "os_price_statistics",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Compilation of CPI: A Technical Note, Section C, para 6, p.2",
+      "source_excerpt": "Imputed Sub-group Index (Non-Food Group) = (Last Observed Index of Sub-group) x (General CPI of Current Month/General CPI of last Observed Month).",
+      "question": "Under NSO's macro-level CPI imputation methodology (used during COVID-19 lockdown data gaps), how is a missing Non-Food sub-group's index imputed?",
+      "options": [
+        "By carrying forward last month's index unchanged, with no adjustment",
+        "By multiplying the last observed index of that sub-group by the ratio of the General CPI (current month to last observed month)",
+        "By averaging the indices of all other Non-Food sub-groups for the current month",
+        "By linear extrapolation from the previous three months' index values"
+      ],
+      "answer_index": 1,
+      "explanation": "For Non-Food groups, the imputed index equals the sub-group's last observed index multiplied by the ratio of the General CPI between the current month and the last month it was actually observed -- Food group sub-groups use the Food & Beverages Group Index instead of the General CPI for the same calculation."
+    },
+    {
+      "item_id": "ha_cpi_elementary_geometric_mean_blank",
+      "doc_id": "cpi_imputation",
+      "competency_id": "os_price_statistics",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Compilation of CPI: A Technical Note, Annex I, para 3(a), p.6",
+      "source_excerpt": "The elementary indices are the lowest level of aggregation where prices of each good or service are combined into price indices for which explicit expenditure weights are, generally, not available... The Price Ratios (current month to base period) are combined by taking simple geometric mean.",
+      "question": "In CPI compilation, elementary-level price indices (the lowest level of aggregation, with no explicit expenditure weights) are compiled by combining price ratios using the simple _____ mean.",
+      "accepted_answers": [
+        "geometric"
+      ],
+      "explanation": "At the elementary aggregation level, CPI price ratios (current month to base period) are combined using the simple geometric mean; higher-level aggregation then applies expenditure weights using a Laspeyres-type index formula."
+    },
+    {
+      "item_id": "ha_asi_census_sector_2004_mcq",
+      "doc_id": "manual_asi_2008",
+      "competency_id": "os_industrial_statistics",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Manual on ASI, Section V 'Sources and Systems', para 48, p.12-13",
+      "source_excerpt": "Units with 100 or more workers will be categorised as census sector and the rest of the units will be treated as sample sector, without any change in the existing criteria",
+      "question": "Under the Annual Survey of Industries (ASI) sampling design adopted from ASI 2004-05 onward, which units are placed in the Census Sector (surveyed on complete enumeration basis)?",
+      "options": [
+        "All units regardless of size, since ASI moved to full census coverage in 2004-05",
+        "Units with 100 or more workers",
+        "Only units belonging to public sector undertakings (PSUs)",
+        "Units with 200 or more workers, unchanged from the ASI 1997-98 design"
+      ],
+      "answer_index": 1,
+      "explanation": "As per the 13th meeting of the Standing Committee on Industrial Statistics (10 March 2005), from ASI 2004-05 onward units with 100 or more workers are categorised as the Census Sector, with the rest treated as the Sample Sector -- a change from ASI 1997-98's 200-or-more-workers threshold."
+    },
+    {
+      "item_id": "ha_asi_frame_authority_blank",
+      "doc_id": "manual_asi_2008",
+      "competency_id": "os_industrial_statistics",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Manual on ASI, Section V 'Sources and Systems', para 45, p.12",
+      "source_excerpt": "The ASI frame is based on the lists of registered factories / units maintained by the Chief Inspector of Factories in each state and those maintained by registration authorities in respect of bidi and cigar establishments and electricity undertakings.",
+      "question": "The Annual Survey of Industries (ASI) sampling frame is based on lists of registered factories maintained by the Chief Inspector of _____ in each state.",
+      "accepted_answers": [
+        "Factories",
+        "factories"
+      ],
+      "explanation": "The ASI frame is built from lists of registered factories/units maintained by the Chief Inspector of Factories in each state, revised annually by NSSO's Field Operations Division in consultation with that authority."
+    },
+    {
+      "item_id": "ha_ngp_ngdr_agency_mcq",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy 2022, Section 5.1.4, p.16",
+      "source_excerpt": "Survey of India shall be the agency responsible for developing and operating the NGDR and the UGI in collaboration with BISAG-N, other institutions and the private sector, under the guidance and supervision of GDPDC.",
+      "question": "Under India's National Geospatial Policy 2022, which agency is responsible for developing and operating the National Geospatial Data Registry (NGDR) and Unified Geospatial Interface (UGI)?",
+      "options": [
+        "National Remote Sensing Centre (NRSC)",
+        "Survey of India",
+        "Department of Science and Technology (DST) directly, with no delegated agency",
+        "Geological Survey of India (GSI)"
+      ],
+      "answer_index": 1,
+      "explanation": "Survey of India is designated as the agency responsible for developing and operating both the NGDR and the UGI, working in collaboration with BISAG-N and the private sector under GDPDC's guidance and supervision."
+    },
+    {
+      "item_id": "ha_ngp_gdpdc_role_mcq",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Geospatial Policy 2022, Section 4.1, p.15",
+      "source_excerpt": "The Government shall constitute a Geospatial Data Promotion and Development Committee (GDPDC) at the national level which shall be the apex body for formulating and implementing appropriate guidelines, strategies and programs for promotion of activities related to Geospatial sector.",
+      "question": "What is the role of the Geospatial Data Promotion and Development Committee (GDPDC) under India's National Geospatial Policy 2022?",
+      "options": [
+        "A purely advisory body with no formal standing, convened only when DST requests input",
+        "The apex national body for formulating and implementing guidelines, strategies and programs for the Geospatial sector, replacing the earlier National Spatial Data Committee",
+        "A private-sector industry association independent of any government mandate",
+        "A judicial body that adjudicates disputes over geospatial data licensing"
+      ],
+      "answer_index": 1,
+      "explanation": "GDPDC is constituted as the apex national body driving the overall development of the Geospatial ecosystem, replacing and subsuming the functions of the earlier National Spatial Data Committee (NSDC) and the previous GDPDC constituted by DST office memorandum."
+    },
+    {
+      "item_id": "ha_nas_ddp_allocation_method_mcq",
+      "doc_id": "nas_state_district",
+      "competency_id": "os_national_accounts",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Manual on Estimation of State/District Income, Section 6, para 6.56, p.~130",
+      "source_excerpt": "For unorganised manufacturing, Construction and Tertiary Sector, generally allocation method is used. In this method, allocation of state totals of SDP estimates, for various sectors, over different districts is done on the basis of certain indicator, generally workforce.",
+      "question": "For District Domestic Product (DDP) estimation in the unorganised manufacturing, construction, and tertiary sectors, what method does the manual say is generally used, and on what does it rely?",
+      "options": [
+        "Direct district-level enumeration, requiring no allocation from state totals at all",
+        "An allocation method that distributes State Domestic Product (SDP) totals across districts using an indicator, generally workforce",
+        "A per-capita income survey conducted independently in each district",
+        "Satellite-derived nightlight intensity data as a proxy for district output"
+      ],
+      "answer_index": 1,
+      "explanation": "The allocation method distributes SDP sector totals across districts using an indicator -- generally workforce -- which implicitly assumes per-head earnings are uniform across districts, an assumption the manual itself flags as often not holding true."
+    },
+    {
+      "item_id": "ha_nas_sdp_ddp_analogy_blank",
+      "doc_id": "nas_state_district",
+      "competency_id": "os_national_accounts",
+      "question_type": "fill_in_blank",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Manual on Estimation of State/District Income, Introduction, p.~5",
+      "source_excerpt": "SDP/DDP represent at state/district level, what Gross Domestic Product (GDP) represents at national level. Therefore, the methodology of compiling SDP/DDP estimates would also be similar to that of GDP",
+      "question": "The manual explains that State Domestic Product (SDP) and District Domestic Product (DDP) represent, at the state and district level, what Gross Domestic Product (GDP) represents at the _____ level.",
+      "accepted_answers": [
+        "national",
+        "national level"
+      ],
+      "explanation": "SDP/DDP are the state/district-level analogues of national GDP, so their compilation methodology closely follows the same national-accounts principles used for GDP."
+    },
+    {
+      "item_id": "ha_certin_audit_frequency_mcq",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "CERT-In Guidelines for Government Entities, Section 3.4, p.~8",
+      "source_excerpt": "Internal information security audit to be conducted at least once in 6 months. 3rd Party Security audits must be conducted at least once a year.",
+      "question": "Per CERT-In's cybersecurity guidelines for government entities, how often must internal information security audits and third-party security audits each be conducted, at minimum?",
+      "options": [
+        "Internal audits once a year; third-party audits once every 6 months",
+        "Internal audits at least once every 6 months; third-party audits at least once a year",
+        "Both internal and third-party audits at least once a month",
+        "Only third-party audits are required; internal audits are optional"
+      ],
+      "answer_index": 1,
+      "explanation": "CERT-In requires internal information security audits at least every 6 months and third-party security audits at least annually, optionally using CERT-In empanelled auditors."
+    },
+    {
+      "item_id": "ha_certin_inventory_unauthorized_blank",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_cyber_hygiene",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "CERT-In Guidelines for Government Entities, Section 3.6, p.~8",
+      "source_excerpt": "Maintain inventory of authorised hardware and software (including versions, patch level, validity of support etc) along with mechanism for automated scanning to detect presence of unauthorized device and software.",
+      "question": "CERT-In's guidelines require government organisations to maintain an inventory of authorised hardware and software, plus an automated scanning mechanism to detect the presence of any _____ device or software.",
+      "accepted_answers": [
+        "unauthorized",
+        "unauthorised"
+      ],
+      "explanation": "Beyond just cataloguing authorised assets (with version and patch-level details), the guideline requires automated scanning specifically to catch unauthorized devices and software appearing on the network."
+    },
+    {
+      "item_id": "ha_cca_interop_issuer_subject_mcq",
+      "doc_id": "cca_dsc_interop",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "CCA Interoperability Guidelines for DSC v4.0, Introduction, p.5",
+      "source_excerpt": "The comparative analysis of the certificates has highlighted that the majority of the interoperability problems in certificates are due to inconsistency in the 'Issuer' and 'Subject' fields of the certificates.",
+      "question": "According to the Controller of Certifying Authorities' (CCA) comparative analysis, the majority of interoperability problems among Indian Digital Signature Certificates (DSCs) were traced to inconsistency in which certificate fields?",
+      "options": [
+        "The 'Validity Period' and 'Serial Number' fields",
+        "The 'Issuer' and 'Subject' fields",
+        "The 'Public Key Algorithm' field only",
+        "The 'CRL Distribution Point' field only"
+      ],
+      "answer_index": 1,
+      "explanation": "CCA's analysis found the 'Issuer' field alone was interpreted in around 20 different ways across Certifying Authorities, and the 'Subject' field's sub-fields (like Organization Unit) were similarly inconsistent -- these two fields drove most interoperability failures."
+    },
+    {
+      "item_id": "ha_cca_interop_two_initiatives_blank",
+      "doc_id": "cca_dsc_interop",
+      "competency_id": "dl_digital_signatures",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "CCA Interoperability Guidelines for DSC v4.0, 'The interoperability model', p.6",
+      "source_excerpt": "The interoperability model that has been defined by the CA recommends two major initiatives - organizational guidelines and certificate profile guidelines.",
+      "question": "CCA's interoperability model for Digital Signature Certificates recommends two major initiatives: organizational guidelines and _____ guidelines.",
+      "accepted_answers": [
+        "certificate profile",
+        "certificate profile guidelines"
+      ],
+      "explanation": "The two initiatives are organizational guidelines (governing how Certifying Authorities structure themselves, including sub-CA operation) and certificate profile guidelines (governing the mandated interpretation of certificate fields and extensions)."
+    },
+    {
+      "item_id": "ha_kqf_seven_commitments_mcq",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Karmayogi Quality Framework, Part I, p.~5",
+      "source_excerpt": "Seven quality commitments govern every stage: Purpose & Competency Alignment - Learning Design - Content Accuracy - Assessment - Technology - Learner Experience - Ethics & Values.",
+      "question": "The Karmayogi Quality Framework (KQF) defines quality in civil-service learning across seven commitments. Which of the following is one of them?",
+      "options": [
+        "Vendor Cost Optimisation",
+        "Ethics & Values",
+        "Marketing Reach",
+        "Platform Uptime Percentage"
+      ],
+      "answer_index": 1,
+      "explanation": "KQF's seven commitments are Purpose & Competency Alignment, Learning Design, Content Accuracy, Assessment, Technology, Learner Experience, and Ethics & Values -- the framework's foreword singles out Ethics & Values as its most significant commitment."
+    },
+    {
+      "item_id": "ha_kqf_course_design_question_blank",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Karmayogi Quality Framework, Foreword, p.iii",
+      "source_excerpt": "Before any course is built, its author must answer a simple question, 'what specific work decisions will this course help a public official make better'? If that question cannot be answered clearly, the course should not be built.",
+      "question": "Per the Karmayogi Quality Framework's foreword, before any course is built its author must be able to clearly answer what specific work _____ the course will help a public official make better.",
+      "accepted_answers": [
+        "decisions",
+        "decision"
+      ],
+      "explanation": "KQF anchors every course in real work decisions -- if an author cannot clearly state which work decisions a course improves, the framework says the course should not be built at all."
+    },
+    {
+      "item_id": "ha_niti_ai_five_sectors_mcq",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.7",
+      "source_excerpt": "NITI Aayog has decided to focus on five sectors that are envisioned to benefit the most from AI in solving societal needs: a) Healthcare... b) Agriculture... c) Education... d) Smart Cities and Infrastructure... and e) Smart Mobility and Transportation",
+      "question": "NITI Aayog's National Strategy for Artificial Intelligence identifies five priority sectors expected to benefit most from AI in solving societal needs. Which of the following is NOT one of them?",
+      "options": [
+        "Healthcare",
+        "Agriculture",
+        "Banking and Financial Services",
+        "Smart Mobility and Transportation"
+      ],
+      "answer_index": 2,
+      "explanation": "The five NITI Aayog priority sectors are Healthcare, Agriculture, Education, Smart Cities and Infrastructure, and Smart Mobility and Transportation -- Banking and Financial Services is not among them."
+    },
+    {
+      "item_id": "ha_niti_ai_adoption_barrier_mcq",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "National Strategy for Artificial Intelligence, p.7",
+      "source_excerpt": "the report identifies the following barriers that need to be addressed in order to achieve the goals of #AIforAll: a) Lack of broad based expertise in research and application of AI, b) Absence of enabling data ecosystems - access to intelligent data, c) High resource cost and low awareness for adoption of AI, d) Privacy and security, including a lack of formal regulations around anonymisation of data, and e) Absence of collaborative approach to adoption and application of AI.",
+      "question": "Which of the following is identified as a barrier to large-scale AI adoption in NITI Aayog's National Strategy for Artificial Intelligence?",
+      "options": [
+        "Excessive government regulation preventing any private-sector AI research",
+        "Absence of enabling data ecosystems -- limited access to intelligent, usable data",
+        "Too many competing national AI strategies causing confusion",
+        "Overinvestment in AI research relative to other technologies"
+      ],
+      "answer_index": 1,
+      "explanation": "The report's five barriers to #AIforAll are: lack of broad-based AI expertise, absence of enabling data ecosystems, high resource cost and low adoption awareness, privacy/security regulatory gaps, and absence of a collaborative adoption approach."
+    },
+    {
+      "item_id": "ha_niti_ai_ictai_blank",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "question_type": "fill_in_blank",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.7",
+      "source_excerpt": "International Centers of Transformational AI (ICTAI) with a mandate of developing and deploying application-based research. Private sector collaboration is envisioned to be a key aspect of ICTAIs.",
+      "question": "NITI Aayog proposes a two-tiered AI research structure: Centres of Research Excellence (CORE) for core research, and International Centers of _____ AI (ICTAI) for application-based research with private-sector collaboration.",
+      "accepted_answers": [
+        "Transformational",
+        "transformational"
+      ],
+      "explanation": "ICTAI (International Centers of Transformational AI) is the applied-research tier of NITI Aayog's proposed two-tier structure, complementing CORE's focus on fundamental research."
     }
   ]
 }

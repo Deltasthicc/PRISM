@@ -11,6 +11,11 @@ export const useAuthStore = create(
       isAuthenticated: false,
       loading: true, // true until the initial player-session check resolves
       error: null,
+      // HTTP status of the last login()/register() failure, if any -- lets a
+      // caller distinguish "this username doesn't exist yet" (404 from
+      // login's by-username lookup) from a generic backend/network failure,
+      // which `error` alone (a plain message string) can't do.
+      errorCode: null,
 
       async fetchMe() {
         const isInitialLoad = !get().player;
@@ -42,25 +47,25 @@ export const useAuthStore = create(
       },
 
       async login(username) {
-        set({ error: null });
+        set({ error: null, errorCode: null });
         try {
           const { player } = await auth.login(username);
           set({ player, isAuthenticated: true });
           return true;
         } catch (e) {
-          set({ error: e.message });
+          set({ error: e.message, errorCode: e.code ?? null });
           return false;
         }
       },
 
       async register(username) {
-        set({ error: null });
+        set({ error: null, errorCode: null });
         try {
           const { player } = await auth.register(username);
           set({ player, isAuthenticated: true });
           return true;
         } catch (e) {
-          set({ error: e.message });
+          set({ error: e.message, errorCode: e.code ?? null });
           return false;
         }
       },

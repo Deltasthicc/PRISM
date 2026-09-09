@@ -156,6 +156,37 @@ TOPICS: dict[str, dict] = {
 }
 
 _DIFFICULTY_ORDER = {"easy": 0, "medium": 1, "hard": 2}
+
+# Reference time-to-answer per difficulty, in seconds -- a rough, openly
+# approximate baseline (not derived from any measured population of test
+# takers), used only to turn a client-reported elapsed time into a small,
+# bounded nudge on top of accuracy. This is intentionally a secondary signal:
+# accuracy alone still determines whether an answer counts as correct: timing
+# only adjusts *how confidently* a correct-answer streak is reported, within
+# a +-15% band, so a fast wrong answer is never scored better than a slow
+# right one, and a slow correct answer never drops out of its accuracy tier.
+_EXPECTED_SECONDS = {"easy": 20, "medium": 40, "hard": 75}
+_TIME_FACTOR_MIN = 0.85
+_TIME_FACTOR_MAX = 1.10
+
+
+def _time_factor(difficulty: str, time_taken_ms: int | None) -> float:
+    """1.0 (neutral) if no timing was reported; otherwise a bounded ratio of
+    expected-to-actual time, so answering faster than the reference nudges
+    the factor above 1.0 and answering slower nudges it below."""
+    if not time_taken_ms or time_taken_ms <= 0:
+        return 1.0
+    expected_ms = _EXPECTED_SECONDS[difficulty] * 1000
+    ratio = expected_ms / time_taken_ms
+    return max(_TIME_FACTOR_MIN, min(_TIME_FACTOR_MAX, ratio))
+
+
+def _pace_label(time_factor: float) -> str:
+    if time_factor >= 1.03:
+        return "faster"
+    if time_factor <= 0.92:
+        return "slower"
+    return "typical"
 MAX_QUESTIONS_PER_TOPIC = 10
 ATTEMPT_TTL_SECONDS = 30 * 60
 MAX_ACTIVE_ATTEMPTS = 1_000
@@ -339,6 +370,10 @@ class AnswerIn(BaseModel):
     item_id: str
     selected_index: int | None = Field(default=None, ge=0, le=3)
     answer_text: str | None = Field(default=None, max_length=500)
+    # Client-measured wall-clock time between this question being shown and
+    # answered, in milliseconds. Optional (older/misbehaving clients simply
+    # omit it) -- see _time_factor() for how a missing value is handled.
+    time_taken_ms: int | None = Field(default=None, ge=0, le=30 * 60 * 1000)
 
 
 class SubmitRequest(BaseModel):
@@ -361,6 +396,8 @@ class GradedAnswer(BaseModel):
     source_excerpt: str
     doc_id: str
     locator: str
+    time_taken_ms: int | None = None
+    pace: str | None = None  # "faster" | "typical" | "slower" | None (no timing data)
 
 
 class CompetencyScore(BaseModel):
@@ -373,6 +410,7 @@ class CompetencyScore(BaseModel):
     evidence_count: int
     confidence: str
     rank: int
+    avg_time_factor: float = 1.0
 
 
 class SubmitResponse(BaseModel):
@@ -417,6 +455,7 @@ async def submit_quiz(
     _active_attempts.pop(body.attempt_id, None)
     graded: list[GradedAnswer] = []
     by_competency: dict[str, list[bool]] = {}
+    time_factors_by_competency: dict[str, list[float]] = {}
 
     for answer in body.answers:
         item = lookup.get(answer.item_id)
@@ -426,6 +465,8 @@ async def submit_quiz(
                 detail=f"Item {answer.item_id!r} does not belong to topic {body.topic_id!r}",
             )
         question_type = item.get("question_type", "mcq")
+        time_factor = _time_factor(item["difficulty"], answer.time_taken_ms)
+        pace = _pace_label(time_factor) if answer.time_taken_ms else None
         if question_type == "mcq":
             if answer.selected_index is None:
                 raise HTTPException(status_code=422, detail=f"Item {item['item_id']!r} requires selected_index")
@@ -442,6 +483,8 @@ async def submit_quiz(
                     source_excerpt=item["source_excerpt"],
                     doc_id=item["doc_id"],
                     locator=item["locator"],
+                    time_taken_ms=answer.time_taken_ms,
+                    pace=pace,
                 )
             )
         else:
@@ -462,9 +505,15 @@ async def submit_quiz(
                     source_excerpt=item["source_excerpt"],
                     doc_id=item["doc_id"],
                     locator=item["locator"],
+                    time_taken_ms=answer.time_taken_ms,
+                    pace=pace,
                 )
             )
         by_competency.setdefault(item["competency_id"], []).append(is_correct)
+        # Only correct answers' pace feeds the confidence nudge below -- a
+        # fast wrong answer must never look better than a slow right one.
+        if is_correct:
+            time_factors_by_competency.setdefault(item["competency_id"], []).append(time_factor)
 
     total = len(graded)
     correct = sum(1 for g in graded if g.correct)
@@ -475,7 +524,10 @@ async def submit_quiz(
         c = sum(results)
         t = len(results)
         accuracy = c / t if t else 0.0
-        level = round(accuracy * 5, 1)
+        competency_time_factors = time_factors_by_competency.get(competency_id, [])
+        avg_time_factor = sum(competency_time_factors) / len(competency_time_factors) if competency_time_factors else 1.0
+        level = round(min(5.0, accuracy * 5 * avg_time_factor), 1)
+        confidence = "high" if t >= 3 and avg_time_factor >= 1.0 else "moderate" if t >= 3 else "low"
         score_rows.append(
             {
                 "competency_id": competency_id,
@@ -485,7 +537,8 @@ async def submit_quiz(
                 "accuracy": round(accuracy, 2),
                 "provisional_level": level,
                 "evidence_count": t,
-                "confidence": "moderate" if t >= 3 else "low",
+                "confidence": confidence,
+                "avg_time_factor": round(avg_time_factor, 3),
             }
         )
         diagnostic_scores[competency_id] = level
@@ -503,7 +556,17 @@ async def submit_quiz(
             record = EvidenceRecord(
                 player_id=body.player_id,
                 competency_id=score.competency_id,
-                evidence_type="diagnostic",
+                # Was "diagnostic" (UNSCORED_EVIDENCE_TYPES in learning_engine.py)
+                # until this quiz was made the sole source of competency
+                # evidence: no scoring source ever wrote "observed_practice"
+                # (the only other SCORING_EVIDENCE_TYPES entry, besides
+                # "self_report", which this app no longer collects from any
+                # UI), so a diagnostic-tagged record here never moved a
+                # learner's observed_level at all. Real answered questions
+                # are exactly the "observed practice" this evidence type is
+                # for -- see docs/contracts/data-authorization.md 4.1's note
+                # that weighting these types is Lane 3's versioned policy.
+                evidence_type="observed_practice",
                 value=round(score.provisional_level),
                 detail=json.dumps(
                     {
@@ -516,6 +579,7 @@ async def submit_quiz(
                             for answer in graded
                             if answer.competency_id == score.competency_id
                         ],
+                        "avg_time_factor": score.avg_time_factor,
                         "provisional": True,
                     },
                     separators=(",", ":"),

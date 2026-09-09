@@ -15,6 +15,7 @@ class LearnerProfileUpsert(BaseModel):
     does `for field, value in body.model_dump().items(): setattr(profile, field, value)`.
     """
 
+    full_name: str = Field("", max_length=200)
     designation: str = ""
     department: str = ""
     job_role: str = ""

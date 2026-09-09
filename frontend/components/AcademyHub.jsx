@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { BookOpen, BrainCircuit, FileQuestion, ShieldCheck } from 'lucide-react';
@@ -27,7 +27,6 @@ const EMPTY_PROFILE = {
   target_domains: [],
 };
 
-const PRIORITY_TONE = { critical: 'danger', high: 'warning', medium: 'accent', maintain: 'success' };
 const LINK_BUTTON_CLASS = [
   'inline-flex items-center font-sans text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors',
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00236f]',
@@ -39,8 +38,6 @@ export default function AcademyHub() {
   const { t, language } = useLanguage();
   const [profile, setProfile] = useState(EMPTY_PROFILE);
   const [selectedSlug, setSelectedSlug] = useState('official-statistics');
-  const [ratings, setRatings] = useState({});
-  const [assessment, setAssessment] = useState(null);
   const [quiz, setQuiz] = useState(null);
   const [working, setWorking] = useState('');
   const [error, setError] = useState('');
@@ -62,11 +59,6 @@ export default function AcademyHub() {
   useEffect(() => {
     if (data?.profile) setProfile({ ...EMPTY_PROFILE, ...data.profile });
   }, [data?.profile]);
-
-  const selected = useMemo(
-    () => data?.curricula?.find((curriculum) => curriculum.slug === selectedSlug),
-    [data?.curricula, selectedSlug]
-  );
 
   if (!ready || isLoading) {
     return <p className="font-sans text-sm text-[#757682] text-center mt-10">{t('academy.loadingAcademy')}</p>;
@@ -94,19 +86,6 @@ export default function AcademyHub() {
         previous_trainings: Array.isArray(profile.previous_trainings) ? profile.previous_trainings : [],
       });
       setProfile({ ...EMPTY_PROFILE, ...result.profile });
-    } catch (cause) {
-      setError(cause.message);
-    } finally {
-      setWorking('');
-    }
-  }
-
-  async function runAssessment() {
-    setWorking('assessment');
-    setError('');
-    setAssessment(null);
-    try {
-      setAssessment(await learning.assess(player.player_id, selectedSlug, ratings, language));
     } catch (cause) {
       setError(cause.message);
     } finally {
@@ -222,7 +201,7 @@ export default function AcademyHub() {
                 </div>
                 <p className="font-sans text-sm text-[#757682] mt-3">{t('academy.forAudience')} {curriculum.audience}</p>
                 <div className="flex flex-wrap gap-2 mt-4">
-                  <Button variant={active ? 'primary' : 'ghost'} onClick={() => { setSelectedSlug(curriculum.slug); setAssessment(null); setRatings({}); }}>
+                  <Button variant={active ? 'primary' : 'ghost'} onClick={() => setSelectedSlug(curriculum.slug)}>
                     {active ? t('academy.selectedBadge') : t('academy.assessThisPath')}
                   </Button>
                   {dungeon && (
@@ -240,31 +219,13 @@ export default function AcademyHub() {
         </div>
       </section>
 
-      {selected && (
-        <Panel>
-          <h2 className="font-sans text-base font-bold text-[#00236f] mb-2">{t('academy.section3Heading')}</h2>
-          <p className="font-sans text-sm text-[#757682] mb-5">{t('academy.section3Body')}</p>
-          <div className="flex flex-col gap-4">
-            {selected.competencies.map((competency) => (
-              <label key={competency.id} className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-3 border-b border-[#c5c5d3]/40 pb-4">
-                <span>
-                  <span className="font-sans text-sm font-semibold text-[#131b2e]">{competency.label}</span>
-                  <span className="font-sans text-sm text-[#757682] block mt-1">{competency.description}</span>
-                </span>
-                <span className="flex items-center gap-3">
-                  <input type="range" min="0" max="5" step="0.5" value={ratings[competency.id] ?? 0} onChange={(event) => setRatings({ ...ratings, [competency.id]: Number(event.target.value) })} className="w-full accent-[#00236f]" />
-                  <output className="font-sans text-sm font-semibold text-[#00236f] w-8">{ratings[competency.id] ?? 0}</output>
-                </span>
-              </label>
-            ))}
-          </div>
-          <Button className="mt-5" onClick={runAssessment} disabled={working === 'assessment'}>
-            {working === 'assessment' ? t('academy.analysingButton') : t('academy.identifyGapsButton')}
-          </Button>
-        </Panel>
-      )}
-
-      {assessment && <AssessmentResults assessment={assessment} dungeon={dungeonBySlug[selectedSlug]} />}
+      <Panel variant="accent">
+        <h2 className="font-sans text-base font-bold text-[#00236f] mb-2">{t('academy.section3Heading')}</h2>
+        <p className="font-sans text-sm text-[#757682] mb-5">{t('academy.section3Body')}</p>
+        <Link href="/stats" className={`${LINK_BUTTON_CLASS} bg-[#00236f] text-white hover:bg-[#001a54]`}>
+          {t('academy.viewCompetencyVector')}
+        </Link>
+      </Panel>
 
       <Panel variant="accent">
         <div className="flex items-center gap-2 mb-2">
@@ -315,60 +276,6 @@ function Capability({ icon: Icon, title, body }) {
       <Icon className="text-[#00236f] mb-2" size={20} aria-hidden="true" />
       <h2 className="font-sans text-sm font-semibold text-[#131b2e]">{title}</h2>
       <p className="font-sans text-sm text-[#757682] mt-2">{body}</p>
-    </Panel>
-  );
-}
-
-function AssessmentResults({ assessment, dungeon }) {
-  const { t } = useLanguage();
-  return (
-    <Panel variant="accent">
-      <h2 className="font-sans text-base font-bold text-[#00236f]">{t('academy.pathwayHeading')}</h2>
-      <p className="font-sans text-sm text-[#757682] mt-2">{assessment.method.note}</p>
-      {assessment.pathway.length === 0 ? (
-        <p className="font-sans text-sm text-[#904d00] mt-4">{t('academy.noGapMessage')}</p>
-      ) : (
-        <ol className="flex flex-col gap-3 mt-4">
-          {assessment.pathway.map((step) => (
-            <li key={step.competency_id} className="border border-[#c5c5d3]/40 rounded-lg bg-[#f2f3ff] p-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-sans text-sm font-semibold text-[#131b2e]">{step.step}. {step.label}</span>
-                <Badge tone={PRIORITY_TONE[step.priority] || 'default'}>{step.priority}</Badge>
-                <Badge tone="accent">gap {step.gap.toFixed(1)}</Badge>
-              </div>
-              <p className="font-sans text-sm text-[#757682] mt-2">
-                Observed {step.observed_level.toFixed(1)}/5 via {step.evidence}; pathway target {step.pathway_target.toFixed(1)}/5.
-              </p>
-              <p className="font-sans text-sm text-[#131b2e] mt-1">{step.recommended_action}</p>
-            </li>
-          ))}
-        </ol>
-      )}
-
-      <h3 className="font-sans text-sm font-bold text-[#00236f] mt-6">{t('academy.recommendedLearningHeading')}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-        {assessment.courses.map((course) => {
-          const external = course.url.startsWith('http');
-          const href = course.provider_type === 'internal-practice' && dungeon
-            ? `/dungeon/${dungeon.dungeon_id}`
-            : course.url;
-          return (
-            <div key={course.course_id} className="border border-[#c5c5d3]/40 rounded-lg bg-[#f2f3ff] p-3">
-              <div className="flex gap-2 flex-wrap">
-                <Badge tone={course.provider_type === 'internal-practice' ? 'accent' : 'warning'}>{course.provider}</Badge>
-                <Badge tone="default">score {course.relevance_score.toFixed(1)}</Badge>
-              </div>
-              <p className="font-sans text-sm font-semibold text-[#131b2e] mt-3">{course.title}</p>
-              <p className="font-sans text-sm text-[#757682] mt-2">{course.verification_note}</p>
-              {external ? (
-                <a href={href} target="_blank" rel="noreferrer" className="font-sans text-sm text-[#00236f] hover:underline mt-2 inline-block">{t('academy.openCatalog')}</a>
-              ) : (
-                <Link href={href} className="font-sans text-sm text-[#00236f] hover:underline mt-2 inline-block">{t('academy.startAdaptivePractice')}</Link>
-              )}
-            </div>
-          );
-        })}
-      </div>
     </Panel>
   );
 }

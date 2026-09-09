@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import {
   ArrowLeft,
@@ -15,30 +16,39 @@ import {
   Network,
   Radar,
   Timer,
+  XCircle,
 } from 'lucide-react';
 
 import { learning } from '@/lib/api/client';
-import { COMPETENCY_TOPICS, TOPIC_BY_LABEL } from '@/lib/competencyTopics';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useRequireAuth } from '@/lib/useRequireAuth';
+import { COMPETENCY_TOPICS } from '@/lib/competencyTopics';
 
 const QUESTIONS_PER_TOPIC = 3;
 
-export default function CompetencyQuizPage({
-  officerProfile,
-  onCompleteQuizAndLaunchDashboard,
-  onBackToProfile,
-  onBackToLogin,
-}) {
+// A real Next.js route (see app/baseline-assessment/page.jsx) instead of a
+// step inside the old login/page.jsx state machine, so it sources the
+// player/profile from real auth + backend state instead of receiving a
+// fabricated "officerProfile" prop.
+export default function CompetencyQuizPage() {
+  const router = useRouter();
+  const { ready } = useRequireAuth();
+  const player = useAuthStore((state) => state.player);
+
+  const [profile, setProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [reviewIndex, setReviewIndex] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(600);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
   // Real, source-cited questions fetched from routes/competency_quiz.py,
-  // one topic per specialization the officer picked in CreateProfilePage.
-  // Falls back to the first real topic if none of their picks matched one
-  // (shouldn't happen once CreateProfilePage only offers real topics, but a
-  // profile created before that change could still have stale labels).
+  // one topic per curriculum the learner picked at registration
+  // (LearnerProfile.target_domains). Falls back to the first real topic if
+  // none of their picks matched one (e.g. a profile predating this route).
   const [questions, setQuestions] = useState([]);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -46,15 +56,53 @@ export default function CompetencyQuizPage({
   const [results, setResults] = useState(null);
   const [submittingQuiz, setSubmittingQuiz] = useState(false);
 
-  const selectedTopics = useMemo(() => {
-    const picked = (officerProfile?.specialization || [])
-      .map((label) => TOPIC_BY_LABEL[label])
-      .filter(Boolean);
-    return picked.length > 0 ? picked : [COMPETENCY_TOPICS[0]];
-  }, [officerProfile?.specialization]);
+  // Per-question elapsed time, keyed by item_id, accumulated across every
+  // visit to that question (Next/Prev/jump all flush the running delta) --
+  // see recordElapsed()/questionStartRef below. Sent to the backend as
+  // time_taken_ms so routes/competency_quiz.py's scoring can use it as a
+  // secondary, accuracy-never-overriding confidence signal.
+  const timeSpentRef = useRef({});
+  const questionStartRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
+    if (!ready || !player) return undefined;
+
+    async function loadProfile() {
+      setProfileLoading(true);
+      try {
+        const { profile: fetched } = await learning.getProfile(player.player_id);
+        if (!cancelled) setProfile(fetched);
+      } catch {
+        if (!cancelled) setProfile({});
+      } finally {
+        if (!cancelled) setProfileLoading(false);
+      }
+    }
+
+    loadProfile();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, player]);
+
+  const displayName = profile?.full_name || player?.username || '';
+  const initials = displayName
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('') || '?';
+
+  const selectedTopics = useMemo(() => {
+    const targetDomains = profile?.target_domains || [];
+    const picked = COMPETENCY_TOPICS.filter((topic) => targetDomains.includes(topic.curriculumSlug));
+    return picked.length > 0 ? picked : [COMPETENCY_TOPICS[0]];
+  }, [profile?.target_domains]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (profileLoading) return undefined;
 
     async function loadQuestions() {
       setLoadingQuestions(true);
@@ -85,10 +133,27 @@ export default function CompetencyQuizPage({
     return () => {
       cancelled = true;
     };
-    // selectedTopics is derived from officerProfile.specialization, which is
+    // selectedTopics is derived from profile.target_domains, which is
     // stable for the lifetime of one quiz attempt.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [profileLoading]);
+
+  // ============================================================
+  // PER-QUESTION TIMING
+  // ============================================================
+
+  useEffect(() => {
+    if (isSubmitted || !questions.length) return;
+    questionStartRef.current = Date.now();
+  }, [currentQuestionIndex, questions.length, isSubmitted]);
+
+  function recordElapsed() {
+    const q = questions[currentQuestionIndex];
+    if (!q || questionStartRef.current == null) return;
+    const delta = Date.now() - questionStartRef.current;
+    timeSpentRef.current[q.item_id] = (timeSpentRef.current[q.item_id] || 0) + delta;
+    questionStartRef.current = Date.now();
+  }
 
   // ============================================================
   // TIMER
@@ -168,15 +233,22 @@ export default function CompetencyQuizPage({
   // ============================================================
 
   const handleNext = () => {
+    recordElapsed();
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
 
   const handlePrev = () => {
+    recordElapsed();
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
+  };
+
+  const jumpToQuestion = (idx) => {
+    recordElapsed();
+    setCurrentQuestionIndex(idx);
   };
 
   // ============================================================
@@ -188,6 +260,7 @@ export default function CompetencyQuizPage({
       setSubmitError('Please answer every question before submitting this baseline.');
       return;
     }
+    recordElapsed();
     setSubmittingQuiz(true);
     setSubmitError('');
     setIsTimerRunning(false);
@@ -200,10 +273,11 @@ export default function CompetencyQuizPage({
           attemptId: q.attempt_id,
           answers: [],
         });
+        const timeTakenMs = timeSpentRef.current[q.item_id] || null;
         group.answers.push(
           q.question_type === 'fill_in_blank'
-            ? { item_id: q.item_id, answer_text: selectedAnswers[q.item_id] }
-            : { item_id: q.item_id, selected_index: selectedAnswers[q.item_id] }
+            ? { item_id: q.item_id, answer_text: selectedAnswers[q.item_id], time_taken_ms: timeTakenMs }
+            : { item_id: q.item_id, selected_index: selectedAnswers[q.item_id], time_taken_ms: timeTakenMs }
         );
       });
 
@@ -213,7 +287,7 @@ export default function CompetencyQuizPage({
             attempt.attemptId,
             topicId,
             attempt.answers,
-            officerProfile?.player_id
+            player?.player_id
           )
         )
       );
@@ -260,26 +334,14 @@ export default function CompetencyQuizPage({
   // ============================================================
 
   const handleFinishAndLaunchDashboard = () => {
-    if (!results) return;
-
-    onCompleteQuizAndLaunchDashboard({
-      ...officerProfile,
-      quizResults: {
-        score: results.correct,
-        total: results.total,
-        percentage: results.scorePercentage,
-        dimensionLevels: results.competencyScores,
-        evidencePersisted: results.evidencePersisted,
-        testedAt: new Date().toISOString(),
-      },
-    });
+    router.push('/stats');
   };
 
   // ============================================================
   // LOADING / ERROR
   // ============================================================
 
-  if (loadingQuestions) {
+  if (!ready || profileLoading || loadingQuestions) {
     return (
       <div className="min-h-screen w-full bg-[#f7f8fc] flex items-center justify-center px-4">
         <p className="text-sm text-[#555d6d] font-mono">Preparing your competency assessment…</p>
@@ -295,10 +357,10 @@ export default function CompetencyQuizPage({
         </p>
         <button
           type="button"
-          onClick={onBackToProfile}
+          onClick={() => router.push('/academy')}
           className="px-4 py-2.5 rounded-xl border border-[#dfe2eb] text-[#00236f] text-xs font-semibold hover:bg-[#f5f6fa]"
         >
-          Back to profile
+          Back to Academy
         </button>
       </div>
     );
@@ -325,7 +387,7 @@ export default function CompetencyQuizPage({
             <div className="flex items-center gap-3 min-w-0">
 
               <div className="w-11 h-11 rounded-xl bg-[#00236f] text-white flex items-center justify-center font-bold text-sm font-mono shrink-0 shadow-sm">
-                {officerProfile?.avatarInitials || 'RS'}
+                {initials}
               </div>
 
               <div className="min-w-0">
@@ -333,24 +395,19 @@ export default function CompetencyQuizPage({
                 <div className="flex items-center gap-2 flex-wrap">
 
                   <span className="font-bold text-sm text-[#10182b]">
-                    {officerProfile?.name || 'Dr. Rajesh Sharma'}
+                    {displayName}
                   </span>
 
-                  <span className="px-2 py-1 rounded-md bg-[#eef1ff] text-[#00236f] font-mono text-[10px] font-bold">
-                    {officerProfile?.designation || 'Assistant Director'}
-                  </span>
+                  {profile?.designation && (
+                    <span className="px-2 py-1 rounded-md bg-[#eef1ff] text-[#00236f] font-mono text-[10px] font-bold">
+                      {profile.designation}
+                    </span>
+                  )}
 
                 </div>
 
-                <p className="text-[11px] text-[#6b7280] mt-1 truncate">
-                  {officerProfile?.division ||
-                    'CSO Analytics & National Accounts'}{' '}
-                  <span className="mx-1">•</span>{' '}
-                  {officerProfile?.cadre || 'Cadre Band 3'}
-                </p>
-
                 <p className="text-[10px] text-[#8a8f9d] font-mono mt-0.5">
-                  {officerProfile?.cadreId || 'IND-88219'}
+                  {player?.username}
                 </p>
 
               </div>
@@ -696,7 +753,7 @@ export default function CompetencyQuizPage({
                       <button
                         key={q.item_id}
                         type="button"
-                        onClick={() => setCurrentQuestionIndex(idx)}
+                        onClick={() => jumpToQuestion(idx)}
                         className={`relative py-3 px-3 rounded-xl text-[11px] font-mono font-bold transition-all flex items-center justify-between cursor-pointer ${
                           isCurrent
                             ? 'bg-[#00236f] text-white shadow-md'
@@ -801,8 +858,7 @@ export default function CompetencyQuizPage({
                   Your selected specialities determine the question topics.
                   Results are a provisional signal for{' '}
                   <span className="text-white font-semibold">
-                    {officerProfile?.designation ||
-                      'Statistical Officer'}
+                    {profile?.designation || displayName}
                   </span>
                   , not an official or psychometrically validated rating.
                 </p>
@@ -811,6 +867,166 @@ export default function CompetencyQuizPage({
 
             </div>
           </div>
+
+        ) : reviewIndex !== null ? (
+
+          /* ======================================================
+             REVIEW MODE -- read-only per-question breakdown of what was
+             already graded. This is the fix for the old "Review Answers"
+             bug: that button used to call setIsSubmitted(false), which
+             re-rendered the exact same live/editable quiz UI against an
+             attempt_id the backend had already consumed, so re-submitting
+             always 409'd with "expired or already submitted" and there was
+             no way to actually see which answers were right or wrong.
+             This branch never re-enters the live quiz at all -- it only
+             ever reads from `results`, which is never cleared.
+          ====================================================== */
+
+          (() => {
+            const reviewQuestion = questions[reviewIndex];
+            const reviewGraded = results.gradedByItemId[reviewQuestion.item_id];
+            const reviewIsCorrect = Boolean(reviewGraded?.correct);
+            const reviewIsFillInBlank = reviewQuestion.question_type === 'fill_in_blank';
+            const submittedValue = reviewIsFillInBlank
+              ? reviewGraded?.submitted_text
+              : reviewGraded?.selected_index;
+
+            return (
+              <div className="w-full bg-white border border-[#dfe2eb] rounded-2xl shadow-[0_6px_25px_rgba(0,35,111,0.05)] overflow-hidden">
+                <div className={`h-1 ${reviewIsCorrect ? 'bg-[#005147]' : 'bg-[#904d00]'}`} />
+                <div className="p-5 sm:p-7">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#edf0f5]">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#00236f] text-white font-mono text-[11px] font-bold">
+                        Q{reviewIndex + 1}
+                        <ChevronRight size={12} />
+                        {questions.length}
+                      </span>
+                      <span className="px-2.5 py-1 rounded-lg bg-[#fff1e7] text-[#904d00] font-mono text-[10px] font-bold">
+                        {reviewQuestion.competency_label}
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-mono text-[10px] font-bold ${
+                          reviewIsCorrect ? 'bg-[#d7f4ee] text-[#005147]' : 'bg-[#ffe5d3] text-[#904d00]'
+                        }`}
+                      >
+                        {reviewIsCorrect ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                        {reviewIsCorrect ? 'Correct' : 'Incorrect'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="py-6">
+                    <h2 className="text-sm sm:text-base font-semibold text-[#151c2d] leading-7 mb-4">
+                      {reviewQuestion.question}
+                    </h2>
+
+                    {reviewIsFillInBlank ? (
+                      <div className="space-y-2">
+                        <div className="p-3.5 rounded-xl border border-[#e1e4eb] bg-[#fbfcfe]">
+                          <span className="font-mono text-[10px] text-[#7a808e] block mb-1">Your answer</span>
+                          <span className="text-xs text-[#252c3c]">{submittedValue || '(skipped)'}</span>
+                        </div>
+                        {!reviewIsCorrect && (
+                          <div className="p-3.5 rounded-xl border border-[#b8e4dc] bg-[#f1fbf9]">
+                            <span className="font-mono text-[10px] text-[#7a808e] block mb-1">Accepted answer</span>
+                            <span className="text-xs text-[#005147] font-semibold">
+                              {reviewGraded?.correct_answer_display}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-2.5">
+                        {reviewQuestion.options.map((optionText, optionIndex) => {
+                          const wasSelected = submittedValue === optionIndex;
+                          const isCorrectOption = reviewGraded?.correct_index === optionIndex;
+                          const letter = String.fromCharCode(65 + optionIndex);
+                          return (
+                            <div
+                              key={optionIndex}
+                              className={`w-full text-left p-3.5 rounded-xl border flex items-start gap-3 ${
+                                isCorrectOption
+                                  ? 'bg-[#f1fbf9] border-[#b8e4dc]'
+                                  : wasSelected
+                                    ? 'bg-[#fff8f2] border-[#ffd7bb]'
+                                    : 'bg-[#fbfcfe] border-[#e1e4eb]'
+                              }`}
+                            >
+                              <div
+                                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 font-mono text-[11px] font-bold ${
+                                  isCorrectOption
+                                    ? 'bg-[#005147] text-white'
+                                    : wasSelected
+                                      ? 'bg-[#904d00] text-white'
+                                      : 'bg-white text-[#687080] border border-[#e1e4eb]'
+                                }`}
+                              >
+                                {letter}
+                              </div>
+                              <span className="text-xs leading-6 pt-0.5 text-[#252c3c]">{optionText}</span>
+                              {wasSelected && !isCorrectOption && (
+                                <span className="ml-auto text-[9px] font-mono font-bold text-[#904d00] shrink-0">
+                                  YOUR ANSWER
+                                </span>
+                              )}
+                              {isCorrectOption && (
+                                <span className="ml-auto text-[9px] font-mono font-bold text-[#005147] shrink-0">
+                                  CORRECT
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div className="mt-5 p-4 rounded-xl bg-[#f7f8fc] border border-[#dfe2eb]">
+                      <p className="text-[10px] font-mono font-bold uppercase tracking-wide text-[#757682] mb-1.5">
+                        Explanation
+                      </p>
+                      <p className="text-xs text-[#333a49] leading-6">{reviewGraded?.explanation}</p>
+                      <p className="text-[10px] text-[#8a8f9d] font-mono mt-2">
+                        Source: {reviewGraded?.doc_id}
+                        {reviewGraded?.locator ? ` — ${reviewGraded.locator}` : ''}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-5 border-t border-[#edf0f5] flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setReviewIndex(Math.max(0, reviewIndex - 1))}
+                      disabled={reviewIndex === 0}
+                      className="px-3.5 py-2.5 rounded-xl border border-[#dfe2eb] text-[#555d6d] hover:bg-[#f5f6fa] text-[11px] font-mono font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    >
+                      <ArrowLeft size={14} />
+                      Previous
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReviewIndex(null)}
+                      className="px-4 py-2.5 rounded-xl bg-[#f5f6fb] text-[#00236f] text-[11px] font-mono font-bold hover:bg-[#e9edff]"
+                    >
+                      Back to Results
+                    </button>
+                    {reviewIndex < questions.length - 1 ? (
+                      <button
+                        type="button"
+                        onClick={() => setReviewIndex(reviewIndex + 1)}
+                        className="px-3.5 py-2.5 rounded-xl bg-[#00236f] text-white text-[11px] font-mono font-bold hover:bg-[#173d88] flex items-center gap-1.5"
+                      >
+                        Next
+                        <ArrowRight size={14} />
+                      </button>
+                    ) : (
+                      <div className="w-[88px]" />
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()
 
         ) : (
 
@@ -851,9 +1067,9 @@ export default function CompetencyQuizPage({
                       </h2>
 
                       <p className="text-[11px] text-[#7b8190] mt-1">
-                        Generated for {officerProfile?.name} •{' '}
-                        {officerProfile?.designation} •{' '}
-                        {officerProfile?.cadreId}
+                        Generated for {displayName}
+                        {profile?.designation ? ` • ${profile.designation}` : ''} •{' '}
+                        {player?.username}
                       </p>
 
                     </div>
@@ -930,10 +1146,14 @@ export default function CompetencyQuizPage({
                         : String.fromCharCode(65 + graded.correct_index)
                       : '';
 
+                    const questionIndex = questions.indexOf(q);
+
                     return (
-                      <div
+                      <button
                         key={q.item_id}
-                        className={`p-4 rounded-xl border transition-all ${
+                        type="button"
+                        onClick={() => setReviewIndex(questionIndex)}
+                        className={`text-left p-4 rounded-xl border transition-all hover:shadow-md cursor-pointer ${
                           isCorrect
                             ? 'bg-[#f1fbf9] border-[#b8e4dc]'
                             : 'bg-[#fff8f2] border-[#ffd7bb]'
@@ -998,7 +1218,7 @@ export default function CompetencyQuizPage({
 
                         </div>
 
-                      </div>
+                      </button>
                     );
                   })}
 
@@ -1078,7 +1298,7 @@ export default function CompetencyQuizPage({
 
                   <button
                     type="button"
-                    onClick={() => setIsSubmitted(false)}
+                    onClick={() => setReviewIndex(0)}
                     className="px-4 py-2.5 rounded-xl border border-[#dfe2eb] text-[#555d6d] hover:bg-[#f5f6fa] text-[10px] font-mono font-semibold transition-all cursor-pointer"
                   >
                     Review Answers
@@ -1086,7 +1306,7 @@ export default function CompetencyQuizPage({
 
                   <button
                     type="button"
-                    onClick={onBackToProfile}
+                    onClick={() => router.push('/register')}
                     className="px-4 py-2.5 rounded-xl border border-[#dfe2eb] text-[#555d6d] hover:bg-[#f5f6fa] text-[10px] font-mono font-semibold transition-all cursor-pointer"
                   >
                     Edit Profile / Designation

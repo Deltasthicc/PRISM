@@ -19,6 +19,7 @@ def serialize_profile(profile: LearnerProfile) -> dict:
     return {
         "profile_id": profile.profile_id,
         "player_id": profile.player_id,
+        "full_name": profile.full_name or "",
         "designation": profile.designation,
         "department": profile.department,
         "job_role": profile.job_role,

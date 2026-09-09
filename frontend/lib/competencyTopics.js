@@ -1,9 +1,9 @@
 // Mirrors backend/routes/competency_quiz.py's TOPICS dict -- keep the
 // topic_id keys and curriculum_slug values in sync if that file changes.
-// This is the single source of truth both CreateProfilePage (specialization
-// picker) and CompetencyQuizPage (question fetch/scoring) use, so a chosen
-// specialization always maps to a real backend topic with real questions --
-// never a label the quiz has no content for.
+// CompetencyQuizPage uses this to pick which topics to fetch questions for,
+// based on the learner's chosen curriculum (LearnerProfile.target_domains),
+// so a chosen specialization always maps to a real backend topic with real
+// questions -- never a label the quiz has no content for.
 export const COMPETENCY_TOPICS = [
   {
     id: 'statistical_foundations',
@@ -118,4 +118,3 @@ export const COMPETENCY_TOPICS = [
 ];
 
 export const TOPIC_BY_ID = Object.fromEntries(COMPETENCY_TOPICS.map((topic) => [topic.id, topic]));
-export const TOPIC_BY_LABEL = Object.fromEntries(COMPETENCY_TOPICS.map((topic) => [topic.label, topic]));

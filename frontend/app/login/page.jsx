@@ -1,348 +1,95 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
-import CreateProfilePage from '../CreateProfilePage/CreateProfilePage';
-import CompetencyQuizPage from '../CompetencyQuizPage/CompetencyQuizPage';
-import { COMPETENCY_TOPICS } from '@/lib/competencyTopics';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Panel from '@/components/ui/Panel';
 
+// Just the login form. A username that doesn't exist yet routes to
+// /register instead of silently creating an account here -- login and
+// register are genuinely different backend operations (GET .../by-username
+// vs POST .../create, see lib/api/client.js's `auth` export) and now stay
+// separate routes instead of one state machine that also rendered profile
+// setup and the baseline quiz in-place.
 export default function LoginPage() {
   const router = useRouter();
-  const authLogin = useAuthStore((s) => s.login);
-  const authRegister = useAuthStore((s) => s.register);
-
-  // Demo flow: login -> profile setup -> competency quiz.
-  const [currentStep, setCurrentStep] = useState('login');
-
-  // Stores the profile throughout the workflow
-  const [officerProfile, setOfficerProfile] = useState(null);
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
+  const { t } = useLanguage();
+  const [username, setUsername] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
 
-  // Demo login: this is a placeholder page with no real credential check --
-  // any non-empty email/password combination is accepted, matching this
-  // project's actual auth model right now (backend DISABLE_AUTH grants every
-  // request full access; see routes/authorization.py). What *does* need to
-  // be real is the player_id behind it: the email is used as a stable
-  // backend username so /stats, /academy and the competency quiz below all
-  // have a genuine player record to read and write, instead of the previous
-  // flow which only ever set local React state and never touched the real
-  // auth store -- that mismatch (useRequireAuth() always seeing no player)
-  // was the actual cause of the login loop.
-  async function resolveRealPlayer(usernameSeed) {
-    const username = usernameSeed.trim().toLowerCase();
-    let ok = await authLogin(username);
-    if (!ok) ok = await authRegister(username);
-    return ok ? useAuthStore.getState().player : null;
-  }
-
-  function profileEmail(input, username) {
-    return input.includes('@') ? input : `${username}@demo.prism.local`;
-  }
-
-  /*
-   * LOGIN
-   */
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoginError('');
-
-    if (!email.trim()) {
-      setLoginError('Please enter any demo username or email.');
-      return;
-    }
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setFormError('');
+    const trimmed = username.trim().toLowerCase();
+    if (!trimmed) return;
 
     setSubmitting(true);
-    const realPlayer = await resolveRealPlayer(email);
+    const ok = await useAuthStore.getState().login(trimmed);
     setSubmitting(false);
 
-    if (!realPlayer) {
-      setLoginError('Could not reach the backend. Please try again.');
+    if (ok) {
+      router.push('/academy');
       return;
     }
 
-    const loggedInProfile = {
-      name: 'Dr. Rajesh Sharma',
-      email: profileEmail(email.trim(), realPlayer.username),
-      player_id: realPlayer.player_id,
-      username: realPlayer.username,
-      cadreId: 'IND-88219',
-      designation: 'Assistant Director',
-      division: 'CSO Analytics & National Accounts',
-      cadreStream: 'Indian Statistical Service (ISS)',
-      cadre: 'Cadre Band 3',
-      yearsOfService: '5-10 years',
-      targetBand: 'Director — National Accounts (Band 4)',
-      phone: '+91 98101 23456',
-      specialization: COMPETENCY_TOPICS.slice(0, 3).map((topic) => topic.label),
-      avatarInitials: 'RS',
-      isRegistered: false,
-    };
-
-    setOfficerProfile(loggedInProfile);
-
-    // After login → Profile Setup
-    setCurrentStep('profile');
-  };
-
-  /*
-   * PROFILE SETUP → BASELINE QUIZ
-   */
-  const handleProfileComplete = (profile) => {
-    setOfficerProfile(profile);
-
-    // Immediately move to competency baseline quiz
-    setCurrentStep('quiz');
-  };
-
-  /*
-   * QUIZ COMPLETE → DASHBOARD
-   */
-  const handleQuizComplete = (completedProfile) => {
-    setOfficerProfile(completedProfile);
-
-    /*
-     * The quiz component already adds:
-     *
-     * quizResults: {
-     *   score,
-     *   total,
-     *   percentage,
-     *   congruence,
-     *   dimensionLevels,
-     *   testedAt
-     * }
-     *
-     * Now send the completed profile to the dashboard.
-     */
-
-    // Optional: persist the completed profile
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(
-        'officerProfile',
-        JSON.stringify(completedProfile)
-      );
+    const errorCode = useAuthStore.getState().errorCode;
+    if (errorCode === 404) {
+      router.push(`/register?username=${encodeURIComponent(trimmed)}`);
+      return;
     }
-
-    router.push('/stats');
-  };
-
-  /*
-   * ============================================================
-   * STEP 2 — PROFILE SETUP
-   * ============================================================
-   */
-  if (currentStep === 'profile') {
-    return (
-      <CreateProfilePage
-        initialProfile={officerProfile}
-        onResolvePlayer={resolveRealPlayer}
-        onBackToLogin={() => {
-          setCurrentStep('login');
-        }}
-        onSaveAndProceedToQuiz={handleProfileComplete}
-      />
-    );
+    setFormError(t('login.genericError') || 'Could not sign in. Please try again.');
   }
 
-  /*
-   * ============================================================
-   * STEP 3 — COMPETENCY BASELINE QUIZ
-   * ============================================================
-   */
-  if (currentStep === 'quiz') {
-    return (
-      <CompetencyQuizPage
-        officerProfile={officerProfile}
-        onBackToProfile={() => {
-          setCurrentStep('profile');
-        }}
-        onBackToLogin={() => {
-          setCurrentStep('login');
-        }}
-        onCompleteQuizAndLaunchDashboard={
-          handleQuizComplete
-        }
-      />
-    );
-  }
-
-  /*
-   * ============================================================
-   * STEP 1 — LOGIN
-   * ============================================================
-   */
   return (
-    <main className="min-h-screen bg-[#f7f8fc] px-4 py-8 sm:px-6">
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+    <div className="flex flex-col items-center pt-16 gap-6 px-4 pb-16">
+      <LanguageSwitcher className="self-end mr-4 sm:mr-0" />
 
-        <div className="w-full max-w-md">
-
-          {/* LOGIN CARD */}
-          <div className="rounded-2xl border border-[#dfe2eb] bg-white p-6 shadow-sm sm:p-8">
-
-            {/* Header */}
-            <div className="mb-7">
-
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#757987]">
-                MoSPI Skill Intelligence
-              </p>
-
-              <h1 className="text-2xl font-bold tracking-tight text-[#00236f]">
-                Officer Login
-              </h1>
-
-              <p className="mt-2 text-xs leading-5 text-[#707382]">
-                Sign in to access your competency profile,
-                baseline assessment, and personalized learning
-                pathway.
-              </p>
-
-            </div>
-
-            {/* Error */}
-            {loginError && (
-              <div className="mb-5 rounded-xl border border-[#ffc8c3] bg-[#fff4f2] p-3 text-xs text-[#93000a]">
-                {loginError}
-              </div>
-            )}
-
-            {/* Login Form */}
-            <form
-              onSubmit={handleLogin}
-              className="space-y-5"
-            >
-
-              {/* Email */}
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-1.5 block text-[10px] font-bold text-[#343846]"
-                >
-                  Demo Username or Email
-                </label>
-
-                <input
-                  id="email"
-                  type="text"
-                  value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
-                  placeholder="rajesh.sharma@mospi.gov.in"
-                  className="w-full rounded-xl border border-[#dfe2eb] bg-[#fafbfc] px-3 py-3 text-xs text-[#202536] outline-none transition hover:border-[#cdd2df] hover:bg-white focus:border-[#00236f] focus:bg-white focus:ring-4 focus:ring-[#00236f]/5"
-                  required
-                />
-              </div>
-
-              {/* Password */}
-              <div>
-                <div className="mb-1.5 flex items-center justify-between">
-
-                  <label
-                    htmlFor="password"
-                    className="text-[10px] font-bold text-[#343846]"
-                  >
-                    Demo Password (optional)
-                  </label>
-
-                </div>
-
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) =>
-                    setPassword(e.target.value)
-                  }
-                  placeholder="Enter your password"
-                  className="w-full rounded-xl border border-[#dfe2eb] bg-[#fafbfc] px-3 py-3 text-xs text-[#202536] outline-none transition hover:border-[#cdd2df] hover:bg-white focus:border-[#00236f] focus:bg-white focus:ring-4 focus:ring-[#00236f]/5"
-                />
-              </div>
-
-              {/* Login */}
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full rounded-xl bg-[#00236f] px-5 py-3 text-xs font-bold text-white shadow-[0_6px_18px_rgba(0,35,111,0.18)] transition hover:bg-[#00358f] disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {submitting ? 'Signing in…' : 'Sign In'}
-              </button>
-
-            </form>
-
-            {/* Divider */}
-            <div className="my-6 flex items-center gap-3">
-              <div className="h-px flex-1 bg-[#edf0f5]" />
-              <span className="text-[9px] font-semibold uppercase tracking-wide text-[#999ca8]">
-                New officer
-              </span>
-              <div className="h-px flex-1 bg-[#edf0f5]" />
-            </div>
-
-            {/* Profile Setup */}
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={async () => {
-                /*
-                 * This shortcut skips the login form entirely, but it must
-                 * still resolve to a real backend player -- same reasoning
-                 * as handleLogin above. Uses whatever email the user may
-                 * have already typed, or a generated demo identity otherwise.
-                 */
-                if (!officerProfile) {
-                  setSubmitting(true);
-                  const seed = email.trim() || `demo-officer-${Date.now()}`;
-                  const realPlayer = await resolveRealPlayer(seed);
-                  setSubmitting(false);
-                  if (!realPlayer) {
-                    setLoginError('Could not reach the backend. Please try again.');
-                    return;
-                  }
-                  setOfficerProfile({
-                    name: 'Dr. Rajesh Sharma',
-                    email: profileEmail(seed, realPlayer.username),
-                    player_id: realPlayer.player_id,
-                    username: realPlayer.username,
-                    cadreId: 'IND-88219',
-                    designation: 'Assistant Director',
-                    division:
-                      'CSO Analytics & National Accounts',
-                    cadreStream:
-                      'Indian Statistical Service (ISS)',
-                    cadre: 'Cadre Band 3',
-                    yearsOfService: '5-10 years',
-                    targetBand:
-                      'Director — National Accounts (Band 4)',
-                    phone: '+91 98101 23456',
-                    specialization: [COMPETENCY_TOPICS[0].label],
-                    avatarInitials: 'RS',
-                    isRegistered: false,
-                  });
-                }
-
-                setCurrentStep('profile');
-              }}
-              className="w-full rounded-xl border border-[#dfe2eb] bg-white px-5 py-3 text-xs font-semibold text-[#00236f] transition hover:border-[#bfc7df] hover:bg-[#f8f9ff] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Profile Setup
-            </button>
-
-          </div>
-
-          {/* Footer text */}
-          <p className="mt-5 text-center text-[9px] leading-4 text-[#858895]">
-            Demo access and competency assessment workflow
-          </p>
-
-        </div>
+      <div className="flex flex-col items-center gap-2">
+        <Badge tone="accent">{t('brand.name')}</Badge>
+        <span className="font-sans text-xl font-bold text-[#00236f] tracking-tight">{t('brand.name')}</span>
+        <span className="font-mono text-[11px] text-[#757682] uppercase tracking-wider text-center">
+          {t('brand.tagline')}
+        </span>
       </div>
-    </main>
+
+      <Panel className="w-full max-w-sm p-6">
+        <h1 className="font-sans text-lg font-bold text-[#00236f] mb-1 text-center">{t('login.heading')}</h1>
+        <p className="font-sans text-sm text-[#757682] mb-6 text-center">{t('login.subtitle')}</p>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <label className="flex flex-col gap-1.5">
+            <span className="font-sans text-xs font-semibold text-[#444651]">{t('login.usernameLabel')}</span>
+            <input
+              id="username"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              required
+              autoComplete="username"
+              autoFocus
+              className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f]"
+            />
+          </label>
+          {formError && (
+            <p className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2">
+              {formError}
+            </p>
+          )}
+          <Button type="submit" disabled={submitting} className="mt-2 w-full">
+            {submitting ? t('login.submitting') : t('login.submit')}
+          </Button>
+        </form>
+        <p className="font-sans text-sm text-[#757682] text-center mt-5">
+          {t('login.newHere')}{' '}
+          <Link href="/register" className="text-[#00236f] font-medium hover:underline">
+            {t('login.createAccount')}
+          </Link>
+        </p>
+      </Panel>
+    </div>
   );
 }

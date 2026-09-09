@@ -15,6 +15,9 @@ class DsaProblemOut(BaseModel):
     starter_code_by_language: dict[str, str]
     test_case_count: int
     sample_input: list
+    constraints: list[str]
+    examples: list[dict]
+    solution_outline: str
 
 
 class DsaProblemsResponse(BaseModel):

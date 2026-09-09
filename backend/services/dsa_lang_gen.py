@@ -417,6 +417,11 @@ JsonValue __wrap(const vector<long long>& v) {
     for (auto x : v) a.push_back(JsonValue::mkNum(x));
     return JsonValue::mkArr(a);
 }
+JsonValue __wrap(const vector<vector<long long>>& matrix) {
+    vector<JsonValue> rows;
+    for (const auto& row : matrix) rows.push_back(__wrap(row));
+    return JsonValue::mkArr(rows);
+}
 """
 
 CPP_MAIN_TEMPLATE = """
@@ -611,6 +616,11 @@ class Program {
     static object __wrap(System.Collections.Generic.List<long?> v) {
         var outp = new System.Collections.Generic.List<object>();
         foreach (var x in v) outp.Add(x.HasValue ? (object)x.Value : null);
+        return outp;
+    }
+    static object __wrap(System.Collections.Generic.List<System.Collections.Generic.List<long>> matrix) {
+        var outp = new System.Collections.Generic.List<object>();
+        foreach (var row in matrix) outp.Add(__wrap(row));
         return outp;
     }
 

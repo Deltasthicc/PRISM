@@ -24,7 +24,7 @@ export const TRANSLATIONS = {
       signOut: 'Sign out',
       questModeOn: 'Quest Mode: On',
       questModeOff: 'Quest Mode: Off',
-      questModeToggleTitle: 'Optional gamified practice layer (dungeon, XP, guild raids) -- off by default.',
+      questModeToggleTitle: 'Optional gamified practice layer (dungeon rooms, XP, AI-judged combat) -- off by default.',
     },
     login: {
       heading: 'Sign in',
@@ -323,7 +323,7 @@ export const TRANSLATIONS = {
       signOut: 'साइन आउट',
       questModeOn: 'क्वेस्ट मोड: चालू',
       questModeOff: 'क्वेस्ट मोड: बंद',
-      questModeToggleTitle: 'वैकल्पिक गेमिफाइड अभ्यास स्तर (डंजियन, XP, गिल्ड रेड) — डिफ़ॉल्ट रूप से बंद।',
+      questModeToggleTitle: 'वैकल्पिक गेमिफाइड अभ्यास स्तर (डंजियन रूम, XP, AI-न्याय युद्ध) — डिफ़ॉल्ट रूप से बंद।',
     },
     login: {
       heading: 'साइन इन करें',

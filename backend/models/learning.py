@@ -4,10 +4,19 @@ SQLAlchemy models -- the persistence layer for the cross-domain skill
 intelligence features (see services/curricula.py, learning_engine.py,
 quiz_generator.py, and routes/learning.py).
 
-These are brand-new tables, so plain Base.metadata.create_all() in main.py's
-lifespan is enough; unlike the Phase 2/3 columns added to `players` in
-db/database.py's ensure_columns() calls, nothing here alters an existing
-table.
+These were brand-new tables when this module was first written, so plain
+Base.metadata.create_all() in main.py's lifespan was enough on its own.
+That stopped being true the moment `full_name` was added to the
+already-existing `learner_profiles` table: create_all() never alters an
+existing table's columns, so any local SQLite app.db created before that
+change is permanently missing the column until main.py's lifespan also
+calls db/database.py's ensure_columns("learner_profiles", ...) for it --
+confirmed as a real, reproduced bug (every learner_profiles read 500ing
+with "no such column: learner_profiles.full_name" against a pre-existing
+demo database). Adding a column to any model here now requires the
+matching ensure_columns() call in main.py, the same discipline the
+Phase 2/3 `players` columns already follow -- this docstring's original
+"nothing here alters an existing table" claim does not hold in general.
 """
 from __future__ import annotations
 

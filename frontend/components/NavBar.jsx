@@ -42,6 +42,7 @@ export default function NavBar() {
   // on the learner having picked dsa-fundamentals, above).
   const questModeOn = player?.preferred_mode === 'quest';
   const navTabs = [
+    { href: '/stats', label: t('nav.competencyGapAnalysis'), hasDot: false },
     { href: '/dungeon', label: t('nav.prerequisitePathways'), hasDot: false },
     {
       href: '/quiz',

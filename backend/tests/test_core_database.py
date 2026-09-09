@@ -209,9 +209,41 @@ def test_ensure_columns_is_a_no_op_on_postgresql(monkeypatch, tmp_path):
     sqlite_engine.dispose()
 
 
+def test_ensure_columns_heals_a_pre_existing_learner_profiles_table(monkeypatch, tmp_path):
+    """Reproduces a real, live bug: a local app.db created before `full_name`
+    was added to LearnerProfile (models/learning.py) has a learner_profiles
+    table with no such column, and Base.metadata.create_all() never alters
+    an existing table -- so every read of that table 500'd with
+    "no such column: learner_profiles.full_name" until main.py's lifespan
+    also called ensure_columns() for it. This pins the fix at the same
+    level main.py exercises it: a table missing the column, healed, then a
+    real SELECT * (matching what the ORM issues) succeeding afterward."""
+    sqlite_engine = create_engine(f"sqlite:///{(tmp_path / 'pre_existing_profiles.db').as_posix()}")
+    with sqlite_engine.begin() as connection:
+        connection.execute(text(
+            "CREATE TABLE learner_profiles (profile_id VARCHAR PRIMARY KEY, player_id VARCHAR)"
+        ))
+
+    monkeypatch.setattr(database_module, "_is_sqlite", True)
+    monkeypatch.setattr(database_module, "engine", sqlite_engine)
+
+    with sqlite_engine.connect() as connection:
+        with pytest.raises(Exception, match="no such column"):
+            connection.execute(text("SELECT full_name FROM learner_profiles"))
+
+    ensure_columns("learner_profiles", [("full_name", "TEXT DEFAULT ''")])
+
+    with sqlite_engine.connect() as connection:
+        # Must not raise -- the exact query shape that was 500ing in production.
+        connection.execute(text("SELECT * FROM learner_profiles WHERE player_id = 'x'"))
+        columns = {row[1] for row in connection.execute(text("PRAGMA table_info(learner_profiles)"))}
+    assert "full_name" in columns
+    sqlite_engine.dispose()
+
+
 # --- ensure_columns() injection hardening (Package 6) ---
 #
-# All four current call sites (main.py's lifespan) pass hardcoded literals,
+# All current call sites (main.py's lifespan) pass hardcoded literals,
 # so none of these were reachable with attacker-controlled input -- these
 # tests exist because the raw f-string interpolation of `table`/`name`/
 # `type_and_default` is exactly the shape a SAST scanner flags regardless,

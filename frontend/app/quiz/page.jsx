@@ -1,12 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { FileQuestion } from 'lucide-react';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { learning } from '@/lib/api/client';
-import QuizGeneratorPanel from '@/components/QuizGeneratorPanel';
+import QuizGeneratorPanel, { QuizPreview } from '@/components/QuizGeneratorPanel';
+import FixedQuizPanel from '@/components/FixedQuizPanel';
 import Badge from '@/components/ui/Badge';
 import Panel from '@/components/ui/Panel';
 
@@ -22,6 +24,9 @@ export default function SourceQuizGeneratorPage() {
   const { ready } = useRequireAuth();
   const player = useAuthStore((s) => s.player);
   const { t } = useLanguage();
+  const [mode, setMode] = useState('upload');
+  const [openQuiz, setOpenQuiz] = useState(null);
+  const [openError, setOpenError] = useState('');
 
   const {
     data: historyData,
@@ -33,6 +38,16 @@ export default function SourceQuizGeneratorPage() {
     queryFn: () => learning.listQuizzes(player.player_id),
     enabled: ready && !!player,
   });
+
+  async function openFromHistory(quizId) {
+    setOpenError('');
+    try {
+      const quiz = await learning.getQuiz(quizId, player.player_id);
+      setOpenQuiz(quiz);
+    } catch (cause) {
+      setOpenError(cause.message);
+    }
+  }
 
   if (!ready) return null;
 
@@ -46,9 +61,37 @@ export default function SourceQuizGeneratorPage() {
         <p className="font-sans text-sm text-[#757682] mt-2 max-w-2xl">{t('quizGeneratorPage.subtitle')}</p>
       </div>
 
-      <Panel variant="accent">
-        <QuizGeneratorPanel onGenerated={() => refetchHistory()} />
-      </Panel>
+      <div className="flex items-center gap-1 bg-[#f2f3ff] rounded-lg p-1 self-start">
+        <button
+          type="button"
+          onClick={() => setMode('upload')}
+          className={`font-mono text-[11px] uppercase tracking-wider px-3 py-2 rounded-md ${mode === 'upload' ? 'bg-white text-[#00236f] shadow-sm' : 'text-[#757682]'}`}
+        >
+          {t('quizGeneratorPage.modeUpload')}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('fixed')}
+          className={`font-mono text-[11px] uppercase tracking-wider px-3 py-2 rounded-md ${mode === 'fixed' ? 'bg-white text-[#00236f] shadow-sm' : 'text-[#757682]'}`}
+        >
+          {t('quizGeneratorPage.modeFixed')}
+        </button>
+      </div>
+
+      {mode === 'upload' ? (
+        <Panel variant="accent">
+          <QuizGeneratorPanel onGenerated={() => refetchHistory()} />
+        </Panel>
+      ) : (
+        <FixedQuizPanel />
+      )}
+
+      {openError && (
+        <p className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2">
+          {openError}
+        </p>
+      )}
+      {openQuiz && <QuizPreview quiz={openQuiz} onScored={() => refetchHistory()} />}
 
       <Panel>
         <h2 className="font-sans text-base font-bold text-[#131b2e] mb-3">{t('quizGeneratorPage.historyHeading')}</h2>
@@ -61,18 +104,26 @@ export default function SourceQuizGeneratorPage() {
         ) : (
           <ul className="flex flex-col gap-2">
             {historyData.quizzes.map((item) => (
-              <li
-                key={item.quiz_id || item.id || `${item.title}-${item.created_at}`}
-                className="flex flex-wrap items-center justify-between gap-2 border border-[#c5c5d3]/30 rounded-lg px-3 py-2"
-              >
-                <span className="font-sans text-sm font-semibold text-[#131b2e]">{item.title}</span>
-                <div className="flex items-center gap-2">
-                  <Badge tone="default">{item.difficulty}</Badge>
-                  <Badge tone="accent">{item.generation_mode}</Badge>
-                  <span className="font-mono text-[10px] text-[#757682]">
-                    {item.question_count} {t('quizGeneratorPage.questionsSuffix')}
-                  </span>
-                </div>
+              <li key={item.quiz_id || item.id || `${item.title}-${item.created_at}`}>
+                <button
+                  type="button"
+                  onClick={() => item.quiz_id && openFromHistory(item.quiz_id)}
+                  className="w-full flex flex-wrap items-center justify-between gap-2 border border-[#c5c5d3]/30 rounded-lg px-3 py-2 text-left hover:border-[#00236f]/30"
+                >
+                  <span className="font-sans text-sm font-semibold text-[#131b2e]">{item.title}</span>
+                  <div className="flex items-center gap-2">
+                    <Badge tone="default">{item.difficulty}</Badge>
+                    <Badge tone="accent">{item.generation_mode}</Badge>
+                    <span className="font-mono text-[10px] text-[#757682]">
+                      {item.question_count} {t('quizGeneratorPage.questionsSuffix')}
+                    </span>
+                    {item.best_score != null && (
+                      <Badge tone="success">
+                        {t('quizGeneratorPage.bestScore')}: {item.best_score}%
+                      </Badge>
+                    )}
+                  </div>
+                </button>
               </li>
             ))}
           </ul>

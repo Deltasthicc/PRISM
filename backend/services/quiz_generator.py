@@ -14,7 +14,41 @@ import re
 
 
 VALID_BLOOM_LEVELS = {"remember", "understand", "apply", "analyse", "evaluate"}
+VALID_QUESTION_DIFFICULTIES = {"easy", "medium", "hard"}
 WORD_RE = re.compile(r"\b[A-Za-z][A-Za-z-]{4,}\b")
+
+
+def _estimate_difficulty(sentence: str, answer: str) -> str:
+    """A deterministic, explainable easy/medium/hard estimate for one
+    fill-in-the-blank question, used only by the extractive fallback (no
+    model available there to judge difficulty itself -- the Gemini path
+    below asks the model to self-report `difficulty` per question instead,
+    validated the same way `bloom_level` already is).
+
+    The two signals available without a language model are how long/salient
+    the blanked-out term is and how long/clause-heavy its carrier sentence
+    is -- both genuinely correlate with how hard the fill-in-the-blank is to
+    answer, so this is a real (if simple) heuristic, not an arbitrary label.
+    """
+    score = 0
+    word_len = len(answer)
+    if word_len >= 10:
+        score += 2
+    elif word_len >= 7:
+        score += 1
+    sentence_len = len(sentence)
+    if sentence_len >= 220:
+        score += 2
+    elif sentence_len >= 140:
+        score += 1
+    clause_breaks = sentence.count(",") + sentence.count(";") + sentence.count(":")
+    if clause_breaks >= 2:
+        score += 1
+    if score >= 4:
+        return "hard"
+    if score >= 2:
+        return "medium"
+    return "easy"
 
 
 def _sentences(text: str) -> list[str]:
@@ -54,6 +88,9 @@ def _validate_questions(raw_questions, source_text: str, requested_count: int) -
         bloom_level = str(item.get("bloom_level", "understand")).lower()
         if bloom_level not in VALID_BLOOM_LEVELS:
             bloom_level = "understand"
+        question_difficulty = str(item.get("difficulty", "medium")).lower()
+        if question_difficulty not in VALID_QUESTION_DIFFICULTIES:
+            question_difficulty = "medium"
         validated.append(
             {
                 "question": str(item["question"]).strip(),
@@ -63,6 +100,7 @@ def _validate_questions(raw_questions, source_text: str, requested_count: int) -
                 "source_excerpt": excerpt,
                 "competency": str(item.get("competency", "Source comprehension")).strip(),
                 "bloom_level": bloom_level,
+                "difficulty": question_difficulty,
             }
         )
         if len(validated) == requested_count:
@@ -112,6 +150,7 @@ def _fallback_questions(source_text: str, count: int) -> list[dict]:
                 "source_excerpt": sentence,
                 "competency": "Source comprehension",
                 "bloom_level": "understand",
+                "difficulty": _estimate_difficulty(sentence, answer),
             }
         )
         used_answers.add(answer.lower())
@@ -151,9 +190,11 @@ Rules:
 - Do not use facts that are absent from the source.
 - Distractors must be plausible but contradicted or unsupported by the quoted source.
 - Include a short explanation, competency, and Bloom level (remember, understand, apply, analyse, evaluate).
+- Also include a per-question `difficulty` (easy, medium, or hard) based on how much reasoning the question demands
+  from the source, independent of the overall quiz difficulty setting above -- a quiz can mix difficulties.
 
 Schema per item:
-{{"question":"...","options":["...","...","...","..."],"answer_index":0,"explanation":"...","source_excerpt":"...","competency":"...","bloom_level":"understand"}}
+{{"question":"...","options":["...","...","...","..."],"answer_index":0,"explanation":"...","source_excerpt":"...","competency":"...","bloom_level":"understand","difficulty":"medium"}}
 
 SOURCE:
 {source_text[:80_000]}

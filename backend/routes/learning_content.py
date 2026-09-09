@@ -1,6 +1,7 @@
 """Content and quiz routes."""
 
 import hashlib
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
@@ -9,10 +10,17 @@ from db.database import get_db
 from models.learning import GeneratedQuiz, LearningMaterial
 from routes.authorization import require_own_player, require_own_player_dependency, require_permission_dependency
 from routes.learning_common import player_or_404
-from schemas.learning import QuizResponse
+from schemas.learning import (
+    DifficultyBreakdown,
+    QuizAnswerResult,
+    QuizResponse,
+    QuizSubmitRequest,
+    QuizSubmitResponse,
+)
 from security.rbac import BoundPrincipal, Permission
 from services.content_ingestion import ContentExtractionError, MAX_UPLOAD_BYTES, extract_text
 from services.quiz_generator import generate_quiz as _service_generate_quiz
+from services.quiz_scoring import DIFFICULTY_WEIGHT, pace_label, time_factor
 
 router = APIRouter(prefix="/learning", tags=["Learning Content"])
 
@@ -92,6 +100,138 @@ async def create_quiz(
     )
 
 
+@router.get("/quiz/detail/{quiz_id}", response_model=QuizResponse)
+async def get_quiz(
+    quiz_id: str,
+    player_id: str = Query(...),
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_own_player_dependency(Permission.PROFILE_SELF_READ)
+    ),
+):
+    """Fetch one previously generated quiz's full content -- used by the
+    frontend to re-open a quiz from history and take/retake it, since the
+    list endpoint below only returns lightweight metadata."""
+    player_or_404(db, player_id)
+    quiz = db.query(GeneratedQuiz).filter(GeneratedQuiz.quiz_id == quiz_id).first()
+    if not quiz:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    if quiz.player_id != player_id:
+        raise HTTPException(status_code=403, detail="This quiz belongs to a different player")
+    return QuizResponse(
+        quiz_id=quiz.quiz_id,
+        material_id=quiz.material_id,
+        title=quiz.title,
+        difficulty=quiz.difficulty,
+        language=quiz.language,
+        generation_mode=quiz.generation_mode,
+        questions=quiz.questions,
+    )
+
+
+@router.post("/quiz/{quiz_id}/submit", response_model=QuizSubmitResponse)
+async def submit_quiz(
+    quiz_id: str,
+    body: QuizSubmitRequest,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(
+        require_permission_dependency(Permission.PRACTICE_SELF_WRITE)
+    ),
+):
+    """Grade a real attempt at a previously generated quiz and return a
+    time+difficulty-weighted score -- see services/quiz_scoring.py and
+    schemas.learning.QuizSubmitResponse's docstring for why this
+    deliberately does NOT touch AccuracyHistory/the real competency vector:
+    a generated quiz's per-question `competency` is free text (from the
+    model or the extractive fallback), not a real curriculum competency_id,
+    so treating it as curriculum evidence would be exactly the kind of
+    fabrication this project has repeatedly had to fix elsewhere."""
+    require_own_player(principal, body.player_id)
+    player_or_404(db, body.player_id)
+
+    quiz = db.query(GeneratedQuiz).filter(GeneratedQuiz.quiz_id == quiz_id).first()
+    if not quiz:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    if quiz.player_id != body.player_id:
+        raise HTTPException(status_code=403, detail="This quiz belongs to a different player")
+
+    questions = quiz.questions or []
+    seen_indices = set()
+    results: list[QuizAnswerResult] = []
+    totals_by_difficulty: dict[str, dict] = {}
+    weighted_earned = 0.0
+    weighted_possible = 0.0
+
+    for answer in body.answers:
+        if answer.question_index in seen_indices or not 0 <= answer.question_index < len(questions):
+            continue
+        seen_indices.add(answer.question_index)
+        question = questions[answer.question_index]
+        difficulty = str(question.get("difficulty", "medium"))
+        if difficulty not in DIFFICULTY_WEIGHT:
+            difficulty = "medium"
+        correct = answer.selected_index is not None and answer.selected_index == question.get("answer_index")
+        factor = time_factor(difficulty, answer.time_taken_ms)
+        weight = DIFFICULTY_WEIGHT[difficulty]
+        weighted_possible += weight
+        if correct:
+            weighted_earned += weight * factor
+
+        bucket = totals_by_difficulty.setdefault(
+            difficulty, {"count": 0, "correct": 0, "time_factors": []}
+        )
+        bucket["count"] += 1
+        bucket["correct"] += 1 if correct else 0
+        bucket["time_factors"].append(factor)
+
+        results.append(
+            QuizAnswerResult(
+                question_index=answer.question_index,
+                correct=correct,
+                correct_index=question.get("answer_index", -1),
+                selected_index=answer.selected_index,
+                difficulty=difficulty,
+                time_factor=round(factor, 3),
+                pace=pace_label(factor) if answer.time_taken_ms else None,
+            )
+        )
+
+    if not results:
+        raise HTTPException(status_code=422, detail="No valid answers were submitted for this quiz")
+
+    results.sort(key=lambda item: item.question_index)
+    correct_count = sum(1 for item in results if item.correct)
+    accuracy = correct_count / len(results)
+    weighted_score = round((weighted_earned / weighted_possible) * 100, 1) if weighted_possible else 0.0
+
+    by_difficulty = {
+        difficulty: DifficultyBreakdown(
+            count=bucket["count"],
+            correct=bucket["correct"],
+            accuracy=round(bucket["correct"] / bucket["count"], 3) if bucket["count"] else 0.0,
+            avg_time_factor=round(sum(bucket["time_factors"]) / len(bucket["time_factors"]), 3)
+            if bucket["time_factors"]
+            else 1.0,
+        )
+        for difficulty, bucket in totals_by_difficulty.items()
+    }
+
+    if quiz.best_score is None or weighted_score > quiz.best_score:
+        quiz.best_score = weighted_score
+    quiz.last_attempted_at = datetime.now(timezone.utc)
+    db.commit()
+
+    return QuizSubmitResponse(
+        quiz_id=quiz.quiz_id,
+        total_questions=len(results),
+        correct_count=correct_count,
+        accuracy=round(accuracy, 3),
+        weighted_score=weighted_score,
+        by_difficulty=by_difficulty,
+        results=results,
+    )
+
+
 @router.get("/quiz/{player_id}")
 async def list_quizzes(
     player_id: str,
@@ -119,6 +259,8 @@ async def list_quizzes(
                 "question_count": len(quiz.questions or []),
                 "generation_mode": quiz.generation_mode,
                 "created_at": quiz.created_at.isoformat() if quiz.created_at else None,
+                "best_score": quiz.best_score,
+                "last_attempted_at": quiz.last_attempted_at.isoformat() if quiz.last_attempted_at else None,
             }
             for quiz in quizzes
         ]

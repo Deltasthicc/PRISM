@@ -19,7 +19,8 @@ from models.player import Player
 from routes.authorization import require_own_player, require_permission_dependency
 from schemas.dsa_sandbox import DsaProblemsResponse, DsaSubmitRequest, DsaSubmitResponse
 from security.rbac import BoundPrincipal, Permission
-from services.dsa_problems import HARNESS, PROBLEMS, PROBLEMS_BY_ID, public_problem
+from services import dsa_lang_gen
+from services.dsa_problems import PROBLEMS, PROBLEMS_BY_ID, public_problem
 from services.game_logic import update_accuracy_history
 from services.judge_client import JudgeUnavailableError, run_test_case
 
@@ -31,7 +32,10 @@ _TERMINAL_STATUSES = {"wrong_answer", "runtime_error", "compile_error", "time_li
 @router.get("/problems", response_model=DsaProblemsResponse)
 async def list_problems():
     """Public catalogue -- same convention as GET /learning/curricula."""
-    return {"problems": [public_problem(p) for p in PROBLEMS]}
+    return {
+        "problems": [public_problem(p) for p in PROBLEMS],
+        "languages": {key: meta["label"] for key, meta in dsa_lang_gen.LANGUAGES.items()},
+    }
 
 
 @router.post("/submit", response_model=DsaSubmitResponse)
@@ -57,7 +61,8 @@ async def submit_solution(
     if not problem:
         raise HTTPException(status_code=404, detail="Problem not found")
 
-    full_source = body.code + HARNESS
+    language = body.language if body.language in dsa_lang_gen.LANGUAGES else dsa_lang_gen.DEFAULT_LANGUAGE
+    full_source = dsa_lang_gen.full_source(language, body.code, problem)
     passed_count = 0
     first_failure = None
     final_status = "accepted"
@@ -65,7 +70,7 @@ async def submit_solution(
     for index, test_case in enumerate(problem["test_cases"]):
         try:
             result = await run_test_case(
-                full_source, test_case["stdin"], test_case["expected_output"]
+                full_source, test_case["stdin"], test_case["expected_output"], language=language
             )
         except JudgeUnavailableError:
             raise HTTPException(
@@ -101,6 +106,7 @@ async def submit_solution(
         competency_id=problem["competency_id"],
         difficulty=problem["difficulty"],
         code=body.code,
+        language=language,
         status=final_status,
         passed_count=passed_count,
         total_count=total_count,

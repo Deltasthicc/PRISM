@@ -21,7 +21,8 @@ export default function DsaSandboxPage() {
   const { t } = useLanguage();
 
   const [selectedProblemId, setSelectedProblemId] = useState(null);
-  const [codeByProblem, setCodeByProblem] = useState({});
+  const [language, setLanguage] = useState('python');
+  const [codeByProblemAndLanguage, setCodeByProblemAndLanguage] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
   const [submitError, setSubmitError] = useState('');
@@ -47,13 +48,19 @@ export default function DsaSandboxPage() {
   });
 
   const problems = useMemo(() => problemsData?.problems || [], [problemsData]);
+  const languages = problemsData?.languages || { python: 'Python' };
 
   useEffect(() => {
     if (!selectedProblemId && problems.length) setSelectedProblemId(problems[0].id);
   }, [problems, selectedProblemId]);
 
   const selected = problems.find((p) => p.id === selectedProblemId) || null;
-  const code = selected ? codeByProblem[selected.id] ?? selected.starter_code : '';
+  const codeKey = selected ? `${selected.id}::${language}` : null;
+  const code = selected
+    ? codeByProblemAndLanguage[codeKey] ??
+      selected.starter_code_by_language?.[language] ??
+      selected.starter_code
+    : '';
 
   function handleSelectProblem(problem) {
     setSelectedProblemId(problem.id);
@@ -61,9 +68,15 @@ export default function DsaSandboxPage() {
     setSubmitError('');
   }
 
+  function handleLanguageChange(nextLanguage) {
+    setLanguage(nextLanguage);
+    setResult(null);
+    setSubmitError('');
+  }
+
   function handleCodeChange(value) {
-    if (!selected) return;
-    setCodeByProblem((prev) => ({ ...prev, [selected.id]: value }));
+    if (!codeKey) return;
+    setCodeByProblemAndLanguage((prev) => ({ ...prev, [codeKey]: value }));
   }
 
   async function handleRun() {
@@ -72,7 +85,7 @@ export default function DsaSandboxPage() {
     setSubmitError('');
     setResult(null);
     try {
-      const response = await learning.submitDsaSandbox(player.player_id, selected.id, code);
+      const response = await learning.submitDsaSandbox(player.player_id, selected.id, code, language);
       setResult(response);
     } catch (cause) {
       setSubmitError(cause.message || t('dsaSandboxPage.judgeUnavailable'));
@@ -155,9 +168,27 @@ export default function DsaSandboxPage() {
                 </Panel>
 
                 <Panel>
-                  <label className="font-mono text-[10px] uppercase tracking-wider text-[#757682]">
-                    {t('dsaSandboxPage.yourSolution')}
-                  </label>
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <label className="font-mono text-[10px] uppercase tracking-wider text-[#757682]">
+                      {t('dsaSandboxPage.yourSolution')}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-[#757682]">
+                        {t('dsaSandboxPage.language')}
+                      </span>
+                      <select
+                        value={language}
+                        onChange={(e) => handleLanguageChange(e.target.value)}
+                        className="font-mono text-xs bg-white border border-[#c5c5d3]/50 rounded-lg px-2 py-1 text-[#131b2e] outline-none focus:border-[#00236f]/50"
+                      >
+                        {Object.entries(languages).map(([key, label]) => (
+                          <option key={key} value={key}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                   <textarea
                     value={code}
                     onChange={(e) => handleCodeChange(e.target.value)}

@@ -72,6 +72,13 @@ async def lifespan(app: FastAPI):
     ensure_columns("learner_profiles", [
         ("full_name", "TEXT DEFAULT ''"),
     ])
+    ensure_columns("dsa_submissions", [
+        ("language", "TEXT DEFAULT 'python'"),
+    ])
+    ensure_columns("generated_quizzes", [
+        ("best_score", "REAL"),
+        ("last_attempted_at", "TEXT"),
+    ])
 
     # Auto-seed the demo DSA dungeon, then materialize every other curriculum
     # in services/curricula.py as its own dungeon (see db/seed.py's

@@ -40,6 +40,8 @@ EXPECTED_PATHS = {
     "/learning/pathway/{player_id}",
     "/learning/quiz/generate",
     "/learning/quiz/{player_id}",
+    "/learning/quiz/detail/{quiz_id}",
+    "/learning/quiz/{quiz_id}/submit",
     "/learning/admin/overview",
 }
 
@@ -49,7 +51,7 @@ def test_versioned_openapi_lists_current_public_paths():
     document = json.loads(contract_path.read_text(encoding="utf-8"))
 
     assert document["openapi"] == "3.0.3"
-    assert document["info"]["version"] == "0.3.0"
+    assert document["info"]["version"] == "0.4.0"
     assert set(document["paths"]) == EXPECTED_PATHS
 
 
@@ -63,6 +65,8 @@ def test_protected_learning_paths_declare_bearer_security():
         "/learning/pathway/{player_id}",
         "/learning/quiz/generate",
         "/learning/quiz/{player_id}",
+        "/learning/quiz/detail/{quiz_id}",
+        "/learning/quiz/{quiz_id}/submit",
         "/learning/admin/overview",
     }
 

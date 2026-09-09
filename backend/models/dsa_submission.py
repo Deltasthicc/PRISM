@@ -9,7 +9,7 @@ this is that ground-truth record, not a fabricated summary.
 """
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, JSON, Index
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, JSON, Index, text
 from sqlalchemy.orm import relationship
 from db.database import Base
 
@@ -34,6 +34,13 @@ class DsaSubmission(Base):
     competency_id = Column(String, nullable=False)
     difficulty = Column(String, nullable=False)
     code = Column(String, nullable=False)
+    # python | javascript | java | cpp | csharp -- see services/dsa_lang_gen.py.
+    # A real server_default (not just the ORM-level one) because every
+    # historical row predates multi-language support and was genuinely
+    # Python-only -- backfilling "python" here is a documented fact, not a
+    # fabrication, and it keeps `alembic check` from drifting against the
+    # migration's own server_default forever.
+    language = Column(String, nullable=False, default="python", server_default=text("'python'"))
     # accepted | wrong_answer | runtime_error | compile_error |
     # time_limit_exceeded | judge_unavailable -- see
     # services/judge_client.py's STATUS_MAP for the authoritative mapping

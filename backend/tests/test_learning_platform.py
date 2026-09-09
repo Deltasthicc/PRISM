@@ -177,6 +177,21 @@ def test_generate_quiz_falls_back_deterministically_without_api_key(monkeypatch)
         assert len({option.lower() for option in question["options"]}) == 4
         assert 0 <= question["answer_index"] <= 3
         assert question["source_excerpt"] in source
+        assert question["difficulty"] in {"easy", "medium", "hard"}
+
+
+def test_estimate_difficulty_scales_with_term_and_sentence_length():
+    from services.quiz_generator import _estimate_difficulty
+
+    assert _estimate_difficulty("Short sentence.", "data") == "easy"
+    long_sentence = (
+        "This is a considerably longer sentence about interoperability, deliberately "
+        "padded out well past the two-hundred-and-twenty character threshold so that "
+        "both the carrier-sentence-length signal and the long-answer-term signal "
+        "clearly stack together into the hard bucket for this heuristic."
+    )
+    assert len(long_sentence) >= 220
+    assert _estimate_difficulty(long_sentence, "interoperability") == "hard"
 
 
 # ─── routes/game.py cross-domain room unlock ───

@@ -61,6 +61,7 @@ class QuizQuestion(BaseModel):
     source_excerpt: str
     competency: str
     bloom_level: str
+    difficulty: str = "medium"
 
 
 class QuizResponse(BaseModel):
@@ -73,3 +74,63 @@ class QuizResponse(BaseModel):
     language: str
     generation_mode: str
     questions: list[QuizQuestion]
+
+
+class QuizAnswerIn(BaseModel):
+    """One answer in a POST /learning/quiz/{quiz_id}/submit body.
+
+    `time_taken_ms` is optional client-measured wall-clock time, the same
+    convention routes/competency_quiz.py's AnswerIn already uses -- see
+    services/quiz_scoring.py for how a missing value is handled (neutral,
+    no penalty or bonus)."""
+
+    question_index: int = Field(..., ge=0)
+    selected_index: int | None = Field(default=None, ge=0, le=3)
+    time_taken_ms: int | None = Field(default=None, ge=0, le=30 * 60 * 1000)
+
+
+class QuizSubmitRequest(BaseModel):
+    player_id: str
+    answers: list[QuizAnswerIn] = Field(..., min_length=1, max_length=50)
+
+
+class QuizAnswerResult(BaseModel):
+    question_index: int
+    correct: bool
+    correct_index: int
+    selected_index: int | None
+    difficulty: str
+    time_factor: float
+    pace: str | None = None
+
+
+class DifficultyBreakdown(BaseModel):
+    count: int
+    correct: int
+    accuracy: float
+    avg_time_factor: float
+
+
+class QuizSubmitResponse(BaseModel):
+    """Response for POST /learning/quiz/{quiz_id}/submit.
+
+    `weighted_score` factors both which difficulty bucket each question
+    belongs to (harder questions worth more) and how long each answer took
+    (see services/quiz_scoring.py) -- deliberately a standalone per-quiz
+    score, not written into AccuracyHistory/the real competency vector,
+    since `competency` on a generated question is free text, not a real
+    curriculum competency_id.
+    """
+
+    quiz_id: str
+    total_questions: int
+    correct_count: int
+    accuracy: float
+    weighted_score: float
+    scoring_note: str = (
+        "Per-quiz score only -- harder questions are weighted more, and faster/"
+        "slower-than-expected answers nudge the score within a bounded band. "
+        "Not written into your curriculum competency vector."
+    )
+    by_difficulty: dict[str, DifficultyBreakdown]
+    results: list[QuizAnswerResult]

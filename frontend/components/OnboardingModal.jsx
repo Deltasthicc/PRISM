@@ -3,37 +3,38 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useOnboardingStore } from '@/store/useOnboardingStore';
-import PixelPanel from './ui/PixelPanel';
-import PixelButton from './ui/PixelButton';
+import Panel from './ui/Panel';
+import Button from './ui/Button';
 
+// Professional-shell tour of the real, always-on feature set. Quest Mode
+// (the opt-in gamified practice layer) gets one honest, clearly-labeled
+// mention at the end rather than most of the tour, since this modal shows
+// to every learner on every page -- including ones who never turn Quest
+// Mode on and only ever see the professional path.
 const SLIDES = [
   {
-    title: 'PROFILE, GAPS, PATHWAY',
-    body: "Build a competency profile in the Academy, run an explainable gap analysis against a target level, and follow a prerequisite-ordered pathway — across DSA, Official Statistics, Public Policy, and Digital Literacy.",
+    title: 'Build your competency profile',
+    body: 'Add your role, occupation, and the domains you want to focus on, then take a real baseline assessment -- no self-rating. Every question is source-cited.',
   },
   {
-    title: 'WELCOME TO QUEST MODE',
-    body: "Practice turns each competency into a dungeon crawl. Your real knowledge is your character sheet — the dungeon routes its monsters straight at whatever topic you're weakest in.",
+    title: 'See your real gaps',
+    body: 'Your competency vector is judged only by questions you have actually answered. Every score shows its evidence and how it was computed -- nothing here is a guess.',
   },
   {
-    title: 'ONE VILLAIN PER TOPIC',
-    body: "Each room on the map is guarded by a single fixed villain. Every question you answer chips away at that same villain's health — it does not reset between questions. Enough correct answers and the villain falls, unlocking rooms deeper in the dungeon.",
+    title: 'Follow your pathway',
+    body: 'Prerequisite Pathways orders your gaps by what actually depends on what, across DSA, Official Statistics, Public Policy, and Digital Literacy.',
   },
   {
-    title: 'ANSWER IN YOUR OWN WORDS',
-    body: 'Combat is free-text. An AI judge scores your answer by meaning, not exact wording. CORRECT lands a heavy blow and full XP, PARTIAL lands a lighter hit, INCORRECT misses entirely.',
+    title: 'Practice for real',
+    body: 'The DSA Sandbox runs your code against a real judge, not a simulated pass/fail. Solving a problem writes real evidence back into your competency vector.',
   },
   {
-    title: 'HINTS & STREAKS',
-    body: 'Stuck? Spend a hint token to reveal a nudge toward the answer. Tokens are limited but replenish as your daily streak grows, so playing consistently pays off.',
+    title: 'Generate quizzes from your own material',
+    body: 'Upload a document and the Source Quiz Generator produces a grounded quiz from it -- every answer traces back to a real excerpt.',
   },
   {
-    title: "YOUR HERO'S POWER",
-    body: 'Your chosen hero carries one unique power, usable up to 3 times per hour — anything from a devastating instant strike to a free hint, a full heal, or doubled XP. Save it for a fight that needs it.',
-  },
-  {
-    title: 'THE BOSS',
-    body: "Clear every topic in a domain's dungeon and its boss room opens: a final fight that pulls questions from everything you have learned in that domain.",
+    title: 'Optional: Quest Mode',
+    body: 'A separate, opt-in gamified practice layer exists if you want it (dungeon-style rooms, an AI-judged combat loop) -- off by default, and switchable any time from the toggle in the top bar. Nothing about your real competency data changes because of it.',
   },
 ];
 
@@ -59,26 +60,26 @@ export default function OnboardingModal() {
   const isLast = slide === SLIDES.length - 1;
 
   return (
-    <div className="fixed inset-0 z-[9997] flex items-center justify-center bg-black/70 px-4">
-      <PixelPanel variant="arcane" className="w-full max-w-lg">
-        <h2 className="font-display text-sm text-arcane mb-3">{current.title}</h2>
-        <p className="font-body text-lg text-parchment leading-relaxed">{current.body}</p>
+    <div className="fixed inset-0 z-[9997] flex items-center justify-center bg-black/40 px-4">
+      <Panel className="w-full max-w-lg">
+        <h2 className="font-sans text-base font-bold text-[#00236f] mb-2">{current.title}</h2>
+        <p className="font-sans text-sm text-[#444651] leading-relaxed">{current.body}</p>
         <div className="flex items-center justify-between mt-6">
-          <span className="font-body text-sm text-parchment-dim">
+          <span className="font-mono text-xs text-[#757682]">
             {slide + 1} / {SLIDES.length}
           </span>
           <div className="flex gap-2">
             {slide > 0 && (
-              <PixelButton variant="ghost" onClick={() => setSlide((s) => s - 1)}>
-                BACK
-              </PixelButton>
+              <Button variant="ghost" onClick={() => setSlide((s) => s - 1)}>
+                Back
+              </Button>
             )}
-            <PixelButton variant="gold" onClick={() => (isLast ? handleClose() : setSlide((s) => s + 1))}>
-              {isLast ? "LET'S GO" : 'NEXT'}
-            </PixelButton>
+            <Button onClick={() => (isLast ? handleClose() : setSlide((s) => s + 1))}>
+              {isLast ? "Let's go" : 'Next'}
+            </Button>
           </div>
         </div>
-      </PixelPanel>
+      </Panel>
     </div>
   );
 }

@@ -5,11 +5,15 @@ import { ShieldAlert, Users, ClipboardCheck, FileQuestion, Target } from 'lucide
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { learning } from '@/lib/api/client';
-import PixelBadge from '@/components/ui/PixelBadge';
-import PixelButton from '@/components/ui/PixelButton';
-import PixelPanel from '@/components/ui/PixelPanel';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Panel from '@/components/ui/Panel';
 
-const PRIORITY_TONE = { critical: 'blood', high: 'ember', medium: 'gold', maintain: 'arcane', unknown: 'stone' };
+// An aggregate organization-metrics dashboard has no reason to look like a
+// dungeon crawl -- it isn't part of Quest Mode's opt-in gamified layer, so
+// it uses the same plain professional-shell components as /stats and
+// /academy, not the Pixel* kit reserved for Quest's own opt-in routes.
+const PRIORITY_TONE = { critical: 'danger', high: 'warning', medium: 'warning', maintain: 'success', unknown: 'default' };
 const PRIORITY_KEY = {
   unassessed: 'priorityUnassessed',
   critical: 'priorityCritical',
@@ -29,13 +33,13 @@ export default function AdminPage() {
   });
 
   if (!ready || isLoading) {
-    return <p className="font-body text-parchment-dim text-center mt-10">{t('admin.loading')}</p>;
+    return <p className="font-sans text-sm text-[#757682] text-center mt-10">{t('admin.loading')}</p>;
   }
   if (isError || !data) {
     return (
       <div className="flex flex-col items-center gap-3 mt-10" role="alert">
-        <p className="font-body text-blood">{t('admin.loadFailed')}</p>
-        <PixelButton variant="ghost" onClick={() => refetch()}>{t('admin.retry')}</PixelButton>
+        <p className="font-sans text-sm text-[#b3261e]">{t('admin.loadFailed')}</p>
+        <Button variant="ghost" onClick={() => refetch()}>{t('admin.retry')}</Button>
       </div>
     );
   }
@@ -43,24 +47,24 @@ export default function AdminPage() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <PixelBadge tone="gold">{t('admin.badge')}</PixelBadge>
-        <h1 className="font-display text-base text-parchment mt-3">{t('admin.heading')}</h1>
-        <p className="font-body text-xl text-parchment-dim mt-2 max-w-3xl">{t('admin.subtitle')}</p>
+        <Badge tone="warning">{t('admin.badge')}</Badge>
+        <h1 className="font-sans text-lg font-bold text-[#00236f] mt-3">{t('admin.heading')}</h1>
+        <p className="font-sans text-sm text-[#757682] mt-2 max-w-3xl">{t('admin.subtitle')}</p>
       </header>
 
-      <PixelPanel>
+      <Panel>
         <div className="flex items-start gap-3">
-          <ShieldAlert className="text-blood shrink-0 mt-1" aria-hidden="true" />
+          <ShieldAlert className="text-[#b3261e] shrink-0 mt-1" aria-hidden="true" />
           <div>
-            <h2 className="font-display text-[10px] text-blood">{t('admin.notSecureHeading')}</h2>
-            <p className="font-body text-parchment-dim mt-2">
+            <h2 className="font-sans text-sm font-bold text-[#b3261e]">{t('admin.notSecureHeading')}</h2>
+            <p className="font-sans text-sm text-[#757682] mt-2">
               {data.privacy_note} {t('admin.notSecureBodyBefore')}{' '}
-              <span className="text-parchment">docs/contracts/identity-authorization.md</span>{' '}
+              <span className="text-[#131b2e] font-mono text-xs">docs/contracts/identity-authorization.md</span>{' '}
               {t('admin.notSecureBodySection')}
             </p>
           </div>
         </div>
-      </PixelPanel>
+      </Panel>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Stat icon={Users} label={t('admin.learners')} value={data.learners} />
@@ -69,51 +73,51 @@ export default function AdminPage() {
         <Stat icon={FileQuestion} label={t('admin.quizzesGenerated')} value={data.quizzes_generated} />
       </div>
 
-      <PixelPanel>
-        <h2 className="font-display text-xs text-gold mb-4">{t('admin.topSkillGaps')}</h2>
+      <Panel>
+        <h2 className="font-sans text-base font-bold text-[#131b2e] mb-4">{t('admin.topSkillGaps')}</h2>
         {data.top_skill_gaps.length === 0 ? (
-          <p className="font-body text-parchment-dim">{t('admin.noAssessments')}</p>
+          <p className="font-sans text-sm text-[#757682]">{t('admin.noAssessments')}</p>
         ) : (
           <ol className="flex flex-col gap-2">
             {data.top_skill_gaps.map((row) => (
-              <li key={row.competency} className="flex items-center justify-between border-b-2 border-black pb-2">
-                <span className="font-body text-parchment">{row.competency}</span>
-                <PixelBadge tone="ember">{row.learner_count} {row.learner_count === 1 ? t('admin.learner') : t('admin.learnerPlural')}</PixelBadge>
+              <li key={row.competency} className="flex items-center justify-between border-b border-[#c5c5d3]/40 pb-2">
+                <span className="font-sans text-sm text-[#131b2e]">{row.competency}</span>
+                <Badge tone="warning">{row.learner_count} {row.learner_count === 1 ? t('admin.learner') : t('admin.learnerPlural')}</Badge>
               </li>
             ))}
           </ol>
         )}
-      </PixelPanel>
+      </Panel>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <PixelPanel>
-          <h2 className="font-display text-xs text-gold mb-4">{t('admin.gapPriorityBreakdown')}</h2>
+        <Panel>
+          <h2 className="font-sans text-base font-bold text-[#131b2e] mb-4">{t('admin.gapPriorityBreakdown')}</h2>
           <div className="flex flex-wrap gap-2">
             {Object.entries(data.gap_priorities).length === 0 && (
-              <p className="font-body text-parchment-dim">{t('admin.noData')}</p>
+              <p className="font-sans text-sm text-[#757682]">{t('admin.noData')}</p>
             )}
             {Object.entries(data.gap_priorities).map(([priority, count]) => (
-              <PixelBadge key={priority} tone={PRIORITY_TONE[priority] || 'stone'}>
+              <Badge key={priority} tone={PRIORITY_TONE[priority] || 'default'}>
                 {t(`enums.${PRIORITY_KEY[priority] || 'priorityUnassessed'}`)}: {count}
-              </PixelBadge>
+              </Badge>
             ))}
           </div>
-        </PixelPanel>
+        </Panel>
 
-        <PixelPanel>
-          <h2 className="font-display text-xs text-gold mb-4">{t('admin.providerIntegrationStatus')}</h2>
+        <Panel>
+          <h2 className="font-sans text-base font-bold text-[#131b2e] mb-4">{t('admin.providerIntegrationStatus')}</h2>
           <div className="flex flex-col gap-3">
             {Object.entries(data.integration_status).map(([provider, status]) => (
-              <div key={provider} className="border-b-2 border-black pb-2">
+              <div key={provider} className="border-b border-[#c5c5d3]/40 pb-2">
                 <div className="flex items-center gap-2">
-                  <span className="font-display text-[10px] text-parchment uppercase">{provider}</span>
-                  <PixelBadge tone={status.mode === 'configured' ? 'arcane' : 'gold'}>{status.mode}</PixelBadge>
+                  <span className="font-mono text-xs text-[#131b2e] uppercase">{provider}</span>
+                  <Badge tone={status.mode === 'configured' ? 'accent' : 'warning'}>{status.mode}</Badge>
                 </div>
-                <p className="font-body text-sm text-parchment-dim mt-1">{status.detail}</p>
+                <p className="font-sans text-sm text-[#757682] mt-1">{status.detail}</p>
               </div>
             ))}
           </div>
-        </PixelPanel>
+        </Panel>
       </div>
     </div>
   );
@@ -121,10 +125,10 @@ export default function AdminPage() {
 
 function Stat({ icon: Icon, label, value }) {
   return (
-    <PixelPanel>
-      <Icon className="text-arcane mb-2" aria-hidden="true" />
-      <p className="font-display text-lg text-parchment">{value}</p>
-      <p className="font-body text-sm text-parchment-dim mt-1">{label}</p>
-    </PixelPanel>
+    <Panel>
+      <Icon className="text-[#00236f] mb-2" aria-hidden="true" />
+      <p className="font-sans text-lg font-bold text-[#131b2e]">{value}</p>
+      <p className="font-sans text-sm text-[#757682] mt-1">{label}</p>
+    </Panel>
   );
 }

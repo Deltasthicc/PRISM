@@ -3,45 +3,37 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { Lock } from 'lucide-react';
+import { Lock, CheckCircle2, AlertTriangle, Circle } from 'lucide-react';
 import clsx from 'clsx';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useGameStore } from '@/store/useGameStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { learning, game } from '@/lib/api/client';
 import { layoutGraph } from '@/lib/graphLayout';
-import PixelPanel from '@/components/ui/PixelPanel';
-import PixelBadge from '@/components/ui/PixelBadge';
-import PixelButton from '@/components/ui/PixelButton';
-import XPBar from '@/components/XPBar';
-import ChainLink from '@/components/ChainLink';
-import PixelSprite from '@/components/PixelSprite';
-import { monsterForTopic } from '@/lib/sprites/monsterSprites';
+import Panel from '@/components/ui/Panel';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
 
-// This map renders exactly what the backend computes for this learner:
-// real per-room unlock/accuracy status from GET /game/dungeon/{id}
+// This map renders exactly what the backend computes for this learner: real
+// per-room unlock/accuracy status from GET /game/dungeon/{id}
 // (backend/routes/game.py::_annotate_rooms_for_player) merged with the real,
 // prerequisite-ordered competency gap analysis from GET /learning/pathway
 // (backend/services/learning_engine.py::analyse_competencies) -- the same
-// engine /stats already uses. An earlier version of this page (see git
-// history, commit "meow") replaced a working, backend-driven map with a
-// hand-written fictional course list; this restores the real version and
-// generalizes it from the single hardcoded DSA dungeon to every curriculum
-// the learner has selected.
-const STATUS_STYLE = {
-  locked: 'bg-stone-light border-black opacity-50',
-  unlocked: 'bg-stone border-arcane',
-  weak: 'bg-stone border-blood',
-  mastered: 'bg-stone border-gold',
+// engine /stats already uses. This page is on the always-visible
+// professional path (NavBar never gates it behind the opt-in Quest Mode
+// toggle -- see components/NavBar.jsx), so unlike /boss and /combat it uses
+// the same plain professional-shell components (Panel/Badge/Button) as
+// /stats and /academy, not the Pixel*/dungeon-skin kit that's reserved for
+// Quest Mode's own opt-in routes.
+const STATUS_ICON = { locked: Lock, unlocked: Circle, weak: AlertTriangle, mastered: CheckCircle2 };
+const STATUS_TONE = { locked: 'default', unlocked: 'accent', weak: 'danger', mastered: 'success' };
+const STATUS_BORDER = {
+  locked: 'border-[#c5c5d3]/50 opacity-60',
+  unlocked: 'border-[#00236f]/40',
+  weak: 'border-[#b3261e]/50',
+  mastered: 'border-[#1a7f4b]/50',
 };
-
-const PRIORITY_TONE = {
-  critical: 'blood',
-  high: 'ember',
-  medium: 'gold',
-  maintain: 'arcane',
-  unassessed: 'stone',
-};
+const PRIORITY_TONE = { critical: 'danger', high: 'warning', medium: 'warning', maintain: 'success', unassessed: 'default' };
 
 export default function DungeonMapPage() {
   const { ready } = useRequireAuth();
@@ -103,10 +95,10 @@ export default function DungeonMapPage() {
 
   const pathwayOrder = useMemo(() => pathwayData?.pathway || [], [pathwayData]);
 
-  // rowHeight must be >= the room tile's rendered height (tile - 20 = 130px)
-  // plus a visible gap, or adjacent depth rows overlap on the map.
-  const tile = 150;
-  const rowHeight = 170;
+  // rowHeight must be >= the node's rendered height (tile - 20 = 90px) plus
+  // a visible gap, or adjacent depth rows overlap.
+  const tile = 160;
+  const rowHeight = 130;
 
   const rooms = useMemo(() => {
     if (!dungeon) return [];
@@ -126,48 +118,48 @@ export default function DungeonMapPage() {
       });
   }, [dungeon, competencyByTopic, pathwayOrder]);
 
-  const bossRoom = dungeon?.rooms?.find((r) => r.is_boss) || null;
+  const capstoneRoom = dungeon?.rooms?.find((r) => r.is_boss) || null;
 
   const graph = useMemo(
     () => Object.fromEntries(rooms.map((r) => [r.topic, r.prerequisites])),
     [rooms]
   );
-  const positions = useMemo(() => layoutGraph({ graph, colWidth: 170, rowHeight }), [graph]);
+  const positions = useMemo(() => layoutGraph({ graph, colWidth: 180, rowHeight }), [graph]);
 
   if (!ready || (!curriculaData && !dungeonError)) {
-    return <p className="font-body text-parchment-dim text-center mt-10">Descending into the dungeon…</p>;
+    return <p className="font-sans text-sm text-[#757682] text-center mt-10">Loading your pathway…</p>;
   }
 
   if (dungeonError) {
     return (
       <div className="flex flex-col items-center gap-3 mt-10">
-        <p className="font-body text-blood text-center">{dungeonError}</p>
-        <PixelButton variant="ghost" onClick={() => matchedDungeon && loadDungeon(matchedDungeon.dungeon_id)}>
-          RETRY
-        </PixelButton>
+        <p className="font-sans text-sm text-[#b3261e] text-center">{dungeonError}</p>
+        <Button variant="ghost" onClick={() => matchedDungeon && loadDungeon(matchedDungeon.dungeon_id)}>
+          Retry
+        </Button>
       </div>
     );
   }
 
   if (!activeSlug) {
     return (
-      <p className="font-body text-parchment-dim text-center mt-10">
+      <p className="font-sans text-sm text-[#757682] text-center mt-10">
         Pick at least one specialty in your profile to see a pathway here.
       </p>
     );
   }
 
   if (loadingDungeon || !dungeon || pathwayLoading) {
-    return <p className="font-body text-parchment-dim text-center mt-10">Descending into the dungeon…</p>;
+    return <p className="font-sans text-sm text-[#757682] text-center mt-10">Loading your pathway…</p>;
   }
 
   const xs = rooms.map((r) => positions[r.topic]?.x ?? 0);
   const ys = rooms.map((r) => positions[r.topic]?.y ?? 0);
   const minX = rooms.length ? Math.min(...xs) : 0;
   const maxY = rooms.length ? Math.max(...ys) : 0;
-  const offsetX = -minX + 80;
-  const bossTop = maxY + rowHeight;
-  const bossHeight = tile - 10;
+  const offsetX = -minX + 90;
+  const capstoneTop = maxY + rowHeight;
+  const capstoneHeight = tile - 60;
 
   const edges = [];
   rooms.forEach((r) => {
@@ -186,61 +178,60 @@ export default function DungeonMapPage() {
     );
   }
 
-  function handleBossClick() {
+  function handleCapstoneClick() {
     if (!dungeon.boss_unlocked || !matchedDungeon) return;
     router.push(`/boss/${matchedDungeon.dungeon_id}`);
   }
 
   return (
-    <div>
-      <div className="mb-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+    <div className="max-w-5xl mx-auto flex flex-col gap-5">
+      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
         <div>
-          <h1 className="font-display text-sm text-parchment">{activeCurriculum?.name || dungeon.domain}</h1>
+          <h1 className="font-sans text-lg font-bold text-[#00236f]">{activeCurriculum?.name || dungeon.domain}</h1>
           {dungeon.next_topic && (
-            <p className="font-body text-arcane mt-1">
-              The dungeon senses weakness in{' '}
-              <strong>{rooms.find((r) => r.topic === dungeon.next_topic)?.label || dungeon.next_topic}</strong>.
+            <p className="font-sans text-sm text-[#757682] mt-1">
+              Your biggest current gap is in{' '}
+              <strong className="text-[#131b2e]">
+                {rooms.find((r) => r.topic === dungeon.next_topic)?.label || dungeon.next_topic}
+              </strong>
+              .
             </p>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          {curricula.length > 1 && (
-            <select
-              value={activeSlug || ''}
-              onChange={(e) => setSelectedSlug(e.target.value)}
-              className="bg-stone border-2 border-black font-display text-[9px] text-parchment px-2 py-2 outline-none cursor-pointer"
-            >
-              {curricula.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          )}
-          <div className="w-full md:w-64">
-            <XPBar level={player.level} totalXp={player.total_xp} />
-          </div>
-        </div>
+        {curricula.length > 1 && (
+          <select
+            value={activeSlug || ''}
+            onChange={(e) => setSelectedSlug(e.target.value)}
+            className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f] cursor-pointer"
+          >
+            {curricula.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
-      <PixelPanel className="overflow-x-auto">
+      <Panel className="overflow-x-auto">
         <div
           className="relative mx-auto"
-          style={{ width: offsetX * 2 + tile, height: bossTop + bossHeight + 30, minWidth: 600 }}
+          style={{ width: offsetX * 2 + tile, height: capstoneTop + capstoneHeight + 30, minWidth: 600 }}
         >
-          <svg className="absolute inset-0 w-full h-full pointer-events-none">
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
             {edges.map((e, i) => {
               const from = positions[e.from];
               const to = positions[e.to];
               if (!from || !to) return null;
               return (
-                <ChainLink
+                <line
                   key={i}
                   x1={from.x + offsetX + tile / 2}
-                  y1={from.y + tile / 2}
+                  y1={from.y + tile / 2 - 30}
                   x2={to.x + offsetX + tile / 2}
-                  y2={to.y + tile / 2}
-                  thickness={20}
+                  y2={to.y + tile / 2 - 30}
+                  stroke="#c5c5d3"
+                  strokeWidth={2}
                 />
               );
             })}
@@ -250,111 +241,109 @@ export default function DungeonMapPage() {
             const pos = positions[room.topic];
             if (!pos) return null;
             const locked = room.status === 'locked';
-            const monster = monsterForTopic(room.topic);
+            const Icon = STATUS_ICON[room.status] || Lock;
             return (
               <button
                 key={room.topic}
                 onClick={() => handleRoomClick(room)}
-                style={{ left: pos.x + offsetX, top: pos.y, width: tile, height: tile - 20 }}
+                style={{ left: pos.x + offsetX, top: pos.y, width: tile, height: tile - 60 }}
                 className={clsx(
-                  'absolute flex flex-col items-center justify-center gap-1 border-4 p-2 transition-transform',
-                  'hover:-translate-y-1',
-                  selectedTopic === room.topic && 'ring-2 ring-parchment',
-                  STATUS_STYLE[room.status] || STATUS_STYLE.locked
+                  'absolute flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 bg-white p-3 shadow-sm transition-transform',
+                  'hover:-translate-y-0.5 hover:shadow-md',
+                  selectedTopic === room.topic && 'ring-2 ring-[#00236f]',
+                  STATUS_BORDER[room.status] || STATUS_BORDER.locked
                 )}
               >
-                {locked ? (
-                  <Lock size={28} />
-                ) : (
-                  <PixelSprite src={monster.image} grid={monster.grid} palette={monster.palette} size={40} title={monster.name} />
-                )}
-                <span className="font-display text-[8px] text-parchment text-center leading-tight">
+                <Icon
+                  size={20}
+                  className={clsx(
+                    room.status === 'mastered' && 'text-[#1a7f4b]',
+                    room.status === 'weak' && 'text-[#b3261e]',
+                    room.status === 'unlocked' && 'text-[#00236f]',
+                    room.status === 'locked' && 'text-[#757682]'
+                  )}
+                />
+                <span className="font-sans text-xs font-semibold text-[#131b2e] text-center leading-tight">
                   {room.label}
                 </span>
                 {!locked && (
-                  <span className="font-body text-sm text-parchment-dim">
-                    {Math.round(room.completion * 100)}%
-                  </span>
+                  <span className="font-mono text-[10px] text-[#757682]">{Math.round(room.completion * 100)}%</span>
                 )}
               </button>
             );
           })}
 
-          {/* boss room, one row below the deepest topic */}
-          {bossRoom && (
+          {/* capstone assessment, one row below the deepest topic */}
+          {capstoneRoom && (
             <button
               disabled={!dungeon.boss_unlocked}
-              onClick={handleBossClick}
-              style={{ left: offsetX + tile / 4, top: bossTop, width: tile * 1.5, height: bossHeight }}
+              onClick={handleCapstoneClick}
+              style={{ left: offsetX + tile / 4, top: capstoneTop, width: tile * 1.5, height: capstoneHeight }}
               className={clsx(
-                'absolute flex flex-col items-center justify-center gap-1 border-4 p-2',
-                dungeon.boss_unlocked ? 'bg-stone border-ember' : 'bg-stone-light border-black opacity-50'
+                'absolute flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 p-3 shadow-sm',
+                dungeon.boss_unlocked
+                  ? 'bg-white border-[#fe932c]/60 hover:-translate-y-0.5 hover:shadow-md transition-transform'
+                  : 'bg-[#f7f7fb] border-[#c5c5d3]/50 opacity-60'
               )}
             >
               {dungeon.boss_unlocked ? (
-                <PixelSprite
-                  src={monsterForTopic('boss').image}
-                  grid={monsterForTopic('boss').grid}
-                  palette={monsterForTopic('boss').palette}
-                  size={48}
-                  title={monsterForTopic('boss').name}
-                />
+                <CheckCircle2 size={20} className="text-[#fe932c]" />
               ) : (
-                <Lock size={28} />
+                <Lock size={20} className="text-[#757682]" />
               )}
-              <span className="font-display text-[8px] text-parchment text-center">
-                {dungeon.boss_unlocked ? 'THE DOMAIN BOSS' : 'CLEAR ALL ROOMS FIRST'}
+              <span className="font-sans text-xs font-semibold text-[#131b2e] text-center">
+                {dungeon.boss_unlocked ? 'Capstone assessment' : 'Clear every competency first'}
               </span>
             </button>
           )}
         </div>
-      </PixelPanel>
+      </Panel>
 
-      <div className="flex gap-3 mt-4 flex-wrap">
-        <PixelBadge tone="arcane">unlocked</PixelBadge>
-        <PixelBadge tone="blood">weak — needs practice</PixelBadge>
-        <PixelBadge tone="gold">mastered</PixelBadge>
-        <PixelBadge tone="stone">locked</PixelBadge>
+      <div className="flex gap-3 flex-wrap">
+        <Badge tone="accent">unlocked</Badge>
+        <Badge tone="danger">weak — needs practice</Badge>
+        <Badge tone="success">mastered</Badge>
+        <Badge tone="default">locked</Badge>
       </div>
 
       {selected && (
-        <PixelPanel className="mt-4">
+        <Panel>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <h2 className="font-display text-xs text-parchment">{selected.label}</h2>
-              <p className="font-body text-parchment-dim mt-1 max-w-lg">
+              <h2 className="font-sans text-base font-bold text-[#131b2e]">{selected.label}</h2>
+              <p className="font-sans text-sm text-[#757682] mt-1 max-w-lg">
                 {competencyByTopic.get(selected.topic)?.description}
               </p>
             </div>
             {selected.priority && (
-              <PixelBadge tone={PRIORITY_TONE[selected.priority] || 'stone'}>
+              <Badge tone={PRIORITY_TONE[selected.priority] || 'default'}>
                 {selected.priority === 'unassessed' ? 'not yet assessed' : `${selected.priority} gap`}
-              </PixelBadge>
+              </Badge>
             )}
           </div>
-          <div className="flex flex-wrap gap-4 mt-3 font-body text-sm text-parchment-dim">
+          <div className="flex flex-wrap gap-4 mt-3 font-sans text-sm text-[#757682]">
             {selected.observedLevel != null && <span>Observed level: {selected.observedLevel.toFixed(1)} / 5</span>}
             {selected.gap != null && <span>Gap to target: {selected.gap.toFixed(1)}</span>}
-            <span>Room accuracy: {Math.round((selected.recent_accuracy || 0) * 100)}%</span>
+            <span>Practice accuracy: {Math.round((selected.recent_accuracy || 0) * 100)}%</span>
           </div>
           {selected.recommendedAction && (
-            <p className="font-body text-arcane mt-2 text-sm">{selected.recommendedAction}</p>
+            <p className="font-sans text-sm text-[#00236f] mt-2">{selected.recommendedAction}</p>
           )}
-          <PixelButton
+          <Button
             variant={selected.status === 'locked' ? 'ghost' : 'primary'}
             className="mt-3"
             disabled={selected.status === 'locked'}
             onClick={() => handleRoomClick(selected)}
           >
-            {selected.status === 'locked' ? 'LOCKED — CLEAR PREREQUISITES FIRST' : 'START QUEST'}
-          </PixelButton>
-        </PixelPanel>
+            {selected.status === 'locked' ? 'Locked — clear prerequisites first' : 'Practice this competency'}
+          </Button>
+        </Panel>
       )}
 
       {pathwayOrder.length > 0 && (
-        <PixelPanel className="mt-4">
-          <h2 className="font-display text-xs text-parchment mb-3">RECOMMENDED ORDER</h2>
-          <p className="font-body text-parchment-dim text-sm mb-3">
+        <Panel>
+          <h2 className="font-sans text-base font-bold text-[#131b2e] mb-1">Recommended order</h2>
+          <p className="font-sans text-sm text-[#757682] mb-3">
             Computed from your real gaps and this domain&apos;s prerequisites — largest, most foundational gaps first.
           </p>
           <ol className="flex flex-col gap-2">
@@ -363,18 +352,20 @@ export default function DungeonMapPage() {
                 <button
                   onClick={() => setSelectedTopic(item.competency_id)}
                   className={clsx(
-                    'w-full text-left flex items-center gap-3 px-3 py-2 border-2 border-black font-body text-sm',
-                    selectedTopic === item.competency_id ? 'bg-arcane text-void' : 'bg-stone text-parchment'
+                    'w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg border font-sans text-sm transition-colors',
+                    selectedTopic === item.competency_id
+                      ? 'bg-[#f2f3ff] border-[#00236f]/40'
+                      : 'bg-white border-[#c5c5d3]/30 hover:border-[#00236f]/30'
                   )}
                 >
-                  <span className="font-display text-[9px] shrink-0">#{item.step}</span>
-                  <span className="flex-1">{item.label}</span>
-                  <PixelBadge tone={PRIORITY_TONE[item.priority] || 'stone'}>{item.priority}</PixelBadge>
+                  <span className="font-mono text-xs text-[#757682] shrink-0">#{item.step}</span>
+                  <span className="flex-1 text-[#131b2e] font-medium">{item.label}</span>
+                  <Badge tone={PRIORITY_TONE[item.priority] || 'default'}>{item.priority}</Badge>
                 </button>
               </li>
             ))}
           </ol>
-        </PixelPanel>
+        </Panel>
       )}
     </div>
   );

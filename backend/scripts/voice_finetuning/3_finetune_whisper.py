@@ -61,10 +61,19 @@ def main() -> None:
         WhisperProcessor,
     )
 
-    processor = WhisperProcessor.from_pretrained(args.base_model, language="en", task="transcribe")
+    # English-only checkpoints (the ".en" suffix, e.g. whisper-tiny.en) ship no
+    # lang_to_id/task_to_id mapping at all -- setting an explicit language/task
+    # on their generation_config makes newer transformers' generate() crash
+    # trying to resolve a language id that doesn't exist (confirmed on a real
+    # training run). Only multilingual checkpoints need/support this.
+    is_english_only = args.base_model.endswith(".en")
+    processor = WhisperProcessor.from_pretrained(
+        args.base_model, **({} if is_english_only else {"language": "en", "task": "transcribe"})
+    )
     model = WhisperForConditionalGeneration.from_pretrained(args.base_model)
-    model.generation_config.language = "en"
-    model.generation_config.task = "transcribe"
+    if not is_english_only:
+        model.generation_config.language = "en"
+        model.generation_config.task = "transcribe"
     model.generation_config.forced_decoder_ids = None
 
     def to_dataset(manifest_path: str) -> Dataset:
@@ -87,15 +96,24 @@ def main() -> None:
         batch["labels"] = processor.tokenizer(batch["text"]).input_ids
         return batch
 
+    # No num_proc: passing num_proc=1 still makes datasets.map() spawn a
+    # multiprocessing worker pool and talk to it over an IPC pipe (confirmed
+    # via a real hang on a Python 3.14 GPU box: the main process blocked
+    # forever in conn.recv() waiting on a worker that never replied, most
+    # likely a fork/native-library interaction on that new an interpreter).
+    # Leaving num_proc unset runs map() in-process with no forking and no
+    # IPC at all -- for a corpus this size that's still fast, and it can't
+    # hang on a worker that silently dies.
+    #
     # A small writer_batch_size gives real incremental progress feedback --
     # datasets.map()'s default (1000) only updates the bar once a whole
     # write-batch finishes, so on a ~1000-row split it looks stuck at 0%
     # right up until the entire dataset is done.
     train_ds = train_ds.map(
-        prepare_example, remove_columns=train_ds.column_names, num_proc=1, writer_batch_size=50
+        prepare_example, remove_columns=train_ds.column_names, writer_batch_size=50
     )
     val_ds = val_ds.map(
-        prepare_example, remove_columns=val_ds.column_names, num_proc=1, writer_batch_size=50
+        prepare_example, remove_columns=val_ds.column_names, writer_batch_size=50
     )
 
     class DataCollatorSpeechSeq2Seq:
@@ -149,7 +167,9 @@ def main() -> None:
         eval_dataset=val_ds,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
-        tokenizer=processor.feature_extractor,
+        # `tokenizer=` was removed in newer transformers releases in favor of
+        # `processing_class=` (same value, just a renamed kwarg).
+        processing_class=processor.feature_extractor,
     )
 
     trainer.train()

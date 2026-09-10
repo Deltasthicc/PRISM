@@ -8,6 +8,7 @@ Audio is processed strictly in-memory (no raw audio persistence or temporary fil
 from __future__ import annotations
 
 import asyncio
+import os
 from dataclasses import dataclass
 import threading
 import time
@@ -36,14 +37,17 @@ class FasterWhisperSTT:
 
     def __init__(
         self,
-        model_size: str = DEFAULT_MODEL_SIZE,
-        device: str = DEFAULT_DEVICE,
-        compute_type: str = DEFAULT_COMPUTE_TYPE,
+        model_size: str | None = None,
+        device: str | None = None,
+        compute_type: str | None = None,
         model_instance: Any | None = None,
     ) -> None:
-        self.model_size = model_size
-        self.device = device
-        self.compute_type = compute_type
+        # WHISPER_MODEL_PATH lets a fine-tuned local CTranslate2 model directory
+        # (see scripts/voice_finetuning/) replace the stock tiny.en download,
+        # mirroring the PIPER_MODEL_PATH override already used by LocalPiperTTS.
+        self.model_size = model_size or os.getenv("WHISPER_MODEL_PATH") or DEFAULT_MODEL_SIZE
+        self.device = device or os.getenv("WHISPER_DEVICE") or DEFAULT_DEVICE
+        self.compute_type = compute_type or os.getenv("WHISPER_COMPUTE_TYPE") or DEFAULT_COMPUTE_TYPE
         self._model = model_instance
         self._lock = threading.Lock()
 

@@ -61,10 +61,19 @@ def main() -> None:
         WhisperProcessor,
     )
 
-    processor = WhisperProcessor.from_pretrained(args.base_model, language="en", task="transcribe")
+    # English-only checkpoints (the ".en" suffix, e.g. whisper-tiny.en) ship no
+    # lang_to_id/task_to_id mapping at all -- setting an explicit language/task
+    # on their generation_config makes newer transformers' generate() crash
+    # trying to resolve a language id that doesn't exist (confirmed on a real
+    # training run). Only multilingual checkpoints need/support this.
+    is_english_only = args.base_model.endswith(".en")
+    processor = WhisperProcessor.from_pretrained(
+        args.base_model, **({} if is_english_only else {"language": "en", "task": "transcribe"})
+    )
     model = WhisperForConditionalGeneration.from_pretrained(args.base_model)
-    model.generation_config.language = "en"
-    model.generation_config.task = "transcribe"
+    if not is_english_only:
+        model.generation_config.language = "en"
+        model.generation_config.task = "transcribe"
     model.generation_config.forced_decoder_ids = None
 
     def to_dataset(manifest_path: str) -> Dataset:

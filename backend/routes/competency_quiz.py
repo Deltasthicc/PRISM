@@ -29,10 +29,12 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from db.database import get_db
+from models.accuracy_history import AccuracyHistory
 from models.governance import EvidenceRecord
 from routes.learning_common import player_or_404
 from security.audit import record_audit_event
 from services.curricula import CURRICULA
+from services.game_logic import update_accuracy_history
 from services.hand_authored_questions import normalize_fill_in_blank_answer, questions_for_competency
 from services.quiz_scoring import pace_label as _pace_label
 from services.quiz_scoring import time_factor as _time_factor
@@ -572,6 +574,47 @@ async def submit_quiz(
     evidence_record_ids: list[str] = []
     if body.player_id:
         player_or_404(db, body.player_id)
+
+        # Every graded answer is real practice evidence for its
+        # competency_id's AccuracyHistory row -- the exact same table
+        # dsa_sandbox.py's submit already updates, and the only table
+        # routes/game.py's _is_room_unlocked_for_player/
+        # _annotate_rooms_for_player read to decide a Prerequisite Pathways
+        # room's locked/unlocked/weak/mastered status and next_topic. Before
+        # this, competency-quiz submissions only wrote EvidenceRecord
+        # (competency-vector scoring), so a learner could answer every
+        # question correctly here and the dungeon map would never move --
+        # no course/topic's rooms progressed from this quiz path at all.
+        # One row per (player_id, topic) -- update in place across however
+        # many answers land on the same competency_id in this submission.
+        accuracy_rows: dict[str, AccuracyHistory] = {}
+        for answer in graded:
+            acc = accuracy_rows.get(answer.competency_id)
+            if acc is None:
+                acc = (
+                    db.query(AccuracyHistory)
+                    .filter(
+                        AccuracyHistory.player_id == body.player_id,
+                        AccuracyHistory.topic == answer.competency_id,
+                    )
+                    .first()
+                )
+                if acc is None:
+                    acc = AccuracyHistory(player_id=body.player_id, topic=answer.competency_id)
+                    db.add(acc)
+                    db.flush()
+                accuracy_rows[answer.competency_id] = acc
+            verdict = "correct" if answer.correct else "incorrect"
+            new_l5, new_att, new_cor, new_acc = update_accuracy_history(
+                acc.last_5_results or [], verdict, acc.attempts, acc.correct
+            )
+            acc.last_5_results = new_l5
+            acc.attempts = new_att
+            acc.correct = new_cor
+            acc.recent_accuracy = new_acc
+            if new_acc > 0.65:
+                acc.mastered = True
+
         for score in competency_scores:
             record = EvidenceRecord(
                 player_id=body.player_id,

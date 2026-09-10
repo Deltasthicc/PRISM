@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from db.database import Base, get_db
 from main import app
+from models.accuracy_history import AccuracyHistory
 from models.governance import AuditEvent, EvidenceRecord
 from models.player import Player
 from routes.competency_quiz import TOPICS
@@ -292,6 +293,66 @@ def test_submission_persists_separate_diagnostic_evidence_and_audit(tmp_path):
         assert {record.evidence_type for record in records} == {"observed_practice"}
         assert all('\"provisional\":true' in record.detail for record in records)
         assert db.query(AuditEvent).filter_by(action="competency_quiz.submit").count() == 1
+
+        # Regression coverage: routes/game.py's _is_room_unlocked_for_player
+        # and _annotate_rooms_for_player read ONLY AccuracyHistory to decide
+        # a Prerequisite Pathways room's locked/unlocked/weak/mastered status
+        # and next_topic -- for every curriculum, not just DSA (AccuracyHistory
+        # is keyed by plain competency_id strings). Before this fix,
+        # competency-quiz submissions wrote EvidenceRecord only, so a learner
+        # could ace this quiz and the dungeon map would never move for any
+        # course or topic. One row per competency_id scored, matching
+        # dsa_sandbox.py's submit path exactly.
+        accuracy_rows = db.query(AccuracyHistory).filter_by(player_id=player.player_id).all()
+        assert {row.topic for row in accuracy_rows} == {
+            score["competency_id"] for score in body["competency_scores"]
+        }
+        for row in accuracy_rows:
+            assert row.attempts > 0
+            assert row.recent_accuracy > 0.65
+            assert row.mastered is True  # is_proven()'s accuracy ratchet, all-correct submission
+    finally:
+        app.dependency_overrides.pop(get_db, None)
+        db.close()
+        engine.dispose()
+
+
+def test_repeated_submissions_accumulate_the_same_accuracy_history_row(tmp_path):
+    """Two separate quiz submissions for the same competency must update one
+    running AccuracyHistory row, not create duplicates or reset progress --
+    the same row's `attempts`/`last_5_results` are what a later submission's
+    rolling accuracy is computed from."""
+    engine = create_engine(
+        f"sqlite:///{tmp_path / 'quiz2.db'}", connect_args={"check_same_thread": False}
+    )
+    Base.metadata.create_all(bind=engine)
+    TestSession = sessionmaker(bind=engine)
+    db = TestSession()
+    player = Player(username=f"quiz-{uuid.uuid4()}")
+    db.add(player)
+    db.commit()
+    db.refresh(player)
+
+    def override_db():
+        session = TestSession()
+        try:
+            yield session
+        finally:
+            session.close()
+
+    app.dependency_overrides[get_db] = override_db
+    try:
+        for _ in range(2):
+            issued = issue("data_quality", 2)
+            response = client.post(
+                "/learning/competency-quiz/submit",
+                json=submit_payload(issued, correct=True, player_id=player.player_id),
+            )
+            assert response.status_code == 200
+        rows = db.query(AccuracyHistory).filter_by(player_id=player.player_id).all()
+        assert len(rows) == 1
+        assert rows[0].attempts == 4
+        assert rows[0].correct == 4
     finally:
         app.dependency_overrides.pop(get_db, None)
         db.close()

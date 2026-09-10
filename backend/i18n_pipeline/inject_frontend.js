@@ -22,31 +22,25 @@ const NEW_LANGUAGES = [
 ];
 
 // Keys here are en_flat.json's own dot-paths (derived from this app's own
-// translations.js, not external input), but guarding each segment with a
-// real hasOwnProperty check -- same as LanguageContext.jsx's lookup() --
-// closes off the prototype-pollution shape regardless.
-function setOwn(node, segment, value) {
-  Object.defineProperty(node, segment, {
-    value,
-    writable: true,
-    enumerable: true,
-    configurable: true,
-  });
-}
-
+// translations.js, not external input), but every level is built with
+// Object.create(null) regardless -- one of Semgrep's own documented
+// mitigations for this shape ("using an object without prototypes"). A
+// prototype-less node has no inherited __proto__/constructor to hit, so
+// `node = node[seg]` can never walk into Object.prototype no matter what
+// `seg` is.
 function unflatten(flat) {
-  const root = {};
+  const root = Object.create(null);
   for (const [dotPath, value] of Object.entries(flat)) {
     const segments = dotPath.split('.');
     let node = root;
     for (let i = 0; i < segments.length - 1; i++) {
       const seg = segments[i];
-      if (!Object.prototype.hasOwnProperty.call(node, seg) || typeof node[seg] !== 'object') {
-        setOwn(node, seg, {});
+      if (typeof node[seg] !== 'object' || node[seg] === null) {
+        node[seg] = Object.create(null);
       }
       node = node[seg];
     }
-    setOwn(node, segments[segments.length - 1], value);
+    node[segments[segments.length - 1]] = value;
   }
   return root;
 }

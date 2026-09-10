@@ -55,9 +55,34 @@ These are deliberately **not** in `requirements.txt` — they're only needed to
 run this one-off fine-tune, not to run the deployed app.
 
 ```bash
-pip install torch --index-url https://download.pytorch.org/whl/cu124
+pip install torch
 pip install transformers datasets accelerate evaluate jiwer librosa soundfile ctranslate2
 ```
+
+Do **not** pin a specific CUDA wheel index (e.g. `--index-url .../cu124`) --
+plain `pip install torch` resolves the latest stable release directly from
+PyPI, which bundles its own CUDA runtime and (as of late-2026 releases)
+supports current-generation GPU architectures like Blackwell (RTX 50-series,
+CUDA capability sm_120) out of the box. Pinning an older CUDA-version wheel
+index can silently resolve a *much* older torch build that predates support
+for your GPU's compute capability -- `torch.cuda.is_available()` will still
+print `True` in that case (it only checks that the CUDA runtime loads), so
+verify the actual warning is absent, not just that flag:
+
+```bash
+python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))"
+```
+
+If this prints a `... is not compatible with the current PyTorch
+installation` warning, reinstall with `pip install --upgrade torch` (no
+index URL) before proceeding to step 4 -- training will silently run on an
+unsupported/degraded path otherwise.
+
+Also do **not** `pip install torchcodec` if you hit `ImportError: To support
+decoding audio data, please install 'torchcodec'` from a `datasets.Audio`
+column -- this script no longer uses `datasets.Audio` at all (it reads audio
+directly with `soundfile`/`librosa`) precisely to avoid torchcodec's tight,
+easy-to-break ABI coupling to a specific torch build.
 
 ### 2. Regenerate the corpus (optional — already committed, skip unless you changed curricula/questions)
 

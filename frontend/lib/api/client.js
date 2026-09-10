@@ -351,6 +351,18 @@ export const ai = {
     );
     return { ...data, graph: { nodes, edges } };
   },
+
+  // Real, access-filtered, cited retrieval (ai/retrieval.py, ai/assistant.py)
+  // exposed via routes/ai_real.py. Abstains honestly (status
+  // "insufficient_evidence") rather than inventing an answer when retrieval
+  // finds nothing strong enough -- see ai/assistant.py's own docstring. No
+  // player_id needed: DISABLE_AUTH's demo principal (routes/authorization.py)
+  // covers every request in the shared demo deployment this app runs as.
+  assistantQuery: (query, topK = 3) =>
+    request('/ai/assistant/query', {
+      method: 'POST',
+      body: { query, top_k: topK },
+    }),
 };
 
 // Multipart requests (file upload) can't go through request() above -- the

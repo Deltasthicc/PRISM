@@ -47,6 +47,10 @@ class InMemoryChunkStore:
         self._source_index: dict[str, list[str]] = {}  # source_id -> list[chunk_id]
         self._tenant_index: dict[str, list[str]] = {}  # tenant_id -> list[chunk_id]
 
+    @property
+    def chunk_count(self) -> int:
+        return len(self._chunks)
+
     def add_chunks(self, chunks: list[Chunk]) -> int:
         count = 0
         for chunk in chunks:

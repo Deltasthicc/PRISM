@@ -1,0 +1,90 @@
+// Injects the new /voice page + nav.voiceAssistant keys into every language
+// block of frontend/lib/i18n/translations.js. English values come straight
+// from voice_strings.json; every other language's values come from
+// translate_voice_keys.py's output (Google Translate/MyMemory, never
+// hand-translated) -- this script only reshapes JSON into the nested
+// TRANSLATIONS[lang] shape, it does not translate anything itself.
+const fs = require('fs');
+const path = require('path');
+
+const TRANSLATIONS_PATH = path.join(__dirname, '..', '..', 'frontend', 'lib', 'i18n', 'translations.js');
+const ALL_LANGS = ['en', 'hi', 'bn', 'mr', 'te', 'ta', 'gu', 'ur', 'kn', 'or', 'ml'];
+
+function loadFlat(lang) {
+  if (lang === 'en') {
+    return JSON.parse(fs.readFileSync(path.join(__dirname, 'voice_strings.json'), 'utf-8'));
+  }
+  // `lang` only ever comes from the hardcoded ALL_LANGS array above (never
+  // external input); re-checked here anyway so the path.join below is
+  // provably safe, not merely safe by construction -- see
+  // inject_assistant_keys.js's identical comment/nosemgrep for the same rule.
+  if (!ALL_LANGS.includes(lang)) {
+    throw new Error(`Unsupported language code: ${lang}`);
+  }
+  return JSON.parse(
+    fs.readFileSync(path.join(__dirname, `voice_${lang}.json`), 'utf-8') // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+  );
+}
+
+// Same null-prototype guard as inject_frontend.js's unflatten(), for the
+// same prototype-pollution-loop reason (Semgrep flags the loop shape even
+// though a prototype-less node can't be polluted).
+function setNested(root, dotPath, value) {
+  const segments = dotPath.split('.');
+  let node = root;
+  for (let i = 0; i < segments.length - 1; i++) {
+    const seg = segments[i];
+    if (typeof node[seg] !== 'object' || node[seg] === null) {
+      node[seg] = Object.create(null);
+    }
+    node = node[seg]; // nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop
+  }
+  node[segments[segments.length - 1]] = value;
+}
+
+function evalTranslations(src) {
+  const stripped = src.replace(/export const/g, 'const');
+  const wrapped = stripped + '\nmodule.exports = { LANGUAGES, DEFAULT_LANGUAGE, TRANSLATIONS };\n';
+  const Module = require('module');
+  const m = new Module('translations-eval-voice');
+  m._compile(wrapped, 'translations-eval-voice.js');
+  return m.exports;
+}
+
+function main() {
+  const src = fs.readFileSync(TRANSLATIONS_PATH, 'utf-8');
+  const { LANGUAGES, TRANSLATIONS } = evalTranslations(src);
+
+  for (const lang of ALL_LANGS) {
+    const flat = loadFlat(lang);
+    if (!TRANSLATIONS[lang]) TRANSLATIONS[lang] = {};
+    for (const [dotPath, value] of Object.entries(flat)) {
+      setNested(TRANSLATIONS[lang], dotPath, value);
+    }
+    console.log(`merged voice keys into '${lang}'`);
+  }
+
+  const header = `// Static UI-chrome translations only (nav labels, buttons, headings, form
+// labels, static copy) -- never AI-generated content (quiz questions, gap
+// analysis text), which still comes back from the backend in whatever
+// language it was generated in. See LanguageContext.jsx for the lookup.
+//
+// Non-English blocks below (everything except 'en') were machine-translated
+// via translate.py's calls to Google Translate's public endpoint, then
+// merged with an English fallback for any key the translator failed to
+// return -- see backend/i18n_pipeline/. Not hand-translated by an assistant,
+// per the project's "don't burn tokens hand-translating, use a real
+// translator" instruction; treat these as a first pass a native speaker
+// should review, same as any machine translation.
+export const LANGUAGES = ${JSON.stringify(LANGUAGES, null, 2).replace(/"([a-zA-Z_$][a-zA-Z0-9_$]*)":/g, '$1:')};
+
+export const DEFAULT_LANGUAGE = 'en';
+
+export const TRANSLATIONS = ${JSON.stringify(TRANSLATIONS, null, 2)};
+`;
+
+  fs.writeFileSync(TRANSLATIONS_PATH, header, 'utf-8');
+  console.log(`Wrote ${TRANSLATIONS_PATH}`);
+}
+
+main();

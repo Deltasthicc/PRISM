@@ -30,6 +30,7 @@ from ai.voice.tts import TTSChunk
 from ai.voice.vad import VADEventType, VoiceActivityDetector
 
 from db.database import SessionLocal
+from routes.authorization import _DEMO_AUTH_DISABLED, _demo_principal
 from security.identity import AuthenticationError, get_current_subject
 from security.rbac import (
     AuthorizationError,
@@ -73,11 +74,21 @@ def reset_voice_factories() -> None:
 def _authenticate_token(raw_auth_header: str | None) -> BoundPrincipal:
     """Validate bearer token, resolve bound principal, and verify deployment tenant.
 
-    Fails closed immediately on missing, invalid, or unauthorized credentials.
-    Never falls back to demo mode without explicit test factory injection.
+    Fails closed immediately on missing, invalid, or unauthorized credentials
+    unless an explicit test factory is injected, or the same DISABLE_AUTH demo
+    bypass routes/authorization.py's require_principal already uses is set --
+    this endpoint had no such bypass before, meaning voice could never work in
+    exactly the DISABLE_AUTH=true local/demo setup the rest of this app runs
+    in (no bearer token to send, and no local Keycloak in that setup to issue
+    one). Reusing the same well-labeled bypass here, rather than inventing a
+    second one, keeps this consistent with every other route's demo behavior.
+    Never set DISABLE_AUTH=true for a deployment handling real user data.
     """
     if _auth_verifier is not None:
         return _auth_verifier(raw_auth_header, None)
+
+    if _DEMO_AUTH_DISABLED:
+        return _demo_principal()
 
     if not raw_auth_header:
         raise AuthenticationError("Authentication required.")

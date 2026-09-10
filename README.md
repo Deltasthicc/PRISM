@@ -10,7 +10,7 @@
 ![Frontend](https://img.shields.io/badge/frontend-Next.js%2015%20%2F%20React%2019-000000?logo=nextdotjs&logoColor=white)
 ![Database](https://img.shields.io/badge/database-PostgreSQL%20(Neon)-4169E1?logo=postgresql&logoColor=white)
 ![Languages](https://img.shields.io/badge/UI-11%20languages-orange)
-![Tests](https://img.shields.io/badge/backend%20tests-967-brightgreen)
+![Tests](https://img.shields.io/badge/backend%20tests-969-brightgreen)
 
 [Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [DSA Sandbox](#-dsa-sandbox) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
@@ -189,7 +189,9 @@ flowchart LR
 - Server-derived identity only — `tenant_id`, `user_id`, `player_id`, and `roles` sent by the client are rejected outright; the same tenant/role-scoped RAG filtering and prompt-injection detection used by the text-based assistant applies here too.
 - Cooperative cancellation and barge-in: a learner can interrupt mid-response.
 - **Local-only for now** — the Piper voice model isn't committed to the repo (`.gitignore`'d, configured via `PIPER_MODEL_PATH`/`PIPER_CONFIG_PATH`), so this isn't part of the hosted Render demo; it runs when you bring your own model file locally.
-- **Backend-only today — no frontend entry point yet.** The WebSocket pipeline above is real and has 61 test functions covering it (`tests/test_content_ai_voice.py`), but there is no microphone button or audio UI anywhere in `frontend/`. A learner can reach the text version of the same assistant at [`/assistant`](#-learner-assistant-rag); a voice UI wired to `/ai/voice/stream` is tracked as an open item, not claimed as shipped.
+- **`/voice`**: a real page wired to this WebSocket -- captures mic audio, resamples to 16kHz mono PCM16 client-side (Web Audio API), streams it up, and renders the live transcript plus the same grounded/cited answer `/assistant` shows. Handles barge-in and a denied/unavailable microphone with a clear error. `DISABLE_AUTH=true` now covers this endpoint too (it previously had no demo bypass at all, unlike every other route, so voice could never connect in this app's normal local/demo setup).
+- **TTS needs a local Piper model you bring yourself** (see below) -- without one, the server honestly reports `TTS_FAILURE` per turn and the page shows the real text answer with a "voice reply unavailable" note, rather than pretending to speak. STT works out of the box (`faster-whisper`'s `tiny.en` model downloads automatically on first use).
+- Verified with a real spoken sentence fed through the actual WebSocket protocol end-to-end: real VAD speech-start/end, a real `faster-whisper` transcript, a real RAG-grounded answer with citations, and an honest `TTS_FAILURE` with no Piper model configured. Live microphone capture through a real browser was not part of that verification (see Known limitations).
 
 ## 🚀 Running it locally
 
@@ -249,7 +251,7 @@ Then open `http://localhost:3000`.
 
 ## 🧪 Tests & CI
 
-- **992 backend tests** (967 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
+- **994 backend tests** (969 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
 - **No frontend test suite** exists yet — `frontend/package.json` only defines `dev`/`build`/`start`/`lint`.
 - [`ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`:
   - `backend-tests` — `pip-audit` + full pytest suite against Postgres
@@ -271,7 +273,7 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 - `/integration-registry` is a visual mockup with no backend behind it; `/guild` has a real backend endpoint waiting but no UI wired to it yet.
 - The optional gamified practice layer (Quest Mode: `/character`, `/combat`, `/boss/[dungeonId]`, `/guild`, `/leaderboard`) is off by default and intentionally not part of the front-page pitch for now — see the [real-vs-mockup table](#-whats-real-and-whats-a-mockup) if you need the detail.
 - The Learner Assistant's answer quality without a working `GEMINI_API_KEY` is extractive (it quotes the top-matching evidence directly rather than synthesizing prose) — real and honestly labeled, but a configured key gives noticeably better answers. The 174-excerpt seed corpus is UPSC-exam-style passages, so some phrasing reads more like an exam question than a textbook explanation.
-- The voice pipeline is local-only and has no frontend UI yet — see [Voice AI pipeline](#-voice-ai-pipeline).
+- The voice pipeline's `/voice` UI is real but has two real constraints: TTS output needs a local Piper model you supply yourself (STT and the text answer work without one), and live microphone capture through a real browser has not been verified in this development environment (no physical microphone available here) — the WebSocket protocol itself was verified end-to-end with a real generated speech sample. See [Voice AI pipeline](#-voice-ai-pipeline).
 - 9 of the 11 UI languages are a first machine-translation pass awaiting native-speaker review — see [Internationalization](#-internationalization).
 - One DSA competency (`binary_search`) has no verified quiz questions yet.
 - The real browser OIDC/PKCE login flow (as opposed to the demo bypass and the dev-login bridge) is not yet implemented.
@@ -289,7 +291,7 @@ backend/
   models/            SQLAlchemy models (players, learning, governance, dungeon, guild, ...)
   security/          Real OIDC identity + RBAC (untouched by the demo bypass)
   migrations/        Alembic migrations
-  tests/             992 pytest tests
+  tests/             994 pytest tests
 
 frontend/
   app/           Next.js App Router pages (see the real-vs-mockup table above)

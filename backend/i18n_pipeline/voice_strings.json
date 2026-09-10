@@ -1,0 +1,20 @@
+{
+  "nav.voiceAssistant": "Voice Assistant",
+  "voicePage.eyebrow": "REAL-TIME VOICE",
+  "voicePage.title": "Voice Assistant",
+  "voicePage.subtitle": "Speak a question and get a grounded, cited answer from the same Learner Assistant -- your voice never leaves this session, and nothing is written to disk.",
+  "voicePage.statusIdle": "Not connected",
+  "voicePage.statusConnecting": "Connecting...",
+  "voicePage.statusListening": "Listening",
+  "voicePage.statusProcessing": "Thinking...",
+  "voicePage.statusSpeaking": "Speaking",
+  "voicePage.statusError": "Error",
+  "voicePage.startButton": "Start talking",
+  "voicePage.stopButton": "Stop",
+  "voicePage.micDenied": "Microphone access was denied or is unavailable. Allow microphone access and try again.",
+  "voicePage.connectionError": "Could not connect to the voice assistant. Please try again.",
+  "voicePage.ttsUnavailable": "Voice reply unavailable (no local voice model configured) -- showing the text answer instead.",
+  "voicePage.youSaid": "You said",
+  "voicePage.answerHeading": "Answer",
+  "voicePage.footerNote": "Audio is processed live and never saved. If no spoken reply plays, the text answer above is still real and grounded."
+}

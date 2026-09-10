@@ -14,6 +14,13 @@ function loadFlat(lang) {
   if (lang === 'en') {
     return JSON.parse(fs.readFileSync(path.join(__dirname, 'assistant_strings.json'), 'utf-8'));
   }
+  // `lang` only ever comes from the hardcoded ALL_LANGS array below (never
+  // external input), but re-checking that here -- instead of trusting the
+  // caller -- is what makes path.join(__dirname, `assistant_${lang}.json`)
+  // provably safe rather than merely "safe today by construction."
+  if (!ALL_LANGS.includes(lang)) {
+    throw new Error(`Unsupported language code: ${lang}`);
+  }
   return JSON.parse(fs.readFileSync(path.join(__dirname, `assistant_${lang}.json`), 'utf-8'));
 }
 

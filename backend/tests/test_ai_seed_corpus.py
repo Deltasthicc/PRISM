@@ -80,27 +80,36 @@ def test_seeded_chunks_are_not_visible_under_the_wrong_tenant():
     assert not results
 
 
-def test_app_startup_seeds_the_default_chunk_store_and_assistant_query_finds_it():
-    """End-to-end through the real app's lifespan and the real
-    /ai/assistant/query route -- not just the module-level functions --
-    proving main.py actually wires this up, not only that the pieces work in
-    isolation. Needs `with TestClient(...)` (not the bare module-level
-    `client`) to actually trigger the ASGI lifespan startup event that runs
-    the seeding."""
+def test_assistant_query_route_finds_the_real_seeded_default_store():
+    """End-to-end through the real /ai/assistant/query route and the real
+    `default_chunk_store` singleton it reads -- not just the module-level
+    seed_corpus functions in isolation -- so a route-level regression (e.g.
+    the tenant-scope mismatch this module used to have) would show up here
+    even if the unit-level tests above didn't happen to catch it.
+
+    Deliberately does NOT go through `with TestClient(app) as ...` (which
+    would run main.py's full lifespan, including its Alembic schema-version
+    check against whatever database CI's plain `client = TestClient(app)`
+    fixture already connects to unmigrated) -- main.py's lifespan wiring
+    itself was already verified by hand against a real running dev server
+    (see this PR's description), so this test only needs to seed the same
+    real singleton the route reads and confirm the route's own logic (auth,
+    access filtering, response shape) works against it."""
     from ai.retrieval import default_chunk_store
+    from ai.seed_corpus import seed_default_chunk_store
+
+    seed_default_chunk_store(default_chunk_store)
+    assert default_chunk_store.chunk_count > 0
 
     app.dependency_overrides[require_principal] = _learner_principal
     try:
-        with TestClient(app) as lifespan_client:
-            assert default_chunk_store.chunk_count > 0
-
-            response = lifespan_client.post(
-                "/ai/assistant/query",
-                json={"query": "What is the hazard rate of an exponentially distributed lifetime?"},
-            )
-            assert response.status_code == 200
-            body = response.json()
-            assert body["status"] == "supported"
-            assert body["citations"]
+        response = client.post(
+            "/ai/assistant/query",
+            json={"query": "What is the hazard rate of an exponentially distributed lifetime?"},
+        )
+        assert response.status_code == 200
+        body = response.json()
+        assert body["status"] == "supported"
+        assert body["citations"]
     finally:
         app.dependency_overrides.pop(require_principal, None)

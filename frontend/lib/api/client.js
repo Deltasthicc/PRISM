@@ -438,6 +438,12 @@ export const learning = {
   getCompetencyQuizQuestions: (topicId, count = 5) =>
     request(`/learning/competency-quiz/questions?topic_id=${encodeURIComponent(topicId)}&count=${count}`),
 
+  // Practice exactly one competency (e.g. one Prerequisite Pathways room) --
+  // the backend resolves it to its containing topic internally but scopes
+  // the question pool to just this competency_id, not the whole topic.
+  getPracticeQuestions: (competencyId, count = 5) =>
+    request(`/learning/competency-quiz/questions?competency_id=${encodeURIComponent(competencyId)}&count=${count}`),
+
   submitCompetencyQuiz: (attemptId, topicId, answers, playerId) =>
     request('/learning/competency-quiz/submit', {
       method: 'POST',

@@ -16,6 +16,12 @@ fastapi==0.141.1
 # let it silently drift back below a fixed range.
 starlette==1.6.0
 uvicorn==0.30.6
+# Plain uvicorn has no WebSocket protocol implementation bundled -- without
+# this, /ai/voice/stream's upgrade requests 404 with "Unsupported upgrade
+# request" / "No supported WebSocket library detected" (confirmed on a real
+# local run: TestClient's ASGI transport doesn't need this, so the test
+# suite alone never caught it, only a real uvicorn server does).
+websockets==13.1
 sqlalchemy==2.0.35
 # Bumped from 1.14.0 for current tooling hygiene (Package 7); does not by
 # itself detect CHECK-constraint expression drift -- see

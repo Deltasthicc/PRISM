@@ -54,12 +54,20 @@ def download_voices() -> list[tuple[str, str, str]]:
     os.makedirs(VOICES_DIR, exist_ok=True)
     resolved = []
     for name, remote_subpath in VOICES:
+        # (name, remote_subpath) always come from the fixed VOICES tuple above,
+        # never from user input -- this check is a defense-in-depth allowlist,
+        # not a real runtime guard against untrusted data.
+        if (name, remote_subpath) not in VOICES:
+            raise ValueError(f"Refusing to download unlisted voice: {name}")
+
         onnx_path = os.path.join(VOICES_DIR, f"{name}.onnx")
         config_path = os.path.join(VOICES_DIR, f"{name}.onnx.json")
         if not os.path.exists(onnx_path):
             print(f"Downloading voice {name}...")
+            # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
             urllib.request.urlretrieve(f"{BASE_URL}/{remote_subpath}/{name}.onnx", onnx_path)
         if not os.path.exists(config_path):
+            # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
             urllib.request.urlretrieve(f"{BASE_URL}/{remote_subpath}/{name}.onnx.json", config_path)
         resolved.append((name, onnx_path, config_path))
     return resolved

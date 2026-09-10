@@ -1,0 +1,20 @@
+{
+  "nav.assistant": "Ask PRISM",
+  "assistantPage.eyebrow": "GROUNDED Q&A",
+  "assistantPage.title": "Learner Assistant",
+  "assistantPage.subtitle": "Ask a question and get a grounded answer with citations, drawn only from PRISM's real source documents -- never invented.",
+  "assistantPage.placeholder": "Ask about a topic covered in your courses...",
+  "assistantPage.askButton": "Ask",
+  "assistantPage.asking": "Searching...",
+  "assistantPage.example1": "What does the National AI Strategy say about responsible AI?",
+  "assistantPage.example2": "What is the DARPG Sevottam framework?",
+  "assistantPage.example3": "How is the Periodic Labour Force Survey sample designed?",
+  "assistantPage.answerHeading": "Answer",
+  "assistantPage.statusSupported": "Grounded in source evidence",
+  "assistantPage.statusInsufficientEvidence": "Insufficient evidence",
+  "assistantPage.abstentionNote": "No source material was confident enough to answer this -- try rephrasing, or ask about a topic covered in your courses.",
+  "assistantPage.citationsHeading": "Sources",
+  "assistantPage.provenanceNote": "Every answer is grounded in retrieved, cited source text -- never generated from unstated general knowledge.",
+  "assistantPage.genericError": "Could not reach the assistant. Please try again.",
+  "assistantPage.loadingShell": "Loading..."
+}

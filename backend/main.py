@@ -99,6 +99,16 @@ async def lifespan(app: FastAPI):
             "see docs/contracts/data-authorization.md."
         )
 
+    # Unconditional (not gated by SEED_DEMO_DATA): this is real, committed,
+    # human-reviewed content (data/hand_authored_questions.json's
+    # source_excerpt fields), not synthetic demo data -- the Learner
+    # Assistant (/ai/assistant/query) should have real evidence to retrieve
+    # from in every deployment mode, not just the SQLite demo. In-memory
+    # only, idempotent, no DB writes.
+    from ai.seed_corpus import seed_default_chunk_store
+    indexed = seed_default_chunk_store()
+    print(f"Indexed {indexed} source-cited chunks into the Learner Assistant's retrieval store.")
+
     yield
 
 

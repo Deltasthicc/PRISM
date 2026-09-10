@@ -24,7 +24,7 @@ import models.question  # noqa: F401
 import models.session  # noqa: F401
 import models.submission  # noqa: F401
 
-from ai.assistant import LearnerAssistant
+from ai.assistant import LearnerAssistant, default_assistant
 from ai.grading import grade_student_answer
 from ai.ingestion import ingest_document
 from ai.provenance import AccessContext, AssistantResponseStatus, ItemReviewState
@@ -210,7 +210,16 @@ def test_cross_tenant_retrieval_isolated_via_http(auth_app):
     )
     store.add_chunks(alpha_chunks)
 
-    with patch("routes.ai_real.default_chunk_store", store), patch("ai.assistant.default_chunk_store", store):
+    # routes/ai_real.py's /ai/assistant/query calls the module-level
+    # `default_assistant` singleton (ai/assistant.py), whose `self.chunk_store`
+    # was bound once at construction time (`chunk_store or default_chunk_store`)
+    # -- patching the *module-level name* `default_chunk_store` doesn't reach
+    # that already-bound instance attribute, so this must patch the attribute
+    # directly. Previously this only looked like it worked because the real
+    # global default_chunk_store was always empty regardless; now that
+    # ai/seed_corpus.py populates it at app startup, an ineffective patch here
+    # would leak real seeded chunks into a test asserting tenant isolation.
+    with patch.object(default_assistant, "chunk_store", store):
         # Authenticate as Tenant Beta
         beta_principal = _make_principal(subject_id="beta-user", tenant_scope="deployment-database")
         auth_app.dependency_overrides[require_principal] = lambda: beta_principal

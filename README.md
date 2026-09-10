@@ -2,17 +2,17 @@
 
 <div align="center">
 
-**A bilingual, explainable competency-gap engine for government skill development — built for Smart India Hackathon 2026 (PS: 26101).**
+**An 11-language, explainable competency-gap engine for government skill development — built for Smart India Hackathon 2026 (PS: 26101).**
 
 [![CI](https://github.com/Deltasthicc/PRISM/actions/workflows/ci.yml/badge.svg)](https://github.com/Deltasthicc/PRISM/actions/workflows/ci.yml)
 [![Keepalive](https://github.com/Deltasthicc/PRISM/actions/workflows/keepalive.yml/badge.svg)](https://github.com/Deltasthicc/PRISM/actions/workflows/keepalive.yml)
 ![Backend](https://img.shields.io/badge/backend-FastAPI%200.141-009688?logo=fastapi&logoColor=white)
 ![Frontend](https://img.shields.io/badge/frontend-Next.js%2015%20%2F%20React%2019-000000?logo=nextdotjs&logoColor=white)
 ![Database](https://img.shields.io/badge/database-PostgreSQL%20(Neon)-4169E1?logo=postgresql&logoColor=white)
-![Languages](https://img.shields.io/badge/UI-English%20%2F%20हिंदी-orange)
-![Tests](https://img.shields.io/badge/backend%20tests-935-brightgreen)
+![Languages](https://img.shields.io/badge/UI-11%20languages-orange)
+![Tests](https://img.shields.io/badge/backend%20tests-967-brightgreen)
 
-[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
+[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [DSA Sandbox](#-dsa-sandbox) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
 </div>
 
@@ -20,15 +20,15 @@
 
 ## 📖 What PRISM actually does
 
-Government officers (MoSPI-style: statistical officers, analysts, policy staff) need a way to know exactly *which* skills they're missing, *why*, and *what to do about it* — without a vague "take this course" recommendation. PRISM is a **deterministic, explainable competency-gap engine**: it blends a learner's self-assessment with demonstrated performance (quiz results, exercises) at a fixed **65% demonstrated / 35% self-assessed** weighting, maps the result against a curated, government-source-cited competency catalog, and generates a personalized learning pathway with a plain-language rationale for every gap it identifies.
+Government officers (MoSPI-style: statistical officers, analysts, policy staff) need a way to know exactly *which* skills they're missing, *why*, and *what to do about it* — without a vague "take this course" recommendation. PRISM is a **deterministic, explainable competency-gap engine**: it blends a learner's self-assessment with demonstrated performance (quiz results, exercises, real code submissions) at a fixed **65% demonstrated / 35% self-assessed** weighting, maps the result against a curated, government-source-cited competency catalog, and generates a personalized learning pathway (the "Prerequisite Pathways" map) with a plain-language rationale for every gap it identifies.
 
-**Four curricula, ~57 competencies**, each traceable to an actual government or standards document (see [`backend/services/competency_docs.py`](backend/services/competency_docs.py) and [`curricula.py`](backend/services/curricula.py)):
+**Four curricula, 55 competencies**, each traceable to an actual government or standards document (see [`backend/services/competency_docs.py`](backend/services/competency_docs.py) and [`curricula.py`](backend/services/curricula.py)):
 - DSA Fundamentals
 - Official Statistics & Data Governance
 - Public Policy
 - Digital Literacy
 
-The whole UI and the deterministic gap-analysis prose is available in **English and Hindi**, switchable live from the navbar — no page reload required.
+The whole UI and the deterministic gap-analysis prose is available in **11 languages** — English, Hindi, and the next 9 most-spoken languages from the 2011 Census (Bengali, Marathi, Telugu, Tamil, Gujarati, Urdu, Kannada, Odia, Malayalam) — switchable live from the navbar, no page reload required. See [Internationalization](#-internationalization) for what's machine-translated vs. what still needs a native-speaker review pass.
 
 ## 🖥️ Live demo
 
@@ -88,8 +88,10 @@ There's also a **separate, standalone second FastAPI app** at repo root (`servic
 
 There are two genuinely separate, working quiz mechanisms — not one quiz reused everywhere:
 
-1. **Baseline competency quiz** ([`backend/routes/competency_quiz.py`](backend/routes/competency_quiz.py)) — **145 hand-authored questions** (both multiple-choice and fill-in-the-blank) across **22 topics** spanning all four curricula, served during onboarding right after profile setup (see [`frontend/lib/competencyTopics.js`](frontend/lib/competencyTopics.js) for the full topic list). Every question traces back to a real, hash-verified government document registered in [`document_corpus.json`](backend/data/document_corpus.json) — **49 source documents** in total, including official GATE CS/IT question papers (DSA), MoSPI/NSSO/Census/DST publications (Official Statistics), UPSC prelims papers, DARPG/NITI Aayog/DoPT documents (Public Policy), and MeitY/I4C/NIELIT material (Digital Literacy) — loaded via [`hand_authored_questions.py`](backend/services/hand_authored_questions.py).
+1. **Competency quiz bank** ([`backend/routes/competency_quiz.py`](backend/routes/competency_quiz.py)) — **174 hand-authored questions** (both multiple-choice and fill-in-the-blank) across **22 topics** spanning all four curricula, servable either as a whole topic (onboarding baseline, `/baseline-assessment`) or scoped to exactly one competency (`/practice`, reached from a Prerequisite Pathways room — see [`frontend/lib/competencyTopics.js`](frontend/lib/competencyTopics.js) for the full topic list). Every question traces back to a real, hash-verified government document registered in [`document_corpus.json`](backend/data/document_corpus.json) — **49 source documents** in total, including official GATE CS/IT question papers (DSA), MoSPI/NSSO/Census/DST publications (Official Statistics), UPSC prelims papers, DARPG/NITI Aayog/DoPT documents (Public Policy), and MeitY/I4C/NIELIT material (Digital Literacy) — loaded via [`hand_authored_questions.py`](backend/services/hand_authored_questions.py). Only one DSA competency (`binary_search`) has no verified questions yet.
 2. **Grounded quiz generation** ([`learning_content.py`](backend/routes/learning_content.py), via [`quiz_generator.py`](backend/services/quiz_generator.py)) — upload your own `.txt`/`.md`/`.pdf`/`.docx` material from the Academy page and get back a fresh MCQ set with an exact source citation for every answer, with a local fallback generator when no Gemini key is configured.
+
+Both the competency quiz and the DSA Sandbox write to the same `AccuracyHistory` table that drives Prerequisite Pathways room unlocking — finishing either kind of real practice moves the map forward, for every course and topic.
 
 ```mermaid
 sequenceDiagram
@@ -112,28 +114,55 @@ sequenceDiagram
     BE-->>FE: Real gap analysis, no hardcoded data
 ```
 
+## 🧮 DSA Sandbox
+
+A real coding workspace for the DSA Fundamentals curriculum ([`frontend/app/dsa-sandbox/`](frontend/app/dsa-sandbox/), [`backend/routes/dsa_sandbox.py`](backend/routes/dsa_sandbox.py)):
+
+- **A real CodeMirror 6 editor** — syntax highlighting, line numbers, bracket matching, autocomplete, folding, four-space indentation, `Ctrl`/`Cmd`+`Enter` to run.
+- **22 original problems** across every DSA topic (arrays, linked lists, trees, graphs, DP, sliding window, hashing, two pointers, backtracking, intervals, matrices, prefix sums, and more), each with two worked examples, constraints, and a collapsible solution outline.
+- **Five real languages** — Python, JavaScript, Java, C++, C# — generated once per problem from shared type metadata ([`services/dsa_lang_gen.py`](backend/services/dsa_lang_gen.py)), not hand-duplicated five times.
+- **A real judge, not a simulated pass/fail** — every submission runs against the public [Judge0](https://ce.judge0.com) API. Hidden test cases stay server-side.
+- Solving a problem writes real practice evidence into the same `AccuracyHistory` row Prerequisite Pathways reads — a DSA Sandbox submission unlocks the map exactly like a competency quiz does.
+
+## 🤖 Learner Assistant (RAG)
+
+A real, access-filtered, cited retrieval engine ([`backend/ai/retrieval.py`](backend/ai/retrieval.py), [`ai/assistant.py`](backend/ai/assistant.py), exposed at `/assistant` in the frontend) — not a general-purpose chatbot, and it says so:
+
+- **Real BM25 retrieval** over a real corpus: at backend startup, [`ai/seed_corpus.py`](backend/ai/seed_corpus.py) indexes all 174 hand-authored questions' `source_excerpt` fields — already-committed, human-reviewed quotes from real government documents — into an in-memory chunk store. No network fetch needed, so this works identically on a fresh clone.
+- **Pre-retrieval access filtering** by tenant and role, before ranking — a chunk a caller isn't allowed to see is never scored, not just hidden after the fact.
+- **Honest abstention** — if nothing retrieved clears the relevance threshold, the assistant says so explicitly (`insufficient_evidence`) instead of inventing an answer.
+- **Every answer carries citations** — source document id, a real locator (page/section), and the exact quoted passage the answer is grounded in.
+- **Graceful LLM degradation** — with a working `GEMINI_API_KEY`, the top evidence is handed to Gemini for a synthesized, still-grounded answer; without one (or on an API error), it falls back to a deterministic extractive answer quoting the top-matching evidence directly, rather than failing.
+- Prompt-injection detection runs on every query before retrieval even starts.
+
 ## ✅ What's real, and what's a mockup
 
 Being honest about this line is the point of this section — the frontend has a real split between pages backed by the actual engine and pages that are still visual placeholders for the demo narrative.
 
 | Route | Status |
 |---|---|
-| `/login` → `CreateProfilePage` → `CompetencyQuizPage` | **Real.** Multi-step flow resolves an actual backend player via `useAuthStore`, then a real profile form, then a source-cited baseline quiz served by `routes/competency_quiz.py`. |
+| `/login` → `/register` → `/baseline-assessment` | **Real.** Resolves an actual backend player via `useAuthStore`, then a real profile form, then a source-cited baseline quiz served by `routes/competency_quiz.py`. |
 | `/stats` | **Real.** Every number comes from `GET /learning/pathway` — no hardcoded competency data. |
+| `/dungeon` ("Prerequisite Pathways") | **Real, for all four curricula.** Driven by `GET /learning/pathway/{player_id}` (the same engine `/stats` uses) merged with real per-player room unlock status from `GET /game/dungeon/{id}`. "Practice this competency" opens `/practice`, a plain quiz scoped to that one competency; finishing it updates `AccuracyHistory`, which is what flips a room to unlocked/weak/mastered and advances the "biggest gap" pointer — verified live across every curriculum, not just DSA. |
+| `/dsa-sandbox` | **Real.** See [DSA Sandbox](#-dsa-sandbox) below — real code, a real Judge0 judge, no simulated pass/fail. |
+| `/assistant` | **Real.** See [Learner Assistant (RAG)](#-learner-assistant-rag) below — a real, cited retrieval engine, not a general chatbot. |
+| `/quiz` (Source Quiz Generator) | **Real.** Upload your own material, get back a real generated quiz — see [Quizzes](#-quizzes) above. |
 | `/academy`, `/register`, `/dashboard`, `/admin` | **Real.** Backed by live API calls (`learning.*` / `game.*`). |
-| `/character`, `/boss/[dungeonId]`, `/leaderboard` | **Real, but gated behind Quest Mode.** Off by default — visiting directly shows `QuestModeGate` (a "turn on Quest Mode?" prompt) until the learner opts in from the NavBar toggle. Once on, these render genuine player/game state (hint tokens, damage, hero selection, XP-ranked leaderboard). Leaderboard's heading was corrected from a false "WEEKLY RANKS" to the honest "ALL-TIME RANKS" — the backend has always ranked by lifetime `total_xp`, no weekly window exists. |
+| `/character`, `/combat/[roomId]`, `/boss/[dungeonId]`, `/leaderboard` | **Real, but gated behind Quest Mode.** Off by default — visiting directly shows `QuestModeGate` (a "turn on Quest Mode?" prompt) until the learner opts in from the NavBar toggle. Once on, these render genuine player/game state (hint tokens, damage, hero selection, XP-ranked leaderboard) on top of the same real competency-quiz question bank. Leaderboard's heading reads "ALL-TIME RANKS" — the backend ranks by lifetime `total_xp`, no weekly window exists. |
 | `/guild` | **Gated behind Quest Mode, and still a self-contained mockup underneath.** The real backend endpoints it should call (`/game/guild/raid/join`, `/raid/status`) exist and work — `joinGuildRaid()` in `frontend/lib/api/client.js` is correctly wired — but nothing in the UI calls it yet; it's disconnected working infrastructure for a legitimately future feature, not fake code. |
-| `/dungeon`, `/quiz` | **Still mockups**, not gated by Quest Mode. No backend calls — progress percentages and quiz questions are fabricated/hardcoded client-side. Wiring them up is future work, not a bug. |
 | `/integration-registry` | **Still a mockup**, but its copy was fixed for honesty — it used to assert specific, never-checked compliance claims ("VERIFIED COMPLIANT", a fabricated audit hash, a specific RTI Act citation); now framed explicitly as "design-intent, not measured." |
 
 ## 🌐 Internationalization
 
-- [`frontend/lib/i18n/translations.js`](frontend/lib/i18n/translations.js) — English + Hindi dictionaries across 17 sections (nav, login, academy, stats, radar, admin, dashboard, leaderboard, character, footer, and more).
-- [`frontend/lib/i18n/LanguageContext.jsx`](frontend/lib/i18n/LanguageContext.jsx) — a `useLanguage()` hook, persisted to `localStorage`, with a `hasOwnProperty`-guarded lookup (deliberately hardened against prototype pollution) and fallback to English.
-- The backend also honors `?lang=en|hi` on `/learning/curricula`, `/learning/pathway/{id}`, `/learning/assessment/{id}`, `/learning/integrations/status`, and `/learning/admin/overview`, translating both the curated curriculum catalog (via a hand-translated `curricula_hi.json`) and the deterministic gap-analysis prose generated by `learning_engine.py`.
-- Scope is intentionally UI chrome + deterministic system text, **not** AI-generated content — quiz questions and Gemini-generated text come back in whatever language they were generated in.
+**11 languages**: English, Hindi, Bengali, Marathi, Telugu, Tamil, Gujarati, Urdu, Kannada, Odia, Malayalam — the 2011 Census's top 10 most-spoken mother tongues, plus English.
 
-The same competency-radar page, switched live from the navbar with no reload:
+- [`frontend/lib/i18n/translations.js`](frontend/lib/i18n/translations.js) — one dictionary per language, ~280 keys each (nav, login, academy, stats, radar, admin, dashboard, leaderboard, character, DSA Sandbox, Learner Assistant, footer, and more). Adding a language needed **zero code changes** — [`LanguageContext.jsx`](frontend/lib/i18n/LanguageContext.jsx) and [`LanguageSwitcher.jsx`](frontend/components/LanguageSwitcher.jsx) were already fully generic over whatever languages this file lists.
+- [`frontend/lib/i18n/LanguageContext.jsx`](frontend/lib/i18n/LanguageContext.jsx) — a `useLanguage()` hook, persisted to `localStorage`, with a `hasOwnProperty`-guarded lookup (deliberately hardened against prototype pollution) and fallback to English for any missing key or language.
+- The backend also honors `?lang=` (all 11 codes) on `/learning/curricula`, `/learning/pathway/{id}`, `/learning/assessment/{id}`, `/learning/integrations/status`, and `/learning/admin/overview`, translating both the curated curriculum catalog (`curricula_<lang>.json` per language) and the deterministic gap-analysis prose generated by `learning_engine.py`.
+- Scope is intentionally UI chrome + deterministic system text, **not** AI-generated content — quiz questions and Gemini-generated text come back in whatever language they were generated in.
+- **Translation provenance matters here**: Hindi's content was hand-translated. Every other language (Bengali through Malayalam) was machine-translated via [`backend/i18n_pipeline/`](backend/i18n_pipeline/) — Google Translate's public endpoint, with MyMemory as a fallback when rate-limited — never by an LLM or by hand. That pipeline is documented and re-runnable, but its output is a first pass: **a fluent native-speaker review is still an open item** for those 9 languages, same standard already applied before trusting Hindi.
+
+The same competency-radar page, switched live from the navbar with no reload (English/Hindi shown as a two-language sample of the full 11-language set):
 
 | English | हिंदी |
 |---|---|
@@ -160,6 +189,7 @@ flowchart LR
 - Server-derived identity only — `tenant_id`, `user_id`, `player_id`, and `roles` sent by the client are rejected outright; the same tenant/role-scoped RAG filtering and prompt-injection detection used by the text-based assistant applies here too.
 - Cooperative cancellation and barge-in: a learner can interrupt mid-response.
 - **Local-only for now** — the Piper voice model isn't committed to the repo (`.gitignore`'d, configured via `PIPER_MODEL_PATH`/`PIPER_CONFIG_PATH`), so this isn't part of the hosted Render demo; it runs when you bring your own model file locally.
+- **Backend-only today — no frontend entry point yet.** The WebSocket pipeline above is real and has 61 test functions covering it (`tests/test_content_ai_voice.py`), but there is no microphone button or audio UI anywhere in `frontend/`. A learner can reach the text version of the same assistant at [`/assistant`](#-learner-assistant-rag); a voice UI wired to `/ai/voice/stream` is tracked as an open item, not claimed as shipped.
 
 ## 🚀 Running it locally
 
@@ -196,9 +226,10 @@ Then open `http://localhost:3000`.
 | `learning_content.py` | `/learning` | Quiz/content generation and listing |
 | `learning_integration.py` | `/learning` | External catalog (iGOT/NSSTA) integration status |
 | `learning_analytics.py` | `/learning` | Admin overview & analytics |
-| `competency_quiz.py` | `/learning/competency-quiz` | Source-cited competency baseline quiz |
+| `competency_quiz.py` | `/learning/competency-quiz` | Source-cited competency quiz bank — by topic (baseline) or by a single `competency_id` (`/practice`) |
+| `dsa_sandbox.py` | `/learning/dsa-sandbox` | Real Judge0 code execution — see [DSA Sandbox](#-dsa-sandbox) |
 | `dev_auth.py` | `/auth` | Local-dev bridge: demo login → real Keycloak token (not a backdoor, not the real OIDC flow) |
-| `ai_real.py` | `/ai` | Gemini-backed AI endpoints |
+| `ai_real.py` | `/ai` | Learner Assistant (`/ai/assistant/query`), retrieval (`/ai/retrieval/search`, `/ai/retrieval/index`) — see [Learner Assistant (RAG)](#-learner-assistant-rag) |
 | `ai_voice.py` | `/ai/voice` | Authenticated WebSocket voice pipeline (`/ai/voice/stream`) — see [Voice AI pipeline](#-voice-ai-pipeline) |
 
 `learning.py` aggregates the `learning_*` routers into one `APIRouter` for a single import point. Full OpenAPI contract: [`docs/contracts/openapi.json`](docs/contracts/openapi.json).
@@ -218,7 +249,7 @@ Then open `http://localhost:3000`.
 
 ## 🧪 Tests & CI
 
-- **935 backend tests** (913 passed, 22 skipped locally; pytest), run against a real `postgres:16` service container in CI.
+- **992 backend tests** (967 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
 - **No frontend test suite** exists yet — `frontend/package.json` only defines `dev`/`build`/`start`/`lint`.
 - [`ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`:
   - `backend-tests` — `pip-audit` + full pytest suite against Postgres
@@ -237,9 +268,12 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 ## ⚠️ Known limitations
 
 - `DISABLE_AUTH=true` in the deployed demo means there is no real identity check on any request — see [Auth model](#-auth-model-read-this-before-you-judge-the-security).
-- `/dungeon`, `/quiz`, and `/integration-registry` are visual mockups with no backend behind them; `/guild` has a real backend endpoint waiting but no UI wired to it yet.
-- The optional gamified practice layer (Quest Mode: `/character`, `/boss/[dungeonId]`, `/guild`, `/leaderboard`) is off by default and intentionally not part of the front-page pitch for now — see the [real-vs-mockup table](#-whats-real-and-whats-a-mockup) if you need the detail.
-- The voice pipeline is local-only — the Piper TTS model isn't committed, so it isn't part of the hosted Render demo.
+- `/integration-registry` is a visual mockup with no backend behind it; `/guild` has a real backend endpoint waiting but no UI wired to it yet.
+- The optional gamified practice layer (Quest Mode: `/character`, `/combat`, `/boss/[dungeonId]`, `/guild`, `/leaderboard`) is off by default and intentionally not part of the front-page pitch for now — see the [real-vs-mockup table](#-whats-real-and-whats-a-mockup) if you need the detail.
+- The Learner Assistant's answer quality without a working `GEMINI_API_KEY` is extractive (it quotes the top-matching evidence directly rather than synthesizing prose) — real and honestly labeled, but a configured key gives noticeably better answers. The 174-excerpt seed corpus is UPSC-exam-style passages, so some phrasing reads more like an exam question than a textbook explanation.
+- The voice pipeline is local-only and has no frontend UI yet — see [Voice AI pipeline](#-voice-ai-pipeline).
+- 9 of the 11 UI languages are a first machine-translation pass awaiting native-speaker review — see [Internationalization](#-internationalization).
+- One DSA competency (`binary_search`) has no verified quiz questions yet.
 - The real browser OIDC/PKCE login flow (as opposed to the demo bypass and the dev-login bridge) is not yet implemented.
 - No frontend automated test suite.
 - Render's free tier means cold starts and tight memory headroom on Keycloak — not a production-scale deployment.
@@ -248,18 +282,19 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 
 ```
 backend/
-  routes/        FastAPI routers (game, learning/*, auth, ai, ai_voice)
-  services/      Domain logic — curricula, gap engine, quiz generation, catalogues
-  ai/voice/      Local voice pipeline (VAD, STT, TTS, session management)
-  models/        SQLAlchemy models (players, learning, governance, dungeon, guild, ...)
-  security/      Real OIDC identity + RBAC (untouched by the demo bypass)
-  migrations/    Alembic migrations
-  tests/         935 pytest tests
+  routes/            FastAPI routers (game, learning/*, auth, ai, ai_voice, dsa_sandbox)
+  services/          Domain logic — curricula, gap engine, quiz generation, catalogues
+  ai/                Retrieval, ingestion, the Learner Assistant, corpus seeding, voice/ (local VAD/STT/TTS)
+  i18n_pipeline/     Documented, re-runnable scripts that machine-translated 9 UI languages
+  models/            SQLAlchemy models (players, learning, governance, dungeon, guild, ...)
+  security/          Real OIDC identity + RBAC (untouched by the demo bypass)
+  migrations/        Alembic migrations
+  tests/             992 pytest tests
 
 frontend/
   app/           Next.js App Router pages (see the real-vs-mockup table above)
   components/    Shared UI (AcademyHub, MLDashboard, NavBar, ...)
-  lib/           API client, i18n (translations.js, LanguageContext.jsx)
+  lib/           API client, i18n (translations.js, LanguageContext.jsx, 11 languages)
   store/         Zustand stores (auth, game)
 
 services/        Standalone optional AI microservice (separate FastAPI app)

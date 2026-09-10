@@ -107,6 +107,25 @@ def test_weak_evidence_triggers_abstention_flag(populated_store):
     assert is_weak is True
 
 
+def test_stopword_only_query_abstains_instead_of_matching_generic_filler(populated_store):
+    """A conversational query with zero content words ("who are you") must
+    abstain rather than fall back to scoring generic filler words -- common
+    words like "who"/"are"/"you" appear in nearly every chunk regardless of
+    real relevance, which previously inflated the score past the abstention
+    threshold and returned an unrelated chunk as if it were a real answer."""
+    alpha_ctx = AccessContext(tenant_id="tenant-alpha", roles=("learner",))
+
+    results, is_weak = populated_store.search(
+        query="who are you",
+        access_context=alpha_ctx,
+        top_k=3,
+        threshold=0.20,
+    )
+
+    assert is_weak is True
+    assert results == []
+
+
 def test_verifiable_citation_resolution(populated_store):
     """Assert citation objects resolve to source version, filename, and locators."""
     alpha_ctx = AccessContext(tenant_id="tenant-alpha", roles=("learner",))

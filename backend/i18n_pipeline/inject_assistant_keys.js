@@ -16,12 +16,18 @@ function loadFlat(lang) {
   }
   // `lang` only ever comes from the hardcoded ALL_LANGS array below (never
   // external input), but re-checking that here -- instead of trusting the
-  // caller -- is what makes path.join(__dirname, `assistant_${lang}.json`)
-  // provably safe rather than merely "safe today by construction."
+  // caller -- is what makes the path.join below provably safe rather than
+  // merely "safe today by construction." The rule below pattern-matches the
+  // path.join(..., `template ${var}`) shape itself and can't see that the
+  // preceding allowlist check already rejects anything but a known-safe
+  // literal -- same false-positive-after-a-real-mitigation situation as
+  // inject_frontend.js's nosemgrep comment documents for a different rule.
   if (!ALL_LANGS.includes(lang)) {
     throw new Error(`Unsupported language code: ${lang}`);
   }
-  return JSON.parse(fs.readFileSync(path.join(__dirname, `assistant_${lang}.json`), 'utf-8'));
+  return JSON.parse(
+    fs.readFileSync(path.join(__dirname, `assistant_${lang}.json`), 'utf-8') // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+  );
 }
 
 // Same null-prototype guard as inject_frontend.js's unflatten(), for the

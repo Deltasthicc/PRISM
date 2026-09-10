@@ -86,13 +86,20 @@ class InMemoryChunkStore:
             (retrieved_chunks, is_insufficient_evidence)
         """
         query_clean = query.strip()
-        all_query_tokens = _tokenize(query_clean)
         content_query_tokens = _content_tokens(query_clean)
 
-        # Fallback to all tokens if query was purely stop words
-        effective_query_tokens = content_query_tokens if content_query_tokens else all_query_tokens
-        if not effective_query_tokens:
+        # A query made entirely of stop words ("who are you", "hi", "how are
+        # you") carries no topical content to ground an answer in -- abstain
+        # immediately rather than falling back to scoring on generic filler
+        # words. Common words are common precisely because they appear in
+        # nearly every chunk, so scoring against them alone inflates
+        # overlap_ratio/BM25 well past the abstention threshold regardless of
+        # real relevance (confirmed live: "who are you" was answered with an
+        # unrelated GATE quiz question instead of abstaining).
+        if not content_query_tokens:
             return [], True
+
+        effective_query_tokens = content_query_tokens
 
         ctx = access_context or AccessContext()
 

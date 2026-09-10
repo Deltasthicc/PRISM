@@ -38,5 +38,11 @@ backend/data/.doc_cache/
 # Local Piper voice model assets
 backend/models/piper/
 
-# Local Piper voice model assets
-backend/models/piper/
+# Whisper domain fine-tuning pipeline: generated audio/models/manifests are
+# large, machine-specific build artifacts -- only the scripts, README, and
+# corpus.txt (the actual training text) are meant to be committed.
+backend/scripts/voice_finetuning/voices/
+backend/scripts/voice_finetuning/audio/
+backend/scripts/voice_finetuning/manifest_*.jsonl
+backend/scripts/voice_finetuning/whisper-domain-finetuned/
+backend/scripts/voice_finetuning/whisper-domain-finetuned-ct2/

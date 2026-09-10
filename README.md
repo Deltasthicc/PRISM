@@ -193,6 +193,10 @@ flowchart LR
 - **TTS needs a local Piper model you bring yourself** (see below) -- without one, the server honestly reports `TTS_FAILURE` per turn and the page shows the real text answer with a "voice reply unavailable" note, rather than pretending to speak. STT works out of the box (`faster-whisper`'s `tiny.en` model downloads automatically on first use).
 - Verified with a real spoken sentence fed through the actual WebSocket protocol end-to-end: real VAD speech-start/end, a real `faster-whisper` transcript, a real RAG-grounded answer with citations, and an honest `TTS_FAILURE` with no Piper model configured. Live microphone capture through a real browser was not part of that verification (see Known limitations).
 
+### Whisper domain fine-tuning (pipeline built, not yet trained)
+
+Stock `faster-whisper tiny.en` measurably mis-transcribes this project's own domain vocabulary — confirmed on clean, synthesized speech with two different TTS voices (e.g. "DARPG Sevottam" comes back as "dark, sevetam"). [`backend/scripts/voice_finetuning/`](backend/scripts/voice_finetuning/) is a complete, ready-to-run fine-tuning pipeline for this: extract real domain text from the curricula and question bank → synthesize training audio across several Piper voices → fine-tune `openai/whisper-tiny.en` with HuggingFace `transformers` → evaluate WER against the stock baseline → convert to CTranslate2 and drop it in via `ai/voice/stt.py`'s new `WHISPER_MODEL_PATH` env var, no code change needed. Data prep and TTS synthesis have been run/smoke-tested locally; the GPU fine-tune itself needs an actual CUDA GPU and is documented as an exact command sequence in [the pipeline's README](backend/scripts/voice_finetuning/README.md) rather than claimed as done.
+
 ## 🚀 Running it locally
 
 **Backend** (Python 3.11 — pinned in `render.yaml` and `backend/.python-version`; newer versions fail to build `pydantic-core` from source):
@@ -274,6 +278,7 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 - The optional gamified practice layer (Quest Mode: `/character`, `/combat`, `/boss/[dungeonId]`, `/guild`, `/leaderboard`) is off by default and intentionally not part of the front-page pitch for now — see the [real-vs-mockup table](#-whats-real-and-whats-a-mockup) if you need the detail.
 - The Learner Assistant's answer quality without a working `GEMINI_API_KEY` is extractive (it quotes the top-matching evidence directly rather than synthesizing prose) — real and honestly labeled, but a configured key gives noticeably better answers. The 174-excerpt seed corpus is UPSC-exam-style passages, so some phrasing reads more like an exam question than a textbook explanation.
 - The voice pipeline's `/voice` UI is real but has two real constraints: TTS output needs a local Piper model you supply yourself (STT and the text answer work without one), and live microphone capture through a real browser has not been verified in this development environment (no physical microphone available here) — the WebSocket protocol itself was verified end-to-end with a real generated speech sample. See [Voice AI pipeline](#-voice-ai-pipeline).
+- The Whisper domain fine-tune (see above) is a built, locally-smoke-tested pipeline, not yet a trained model — the GPU fine-tuning step itself hasn't been run against real hardware, so `WHISPER_MODEL_PATH` currently has no fine-tuned model to point at.
 - 9 of the 11 UI languages are a first machine-translation pass awaiting native-speaker review — see [Internationalization](#-internationalization).
 - One DSA competency (`binary_search`) has no verified quiz questions yet.
 - The real browser OIDC/PKCE login flow (as opposed to the demo bypass and the dev-login bridge) is not yet implemented.

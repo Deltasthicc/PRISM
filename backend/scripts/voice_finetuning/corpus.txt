@@ -1,0 +1,1089 @@
+DSA Fundamentals
+Data Structures & Algorithms
+The original DSA practice path, from arrays through advanced graph and dynamic-programming concepts.
+Computer-science learners and software-engineering candidates
+Beginner to advanced
+Indexing, traversal, mutation, and complexity.
+Linked Lists
+Node-based storage and pointer operations.
+Stacks & Queues
+LIFO, FIFO, and common applications.
+Binary Search
+Search invariants and logarithmic reasoning.
+Recursion
+Base cases, recursive structure, and call stacks.
+Hierarchical structures and traversals.
+Binary Search Trees
+Ordered-tree search, insert, and delete.
+Priority queues and heap invariants.
+Graph representation, traversal, and paths.
+Dynamic Programming
+Overlapping subproblems and optimal substructure.
+Sorting Algorithms
+Sorting strategies, trade-offs, and lower bounds.
+Official Statistics & Data Governance
+Official Statistics
+A MoSPI-aligned demonstration path covering the statistical production lifecycle and emerging data capabilities.
+Officials involved in data collection, analysis, dissemination, and policy support
+Foundation to specialist
+Statistical Foundations
+Descriptive statistics, inference, uncertainty, and interpretation.
+Data Collection
+Administrative data, surveys, instruments, and field operations.
+Sampling Design
+Frames, probability samples, weights, and non-response.
+Data Quality
+Validation, metadata, revisions, and quality assurance.
+Principles, standards, statistical products, and dissemination.
+Data Visualisation
+Clear, accessible, decision-oriented statistical communication.
+GIS for Statistics
+Spatial data, geographies, joins, and thematic mapping.
+Big Data & Cloud
+Modern data pipelines, scale, governance, and cloud concepts.
+ML for Official Statistics
+Responsible use of machine learning in statistical workflows.
+Survey Design
+Questionnaire design, modes, pilots, and respondent burden.
+National Accounts
+GDP aggregates, sectoral accounts, and SNA concepts.
+Price Statistics
+CPI/WPI baskets, weights, index construction, and rebasing.
+Labour Statistics
+Employment, unemployment, participation, and workforce classification.
+Agricultural Statistics
+Crop estimation, area/yield surveys, and seasonal reporting.
+Industrial Statistics
+Industrial production indices, enterprise surveys, and classifications.
+SDG Indicators
+National indicator frameworks, tiers, disaggregation, and reporting.
+Metadata Standards
+Documentation, classifications, and exchange standards for statistical data.
+Statistical Programming
+Reproducible analysis in Python, R, Stata, SPSS, or SAS.
+Data Management & SQL
+Relational modelling, querying, joins, and data preparation.
+APIs & Interoperability
+Consuming and publishing data through documented interfaces.
+Open Data
+Open formats, licensing, release policy, and public data portals.
+Public Policy & Programme Evaluation
+Public Administration
+Role-relevant learning for evidence-based programme design, delivery, and evaluation.
+Public administrators, programme managers, analysts, and policy professionals
+Governance Foundations
+Institutions, accountability, ethics, and citizen orientation.
+Policy Design
+Problem framing, options, stakeholders, and theory of change.
+Public Finance
+Budgets, expenditure, value for money, and fiscal trade-offs.
+Programme Management
+Delivery planning, risks, coordination, and implementation.
+Monitoring & Evaluation
+Indicators, baselines, targets, and learning loops.
+Impact Evaluation
+Causal inference, experimental and quasi-experimental designs.
+Evidence Communication
+Communicating evidence clearly to decision-makers and citizens.
+Leadership
+Setting direction, developing people, and leading through influence.
+Professional Communication
+Written, verbal, and cross-team communication in an official setting.
+Ethics & Integrity
+Conflict of interest, confidentiality, and ethical judgment in public service.
+Decision Making
+Structured decisions under uncertainty, trade-offs, and accountability.
+Change Management
+Leading adoption, managing resistance, and sustaining new ways of working.
+Digital & AI Literacy
+Digital Fluency
+An accessible path for non-technical learners who need safe, practical digital and AI skills.
+Beginners, frontline staff, career switchers, and non-technical professionals
+Absolute beginner to practitioner
+Digital Foundations
+Devices, files, browsers, accounts, and digital workflows.
+Cyber Hygiene
+Passwords, phishing, privacy, safe sharing, and incident reporting.
+Digital Collaboration
+Documents, meetings, versioning, and responsible teamwork.
+Spreadsheet Skills
+Structured data, formulas, validation, and summaries.
+Data Literacy
+Reading, questioning, and communicating with data.
+AI Literacy
+Capabilities, limitations, prompting, and verification.
+Responsible AI
+Bias, privacy, transparency, human oversight, and safe adoption.
+Data Privacy
+Personal data handling, minimization, consent, and retention duties.
+Digital Signatures
+e-signing, certificates, non-repudiation, and document authenticity.
+Government Cloud
+Government cloud services, hosting policy, and shared infrastructure.
+Digital Public Infrastructure
+Identity, payments, and data-exchange rails used across public services.
+The Bonferroni-type inequality asked to be proved states P(⋂ᵢ Aᵢ) ≥ ∑ᵢ P(Aᵢ) − (n − 1) for n events.
+What does this inequality give a usable lower bound for?
+Show that for n events A_1, A_2, ⋯, A_n P(⋂_{i=1}^{n} A_i) ≥ ∑_{i=1}^{n} P(A_i) − (n − 1)
+The expected number of events that occur
+The variance of the number of events that occur
+The probability that all n events occur simultaneously
+The probability that none of the n events occur
+For two mutually exclusive events A and B with P(A), P(B) > 0, the identity P(A|A∪B) = P(A)/(P(A)+P(B)) holds.
+Why does mutual exclusivity make this simplification possible?
+For two mutually exclusive events A and B, show that P(A|A ∪ B) = P(A) / (P(A) + P(B)); P(A), P(B) > 0
+Because mutually exclusive events are always independent, so P(A|A∪B) = P(A)
+Because P(A ∩ (A∪B)) = P(A) and P(A∪B) = P(A) + P(B) exactly, with no overlap term to subtract
+Because conditioning on a union always divides by the sum of the two probabilities, regardless of overlap
+Because P(A) and P(B) must be equal when A and B are mutually exclusive
+This question asks you to bound P[0 < X < 2(λ+1)] for a Gamma(λ+1, 1)-type random variable using Chebyshev's inequality rather than its exact distribution.
+What is the essential trade-off of using Chebyshev's inequality here instead of computing the exact probability?
+A random variable X has the probability density function f(x) = e^{-x} x^λ / λ!; x > 0, where λ is a positive integer.
+Using Chebyshev's inequality, show that P[0 < X < 2(λ+1)] > λ / (λ+1)
+Chebyshev's inequality only needs the mean and variance of X, not its full distribution, but it gives a looser bound than the exact probability
+Chebyshev's inequality gives the exact value of the probability, making distributional assumptions unnecessary
+Chebyshev's inequality only applies to discrete random variables, so it cannot be used for this continuous X
+Chebyshev's inequality requires X to be normally distributed, which this exponential-family density satisfies
+The Rao-Blackwell theorem is used to construct a UMVUE (uniformly minimum variance unbiased estimator).
+What does the theorem guarantee when you condition any unbiased estimator on a sufficient statistic?
+Describe how Rao-Blackwell theorem enables one to find the UMVUE.
+The resulting conditioned estimator is guaranteed to be normally distributed regardless of the original distribution
+The resulting conditioned estimator becomes the maximum likelihood estimator automatically
+The resulting conditioned estimator always has strictly larger variance, which is why it should be avoided
+The resulting conditioned estimator remains unbiased and has variance no greater than the original estimator's
+For the one-parameter exponential family of distributions, the question asks you to show the sample total ∑Xi is a sufficient statistic for the Poisson model's parameter.
+What does 'sufficient' mean for this statistic?
+Prove that there always exists a sufficient statistic for the one-parameter exponential family of distributions.
+Using it, show that sample total is sufficient statistic for the parameter for the Poisson model.
+State whether this estimator is complete.
+The sample total is sufficient only if the sample size n is larger than 30
+The sample total is the only function of the data that is an unbiased estimator of the parameter
+The sample total always has the smallest possible variance among every conceivable estimator of the parameter
+The conditional distribution of the sample, given the value of the sample total, does not depend on the unknown parameter at all
+The maximum likelihood estimator of σ² for an i.i.d.
+Normal(μ, σ²) sample, using divisor n rather than (n−1) in the sample variance formula, is asked to be examined for bias.
+What is true of this particular MLE?
+Let X_1, X_2, ⋯, X_n be i.i.d.
+random variables following N(μ, σ²).
+Find the maximum likelihood estimator for σ² and examine whether the same is unbiased.
+If biased, suggest an unbiased estimator for σ² and examine whether it is consistent.
+It is an unbiased estimator of σ² for every sample size n
+It cannot be computed unless the population is known to be Normal
+It is unbiased only when μ is known in advance, and biased otherwise
+It is a biased estimator of σ², systematically underestimating it on average, though the bias vanishes as n → ∞
+Unlike a fixed-sample-size hypothesis test, Wald's Sequential Probability Ratio Test (SPRT) does not decide after a predetermined number of observations.
+What actually determines when an SPRT stops sampling and reaches a decision?
+Describe sequential probability ratio test (SPRT).
+Find the SPRT for testing H_0: θ = θ_0 against H_1: θ = θ_1, using random observations from Poisson(θ).
+Also find the OC function for the test.
+A fixed sample size calculated in advance from the desired Type I and Type II error rates
+A p-value computed after each observation falling below 0.05
+The sample mean converging to within a fixed tolerance of θ_0 or θ_1
+The running likelihood ratio of the observations so far crossing one of two pre-set boundaries, accepting H0, accepting H1, or continuing to sample otherwise
+A stratified sample is being allocated across strata using either proportional allocation or optimum (Neyman) allocation.
+What is the key extra information optimum allocation uses that proportional allocation ignores?
+A population is divided into three strata.
+Determine the sample size for each stratum for a total sample of size 100 under (i) proportional allocation and (ii) optimum allocation.
+Whether the strata were formed using equal-width or equal-frequency class boundaries
+The correlation between the survey variable and an auxiliary variable measured in a pilot study
+The variability (S_h) within each stratum and the cost (C_h) of sampling per unit in that stratum, not just the stratum's population size
+The total number of strata, regardless of their individual sizes
+This question is essentially asking you to prove the Gauss-Markov theorem for an estimable linear function of a linear model's parameters.
+What does the Gauss-Markov theorem establish about the resulting estimator?
+Let l'β be any estimable linear function of parameters β_1, β_2, ⋯, β_p.
+It is the estimator with the smallest variance among all possible estimators, linear or not
+It is guaranteed to be normally distributed regardless of the error distribution
+It only applies when the design matrix A has full column rank
+It is the Best Linear Unbiased Estimator (BLUE) -- unbiased, and with the smallest variance among all linear unbiased estimators of that quantity
+The Horvitz-Thompson estimator is used here to estimate a population total from a sample drawn with unequal inclusion probabilities (probability proportional to size).
+Why does the Horvitz-Thompson estimator divide each sampled unit's value by its own inclusion probability π_i, rather than simply averaging and scaling up by N/n as in simple random sampling?
+A population of N=4 units has values y_1=10, y_2=20, y_3=30 and y_4=40.
+Consider a sample of size n=2 without replacement with inclusion probabilities proportional to a size measure x_i ...
+Using Horvitz-Thompson estimator, estimate the population total.
+Because dividing by π_i is only a variance-reduction trick with no effect on whether the estimator is unbiased
+Because π_i must always equal n/N for the estimator to be valid, making the division a constant scaling factor
+Because the population total can only be estimated this way when sampling is done with replacement
+For a lifetime X that is exponentially distributed with hazard rate θ, the question asks for the 'shape' of the hazard rate over time.
+What is distinctive about the exponential distribution's hazard rate compared to most other lifetime distributions?
+Suppose that a given individual in a population has a survival time which is exponential with a hazard rate θ.
+Let X be the life length of a randomly chosen individual of this population.
+Find the survival function of X.
+Find the hazard rate of X.
+What is the shape of the hazard rate?
+It is undefined for the exponential distribution because it has no finite mean
+It always increases over time, reflecting wear-out or aging
+It is constant over time -- the instantaneous risk of failure does not depend on how long the item has already survived (the 'memoryless' property)
+It always decreases over time, reflecting early-life 'infant mortality' failures
+A single sampling plan for attributes is being constructed from an Acceptable Quality Level (AQL), a Lot Tolerance Percent Defective (LTPD), and the producer's and consumer's risk at each.
+What do the producer's risk and consumer's risk each represent?
+Construct a single sampling plan for attributes, given the following data: A.Q.L.
+= 0.05, Producer's risk = 0.05, Consumer's risk = 0.10, LTPD = 0.20
+Producer's risk applies only to attribute sampling plans; consumer's risk applies only to variable sampling plans
+Producer's risk is the cost of manufacturing the lot; consumer's risk is the price the consumer pays for it
+Producer's risk and consumer's risk are two names for the same quantity, just measured by different parties
+Producer's risk is the probability of rejecting a genuinely good lot (at the AQL); consumer's risk is the probability of accepting a genuinely bad lot (at the LTPD)
+For quality-control charts, the s (sample standard deviation) chart is generally preferred over the R (range) chart once the subgroup sample size n grows larger (roughly n > 10).
+Describe the effect of sample size on X̄, R and s charts for the sample sizes n ≤ 5, 5 < n ≤ 10 and n > 10.
+The s chart is easier to plot by hand than the R chart at any sample size
+Regulatory standards require the s chart specifically for subgroup sizes above 10
+The range only uses the two extreme observations in a subgroup, so it becomes an increasingly wasteful, less efficient estimator of variability as n grows and more of the sample's information is left unused
+The R chart cannot mathematically be computed for subgroup sizes larger than 10
+The minimax criterion is used to determine a two-player zero-sum game's value from a payoff matrix.
+A game is called 'stable' (has a saddle point in pure strategies) precisely when which condition holds?
+What is the minimax criterion with respect to a game?
+Determine whether the game is stable or not.
+Also, obtain the optimal strategies and the value of the game.
+Both players have exactly the same set of available strategies
+The maximum of the row minimums equals the minimum of the column maximums (maximin = minimax)
+The payoff matrix is square (same number of rows and columns)
+Every entry in the payoff matrix is positive
+The Total Fertility Rate (TFR) and the Gross Reproduction Rate (GRR) are both computed by summing age-specific fertility rates across the reproductive age groups.
+What is the key difference between them?
+Compute the Age-specific Fertility Rate, the Total Fertility Rate, and the Gross Reproduction Rate, from the data given below ...
+Assume that the proportion of female births is 46.2 percent.
+TFR is measured per 1,000 women while GRR is measured per woman -- the two describe the same births, just at different scales
+GRR is always larger than TFR because it also accounts for infant mortality before reproductive age
+TFR applies only to urban populations while GRR applies only to rural populations
+TFR counts all live births per woman across her reproductive years; GRR counts only female live births, using the proportion of female births to isolate direct female-to-female replacement
+For self-owned houses in a Consumer Price Index family budget enquiry, the manual describes estimating a rental value rather than leaving them out of the index entirely.
+Why does the CPI need an estimated rent for a house the household already owns and pays no rent on?
+This eliminates the need for pricing home-ownership costs in the index.
+So that owner-occupied and rented households both contribute a consistent housing-cost component to the index, instead of the index only reflecting the (different) population of renters
+Because self-owned houses are legally required to be taxed at their rental value regardless of any price index
+So that the number of sampled households can be reduced by treating owners and renters as identical
+Because owner-occupied housing costs are always higher than rented housing costs and must be corrected downward
+Not every item a household spends money on is included in a CPI's weighting diagram.
+According to the ILO criterion the manual cites, what is the main expenditure-share threshold used to decide whether an item is significant enough to include?
+Items are included or excluded solely based on whether their price changed in the last year
+An item accounting for roughly 1% or more of an average family's total expenditure at the sub-group level
+Any item purchased by at least 50% of surveyed households, regardless of how much is spent on it
+Only items that are purchased at least once a week by every household in the sample
+Under the DPDP Act 2023's own definition, does a 'personal data breach' require that the data was leaked to an outside party?
+Yes -- the definition only covers cases where personal data is disclosed or acquired by a party outside the Data Fiduciary's organisation
+No -- it also includes purely internal events, such as unauthorised processing or accidental alteration/destruction of the data, as long as confidentiality, integrity, or availability is compromised
+Yes -- but only if the breach involves at least 100 affected individuals
+No -- the Act only defines a breach as occurring when the affected individual formally reports it to the Data Protection Board
+The DPDP Act 2023 defines 'processing' of personal data very broadly.
+Which of the following would NOT count as processing under this definition?
+Merely storing a citizen's data on paper with no computer involved at any stage
+Sharing a citizen's data with another department electronically
+Collecting a citizen's data through an online form
+Deleting a citizen's data from a database
+NITI Aayog's National Strategy for AI proposes '#AIforAll' as India's brand of AI leadership.
+According to the strategy document itself, what does this framing emphasize that a purely commercially-driven AI adoption strategy would not?
+#AIforAll - the brand proposed for India implies inclusive technology leadership, where the full potential of AI is realised in pursuance of the country's unique needs and aspirations.
+The strategy should strive to leverage AI for economic growth, social development and inclusive growth, and finally as a 'Garage' for emerging and developing [countries].
+Restricting AI development exclusively to government research institutions
+Adopting AI strategy only after all other developed nations have already done so
+Maximizing short-term commercial revenue from AI products before other countries can compete
+Inclusive technology leadership serving India's own social and economic development needs, and positioning India as a proving ground ('Garage') for solutions relevant to other developing countries
+The strategy argues that national AI adoption strategies 'cannot be built on the sidelines of previous technology transitions.' What is this statement arguing against?
+Technology disruptions like AI are once-in-a-generation phenomenon, and hence large-scale adoption strategies, especially national strategies, cannot be built on the sidelines of previous technology transitions.
+Allowing private companies to participate in national AI development at all
+Using any lessons at all from earlier technology adoption waves (e.g. internet or mobile rollout) when designing AI policy
+Building AI infrastructure before first building basic electricity and internet infrastructure
+Treating AI policy as a minor add-on to existing IT/digitisation strategies, rather than as a strategy that needs its own dedicated national framing given AI's scale of disruption
+An algorithm checks whether an array of size N is sorted (ascending or descending) by making a single pass and comparing each element only with its adjacent elements.
+What is its worst-case time complexity?
+Given an integer array of size N, we want to check if the array is sorted (in either ascending or descending order).
+An algorithm solves this problem by making a single pass through the array and comparing each element of the array only with its adjacent elements.
+The worst-case time complexity of this algorithm is (A) both O(N) and Omega(N) (B) O(N) but not Omega(N) (C) Omega(N) but not O(N) (D) neither O(N) nor Omega(N)
+Both O(N) and Ω(N)
+O(N) but not Ω(N)
+Ω(N) but not O(N)
+Neither O(N) nor Ω(N)
+A C routine tracks the longest run of at most two distinct values in an array using a sliding window with two length counters, `len1 = (P)` and `len2 = (Q)`, reset whenever a third distinct value appears.
+Which pair of reset expressions is correct?
+Consider an array X that contains n positive integers.
+The C code snippet given below has been written to compute the length of the longest subarray of X that contains at most two distinct integers.
+The code has two missing expressions labelled (P) and (Q).
+Which one of the following options gives the CORRECT missing expressions?
+(A) (P) len1+1 (Q) len2+1 (B) (P) 1 (Q) len1+1 (C) (P) 1 (Q) len2+1 (D) (P) len2+1 (Q) len1+1
+(P) len1+1, (Q) len2+1
+(P) 1, (Q) len1+1
+(P) 1, (Q) len2+1
+(P) len2+1, (Q) len1+1
+The 'distance' of an array is the minimum number of elements that must be replaced so the array becomes sorted in non-decreasing order.
+The distance of the array [2, 5, 3, 1, 4, 2, 6] is .
+Let A be an array containing integer values.
+The distance of A is defined as the minimum number of elements in A that must be replaced with another integer so that the resulting array is sorted in non-decreasing order.
+The distance of the array [2, 5, 3, 1, 4, 2, 6] is ___________
+A recursive C function counts nodes in a non-empty singly linked list: `if (E1) return 1; return E2;`.
+Which pair correctly fills E1 and E2?
+Consider the following code snippet in C language that computes the number of nodes in a non-empty singly linked list pointed to by the pointer variable head.
+struct node{ int elt; struct node *next; }; int getListSize (struct node *head) { if( E1 ) return 1; return E2; } Which one of the following options gives the correct replacements for the expressions E1 and E2?
+E1: head == NULL / E2: 1 + getListSize(head)
+E1: head->next == NULL / E2: 1 + getListSize(head->next)
+E1: head == NULL / E2: 1 + getListSize(head->next)
+E1: head->next == NULL / E2: 1 + getListSize(head)
+Elements 1-5 arrive in order and each is pushed to a stack S or enqueued to a queue Q.
+S is then fully popped, followed by Q being fully dequeued, producing the output '4 3 1 2 5'.
+Which assignment(s) of elements to S/Q could produce this output?
+Consider a stack S and a queue Q.
+Both of them are initially empty and have the capacity to store ten elements each.
+The elements 1, 2, 3, 4, and 5 arrive one by one, in that order...
+First, stack S is emptied by popping all elements.
+Then queue Q is emptied by dequeueing all elements.
+The output obtained by following this process is 4 3 1 2 5.
+Given the output, the objective is to predict whether an element was assigned to S or Q.
+1S, 2Q, 3S, 4S, 5Q
+1Q, 2Q, 3S, 4S, 5Q
+1Q, 2Q, 3Q, 4S, 5S
+1S, 2S, 3S, 4Q, 5Q
+Stack S1 (capacity 4) holds [100, 200, 300, 400] top-to-bottom being 400 on top; S2 (capacity 2) is empty.
+Using only PushToS2 (pop S1, push S2), PushToS1 (pop S2, push S1), and GenerateOutput (pop S1, output), which output sequence is achievable?
+Let S1 and S2 be two stacks.
+S1 has capacity of 4 elements.
+S2 has capacity of 2 elements.
+S1 already has 4 elements: 100, 200, 300, and 400, whereas S2 is empty...
+Only the following three operations are available: PushToS2, PushToS1, GenerateOutput...
+Which of the following output sequences can be generated by using the above operations?
+100, 200, 400, 300
+200, 300, 400, 100
+400, 200, 100, 300
+300, 200, 400, 100
+Given bar(n) returns floor(log2(n)) via halving recursion, and foo(n) = 1 + foo(bar(n)) with foo(1) = 1, the smallest positive integer n for which foo(n) returns 5 is .
+Which of these recurrence relations describes an algorithm with time complexity Θ(n)?
+Which of the following can be recurrence relation(s) corresponding to an algorithm with time complexity Theta(n)?
+(A) T(n) = T(n-1) + 1, T(1) = 1 (B) T(n) = 2T(n/2) + 1, T(1) = 1 (C) T(n) = 2T(n/2) + n, T(1) = 1 (D) T(n) = T(n-1) + n, T(1) = 1
+T(n) = T(n-1) + 1, T(1) = 1
+T(n) = T(n-1) + n, T(1) = 1
+T(n) = 2T(n/2) + n, T(1) = 1
+T(n) = 2T(n/2) + 1, T(1) = 1
+For the recurrence T(n) = √n·T(√n) + n (T(1)=1), which closed form is correct?
+Consider the following recurrence relation: T(n) = sqrt(n)*T(sqrt(n)) + n for n >= 1, 1 for n = 1.
+Which one of the following options is CORRECT?
+Θ(n log log n)
+Θ(n log n)
+Θ(n² log n)
+Θ(n² log log n)
+A full binary tree (every node has 0 or 2 children) has 23 nodes.
+Height is the number of edges on the longest root-to-leaf path.
+The maximum possible height is .
+The height of a binary tree is the number of edges in the longest path from the root to a leaf in the tree.
+The maximum possible height of a full binary tree with 23 nodes is _________.
+Match each binary tree traversal to its node-visit order: I=Inorder, II=Preorder, III=Postorder; L=(left, node, right), M=(node, left, right), N=(left, right, node).
+The set T represents various traversals over binary tree.
+The set S represents the order of visiting nodes during a traversal.
+T: I: Inorder, II: Preorder, III: Postorder.
+S: L: left subtree, node, right subtree; M: node, left subtree, right subtree; N: left subtree, right subtree, node.
+Which one of the following is the correct match from T to S?
+I-L, II-M, III-N
+I-M, II-L, III-N
+I-N, II-M, III-L
+I-L, II-N, III-M
+Integers 1 to 15 are inserted into a BST in some order that produces a complete binary tree.
+Which of these values can NEVER be the third element inserted?
+Let P be the set of all integers from 1 to 15.
+Consider any order of insertion of the elements of P into a binary search tree that creates a complete binary tree.
+Which one of the following elements can NEVER be the third element that is inserted?
+Given the preorder traversal of a BST T: 50, 25, 13, 40, 30, 47, 75, 60, 70, 80, 77 -- the position (1-indexed) of the element 60 in T's postorder traversal is .
+The following sequence corresponds to the preorder traversal of a binary search tree T: 50, 25, 13, 40, 30, 47, 75, 60, 70, 80, 77.
+The position of the element 60 in the postorder traversal of T is ______.
+For each leaf L in a BST with a non-NULL inorder successor Suc(L), a new key strictly between Val(L) and Val(Suc(L)) is inserted.
+Which statement about the resulting set of new keys K is true?
+Consider a binary search tree (BST) with n leaf nodes (n > 0)...
+For a node V, let Suc(V) denote the node that is its inorder successor...
+Which of the following statements is/are true?
+K can contain duplicates
+K may be empty
+K cannot have any duplicates
+The BST's height always stays the same after insertion
+Given only the set V of values (not the insertion order or the tree T itself) that were inserted one-by-one into an initially empty BST, which of T's traversals can be determined from V alone?
+You are given a set V of distinct integers.
+A binary search tree T is created by inserting all elements of V one by one, starting with an empty tree...
+You are not aware of the sequence in which these values were inserted into T, and you do not have access to T.
+Which one of the following statements is TRUE?
+Inorder traversal of T
+Root node of T
+Preorder traversal of T
+Postorder traversal of T
+For an odd n > 100, a binary min-heap of n elements is stored 1-indexed in array P.
+Which index does NOT correspond to a leaf node?
+Let n be an odd number greater than 100.
+Consider a binary minheap with n elements stored in an array P whose index starts from 1.
+Which of the following indices of P do/does NOT correspond to any leaf node of the minheap?
+The array [82, 101, 90, 11, 111, 75, 33, 131, 44, 93] is heapified (into a max-heap, via standard build-heap).
+What are the first three elements of the resulting array?
+An array [82, 101, 90, 11, 111, 75, 33, 131, 44, 93] is heapified.
+Which one of the following options represents the first three elements in the heapified array?
+82, 90, 101
+82, 11, 93
+131, 11, 93
+131, 111, 90
+A binary min-heap array-stores 105 distinct elements.
+Let k be the array index of the maximum element.
+How many possible values can k take?
+Consider a binary min-heap containing 105 distinct elements.
+Let k be the index (in the underlying array) of the maximum element stored in the heap.
+The number of possible values of k is
+For a weighted graph, dk(u) is the shortest s-to-u path weight using at most k edges.
+Consider S1: dk+1(u) ≤ dk(u) for all k, u.
+Is S1 (allowing one more edge never worsens the best-known shortest distance) true?
+Let G(V, E) be an undirected, edge-weighted graph with integer weights...
+let dk(u) denote the weight of a shortest path...
+of length at most k...
+S1: For every k >= 0 and u in V, dk+1(u) <= dk(u).
+S2: ...Which one of the following options is correct?
+Only S1 is true
+Only S2 is true
+Both S1 and S2 are true
+Neither S1 nor S2 is true
+For a graph with minimum vertex cover size k, and S any minimum vertex cover, which constraint on a vertex v always guarantees v must be in S?
+Let G(V, E) be a simple, undirected graph.
+A vertex cover of G is a subset V' of V such that for every (u,v) in E, u in V' or v in V'.
+Let the size of the smallest vertex cover in G be k.
+Let S be any vertex cover of size k.
+For a vertex v in V, which of the following constraints will always ensure that v is in S?
+The degree of v is at least k+1
+v is on a path of length k+1
+v is on a cycle of length k+1
+v is part of a clique of size k
+For a graph with all-unique edge weights, which statement about its (unique) minimum spanning tree is true?
+Let G(V, E) be a simple, undirected, edge-weighted graph with unique edge weights.
+Which of the following statements about the minimum spanning trees (MST) of G is/are true?
+(A) In every cycle C of G, the edge with the largest weight in C is not in any MST (B) ...
+(D) For every vertex v in V, the edge with the smallest weight incident on v is in every MST
+In every cycle, the largest-weight edge is never in the MST
+In every cycle, the smallest-weight edge may be excluded from the MST
+For every vertex, its largest-incident-weight edge may be in the MST
+For every vertex, its smallest-incident-weight edge may be excluded from the MST
+For a DFS run on a DAG, with discovery/finish times d[] and f[], which relationship between d[u], d[v], f[u], f[v] for an edge (u,v) can NEVER hold?
+Consider the following pseudocode for depth-first search (DFS) algorithm...
+Suppose that the input directed graph G(V, E) is a directed acyclic graph (DAG).
+For an edge (u, v) in E, which of the following options will NEVER be correct?
+d[u] < d[v] < f[v] < f[u]
+d[v] < d[u] < f[u] < f[v]
+d[v] < f[v] < d[u] < f[u]
+d[u] < d[v] < f[u] < f[v]
+A graph is '2-colorable' if adjacent vertices always get different colors from {0,1} (i.e.
+it is bipartite).
+Which statement about 2-colorable graphs is true?
+An undirected, unweighted, simple graph G(V, E) is said to be 2-colorable if there exists a function c: V -> {0, 1} such that for every (u, v) in E, c(u) != c(v).
+Which of the following statements about 2-colorable graphs is/are true?
+A 2-colorable graph may contain odd-length cycles
+A 2-colorable graph may contain even-length cycles
+Testing 2-colorability takes Θ(|E| log|V|) with an adjacency list
+2-colorability cannot be tested in linear time
+For a weighted DAG with m edges and n vertices, what is the worst-case time complexity of the fastest algorithm to compute single-source shortest paths from a given source?
+Let G be a weighted directed acyclic graph with m edges and n vertices.
+Θ(m + n)
+Θ(m + n log n)
+If a DFS spanning tree T of a directed graph G (rooted at v) also happens to be a valid BFS tree of G rooted at v, which edge-classification statement about G with respect to T must be true?
+Let G be a directed graph and T a depth first search (DFS) spanning tree in G that is rooted at a vertex v.
+Suppose T is also a breadth first search (BFS) tree in G, rooted at v.
+Which of the following statements is/are TRUE for every such graph G and tree T?
+There are no back-edges in G with respect to T
+There are no cross-edges in G with respect to T
+There are no forward-edges in G with respect to T
+The only edges in G are the edges in T
+A DFS traversal of an undirected graph G with 100 vertices produces a DFS forest with 40 edges.
+The number of connected components in G is .
+The number of edges present in the forest generated by the DFS traversal of an undirected graph G with 100 vertices is 40.
+The number of connected components in G is _________
+A DP table T[i][j] depends only on T[i-1][j] and T[i][j-1] (both already-computed neighbors when filled in row-major order).
+Two fill orders are proposed: B1 fills row-by-row (i outer, j inner); B2 fills by increasing anti-diagonal sum i+j.
+Are both fill orders correct?
+Consider a table T...
+T[0][k] = T[k][0] = 1 for k = 0,1,2,...,n; T[i][j] = 2T[i-1][j] + 3T[i][j-1] for 1<=i,j<=n.
+Consider two algorithms...
+Algorithm B1: nested loops i=1..n, j=1..n filling T[i][j] directly.
+Algorithm B2: iterates by anti-diagonal s=i+j, filling T[i][j] only when i+j==s.
+Which one of the following statements is true?
+Both algorithms B1 and B2 are correct
+B1 is correct, but B2 is incorrect
+B2 is correct, but B1 is incorrect
+Both algorithms B1 and B2 are incorrect
+Merge sort runs on A = [10, 7, 8, 19, 41, 35, 25, 31], performing 7 merge operations total.
+A merge is 'void' if its output is simply the left sub-array's elements followed by the right sub-array's elements unchanged.
+The number of void merges among the 7 is .
+Consider an array A = [10, 7, 8, 19, 41, 35, 25, 31].
+Suppose the merge sort algorithm is executed on array A to sort it in increasing order.
+The merge sort algorithm will carry out a total of 7 merge operations.
+A merge operation on sorted left array L and sorted right array R is said to be void if the output of the merge operation is the elements of array L followed by the elements of array R.
+The number of void merge operations among these 7 merge operations is __________.
+Per the Census of India 2011 Houselisting manual, what is described as the important link in determining whether a group of people forms a 'household'?
+A 'household' is usually a group of persons who normally live together and take their meals from a common kitchen unless the exigencies of work prevent any of them from doing so...
+The important link in finding out whether it is a household or not is a common kitchen.
+A common kitchen
+A shared bank account
+A common surname
+Registration with the local municipal body
+Per the Census 2011 manual, a 'Census House' is a building or part of a building recognized as a separate unit because it has a separate from the road, common courtyard, or staircase.
+A 'Census House' is a building or part of a building used or recognized as a separate unit because of having a separate main entrance from the road or common courtyard or staircase etc.
+How does the Census 2011 manual define an 'Institutional Household'?
+A group of unrelated persons who live in an institution and take their meals from a common kitchen is called an 'Institutional Household'.
+A group of unrelated persons living in an institution who take meals from a common kitchen
+Any household with a government employee
+A household inside a government building
+A household headed by a warden
+Per the Census 2011 manual, households that live in the open, on roadsides, or on pavements rather than in any building are classified as households.
+Households which do not live in buildings or Census houses but live in the open or roadside, pavements...
+are to be treated as Houseless households.
+Per MoSPI's 'National Accounts Statistics: Sources and Methods, 2012', how many chapters does the CSO's NAS publication cover, organized across five parts?
+...accounts of the nation, which are presented in the Central Statistical Office (CSO)'s annual publication 'National Accounts Statistics' (NAS).
+The publication is organized in five parts covering 35 Chapters.
+Per the National Statistical Systems Training Academy's (NSSTA) 2021-22 Training Calendar, what is the batch size for the Cohort Based Training Programme (CBTP) for ISS officers?
+The batch size of CBTP would be of 20-25 officers.
+20-25 officers
+100-150 officers
+5-10 officers
+500 officers
+The NQAF-CoCSSO document assesses the Indian Statistical System against a National Quality Assurance Framework maintained by which body?
+Indian Statistical System assessment against the National Quality Assurance Framework
+MoSPI (Ministry of Statistics and Programme Implementation)
+The Reserve Bank of India
+The Comptroller and Auditor General
+The World Bank
+Per NITI Aayog's National Data and Analytics Platform (NDAP) Vision Document, visualisations on the platform are generated based on user search terms, rather than as fixed static charts.
+Dynamic visualisations will be generated based on user search terms.
+Per NITI Aayog's NDAP Vision Document, what problem does it identify with how government datasets are commonly published, which hampers visualization and analysis?
+Data is not published in a user-centric manner...
+some datasets are only available in PDF, webpage or as an image, making it difficult for further analysis.
+Some datasets are only available as PDF, webpage, or image, making further analysis difficult
+Too much data is published at once
+Data is only published in regional languages
+Publishing requires a paid subscription
+Per the National Geospatial Policy, 2022 (Department of Science & Technology), which is a stated Vision/Goal of the policy?
+To make India a World Leader in Global Geospatial space with the best in the class ecosystem for innovation.
+To make India a World Leader in Global Geospatial space with a best-in-class ecosystem for innovation
+To nationalize all private mapping companies
+To restrict geospatial data collection to government agencies only
+To eliminate satellite imagery use in mapping
+Per the National Geospatial Policy, 2022, one of its goals is to enable easy availability of valuable geospatial data collected using funds to businesses and the general public.
+To enable easy availability of valuable Geospatial data collected utilizing public funds, to businesses and general public.
+How does the National Geospatial Policy, 2022 describe itself in its introduction?
+The National Geospatial Policy, 2022 (the Policy) is a citizen-centric policy that seeks to strengthen the Geospatial sector to support national development, economic prosperity and a thriving information economy.
+A citizen-centric policy to strengthen the geospatial sector for national development and economic prosperity
+A defence-classified policy restricted to military use
+A Survey of India revenue-generation policy
+A temporary policy pending Parliamentary approval
+NITI Aayog's National Data and Analytics Platform (NDAP) states its Vision is to ' access to public Government data through a world-class user experience.'
+Vision: Democratize access to public Government data through a world-class user experience.
+What is NDAP's stated Mission, per NITI Aayog's Vision Document?
+Mission: Standardize data across multiple Government sources, provide flexible analytics and make it easily accessible in formats conducive for research, innovation, policy making and public consumption.
+Standardize data across Government sources and provide flexible analytics for research, innovation, and policy making
+Sell government datasets to private analytics firms
+Replace all ministry websites with one central portal
+Provide only raw, unprocessed data with no standardization
+Per NITI Aayog's NDAP Vision Document, its data sources include websites of over Ministries and Departments of the Central Government, plus data.gov.in.
+Websites of over 50 Ministries and Departments of the Central Government and data.gov.in.
+India's first official national income estimates (base year 1948-49) followed a methodology recommended by the National Income Committee, headed by Prof.
+The official estimates of national income with base year 1948-49 were first compiled according to the methodology recommended by the National Income Committee headed by Prof.
+Mahalanobis.
+Per MoSPI's National Accounts Statistics: Sources and Methods (2012), which base-year revision of national accounts took effect in January 2010?
+...from 1993-94 to 1999-2000 in January 2006 and from 1999-2000 to 2004-05 in January 2010.
+1999-2000 to 2004-05
+1993-94 to 1999-2000
+1980-81 to 1993-94
+1970-71 to 1980-81
+Per National Accounts Statistics methodology, Gross Value Added (GVA) at factor cost = Output minus .
+Gross value added (GVA) at factor cost = Output - Intermediate consumption
+What does MoSPI's metadata documentation call the primary source of India's employment/unemployment data (used to estimate LFPR, WPR, and UR)?
+The Periodic Labour Force Survey (PLFS)
+The Annual Survey of Industries
+The Population Census
+The Economic Census
+Per PLFS's statistical-population coverage rules, which of the following is excluded from the survey's population?
+Under-trial prisoners in jails and indoor patients of hospitals, nursing homes, etc., are excluded, but residential staff in such institutions are included.
+Convicted prisoners undergoing sentence are excluded.
+Convicted prisoners undergoing sentence
+Residential staff of hospitals
+Households regularly living in the same roadside spot
+Civilian population near military family quarters
+What does MoSPI's ASI Manual call the Annual Survey of Industries (ASI)?
+The Annual Survey of Industries (ASI) is the principal source of industrial statistics in India.
+The principal source of industrial statistics in India
+A voluntary industry survey
+A quarterly census of population
+A tax-collection exercise
+Under ASI's sampling design, which rule places a factory unit in the fully-enumerated 'census sector' (as opposed to the sampled 'sample sector')?
+All units with 50 or more workers operating with power, and units having 100 or more workers operating without power were covered under the census sector.
+50+ workers if using power, or 100+ workers if not using power
+Exactly 100 workers regardless of power use
+Any unit registered under the Factories Act, regardless of size
+Only units in the electricity sector
+NSSTA's on-the-job training for ISS Probationers includes a module on working with unit-level data using SPSS and .
+Module 2.3 - Working with unit level data using SPSS and R
+Per NSSTA's Training Calendar, Stage 1 of the Cohort Based Training Programme (CBTP) for senior ISS officers is a 12-week online course in which subject?
+Stage 1 (Online Course of Machine Learning using Python for 12 weeks...
+Stage 2 (Foundation Course for two weeks AI, Big Data, Blockchain etc.)
+Machine Learning using Python
+SQL Database Administration
+Web Development using JavaScript
+Cloud Computing using AWS
+Per MoSPI's SDG National Indicator Framework, which agency is listed as the data source for indicator 1.2.1, 'Proportion of population living below the national poverty line'?
+1.2.1: Proportion of population living below the national poverty line -- NITI Aayog -- 5 Years
+NITI Aayog
+Ministry of Finance
+Reserve Bank of India
+National Statistical Office
+Per MoSPI's SDG National Indicator Framework, the data source for indicator 1.3.2 (ICDS beneficiaries) is the Ministry of Women and Child .
+1.3.2: Number of Beneficiaries under Integrated Child Development Scheme - ICDS -- Ministry of Women and Child Development -- Annual
+At its most basic, per MoSPI's metadata guidance, metadata is about data.
+So it is that, at its most basic, metadata is data about data.
+Per NDSAP's Implementation Guidelines, metadata informs the user of which of the following about a dataset?
+Metadata - The information that describes the data source and the time, place, and conditions under which the data were created.
+Metadata informs the user of who, when, what, where, why, and how data were generated.
+Who, when, what, where, why, and how the data were generated
+Only the file size and format
+Only the dataset's price
+Only the department's phone directory
+Per MeitY's MDDS Health Domain report, a 'data element concept' is formed by combining an Attribute with which of the following?
+Data Element: The basic principle of data modelling is the combination of an Object class and an Attribute to form a more specific 'data element concept'.
+An Object class
+A primary key
+A stored procedure
+A foreign key constraint
+Per MeitY's MDDS report, if a database is ported from one DBMS to another, auto-increment of tables can change -- which is why a GUID is proposed alongside the sequential ID (NIN).
+...if the database is ported from one Database Management System (DBMS) to another, the unique sequential number (or auto increment primary keys of tables) will change.
+In order to avoid this problem GUID is proposed along with NIN.
+Per the Government of India's Policy on Open APIs, how is an 'API' defined?
+API: Application Programming Interface (API) means any mechanism that allows a system or service to access data or functionality provided by another system or service.
+Any mechanism that allows a system or service to access data or functionality provided by another system or service
+A physical data cable connecting two servers
+A government department's public phone directory
+A type of firewall configuration
+Per the Open API Policy's definitions, an 'Open API' is the API that has been to enable other systems to interact with that system.
+Open API: The API that has been exposed to enable other systems to interact with that system.
+What is the stated objective of the National Data Sharing and Accessibility Policy (NDSAP)?
+To facilitate access to GoI-owned shareable data in human- and machine-readable form, proactively and periodically updated
+To centralize all government data in a single paid subscription database
+To restrict data sharing to central ministries only
+To digitize only Census data
+Under NDSAP, non-sharable data declared by a department or organization is placed on its .
+Negative List - Non-sharable data as declared by the departments/ organizations
+Per NDSAP's definitions, 'Sharable Data' is data that is:
+Sharable Data - Those data not covered under the scope of negative list and non-sensitive in nature
+Not covered under the negative list and non-sensitive in nature
+Only data older than 25 years
+Only data collected by NIC
+Only data related to the Census
+Of the National Commission for Backward Classes, the National Human Rights Commission, the Law Commission, and the National Consumer Disputes Redressal Commission, how many are constitutional bodies (i.e.
+established directly by the Constitution)?
+Consider the following organizations/bodies in India: 1.
+The National Commission for Backward Classes 2.
+The National Human Rights Commission 3.
+The National Law Commission 4.
+The National Consumer Disputes Redressal Commission -- How many of the above are constitutional bodies?
+Only one
+Only two
+Only three
+All four
+How many of these are correct?
+If the election of the President of India is declared void by the Supreme Court of India, all acts done by him/her...
+before the date of decision become invalid.
+Election for the post of the President of India can be postponed on the ground that some Legislative Assemblies have been dissolved...
+When a Bill is presented to the President of India, the Constitution prescribes time limits within which he/she has to declare his/her assent.
+How many of the above statements are correct?
+All three
+DARPG's Sevottam framework for public service delivery has three components: Citizens Charter, , and Service Delivery Capability.
+The Sevottam framework has been developed with the overarching objective of improving the quality of public service delivery in the country.
+The framework has three components: Citizens Charter, Grievance Redress Mechanism and Service Delivery Capability.
+Per the 2015 Cabinet Resolution establishing it, NITI Aayog's first objective is 'To evolve a of national development priorities, sectors and strategies with the active involvement of States.'
+The NITI Aayog will work towards the following objectives: a.
+To evolve a shared vision of national development priorities, sectors and strategies with the active involvement of States in the light of national objectives.
+Per the 2015 Cabinet Resolution, one objective of NITI Aayog is 'To design strategic and long term and programme frameworks and initiatives, and monitor their progress and efficacy.'
+To design strategic and long term policy and programme frameworks and initiatives, and monitor their progress and their efficacy.
+The lessons learnt through monitoring and feedback will be used for making innovative improvements, including necessary mid-course corrections.
+According to the 2015 Cabinet Resolution establishing it, NITI Aayog was conceived primarily as:
+...there is a need to separate as well as energize the distinct 'process' of governance from the 'strategy' of governance...
+there is need for setting up an institution that serves as a Think Tank of the government -- a directional and policy dynamo.
+A Think Tank providing strategic and technical policy advice -- a "directional and policy dynamo"
+A statutory tribunal for inter-state water disputes
+A permanent Finance Commission
+An audit authority over state budgets
+Consider the following: 1.
+Demographic performance 2.
+Forest and ecology 3.
+Governance reforms 4.
+Stable government 5.
+Tax and fiscal efforts.
+For the horizontal tax devolution, the Fifteenth Finance Commission used how many of the above as criteria other than population, area and income distance?
+Only four
+All five
+When the Lok Sabha transmits a Finance Bill to the Rajya Sabha, it can amend or reject the Bill.
+When the Lok Sabha transmits a Money Bill to the Rajya Sabha, it cannot amend or reject the Bill, it can only make recommendations.
+In the case of disagreement between the Lok Sabha and the Rajya Sabha, there is no joint sitting for Money Bill, but a joint sitting becomes necessary for Finance Bill.
+The Fifteenth Finance Commission recommended maintaining vertical tax devolution to states at per cent.
+XVFC has recommended maintaining the vertical devolution at 41 per cent -- the same as in our report for 2020-21.
+In the Fifteenth Finance Commission's horizontal devolution formula (2021-26), which criterion carries the single highest weight?
+Criteria / Weight (%): Population 15.0, Area 15.0, Forest & ecology 10.0, Income distance 45.0, Tax & fiscal efforts 2.5, Demographic performance 12.5, Total 100.
+Population (15.0%)
+Area (15.0%)
+Income distance (45.0%)
+Demographic performance (12.5%)
+For Sevottam compliance, a department's Citizens Charter needs an average score of and a minimum of across all indicators.
+For Sevottam compliance a Citizens Charter for a department would need to get an average score of 4 and a minimum of 3 in all indicators.
+Under the Sevottam 'Process Quality Assessment,' how many total criteria are assessed across the Citizens Charter and Grievance Redress modules combined?
+It consists of 11 criteria for each of the modules, viz.
+Citizens Charter and Public Grievance Redress Mechanism, thereby comprising 22 criteria in all.
+NITI Aayog's Aspirational Districts Programme tracks progress using indicators comprising data-points across five thematic areas.
+The objective of the program is to monitor the real-time progress of aspirational districts based on 49 indicators (81 data-points) from the five identified thematic areas.
+Under PMGSY's Quality Control mechanism, District/Panchayat officials form the tier, State Quality Monitors the tier, and National Quality Monitors the tier.
+A three-tier Quality Control mechanism has been envisaged under PMGSY.
+The District/Zila Parishad/Panchayat level officials exercise first tier of Quality Control.
+The State Quality Monitors (SQM), appointed by the State Government inspects the work during the work in progress as a second tier of Quality Control.
+National Quality Monitors (NQM) function as the third tier of Quality Control.
+Per the 2015 Cabinet Resolution, one objective of NITI Aayog is to actively and the implementation of programmes and initiatives.
+To actively monitor and evaluate the implementation of programmes and initiatives, including the identification of the needed resources so as to strengthen the probability of success and scope of delivery.
+Which of the following was a stated objective of the Programme Evaluation Organisation's (PEO) evaluation study of PMGSY?
+To assess the impact of the programme on socio-economic conditions of the residents of villages provided with road connectivities under the programme.
+To assess the impact of the programme on the socio-economic conditions of residents of connected villages
+To recommend full privatization of rural road construction
+To fix the GST rate applicable on road contracts
+To replace PMGSY with a new scheme
+The PMGSY evaluation found that improved rural road connectivity resulted in higher income in the form of for agricultural produce, among other benefits.
+It has improved the accessibility of beneficiary villagers and resulted in higher income in the form of better price for agricultural produce, new employment avenues etc.
+Per NITI Aayog's NDAP Vision Document, DISHA (a Ministry of Rural Development data platform) provides access to data from:
+data.gov.in provides ready access to data from 165 departments.
+DISHA, by the Ministry of Rural Development, provides access to data from 42 schemes across 20 ministries.
+42 schemes across 20 ministries
+165 departments
+20 schemes across 42 ministries
+100 schemes across 28 ministries
+Under Mission Karmayogi (NPCSCB), who chairs the apex Public Human Resources Council?
+Prime Minister
+Cabinet Secretary
+Vice-Chairman, NITI Aayog
+Union Minister of Personnel, Public Grievances and Pensions
+A core guiding principle of Mission Karmayogi is supporting transition from ' based' to ' based' HR management.
+The core guiding principles of the Programme will be: Supporting Transition from 'Rules based' to 'Roles based' HR Management.
+According to DARPG's Sevottam guidelines, a Citizens'/Client's Charter is best described as:
+Though not enforceable in a court of law, the Citizens / Client Charter is intended to empower citizens.
+A written declaration by a department of its service standards, consumer choices, and grievance-redress avenues, not court-enforceable
+A legally enforceable contract between a citizen and a government department
+An internal HR performance appraisal document
+A biannual budget statement
+Per the Sevottam guidelines, how does a 'Client' differ from a 'Citizen' for charter purposes?
+Citizens are individuals, groups of individuals...
+and the common public at large.
+They are outside the government...
+Clients could be government agencies and government employees availing services from another government agency...
+Clients are part of the government and are generally referred to as internal clients.
+Clients are internal -- government agencies/employees receiving services from another government agency -- while citizens are the general public outside government
+Clients are exclusively foreign nationals
+The terms are fully interchangeable
+Only citizens may register grievances
+Per the CCS (Conduct) Rules, 1964, every Government servant shall at all times maintain integrity, maintain devotion to duty, and do nothing unbecoming of a Government servant.
+Every Government servant shall at all times -- (i) maintain absolute integrity; (ii) maintain devotion to duty; and (iii) do nothing which is unbecoming of a Government servant.
+Under the CCS (Conduct) Rules, 1964, a Government servant holding a Group 'C' or 'D' post needs prior sanction to accept a gift once its value exceeds:
+Rs. 1,500
+Rs. 7,500
+Rs. 25,000
+A Group 'A' Government servant must report to the Government any wedding/festival gift from a near relative or personal friend once its value exceeds Rs.
+On occasions such as weddings, anniversaries, funerals or religious functions...
+Statement-I: The Supreme Court has held that Article 16(4) reservation policies are limited by Article 335's requirement to maintain 'efficiency of administration'.
+Statement-II: Article 335 itself defines the term 'efficiency of administration'.
+Which is correct?
+Statement-II: Article 335 of the Constitution of India defines the term 'efficiency of administration'.
+Both correct, II explains I
+Both correct, II does not explain I
+I is correct, II is incorrect
+I is incorrect, II is correct
+A Government servant must act in his own except when acting under the direction of his official superior, and such direction shall ordinarily be given in .
+The direction of the official superior shall ordinarily be in writing.
+Mission Karmayogi was budgeted to spend Rs.
+crore over 5 years (2020-21 to 2024-25) to cover around lakh Central employees.
+To cover around 46 lakh Central employees, a sum of Rs.510.86 crore will be spent over a period of 5 years from 2020-21 to 2024-25.
+Mission Karmayogi's institutional/HR change-management approach is centered on calibrating every civil-service position to which framework?
+Supporting Transition from 'Rules based' to 'Roles based' HR Management...
+To calibrate all Civil Service positions to a Framework of Roles, Activities and Competencies (FRACs) approach.
+Framework of Roles, Activities and Competencies (FRACs)
+Balanced Scorecard
+Results-Framework Document (RFD)
+RCEESI+E
+Under the IT Act 2000, 'digital signature' means authentication of any electronic record by a subscriber by means of an electronic method or procedure in accordance with the provisions of Section .
+"digital signature" means authentication of any electronic record by a subscriber by means of an electronic method or procedure in accordance with the provisions of section 3;
+Per Section 2(1)(f) of the IT Act, an 'asymmetric crypto system' is a system of a secure key pair consisting of a private key for creating a digital signature and:
+"asymmetric crypto system" means a system of a secure key pair consisting of a private key for creating a digital signature and a public key to verify the digital signature;
+A public key to verify the digital signature
+A backup key held by the Certifying Authority
+A password known only to the subscriber
+A hash of the subscriber's Aadhaar number
+Under Section 3's Explanation, a 'hash function' is an algorithm designed to make it computationally infeasible to derive or reconstruct the original electronic record from the produced by the algorithm.
+"hash function" means an algorithm mapping or translation of one sequence of bits into another, generally smaller, set known as "hash result" such that...
+making it computationally infeasible -- (a) to derive or reconstruct the original electronic record from the hash result produced by the algorithm
+Section 5 of the IT Act 2000 gives what legal effect to digital signatures where a law requires a document to be signed?
+Where any law provides that information or any other matter shall be authenticated by affixing the signature...
+such requirement shall be deemed to have been satisfied, if such information or matter is authenticated by means of digital signature affixed in such manner as may be prescribed by the Central Government.
+The signature requirement is deemed satisfied by a digital signature affixed as prescribed
+No legal effect until a court rules on it
+It only applies to banking documents
+It requires simultaneous physical signature too
+Per I4C's Cyber Hygiene guidance, a password should not be less than characters.
+Password should not be less than eight characters
+Regarding USB device security, I4C recommends which setting be disabled on all computers when using a USB device?
+Autorun/ Autoplay feature shall be disabled in all the computers, while using USB
+Autorun/Autoplay
+File compression
+Bluetooth
+Dark mode
+For banking or other sensitive sites, what does I4C's guidance say about the browser's 'remember my password' option?
+Do not choose/ select "remember my password" option for banking/ sensitive sites
+It should not be selected for banking/sensitive sites
+It's fine as long as MFA is on
+Only avoid it on shared computers
+Use it only for OTP-linked accounts
+Under 'General Internet Safety Precautions', what does I4C advise about doing financial transactions like online shopping or UPI on public networks?
+Do not use any public computer or Wi-Fi for carrying out financial transactions like online shopping, internet banking, UPI transaction, etc.
+Public computers/Wi-Fi should not be used for such transactions
+They are safe if the site shows a padlock icon
+Only avoid public computers; Wi-Fi is fine
+Only relevant for amounts over Rs. 10,000
+NITI Aayog's Principle of Safety and Reliability for AI requires that:
+AI should be deployed reliably as intended and sufficient safeguards must be placed to ensure the safety of relevant stakeholders.
+AI is deployed reliably as intended, with safeguards for stakeholder safety
+AI must never be deployed without human review of every decision
+AI systems must be open-source
+AI must be re-certified annually by a court
+Per the Principle of Inclusivity and Non-discrimination, AI systems should not:
+AI systems should not deny opportunity to a qualified person on the basis of their identity.
+It should not deepen the harmful historic and social divisions based on religion, race, caste, sex, descent, place of birth or residence.
+Deny opportunity to a qualified person based on their identity
+Use any personal data at all
+Be trained on Indian datasets
+Be deployed in the private sector
+NITI Aayog's Principle of states: 'The design and functioning of the AI system should be recorded and made available for external scrutiny and audit to the extent possible.'
+Principle of Transparency: The design and functioning of the AI system should be recorded and made available for external scrutiny and audit to the extent possible.
+Under NITI Aayog's Principle of Accountability, stakeholders designing/developing/deploying an AI system are expected to:
+All stakeholders involved in the design, development and deployment of the AI system must be responsible for their actions.
+Stakeholders should conduct risk and impact assessments...
+set up an auditing process...
+and create mechanisms for grievance redressal.
+Be responsible for their actions and conduct risk/impact assessments, audits, and grievance redressal
+Only be liable if a court finds criminal intent
+Delegate all responsibility to the AI vendor
+Report only to shareholders
+NITI Aayog's Responsible AI Part 1 paper recommends principles for the responsible management of artificial intelligence in India.
+Non-discrimination 4.
+Principle of Privacy and security 5.
+Principle of Transparency 6.
+Principle of Accountability 7.
+Principle of protection
+As of March 2026, more than crore Aadhaar numbers had been generated, per PIB's Digital Public Infrastructure release.
+As of March 2026, more than 144 crore Aadhaar numbers had been generated.
+Per this PIB release, what three elements formed the 'JAM trinity' that laid the base layer for India's digital transformation?
+Jan Dhan bank accounts, Aadhaar enrolment and widespread mobile phone penetration created the base layer for India's digital transformation.
+Jan Dhan accounts, Aadhaar, mobile penetration
+Judiciary, Administration, Media
+UPI, DigiLocker, CoWIN
+Java, ASP.NET, MySQL
+Per this PIB release, in January 2026 UPI processed:
+In January 2026, it processed 21.70 billion transactions worth over Rs.28.33 lakh crore, reflecting its deep integration...
+21.70 billion transactions worth over Rs. 28.33 lakh crore
+2.17 billion transactions worth Rs. 283 crore
+21.70 million transactions
+691 crore transactions
+According to this PIB release, when was API Setu (the Open API Platform project) initiated, and by which ministry?
+MeitY initiated API Setu, also known as the Open API Platform project, in March 2020.
+MeitY, March 2020
+NITI Aayog, 2015
+RBI, 2016
+I4C, 2021
+The Government of India's national cloud initiative, launched by the Department of Electronics and IT, is termed '' (also known as MeghRaj).
+In pursuit of the vision, the Department of Electronics and IT (DeitY) has embarked upon a National Cloud initiative termed as 'GI Cloud'.
+The GI Cloud architecture envisages discrete cloud computing environments at which two levels?
+...by the creation of discrete cloud computing environments at the national and state levels termed as 'National Clouds' and 'State Clouds' respectively.
+National and state level ("National Clouds" and "State Clouds")
+District and block level
+Village and gram panchayat level
+Public and private sector level
+Per the GI Cloud roadmap, which categories of cloud services will the National Clouds be equipped to provide?
+The National Clouds will be equipped to provide cloud services, i.e.
+IaaS, PaaS and SaaS.
+IaaS, PaaS and SaaS
+Only Software-as-a-Service
+Only email hosting
+Only data backup
+What May 2006 government initiative does the GI Cloud roadmap describe as its original vision -- making government services accessible to citizens through common service delivery outlets?
+National e-Governance Plan (NeGP)
+Digital India
+Aadhaar Act
+IT Act 2000
+NDAP's stated vision is to ' access to public Government data through a world-class user experience.'
+Per the NDAP Vision Document, why is data coherence across ministries and departments identified as a problem?
+Ministries and Departments do not use a shared standard for common indicators.
+Attributes like region and time period defined differently.
+This makes it difficult for datasets to speak to each other.
+Ministries/Departments lack a shared standard for indicators (e.g. region, time period), making datasets hard to compare
+Because most ministries refuse to publish any data
+Because data is stored only on paper
+Because of a lack of internet access in rural India
+Per the official NIELIT Course on Computer Concepts (CCC) syllabus, the course duration is Theory: 25 hrs + Practical: hrs + Tutorial: 5 hrs.
+Theory: 25 hrs + Practical: 50 hrs.
++ Tutorial: 5 hrs.
+This course can also be offered as 10 days full time intensive course.
+Which of these is Unit 1 of the official NIELIT CCC syllabus?
+Syllabus Outline ...
+Introduction to computer ...
+Introduction to GUI Based Operating System ...
+Introduction to Computer
+Spreadsheets
+Making Small Presentations
+WWW and Web Browsers
+Under Unit 2 ('Introduction to GUI Based Operating System') of the NIELIT CCC syllabus, which topic on file handling is explicitly listed?
+2.5 File and Directory Management
+File and Directory Management
+Cloud backup configuration
+Kernel compilation
+Network firewall rules
+In the official NIELIT CCC syllabus, '' is Unit 4, allocated 4 theory hours, 2 tutorial hours, and 10 practical hours.
+Spreadsheets 4 2 10
+Under the NIELIT CCC syllabus's Unit 4.4 ('Function and Charts'), which three sub-topics are explicitly listed?
+4.4 Function and Charts 4.4.1 Using Formulas 4.4.2 Function 4.4.3 Charts
+Using Formulas, Function, Charts
+Pivot Tables, Macros, VBA
+Mail Merge, Templates, Styles
+Slicers, Sparklines, Conditional Formatting
+Which sub-topic appears under '4.2 Elements of Electronic Spread Sheet' in the official NIELIT CCC syllabus?
+4.2.1 Opening of Spread Sheet 4.2.2 Addressing of Cells 4.2.3 Printing of Spread Sheet 4.2.4 Saving Workbooks
+Addressing of Cells
+Video embedding
+Password-protecting a PDF
+Installing a printer driver
+In the NIELIT CCC syllabus, Unit is titled 'Communication and Collaboration.'
+Communication and Collaboration 2 - 2
+Which of the following is listed as a sub-topic under '7.3 Using E-mails' in the official NIELIT CCC syllabus?
+7.3.4 Replying to an E-mail message 7.3.5 Forwarding an E-mail message 7.3.6 Sorting and Searching emails
+Forwarding an E-mail message
+Compiling a mailing list server
+Configuring a mail transfer agent
+Digital signature certificate renewal
+NSSTA's on-the-job training for ISS Probationers includes a module on working with unit-level data using and R.
+Per the SDG National Indicator Framework's metadata for Indicator 2.3.1 (agricultural productivity of wheat and rice), the productivity of major crops is computed based on .
+Per the SDG National Indicator Framework's Indicator 2.4.1, 'Proportion of Net Sown Area to Cultivable Land' is computed as which ratio?
+Indicator 2.4.1: Proportion of Net Sown Area to Cultivable land Description of Indicator Net Sown Area/Cultivable land.
+Computation Numerator: Total Net Sown Area Denominator: Total Cultivable Land Unit of measurement Thousand Hectare
+Total Net Sown Area ÷ Total Cultivable Land
+Total Cultivable Land ÷ Total Net Sown Area
+Total Net Sown Area ÷ Total Geographical Area
+Total Irrigated Area ÷ Total Net Sown Area
+What overall sample design did the Periodic Labour Force Survey (PLFS) 2017-18 adopt, and what were its First Stage Units (FSU)?
+A stratified multi-stage design was adopted for PLFS.
+The first stage units (FSU) were the Urban Frame Survey (UFS) blocks in urban areas and 2011 Population Census villages (Panchayat wards for Kerala) in rural areas.
+The ultimate stage units (USU) were households.
+Simple random sampling of households directly from the Census 2011 household list
+A stratified multi-stage design, with Urban Frame Survey blocks (urban) and Census 2011 villages (rural) as the First Stage Units
+Cluster sampling of entire districts, with each district treated as one first-stage unit
+Systematic sampling of households at a fixed interval down a single all-India frame
+Under PLFS's rotational panel sampling design in urban areas, how many times is each selected household visited in total?
+A rotational panel sampling design has been used in urban areas.
+In this rotational panel scheme each selected household in urban areas is visited four times - in the beginning with first visit schedule and thrice periodically later with revisit schedule.
+Once only, with a single first-visit schedule
+Twice: one first-visit and one revisit schedule
+Four times: one first-visit schedule and three later revisit schedules
+Twelve times, once every month for a year
+In PLFS, urban First Stage Units (UFS blocks) were selected using which method, and what defined the 'size' measure for that method?
+Urban FSUs were selected by probability proportional to size with replacement (PPSWR) scheme, size being the number of households in the UFS block.
+Simple random sampling without replacement, with each block equally likely regardless of size
+Probability proportional to size with replacement (PPSWR), with size measured by the number of households in the UFS block
+Judgment sampling by field supervisors familiar with each block
+Probability proportional to size, with size measured by the block's total land area
+In PLFS, 8 households were selected from each sample village/block, drawn from each second-stage stratum by (a sampling method abbreviated using the initials S, R, S, W, O, R).
+A total of 8 households were selected from each sample village/block for canvassing the detailed schedule.
+The sample households from each of the second stage strata were selected by SRSWOR.
+In PLFS's rural sample, what fraction of the annual First Stage Unit (FSU) allocation was surveyed in each quarter of the survey period?
+For rural areas, in each quarter of the survey period, 25% FSUs of annual allocation were covered.
+100% -- the full rural sample was revisited every quarter
+50% of the annual allocation
+25% of the annual allocation
+10% of the annual allocation
+The UN's National Quality Assurance Framework (NQAF) template organizes its 19 quality statements into how many broad categories, and what do they cover?
+The template covers all aspects related to (A) Managing the statistical system, (B) Managing the institutional environment, (C) Managing statistical processes and (D) Managing statistical outputs.
+Two categories: Inputs and Outputs
+Four categories: managing the statistical system, the institutional environment, statistical processes, and statistical outputs
+Three categories: Planning, Collection, and Dissemination
+Five categories, one per stage of the generic statistical business process
+The UN's NQAF template consists of 19 statements of quality broken down into a total of quality elements.
+The framework is a template consists of 19 statements of quality with 250 quality elements and its supporting documents
+What does MoSPI's SDG National Indicator Framework (NIF) Baseline Report 2015-16 contain for each indicator?
+MoSPI released the first Sustainable Development Goals National Indicator Framework Baseline Report 2015-16.
+The Report contains Data Snapshot, metadata, definitions, computation formulae, data including sources, unit of measurement and periodicity.
+Only the raw data values, with no accompanying documentation
+A Data Snapshot, metadata, definitions, computation formulae, data sources, unit of measurement, and periodicity
+A ranking of States by performance on that indicator, with no metadata
+Only the international SDG target text, without any India-specific data
+Per MoSPI's SIF guidelines, although each State develops its own State Indicator Framework independently, one guiding principle requires it to stay in sync with the Indicator Framework at the national level.
+Under NSO's macro-level CPI imputation methodology (used during COVID-19 lockdown data gaps), how is a missing Non-Food sub-group's index imputed?
+Imputed Sub-group Index (Non-Food Group) = (Last Observed Index of Sub-group) x (General CPI of Current Month/General CPI of last Observed Month).
+By carrying forward last month's index unchanged, with no adjustment
+By multiplying the last observed index of that sub-group by the ratio of the General CPI (current month to last observed month)
+By averaging the indices of all other Non-Food sub-groups for the current month
+By linear extrapolation from the previous three months' index values
+In CPI compilation, elementary-level price indices (the lowest level of aggregation, with no explicit expenditure weights) are compiled by combining price ratios using the simple mean.
+The elementary indices are the lowest level of aggregation where prices of each good or service are combined into price indices for which explicit expenditure weights are, generally, not available...
+The Price Ratios (current month to base period) are combined by taking simple geometric mean.
+Under the Annual Survey of Industries (ASI) sampling design adopted from ASI 2004-05 onward, which units are placed in the Census Sector (surveyed on complete enumeration basis)?
+Units with 100 or more workers will be categorised as census sector and the rest of the units will be treated as sample sector, without any change in the existing criteria
+All units regardless of size, since ASI moved to full census coverage in 2004-05
+Units with 100 or more workers
+Only units belonging to public sector undertakings (PSUs)
+Units with 200 or more workers, unchanged from the ASI 1997-98 design
+The Annual Survey of Industries (ASI) sampling frame is based on lists of registered factories maintained by the Chief Inspector of in each state.
+Under India's National Geospatial Policy 2022, which agency is responsible for developing and operating the National Geospatial Data Registry (NGDR) and Unified Geospatial Interface (UGI)?
+Survey of India shall be the agency responsible for developing and operating the NGDR and the UGI in collaboration with BISAG-N, other institutions and the private sector, under the guidance and supervision of GDPDC.
+National Remote Sensing Centre (NRSC)
+Survey of India
+Department of Science and Technology (DST) directly, with no delegated agency
+Geological Survey of India (GSI)
+What is the role of the Geospatial Data Promotion and Development Committee (GDPDC) under India's National Geospatial Policy 2022?
+A purely advisory body with no formal standing, convened only when DST requests input
+The apex national body for formulating and implementing guidelines, strategies and programs for the Geospatial sector, replacing the earlier National Spatial Data Committee
+A private-sector industry association independent of any government mandate
+A judicial body that adjudicates disputes over geospatial data licensing
+For District Domestic Product (DDP) estimation in the unorganised manufacturing, construction, and tertiary sectors, what method does the manual say is generally used, and on what does it rely?
+For unorganised manufacturing, Construction and Tertiary Sector, generally allocation method is used.
+In this method, allocation of state totals of SDP estimates, for various sectors, over different districts is done on the basis of certain indicator, generally workforce.
+Direct district-level enumeration, requiring no allocation from state totals at all
+An allocation method that distributes State Domestic Product (SDP) totals across districts using an indicator, generally workforce
+A per-capita income survey conducted independently in each district
+Satellite-derived nightlight intensity data as a proxy for district output
+The manual explains that State Domestic Product (SDP) and District Domestic Product (DDP) represent, at the state and district level, what Gross Domestic Product (GDP) represents at the level.
+SDP/DDP represent at state/district level, what Gross Domestic Product (GDP) represents at national level.
+Therefore, the methodology of compiling SDP/DDP estimates would also be similar to that of GDP
+Per CERT-In's cybersecurity guidelines for government entities, how often must internal information security audits and third-party security audits each be conducted, at minimum?
+Internal information security audit to be conducted at least once in 6 months.
+3rd Party Security audits must be conducted at least once a year.
+Internal audits once a year; third-party audits once every 6 months
+Internal audits at least once every 6 months; third-party audits at least once a year
+Both internal and third-party audits at least once a month
+Only third-party audits are required; internal audits are optional
+CERT-In's guidelines require government organisations to maintain an inventory of authorised hardware and software, plus an automated scanning mechanism to detect the presence of any device or software.
+Maintain inventory of authorised hardware and software (including versions, patch level, validity of support etc) along with mechanism for automated scanning to detect presence of unauthorized device and software.
+The comparative analysis of the certificates has highlighted that the majority of the interoperability problems in certificates are due to inconsistency in the 'Issuer' and 'Subject' fields of the certificates.
+The 'Validity Period' and 'Serial Number' fields
+The 'Issuer' and 'Subject' fields
+The 'Public Key Algorithm' field only
+The 'CRL Distribution Point' field only
+CCA's interoperability model for Digital Signature Certificates recommends two major initiatives: organizational guidelines and guidelines.
+The interoperability model that has been defined by the CA recommends two major initiatives - organizational guidelines and certificate profile guidelines.
+The Karmayogi Quality Framework (KQF) defines quality in civil-service learning across seven commitments.
+Which of the following is one of them?
+Seven quality commitments govern every stage: Purpose & Competency Alignment - Learning Design - Content Accuracy - Assessment - Technology - Learner Experience - Ethics & Values.
+Vendor Cost Optimisation
+Ethics & Values
+Marketing Reach
+Platform Uptime Percentage
+Per the Karmayogi Quality Framework's foreword, before any course is built its author must be able to clearly answer what specific work the course will help a public official make better.
+Before any course is built, its author must answer a simple question, 'what specific work decisions will this course help a public official make better'?
+If that question cannot be answered clearly, the course should not be built.
+NITI Aayog's National Strategy for Artificial Intelligence identifies five priority sectors expected to benefit most from AI in solving societal needs.
+Which of the following is NOT one of them?
+NITI Aayog has decided to focus on five sectors that are envisioned to benefit the most from AI in solving societal needs: a) Healthcare...
+b) Agriculture...
+c) Education...
+d) Smart Cities and Infrastructure...
+and e) Smart Mobility and Transportation
+Healthcare
+Agriculture
+Banking and Financial Services
+Smart Mobility and Transportation
+Which of the following is identified as a barrier to large-scale AI adoption in NITI Aayog's National Strategy for Artificial Intelligence?
+Excessive government regulation preventing any private-sector AI research
+Absence of enabling data ecosystems -- limited access to intelligent, usable data
+Too many competing national AI strategies causing confusion
+Overinvestment in AI research relative to other technologies
+NITI Aayog proposes a two-tiered AI research structure: Centres of Research Excellence (CORE) for core research, and International Centers of AI (ICTAI) for application-based research with private-sector collaboration.
+International Centers of Transformational AI (ICTAI) with a mandate of developing and deploying application-based research.
+Private sector collaboration is envisioned to be a key aspect of ICTAIs.

@@ -400,6 +400,30 @@ def test_stt_singleton_helper():
     assert isinstance(engine1, FasterWhisperSTT)
 
 
+def test_stt_model_size_defaults_when_no_env_or_arg_given(monkeypatch):
+    """With nothing set, the stock tiny.en model size is used."""
+    monkeypatch.delenv("WHISPER_MODEL_PATH", raising=False)
+    stt = FasterWhisperSTT()
+    assert stt.model_size == "tiny.en"
+
+
+def test_stt_model_size_reads_whisper_model_path_env_var(monkeypatch, tmp_path):
+    """WHISPER_MODEL_PATH lets a fine-tuned local CTranslate2 model directory
+    (see backend/scripts/voice_finetuning/) replace the stock download without
+    a code change, mirroring LocalPiperTTS's PIPER_MODEL_PATH override."""
+    fake_model_dir = str(tmp_path / "whisper-domain-finetuned")
+    monkeypatch.setenv("WHISPER_MODEL_PATH", fake_model_dir)
+    stt = FasterWhisperSTT()
+    assert stt.model_size == fake_model_dir
+
+
+def test_stt_explicit_model_size_arg_takes_priority_over_env_var(monkeypatch):
+    """An explicit constructor argument still wins over the env var."""
+    monkeypatch.setenv("WHISPER_MODEL_PATH", "/some/env/path")
+    stt = FasterWhisperSTT(model_size="tiny.en")
+    assert stt.model_size == "tiny.en"
+
+
 # ─── 10. Live Faster-Whisper tiny.en Integration Smoke Test ───────────────────
 
 def test_live_faster_whisper_tiny_en_smoke():

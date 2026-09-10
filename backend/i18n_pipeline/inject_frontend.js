@@ -27,7 +27,11 @@ const NEW_LANGUAGES = [
 // mitigations for this shape ("using an object without prototypes"). A
 // prototype-less node has no inherited __proto__/constructor to hit, so
 // `node = node[seg]` can never walk into Object.prototype no matter what
-// `seg` is.
+// `seg` is. The prototype-pollution-loop rule pattern-matches the loop's
+// shape (assign-then-descend into a bracketed key) and can't see that
+// Object.create(null) already removes the prototype chain the rule warns
+// about -- same false-positive-after-a-real-mitigation situation as
+// db/database.py's nosemgrep comments, hence the suppression below.
 function unflatten(flat) {
   const root = Object.create(null);
   for (const [dotPath, value] of Object.entries(flat)) {
@@ -38,7 +42,7 @@ function unflatten(flat) {
       if (typeof node[seg] !== 'object' || node[seg] === null) {
         node[seg] = Object.create(null);
       }
-      node = node[seg];
+      node = node[seg]; // nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop
     }
     node[segments[segments.length - 1]] = value;
   }

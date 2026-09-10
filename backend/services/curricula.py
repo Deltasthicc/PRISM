@@ -11,17 +11,28 @@ import json
 import os
 from copy import deepcopy
 
-# Hand-translated (see scripts/generate_curricula_hi.py's docstring for why
-# not machine-generated this time) Hindi overlay for the fields actually
-# rendered to a learner: curriculum name/domain/description/audience/
-# level_band and each competency's label/description. Deliberately does NOT
-# cover COMPETENCY_SOURCES' citation excerpts or SOURCES' title/publisher --
-# those are literal references to real government documents, and
+# Per-language overlay for the fields actually rendered to a learner:
+# curriculum name/domain/description/audience/level_band and each
+# competency's label/description. Deliberately does NOT cover
+# COMPETENCY_SOURCES' citation excerpts or SOURCES' title/publisher -- those
+# are literal references to real government documents, and
 # paraphrase-translating a citation misrepresents it rather than localizing
 # it; neither is shown to a learner today regardless.
-_TRANSLATIONS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "curricula_hi.json")
-with open(_TRANSLATIONS_PATH, encoding="utf-8") as _handle:
-    _CURRICULA_HI: dict = json.load(_handle)
+#
+# curricula_hi.json was hand-translated (see scripts/generate_curricula_hi.py's
+# docstring for why). curricula_<lang>.json for the other supported languages
+# were machine-translated via backend/i18n_pipeline/ (Google Translate, no
+# GEMINI_API_KEY available in this environment) -- not hand-translated by an
+# assistant, per the project's "use a real translator, don't hand-translate"
+# instruction. Any language without a committed file here simply falls back
+# to English; that is intentional, not a bug.
+_SUPPORTED_LOCALIZATION_LANGS = ["hi", "bn", "mr", "te", "ta", "gu", "ur", "kn", "or", "ml"]
+_CURRICULA_TRANSLATIONS: dict[str, dict] = {}
+for _lang in _SUPPORTED_LOCALIZATION_LANGS:
+    _path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"curricula_{_lang}.json")
+    if os.path.exists(_path):
+        with open(_path, encoding="utf-8") as _handle:
+            _CURRICULA_TRANSLATIONS[_lang] = json.load(_handle)
 
 
 # docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 3 acceptance evidence:
@@ -700,13 +711,16 @@ def validate_curricula(catalog: dict = CURRICULA) -> None:
 
 
 def _localize(curriculum: dict, slug: str, lang: str) -> dict:
-    """Overlay the Hindi translation onto a copy of `curriculum`, field by
-    field -- never mutates the English source, and any field missing from
-    the translation (should not happen; see scripts/generate_curricula_hi.py's
+    """Overlay a translation onto a copy of `curriculum`, field by field --
+    never mutates the English source, and any field missing from the
+    translation (should not happen; see scripts/generate_curricula_hi.py's
     validate_shape) silently falls back to English rather than raising."""
-    if lang != "hi":
+    if lang == "en":
         return curriculum
-    translation = _CURRICULA_HI.get(slug)
+    translations = _CURRICULA_TRANSLATIONS.get(lang)
+    if not translations:
+        return curriculum
+    translation = translations.get(slug)
     if not translation:
         return curriculum
     for field in ("name", "domain", "description", "audience", "level_band"):

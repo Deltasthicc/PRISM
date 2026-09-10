@@ -52,8 +52,10 @@ def main() -> None:
     # heavy, training-only packages installed (they are not part of the
     # deployed app's dependency set -- see the module docstring).
     import evaluate
+    import librosa
+    import soundfile as sf
     import torch
-    from datasets import Audio, Dataset
+    from datasets import Dataset
     from transformers import (
         Seq2SeqTrainer,
         Seq2SeqTrainingArguments,
@@ -81,17 +83,26 @@ def main() -> None:
         manifest_dir = os.path.dirname(manifest_path)
         audio_paths = [os.path.join(manifest_dir, e["audio_path"]) for e in entries]
         texts = [e["text"] for e in entries]
-        ds = Dataset.from_dict({"audio": audio_paths, "text": texts})
-        return ds.cast_column("audio", Audio(sampling_rate=16000))
+        return Dataset.from_dict({"audio_path": audio_paths, "text": texts})
 
     train_ds = to_dataset(args.train_manifest)
     val_ds = to_dataset(args.val_manifest)
     print(f"Loaded {len(train_ds)} train / {len(val_ds)} val examples.")
 
     def prepare_example(batch):
-        audio = batch["audio"]
+        # Read + resample directly with soundfile/librosa instead of
+        # datasets.Audio (which now hard-requires torchcodec to decode --
+        # confirmed on a real GPU run that pairing an unconstrained
+        # torchcodec install with a pinned older torch build crashes with a
+        # native ABI mismatch, "undefined symbol: aoti_torch_abi_version").
+        # soundfile/librosa have no such torch-version coupling at all.
+        array, native_sr = sf.read(batch["audio_path"], dtype="float32")
+        if array.ndim > 1:
+            array = array.mean(axis=1)
+        if native_sr != 16000:
+            array = librosa.resample(array, orig_sr=native_sr, target_sr=16000)
         batch["input_features"] = processor.feature_extractor(
-            audio["array"], sampling_rate=audio["sampling_rate"]
+            array, sampling_rate=16000
         ).input_features[0]
         batch["labels"] = processor.tokenizer(batch["text"]).input_ids
         return batch

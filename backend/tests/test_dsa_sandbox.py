@@ -48,7 +48,7 @@ from routes.authorization import require_principal
 from routes.dsa_sandbox import router as dsa_sandbox_router
 from security.rbac import BoundPrincipal
 from services import dsa_lang_gen
-from services.dsa_problems import PROBLEMS
+from services.dsa_problems import PROBLEMS, PROBLEM_GUIDANCE
 
 
 class _Subject:
@@ -107,8 +107,21 @@ def test_problem_bank_covers_every_dsa_topic_with_real_test_cases():
     body = response.json()
     problems = body["problems"]
     assert len(problems) == len(PROBLEMS)
+    assert len(problems) >= 22
     topics = {p["competency_id"] for p in problems}
     assert topics == {p["competency_id"] for p in PROBLEMS}
+    pattern_labels = {p["topic_label"] for p in problems}
+    assert {
+        "Hash Maps",
+        "Strings & Sliding Window",
+        "Two Pointers",
+        "Backtracking",
+        "Greedy Intervals",
+        "Matrices",
+        "Prefix Sums",
+        "Graph Traversal",
+    } <= pattern_labels
+    assert set(PROBLEM_GUIDANCE) == {p["id"] for p in PROBLEMS}
     assert set(body["languages"]) == set(dsa_lang_gen.LANGUAGES)
     for problem in problems:
         assert problem["test_case_count"] >= 3
@@ -120,9 +133,32 @@ def test_problem_bank_covers_every_dsa_topic_with_real_test_cases():
         assert "solve" in problem["starter_code_by_language"]["cpp"].lower()
         assert "solve" in problem["starter_code_by_language"]["csharp"].lower()
         assert "solve" in problem["starter_code_by_language"]["javascript"].lower()
+        assert len(problem["constraints"]) >= 2
+        assert len(problem["examples"]) == 2
+        assert all(example["explanation"] for example in problem["examples"])
+        assert problem["solution_outline"]
         # The public view must never leak expected_output/full test cases.
         assert "expected_output" not in problem
         assert "test_cases" not in problem
+
+
+def test_matrix_result_harnesses_serialize_nested_lists_in_every_language():
+    """The interval problem returns int[][], including in C++ and C#."""
+    problem = next(p for p in PROBLEMS if p["id"] == "sorting_merge_intervals")
+
+    for language in dsa_lang_gen.LANGUAGES:
+        starter = dsa_lang_gen.starter_code(language, problem)
+        source = dsa_lang_gen.full_source(language, starter, problem)
+        assert source
+
+    cpp_source = dsa_lang_gen.full_source(
+        "cpp", dsa_lang_gen.starter_code("cpp", problem), problem
+    )
+    csharp_source = dsa_lang_gen.full_source(
+        "csharp", dsa_lang_gen.starter_code("csharp", problem), problem
+    )
+    assert "__wrap(const vector<vector<long long>>& matrix)" in cpp_source
+    assert "List<System.Collections.Generic.List<long>> matrix" in csharp_source
 
 
 def test_accepted_submission_persists_and_updates_accuracy_history(monkeypatch):

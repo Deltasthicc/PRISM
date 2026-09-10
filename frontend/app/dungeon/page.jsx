@@ -175,14 +175,22 @@ export default function DungeonMapPage() {
   function handleRoomClick(room) {
     setSelectedTopic(room.topic);
     if (room.status === 'locked') return;
-    router.push(
-      `/combat/${encodeURIComponent(room.topic)}?dungeon=${matchedDungeon.dungeon_id}&label=${encodeURIComponent(room.label)}`
-    );
+    // Plain competency practice (routes/competency_quiz.py via
+    // /practice, see that page's own comment) -- not /combat. This is the
+    // always-visible professional path; the gamified room-fight experience
+    // is Quest Mode's opt-in skin on top of the same backend, not the
+    // default way to practice a competency.
+    router.push(`/practice?competency_id=${encodeURIComponent(room.topic)}&label=${encodeURIComponent(room.label)}`);
   }
 
   function handleCapstoneClick() {
     if (!dungeon.boss_unlocked || !matchedDungeon) return;
-    router.push(`/boss/${matchedDungeon.dungeon_id}`);
+    // Same reasoning as handleRoomClick: no boss fight on the professional
+    // path. The existing multi-topic competency assessment is the closest
+    // real, non-gamified "capstone" today; it isn't yet scoped to just this
+    // curriculum (it draws from the learner's whole profile), which is a
+    // known follow-up, not a silent regression.
+    router.push('/baseline-assessment');
   }
 
   return (

@@ -187,34 +187,49 @@ _COMPETENCY_LABELS = {
     for competency in curriculum["competencies"]
 }
 
+# Reverse lookup so a single competency_id (e.g. what a Prerequisite
+# Pathways room is keyed by) can find its topic without the caller needing
+# to know the bundling -- a competency_id belongs to exactly one topic today
+# (TOPICS' competency_ids lists don't overlap), so first-match is exact, not
+# a heuristic.
+_COMPETENCY_TO_TOPIC: dict[str, str] = {}
+for _topic_id, _topic in TOPICS.items():
+    for _competency_id in _topic["competency_ids"]:
+        _COMPETENCY_TO_TOPIC.setdefault(_competency_id, _topic_id)
+
+
+def _questions_for_competency_ids(competency_ids: list[str]) -> list[dict]:
+    items: list[dict] = []
+    for competency_id in competency_ids:
+        items.extend(questions_for_competency(competency_id))
+    return items
+
 
 def _topic_questions(topic_id: str) -> list[dict]:
     topic = TOPICS.get(topic_id)
     if not topic:
         return []
-    items: list[dict] = []
-    for competency_id in topic["competency_ids"]:
-        items.extend(questions_for_competency(competency_id))
-    return items
+    return _questions_for_competency_ids(topic["competency_ids"])
 
 
-def _select_topic_questions(topic_id: str, count: int) -> list[dict]:
+def _select_questions(competency_ids: list[str], count: int) -> list[dict]:
     """Select a stable, difficulty-progressive and competency-balanced set.
 
     Difficulty labels are curated prototype metadata, not a psychometrically
     calibrated item-response scale. Within that honest boundary, learners see
-    easier items before harder ones and, where a topic spans competencies, one
+    easier items before harder ones and, where the set spans competencies, one
     competency cannot consume the whole requested set merely because its
-    items happen to appear first in the JSON file.
+    items happen to appear first in the JSON file. `competency_ids` is either
+    a whole topic's list (topic_id practice) or a single competency (a
+    Prerequisite Pathways room practicing just that one competency).
     """
 
-    topic = TOPICS[topic_id]
     by_competency = {
         competency_id: sorted(
             questions_for_competency(competency_id),
             key=lambda item: (_DIFFICULTY_ORDER[item["difficulty"]], item["item_id"]),
         )
-        for competency_id in topic["competency_ids"]
+        for competency_id in competency_ids
     }
     selected: list[dict] = []
     for difficulty in ("easy", "medium", "hard"):
@@ -224,10 +239,10 @@ def _select_topic_questions(topic_id: str, count: int) -> list[dict]:
                 for item in by_competency[competency_id]
                 if item["difficulty"] == difficulty
             ]
-            for competency_id in topic["competency_ids"]
+            for competency_id in competency_ids
         }
         while len(selected) < count and any(queues.values()):
-            for competency_id in topic["competency_ids"]:
+            for competency_id in competency_ids:
                 if queues[competency_id] and len(selected) < count:
                     selected.append(queues[competency_id].pop(0))
     return selected
@@ -311,17 +326,39 @@ class QuizQuestionsResponse(BaseModel):
 
 @router.get("/questions", response_model=QuizQuestionsResponse)
 async def get_quiz_questions(
-    topic_id: str,
+    topic_id: str | None = None,
+    # Practice a single competency directly (e.g. one Prerequisite Pathways
+    # room) instead of a whole bundled topic. Exactly one of topic_id/
+    # competency_id must be given; competency_id still resolves to its
+    # containing topic internally (attempts/submission stay topic-keyed),
+    # but the question pool is restricted to just this one competency.
+    competency_id: str | None = None,
     count: int = Query(5, ge=1, le=MAX_QUESTIONS_PER_TOPIC),
 ) -> QuizQuestionsResponse:
-    topic = TOPICS.get(topic_id)
-    if not topic:
-        raise HTTPException(status_code=404, detail=f"Unknown topic: {topic_id!r}")
-    pool = _topic_questions(topic_id)
-    if not pool:
-        raise HTTPException(status_code=503, detail=f"No questions available yet for topic {topic_id!r}")
+    if competency_id:
+        resolved_topic_id = _COMPETENCY_TO_TOPIC.get(competency_id)
+        if not resolved_topic_id:
+            raise HTTPException(status_code=404, detail=f"Unknown competency: {competency_id!r}")
+        competency_ids = [competency_id]
+        label = _COMPETENCY_LABELS.get(competency_id, competency_id)
+    elif topic_id:
+        topic = TOPICS.get(topic_id)
+        if not topic:
+            raise HTTPException(status_code=404, detail=f"Unknown topic: {topic_id!r}")
+        resolved_topic_id = topic_id
+        competency_ids = topic["competency_ids"]
+        label = topic["label"]
+    else:
+        raise HTTPException(status_code=422, detail="Provide either topic_id or competency_id")
 
-    selected = _select_topic_questions(topic_id, count)
+    pool = _questions_for_competency_ids(competency_ids)
+    if not pool:
+        raise HTTPException(
+            status_code=503,
+            detail=f"No questions available yet for {'competency ' + repr(competency_id) if competency_id else 'topic ' + repr(topic_id)}",
+        )
+
+    selected = _select_questions(competency_ids, count)
     questions = [
         QuizQuestionOut(
             item_id=item["item_id"],
@@ -337,9 +374,9 @@ async def get_quiz_questions(
         for item in selected
     ]
     return QuizQuestionsResponse(
-        attempt_id=_issue_attempt(topic_id, selected),
-        topic_id=topic_id,
-        label=topic["label"],
+        attempt_id=_issue_attempt(resolved_topic_id, selected),
+        topic_id=resolved_topic_id,
+        label=label,
         questions=questions,
     )
 

@@ -112,6 +112,60 @@ def test_unknown_topic_is_rejected():
     assert response.status_code == 404
 
 
+def test_neither_topic_nor_competency_is_rejected():
+    response = client.get("/learning/competency-quiz/questions")
+    assert response.status_code == 422
+
+
+def test_competency_id_scopes_questions_to_just_that_competency():
+    """A Prerequisite Pathways room practicing one competency (e.g. "arrays")
+    must never pull in its topic's other bundled competencies (linked_lists,
+    stacks_queues) -- that would silently test something the learner didn't
+    ask to practice."""
+    response = client.get(
+        "/learning/competency-quiz/questions",
+        params={"competency_id": "arrays", "count": 3},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["topic_id"] == "linear_structures"  # resolved internally, not caller-supplied
+    assert data["label"] == "Arrays"  # the competency's own label, not the whole topic's
+    assert data["questions"]
+    assert {q["competency_id"] for q in data["questions"]} == {"arrays"}
+
+
+def test_unknown_competency_id_is_rejected():
+    response = client.get(
+        "/learning/competency-quiz/questions", params={"competency_id": "not-a-real-competency"}
+    )
+    assert response.status_code == 404
+
+
+def test_competency_id_attempt_submits_and_grades_like_any_other():
+    issued = client.get(
+        "/learning/competency-quiz/questions",
+        params={"competency_id": "arrays", "count": 2},
+    ).json()
+    key = {
+        item["item_id"]: item for item in questions_for_competency("arrays")
+    }
+    answers = []
+    for question in issued["questions"]:
+        item = key[question["item_id"]]
+        if item.get("question_type", "mcq") == "mcq":
+            answers.append({"item_id": question["item_id"], "selected_index": item["answer_index"]})
+        else:
+            answers.append({"item_id": question["item_id"], "answer_text": item["accepted_answers"][0]})
+    response = client.post(
+        "/learning/competency-quiz/submit",
+        json={"attempt_id": issued["attempt_id"], "topic_id": issued["topic_id"], "answers": answers},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["correct"] == body["total"] == len(issued["questions"])
+    assert {score["competency_id"] for score in body["competency_scores"]} == {"arrays"}
+
+
 def test_submit_grades_and_ranks_without_calling_it_self_assessment():
     issued = issue("ai_policy", 5)
     response = client.post(

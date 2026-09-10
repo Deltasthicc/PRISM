@@ -1337,6 +1337,7 @@ async def test_barge_in_no_raw_audio_persisted():
 
 # ─── STAGE 6: WEBSOCKET TRANSPORT TESTS ─────────────────────────────────────
 import json
+from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
 from routes.ai_voice import set_voice_factories, reset_voice_factories
@@ -1417,6 +1418,36 @@ def _build_test_voice_session(
         assistant=mock_assistant,
         tts_engine=mock_tts,
     )
+
+
+def test_ws_handshake_rejects_missing_token_when_demo_auth_is_not_disabled():
+    """Baseline for the next test: without DISABLE_AUTH, no factory override,
+    and no Authorization header, the handshake must fail closed exactly as
+    it always has -- this endpoint's real-auth path is untouched."""
+    client = TestClient(app)
+    with client.websocket_connect("/ai/voice/stream") as ws:
+        ws.send_json({"type": "start", "sample_rate": 16000, "channels": 1, "format": "pcm_s16le"})
+        msg = ws.receive_json()
+        assert msg["type"] == "error"
+        assert msg["code"] == "AUTHENTICATION_REQUIRED"
+
+
+def test_ws_handshake_uses_demo_principal_when_disable_auth_is_set():
+    """The DISABLE_AUTH=true demo bypass (routes/authorization.py's
+    _demo_principal, already used by every other route) must also cover this
+    WebSocket -- without it, voice can never work in exactly the local/demo
+    setup (DISABLE_AUTH=true, no Keycloak) the rest of this app runs in. No
+    Authorization header sent at all, matching a real browser client with no
+    bearer token to send in that setup."""
+    with patch("routes.ai_voice._DEMO_AUTH_DISABLED", True):
+        client = TestClient(app)
+        with client.websocket_connect("/ai/voice/stream") as ws:
+            ws.send_json({"type": "start", "sample_rate": 16000, "channels": 1, "format": "pcm_s16le"})
+            msg = ws.receive_json()
+            assert msg["type"] == "ready"
+            assert msg["user_id"] == "demo"
+            assert msg["tenant_id"] == "deployment-database"
+            assert "learner" in msg["roles"]
 
 
 def test_ws_handshake_success():

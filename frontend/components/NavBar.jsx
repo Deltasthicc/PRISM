@@ -53,6 +53,7 @@ export default function NavBar() {
       ? [{ href: '/dsa-sandbox', label: t('nav.dsaSandbox'), hasDot: false }]
       : []),
     { href: '/assistant', label: t('nav.assistant'), hasDot: false },
+    { href: '/voice', label: t('nav.voiceAssistant'), hasDot: false },
     {
       href: '/integration-registry',
       label: t('nav.integrationRegistry'),

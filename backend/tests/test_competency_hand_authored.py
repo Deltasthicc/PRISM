@@ -40,6 +40,7 @@ UPSC_DOC_IDS = {"upsc_csm26_statistics_p1", "upsc_csm26_statistics_p2"}
 RELIABILITY_DOC_IDS = {
     "dpdp_act_2023", "niti_ai_strategy", "cpi_manual_2010",
     "gate2024_cs1", "gate2024_cs2", "gate2026_cs1", "gate2026_cs2",
+    "gate2025_da", "gate2026_da",
     "census2011_houselisting", "ndap_vision", "mdds_health",
     "national_geospatial_policy", "nas_sources_methods", "nssta_calendar",
     "nqaf_cocsso", "plfs_metadata_compliance", "sdg_nif_2026", "nmds_2",
@@ -81,6 +82,16 @@ def test_every_item_references_a_real_corpus_document(doc_id):
     assert len(items) > 0
     for item in items:
         assert item["doc_id"] == doc_id
+
+
+def test_binary_search_competency_has_real_verified_questions():
+    """binary_search (the array algorithm, distinct from binary_search_tree)
+    previously had zero questions -- confirmed real coverage now exists,
+    sourced from official GATE 2025/2026 Data Science & AI papers."""
+    items = questions_for_competency("binary_search")
+    assert len(items) >= 2
+    for item in items:
+        assert item["doc_id"] in {"gate2025_da", "gate2026_da"}
 
 
 def test_every_item_has_a_valid_shape():

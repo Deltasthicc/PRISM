@@ -24,9 +24,8 @@ import json
 import os
 import sys
 import time
-import urllib.error
-import urllib.parse
-import urllib.request
+
+import httpx
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 EN_FLAT_PATH = os.path.join(HERE, "en_flat.json")
@@ -38,21 +37,21 @@ MYMEMORY_RETRIES = 3
 
 
 def _translate_google(text: str, target_lang: str) -> str:
-    q = urllib.parse.quote(text)
-    url = (
-        "https://translate.googleapis.com/translate_a/single"
-        f"?client=gtx&sl=en&tl={target_lang}&dt=t&q={q}"
-    )
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    # Fixed host/scheme -- only the query params vary, so this can't be
+    # steered at a different host or a file:// URL the way a fully dynamic
+    # URL could.
+    url = "https://translate.googleapis.com/translate_a/single"
+    params = {"client": "gtx", "sl": "en", "tl": target_lang, "dt": "t", "q": text}
     last_exc = None
     for attempt in range(GOOGLE_RETRIES):
         try:
-            with urllib.request.urlopen(req, timeout=20) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
+            resp = httpx.get(url, params=params, headers={"User-Agent": USER_AGENT}, timeout=20)
+            resp.raise_for_status()
+            data = resp.json()
             return "".join(segment[0] for segment in data[0])
-        except urllib.error.HTTPError as exc:
+        except httpx.HTTPStatusError as exc:
             last_exc = exc
-            if exc.code == 429:
+            if exc.response.status_code == 429:
                 time.sleep(RATE_LIMIT_BACKOFF[min(attempt, len(RATE_LIMIT_BACKOFF) - 1)])
             else:
                 time.sleep(1.0 * (attempt + 1))
@@ -63,14 +62,14 @@ def _translate_google(text: str, target_lang: str) -> str:
 
 
 def _translate_mymemory(text: str, target_lang: str) -> str:
-    q = urllib.parse.quote(text)
-    url = f"https://api.mymemory.translated.net/get?q={q}&langpair=en|{target_lang}"
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    url = "https://api.mymemory.translated.net/get"
+    params = {"q": text, "langpair": f"en|{target_lang}"}
     last_exc = None
     for attempt in range(MYMEMORY_RETRIES):
         try:
-            with urllib.request.urlopen(req, timeout=20) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
+            resp = httpx.get(url, params=params, headers={"User-Agent": USER_AGENT}, timeout=20)
+            resp.raise_for_status()
+            data = resp.json()
             if data.get("responseStatus") != 200:
                 raise RuntimeError(f"MyMemory status {data.get('responseStatus')}")
             translated = data.get("responseData", {}).get("translatedText", "")

@@ -21,6 +21,19 @@ const NEW_LANGUAGES = [
   { code: 'ml', label: 'മലയാളം' },
 ];
 
+// Keys here are en_flat.json's own dot-paths (derived from this app's own
+// translations.js, not external input), but guarding each segment with a
+// real hasOwnProperty check -- same as LanguageContext.jsx's lookup() --
+// closes off the prototype-pollution shape regardless.
+function setOwn(node, segment, value) {
+  Object.defineProperty(node, segment, {
+    value,
+    writable: true,
+    enumerable: true,
+    configurable: true,
+  });
+}
+
 function unflatten(flat) {
   const root = {};
   for (const [dotPath, value] of Object.entries(flat)) {
@@ -28,10 +41,12 @@ function unflatten(flat) {
     let node = root;
     for (let i = 0; i < segments.length - 1; i++) {
       const seg = segments[i];
-      if (!node[seg] || typeof node[seg] !== 'object') node[seg] = {};
+      if (!Object.prototype.hasOwnProperty.call(node, seg) || typeof node[seg] !== 'object') {
+        setOwn(node, seg, {});
+      }
       node = node[seg];
     }
-    node[segments[segments.length - 1]] = value;
+    setOwn(node, segments[segments.length - 1], value);
   }
   return root;
 }

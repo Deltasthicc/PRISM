@@ -92,12 +92,19 @@ python scripts/voice_finetuning/3_finetune_whisper.py \
     --learning-rate 1e-5
 ```
 
-The `Map (num_proc=1): 0%|...` progress bar before training starts will look
-stuck for a couple of minutes on a corpus this size -- that's expected,
-not a hang. `datasets.map()` only updates its bar once an internal write-batch
-finishes, so it can sit at 0% right up until the whole split is done. Check
-`top`/`htop` for a `python` process pinned near 100% CPU to confirm it's
-actually working.
+The `Map: 0%|...` progress bar before training starts can sit at 0% for a
+minute or two on a corpus this size -- `datasets.map()` only updates it once
+an internal write-batch finishes. That's expected. If it never moves at all
+and stays at exactly `0/1002 [00:00<?, ...]` indefinitely, check
+`ps -eo pid,etime,pcpu,cmd | grep 3_finetune_whisper`: real progress shows
+non-trivial `%CPU` accumulating over time. A genuinely frozen run (0% CPU,
+no growth) was reproduced on a Python 3.14 box and traced to
+`datasets.map()`'s internal multiprocessing worker pool -- passing
+`num_proc=1` still spawns a worker and talks to it over an IPC pipe, and
+that worker can silently die without ever replying, leaving the main
+process blocked forever in `conn.recv()`. This script no longer passes
+`num_proc` at all (so `map()` runs in-process, no forking, no IPC) --
+if you're on an older checkout that still hangs here, `git pull` first.
 
 Watch the logged `wer` metric each epoch — it should trend down from the
 baseline. This should take well under an hour on an RTX 5090 for a corpus this

@@ -87,15 +87,24 @@ def main() -> None:
         batch["labels"] = processor.tokenizer(batch["text"]).input_ids
         return batch
 
+    # No num_proc: passing num_proc=1 still makes datasets.map() spawn a
+    # multiprocessing worker pool and talk to it over an IPC pipe (confirmed
+    # via a real hang on a Python 3.14 GPU box: the main process blocked
+    # forever in conn.recv() waiting on a worker that never replied, most
+    # likely a fork/native-library interaction on that new an interpreter).
+    # Leaving num_proc unset runs map() in-process with no forking and no
+    # IPC at all -- for a corpus this size that's still fast, and it can't
+    # hang on a worker that silently dies.
+    #
     # A small writer_batch_size gives real incremental progress feedback --
     # datasets.map()'s default (1000) only updates the bar once a whole
     # write-batch finishes, so on a ~1000-row split it looks stuck at 0%
     # right up until the entire dataset is done.
     train_ds = train_ds.map(
-        prepare_example, remove_columns=train_ds.column_names, num_proc=1, writer_batch_size=50
+        prepare_example, remove_columns=train_ds.column_names, writer_batch_size=50
     )
     val_ds = val_ds.map(
-        prepare_example, remove_columns=val_ds.column_names, num_proc=1, writer_batch_size=50
+        prepare_example, remove_columns=val_ds.column_names, writer_batch_size=50
     )
 
     class DataCollatorSpeechSeq2Seq:

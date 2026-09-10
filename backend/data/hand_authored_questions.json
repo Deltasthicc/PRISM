@@ -666,6 +666,40 @@
       "question_type": "mcq"
     },
     {
+      "item_id": "ha_gate_binary_search_precondition",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2025 DA, Q.27",
+      "source_excerpt": "For which of the following inputs does binary search take time O(log n) in the worst case? (A) An array of n integers in any order (B) A linked list of n integers in any order (C) An array of n integers in increasing order (D) A linked list of n integers in increasing order",
+      "question": "For which of the following inputs does binary search take O(log n) time in the worst case?",
+      "options": [
+        "An array of n integers in any order",
+        "A linked list of n integers in any order",
+        "An array of n integers in increasing order",
+        "A linked list of n integers in increasing order"
+      ],
+      "answer_index": 2,
+      "explanation": "Per GATE 2025 DA's official answer key, the answer is a sorted array. Binary search needs two things to hit O(log n): the data must be sorted (an unsorted array can't be halved meaningfully) and O(1) random access to the midpoint (a linked list only gets O(n) access to any interior node, which alone breaks the log n bound even if the list is sorted).",
+      "question_type": "mcq"
+    },
+    {
+      "item_id": "ha_gate_binary_search_worst_case_comparisons",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "question_type": "fill_in_blank",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 DA, Q.31",
+      "source_excerpt": "Let A be a sorted array containing 1000 distinct integers. You perform a recursive binary search on A to find an element y. Suppose each comparison checks whether the middle element computed during the current recursive step is equal to, less than, or greater than y. The maximum number of comparisons that may have to be performed if y is not an element of A is _______.",
+      "question": "A is a sorted array of 1000 distinct integers. Running recursive binary search on A for a value y that is NOT present, where each step compares the midpoint against y (equal/less/greater), the maximum number of comparisons ever needed is _____.",
+      "accepted_answers": [
+        "10"
+      ],
+      "explanation": "Confirmed by direct simulation of binary search over all possible not-found targets against a 1000-element sorted array: the search space halves each comparison (1000 -> 500 -> 250 -> ... -> 1), so the worst case is ceil(log2(1001)) = 10 comparisons before the search range is exhausted."
+    },
+    {
       "item_id": "ha_gate_heap_leaf_index",
       "doc_id": "gate2026_cs1",
       "competency_id": "heaps",

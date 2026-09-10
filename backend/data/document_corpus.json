@@ -1,7 +1,7 @@
 {
   "corpus_version": "prototype-v1",
-  "verified_on": "2026-09-09",
-  "total_documents": 49,
+  "verified_on": "2026-09-11",
+  "total_documents": 51,
   "note": "Every document was downloaded, hashed and text-extracted on verified_on. sha256 is of the exact bytes retrieved from url on that date.",
   "documents": [
     {
@@ -900,6 +900,40 @@
       "content_type": "application/pdf",
       "link_status": "verified-file",
       "verified_on": "2026-09-09"
+    },
+    {
+      "doc_id": "gate2025_da",
+      "title": "GATE 2025 Data Science & Artificial Intelligence (DA) Question Paper",
+      "publisher": "GATE (National Coordination Board), organized by IIT Roorkee",
+      "source_id": "SRC-64",
+      "category": "technical",
+      "competency_ids": [
+        "binary_search"
+      ],
+      "url": "https://gate2025.iitr.ac.in/doc/2025/2025_QP/DA.pdf",
+      "sha256": "69ba28fc60e64338113d99c90533025049b7c6e0c99c4f03d76d5ce9d70478c6",
+      "bytes": 7897137,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-11",
+      "pages": 34
+    },
+    {
+      "doc_id": "gate2026_da",
+      "title": "GATE 2026 Data Science & Artificial Intelligence (DA) Question Paper",
+      "publisher": "GATE (National Coordination Board), organized by IIT Guwahati",
+      "source_id": "SRC-65",
+      "category": "technical",
+      "competency_ids": [
+        "binary_search"
+      ],
+      "url": "https://gate2026.iitg.ac.in/doc/download/2026/QPs/DA.pdf",
+      "sha256": "4adb2f713433ec93748ff96bc04891dc10d877e8e4fb5fe7797e36ba87f298f3",
+      "bytes": 2116753,
+      "content_type": "application/pdf",
+      "link_status": "verified-file",
+      "verified_on": "2026-09-11",
+      "pages": 39
     }
   ]
 }

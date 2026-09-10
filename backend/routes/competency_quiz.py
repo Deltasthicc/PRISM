@@ -67,11 +67,10 @@ TOPICS: dict[str, dict] = {
         "competency_ids": ["os_ml", "dl_ai_literacy"],
         "curriculum_slug": "digital-literacy",
     },
-    # DSA -- GATE-sourced (see data/hand_authored_questions.json); no topic
-    # for binary_search, which has zero verified questions so far.
+    # DSA -- GATE-sourced (see data/hand_authored_questions.json).
     "linear_structures": {
         "label": "Arrays, Linked Lists & Stacks/Queues",
-        "competency_ids": ["arrays", "linked_lists", "stacks_queues"],
+        "competency_ids": ["arrays", "linked_lists", "stacks_queues", "binary_search"],
         "curriculum_slug": "dsa-fundamentals",
     },
     "recursion_and_sorting": {

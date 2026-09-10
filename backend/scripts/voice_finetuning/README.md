@@ -92,6 +92,13 @@ python scripts/voice_finetuning/3_finetune_whisper.py \
     --learning-rate 1e-5
 ```
 
+The `Map (num_proc=1): 0%|...` progress bar before training starts will look
+stuck for a couple of minutes on a corpus this size -- that's expected,
+not a hang. `datasets.map()` only updates its bar once an internal write-batch
+finishes, so it can sit at 0% right up until the whole split is done. Check
+`top`/`htop` for a `python` process pinned near 100% CPU to confirm it's
+actually working.
+
 Watch the logged `wer` metric each epoch — it should trend down from the
 baseline. This should take well under an hour on an RTX 5090 for a corpus this
 size. The best checkpoint (by validation WER) is saved to

@@ -87,8 +87,16 @@ def main() -> None:
         batch["labels"] = processor.tokenizer(batch["text"]).input_ids
         return batch
 
-    train_ds = train_ds.map(prepare_example, remove_columns=train_ds.column_names, num_proc=1)
-    val_ds = val_ds.map(prepare_example, remove_columns=val_ds.column_names, num_proc=1)
+    # A small writer_batch_size gives real incremental progress feedback --
+    # datasets.map()'s default (1000) only updates the bar once a whole
+    # write-batch finishes, so on a ~1000-row split it looks stuck at 0%
+    # right up until the entire dataset is done.
+    train_ds = train_ds.map(
+        prepare_example, remove_columns=train_ds.column_names, num_proc=1, writer_batch_size=50
+    )
+    val_ds = val_ds.map(
+        prepare_example, remove_columns=val_ds.column_names, num_proc=1, writer_batch_size=50
+    )
 
     class DataCollatorSpeechSeq2Seq:
         def __call__(self, features):

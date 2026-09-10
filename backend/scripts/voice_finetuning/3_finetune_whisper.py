@@ -158,7 +158,9 @@ def main() -> None:
         eval_dataset=val_ds,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
-        tokenizer=processor.feature_extractor,
+        # `tokenizer=` was removed in newer transformers releases in favor of
+        # `processing_class=` (same value, just a renamed kwarg).
+        processing_class=processor.feature_extractor,
     )
 
     trainer.train()

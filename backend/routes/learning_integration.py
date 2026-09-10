@@ -8,5 +8,5 @@ router = APIRouter(prefix="/learning", tags=["Learning Integrations"])
 
 
 @router.get("/integrations/status")
-async def get_integration_status(lang: str = Query("en", pattern="^(en|hi)$")):
+async def get_integration_status(lang: str = Query("en", pattern="^(en|hi|bn|mr|te|ta|gu|ur|kn|or|ml)$")):
     return integration_status(lang)

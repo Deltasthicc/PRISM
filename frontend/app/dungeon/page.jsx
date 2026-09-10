@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useGameStore } from '@/store/useGameStore';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { learning, game } from '@/lib/api/client';
 import { layoutGraph } from '@/lib/graphLayout';
 import Panel from '@/components/ui/Panel';
@@ -38,6 +39,7 @@ const PRIORITY_TONE = { critical: 'danger', high: 'warning', medium: 'warning', 
 export default function DungeonMapPage() {
   const { ready } = useRequireAuth();
   const router = useRouter();
+  const { language } = useLanguage();
   const player = useAuthStore((s) => s.player);
   const dungeon = useGameStore((s) => s.dungeon);
   const loadingDungeon = useGameStore((s) => s.loadingDungeon);
@@ -53,8 +55,8 @@ export default function DungeonMapPage() {
     enabled: ready && !!player,
   });
   const { data: curriculaData } = useQuery({
-    queryKey: ['curricula', 'en'],
-    queryFn: () => learning.getCurricula('en'),
+    queryKey: ['curricula', language],
+    queryFn: () => learning.getCurricula(language),
     enabled: ready && !!player,
   });
   const { data: dungeonsData } = useQuery({
@@ -74,8 +76,8 @@ export default function DungeonMapPage() {
   const matchedDungeon = (dungeonsData || []).find((d) => d.slug === activeSlug);
 
   const { data: pathwayData, isLoading: pathwayLoading } = useQuery({
-    queryKey: ['pathway', player?.player_id, activeSlug],
-    queryFn: () => learning.getPathway(player.player_id, activeSlug),
+    queryKey: ['pathway', player?.player_id, activeSlug, language],
+    queryFn: () => learning.getPathway(player.player_id, activeSlug, language),
     enabled: ready && !!player && !!activeSlug,
   });
 

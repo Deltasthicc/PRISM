@@ -39,7 +39,7 @@ def _resolve_competency_context(
 
 
 @router.get("/curricula")
-async def list_curricula(lang: str = Query("en", pattern="^(en|hi)$")):
+async def list_curricula(lang: str = Query("en", pattern="^(en|hi|bn|mr|te|ta|gu|ur|kn|or|ml)$")):
     return {"curricula": public_curricula(lang), "proficiency_scale": {"minimum": 0, "maximum": 5}}
 
 
@@ -51,7 +51,7 @@ async def assess_competencies(
     principal: BoundPrincipal = Depends(
         require_own_player_dependency(Permission.ASSESSMENT_SELF_WRITE)
     ),
-    lang: str = Query("en", pattern="^(en|hi)$"),
+    lang: str = Query("en", pattern="^(en|hi|bn|mr|te|ta|gu|ur|kn|or|ml)$"),
 ):
     player_or_404(db, player_id)
     if not get_curriculum(body.curriculum_slug):
@@ -97,7 +97,7 @@ async def get_pathway(
     principal: BoundPrincipal = Depends(
         require_own_player_dependency(Permission.PATHWAY_SELF_READ)
     ),
-    lang: str = Query("en", pattern="^(en|hi)$"),
+    lang: str = Query("en", pattern="^(en|hi|bn|mr|te|ta|gu|ur|kn|or|ml)$"),
 ):
     player_or_404(db, player_id)
     profile = db.query(LearnerProfile).filter(LearnerProfile.player_id == player_id).first()

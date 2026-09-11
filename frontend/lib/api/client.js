@@ -365,6 +365,20 @@ export const ai = {
     }),
 };
 
+// Bounded sampling-design virtual lab (backend/labs/sampling_lab.py, exposed
+// via routes/sampling_lab.py). Real, resource-bounded, deterministic-answer
+// tasks -- no learner code execution, and the task list never carries the
+// expected value or the underlying formula's parameters.
+export const samplingLab = {
+  getTasks: () => request('/learning/sampling-lab/tasks'),
+
+  submit: (playerId, taskId, value) =>
+    request('/learning/sampling-lab/submit', {
+      method: 'POST',
+      body: { player_id: playerId, task_id: taskId, value },
+    }),
+};
+
 // Multipart requests (file upload) can't go through request() above -- the
 // browser must set its own multipart boundary in the Content-Type header,
 // which request()'s hardcoded 'application/json' would clobber.

@@ -61,6 +61,29 @@ def _extract_json(raw: str):
     return json.loads((match.group(1) if match else raw).strip())
 
 
+def _derive_answer_index(item: dict) -> int | None:
+    """Never trust a model-stated `answer_index` on its own -- an LLM can
+    (and does) produce an explanation that argues for one option while a
+    separately-stated index field points at another, with nothing to catch
+    the mismatch. Instead require the model to independently judge each
+    option's truth value (`option_truth`, one bool per option) and derive
+    the index from that structural constraint: a normal question must have
+    exactly one true option; a NOT/EXCEPT-style question (`is_negation`)
+    must have exactly one false option among three true ones. Returns None
+    if the option_truth array doesn't satisfy that constraint, so the
+    caller can reject the item outright rather than guess.
+    """
+    truth = item.get("option_truth")
+    if not isinstance(truth, list) or len(truth) != 4 or not all(isinstance(t, bool) for t in truth):
+        return None
+    is_negation = bool(item.get("is_negation", False))
+    target = False if is_negation else True
+    matches = [i for i, t in enumerate(truth) if t is target]
+    if len(matches) != 1:
+        return None
+    return matches[0]
+
+
 def _validate_questions(raw_questions, source_text: str, requested_count: int) -> list[dict]:
     if not isinstance(raw_questions, list):
         raise ValueError("Quiz output must be a list")
@@ -71,16 +94,13 @@ def _validate_questions(raw_questions, source_text: str, requested_count: int) -
             continue
         options = item.get("options")
         excerpt = " ".join(str(item.get("source_excerpt", "")).split())
-        try:
-            answer_index = int(item.get("answer_index"))
-        except (TypeError, ValueError):
-            continue
+        answer_index = _derive_answer_index(item)
         if (
-            not item.get("question")
+            answer_index is None
+            or not item.get("question")
             or not isinstance(options, list)
             or len(options) != 4
             or len({str(option).strip().lower() for option in options}) != 4
-            or not 0 <= answer_index <= 3
             or len(excerpt) < 20
             or excerpt.lower() not in compact_source
         ):
@@ -185,7 +205,12 @@ Difficulty: {difficulty}. Output language: {language}.
 Rules:
 - Return a JSON array only.
 - Every question has exactly four unique options and one unambiguous answer.
-- answer_index is a zero-based integer from 0 to 3.
+- Do NOT state which option is correct via an index. Instead, judge each of the four options
+  independently and return `option_truth`, a 4-item boolean array: true if that option's
+  statement is factually correct per the source, false if it is not. Exactly one option must be
+  true, UNLESS the question itself is a NOT/EXCEPT-style question (asking which option is the
+  odd one out) -- in that case set `is_negation` to true and make exactly three options true
+  (correct statements) and one false (the actual answer to a NOT/EXCEPT question).
 - source_excerpt must be an exact, contiguous quote from the source and must prove the answer.
 - Do not use facts that are absent from the source.
 - Distractors must be plausible but contradicted or unsupported by the quoted source.
@@ -194,7 +219,7 @@ Rules:
   from the source, independent of the overall quiz difficulty setting above -- a quiz can mix difficulties.
 
 Schema per item:
-{{"question":"...","options":["...","...","...","..."],"answer_index":0,"explanation":"...","source_excerpt":"...","competency":"...","bloom_level":"understand","difficulty":"medium"}}
+{{"question":"...","options":["...","...","...","..."],"option_truth":[true,false,false,false],"is_negation":false,"explanation":"...","source_excerpt":"...","competency":"...","bloom_level":"understand","difficulty":"medium"}}
 
 SOURCE:
 {source_text[:80_000]}

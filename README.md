@@ -12,7 +12,7 @@
 ![Languages](https://img.shields.io/badge/UI-11%20languages-orange)
 ![Tests](https://img.shields.io/badge/backend%20tests-969-brightgreen)
 
-[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [DSA Sandbox](#-dsa-sandbox) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
+[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
 </div>
 
@@ -124,6 +124,16 @@ A real coding workspace for the DSA Fundamentals curriculum ([`frontend/app/dsa-
 - **A real judge, not a simulated pass/fail** — every submission runs against the public [Judge0](https://ce.judge0.com) API. Hidden test cases stay server-side.
 - Solving a problem writes real practice evidence into the same `AccuracyHistory` row Prerequisite Pathways reads — a DSA Sandbox submission unlocks the map exactly like a competency quiz does.
 
+## 🧪 Virtual Lab (Official Statistics)
+
+A bounded, hands-on sampling-design lab ([`frontend/app/sampling-lab/`](frontend/app/sampling-lab/), [`backend/labs/sampling_lab.py`](backend/labs/sampling_lab.py), [`backend/routes/sampling_lab.py`](backend/routes/sampling_lab.py)):
+
+- **Real sample-size calculation tasks** — simple random sampling, finite population correction, and proportional allocation across strata, each with a genuine numeric answer recomputed server-side from a fixed formula (not an LLM-judged free-text answer).
+- **Deterministic, worked feedback** — every submission (right or wrong) gets back the step-by-step calculation, not just a verdict, so a wrong answer is still a learning moment.
+- **No learner code execution, ever** — a learner submits one bounded number per task; there is no code path from a submission to anything running on the API host.
+- A correct submission writes real practice evidence into `AccuracyHistory` for `os_sampling_design` — the same table Prerequisite Pathways reads, so lab completions move the map exactly like a competency quiz or DSA Sandbox submission does.
+- This lab existed, fully built and unit-tested, before it had a route or a frontend page — found and wired up as part of closing out the platform for the demo. Scoped to one Official Statistics competency for now, not the full AI/Data Science/Cloud/Cybersecurity/Automation lab set a from-scratch build would eventually cover.
+
 ## 🤖 Learner Assistant (RAG)
 
 A real, access-filtered, cited retrieval engine ([`backend/ai/retrieval.py`](backend/ai/retrieval.py), [`ai/assistant.py`](backend/ai/assistant.py), exposed at `/assistant` in the frontend) — not a general-purpose chatbot, and it says so:
@@ -145,6 +155,7 @@ Being honest about this line is the point of this section — the frontend has a
 | `/stats` | **Real.** Every number comes from `GET /learning/pathway` — no hardcoded competency data. |
 | `/dungeon` ("Prerequisite Pathways") | **Real, for all four curricula.** Driven by `GET /learning/pathway/{player_id}` (the same engine `/stats` uses) merged with real per-player room unlock status from `GET /game/dungeon/{id}`. "Practice this competency" opens `/practice`, a plain quiz scoped to that one competency; finishing it updates `AccuracyHistory`, which is what flips a room to unlocked/weak/mastered and advances the "biggest gap" pointer — verified live across every curriculum, not just DSA. |
 | `/dsa-sandbox` | **Real.** See [DSA Sandbox](#-dsa-sandbox) below — real code, a real Judge0 judge, no simulated pass/fail. |
+| `/sampling-lab` | **Real.** See [Virtual Lab](#-virtual-lab-official-statistics) below — bounded, deterministic sample-size tasks, no learner code execution. |
 | `/assistant` | **Real.** See [Learner Assistant (RAG)](#-learner-assistant-rag) below — a real, cited retrieval engine, not a general chatbot. |
 | `/quiz` (Source Quiz Generator) | **Real.** Upload your own material, get back a real generated quiz — see [Quizzes](#-quizzes) above. |
 | `/academy`, `/register`, `/dashboard`, `/admin` | **Real.** Backed by live API calls (`learning.*` / `game.*`). |
@@ -234,6 +245,7 @@ Then open `http://localhost:3000`.
 | `learning_analytics.py` | `/learning` | Admin overview & analytics |
 | `competency_quiz.py` | `/learning/competency-quiz` | Source-cited competency quiz bank — by topic (baseline) or by a single `competency_id` (`/practice`) |
 | `dsa_sandbox.py` | `/learning/dsa-sandbox` | Real Judge0 code execution — see [DSA Sandbox](#-dsa-sandbox) |
+| `sampling_lab.py` | `/learning/sampling-lab` | Bounded sample-size calculation tasks — see [Virtual Lab](#-virtual-lab-official-statistics) |
 | `dev_auth.py` | `/auth` | Local-dev bridge: demo login → real Keycloak token (not a backdoor, not the real OIDC flow) |
 | `ai_real.py` | `/ai` | Learner Assistant (`/ai/assistant/query`), retrieval (`/ai/retrieval/search`, `/ai/retrieval/index`) — see [Learner Assistant (RAG)](#-learner-assistant-rag) |
 | `ai_voice.py` | `/ai/voice` | Authenticated WebSocket voice pipeline (`/ai/voice/stream`) — see [Voice AI pipeline](#-voice-ai-pipeline) |

@@ -31,6 +31,9 @@ export default function NavBar() {
   const hasDsaFundamentals = Boolean(
     profileData?.profile?.target_domains?.includes('dsa-fundamentals')
   );
+  const hasOfficialStatistics = Boolean(
+    profileData?.profile?.target_domains?.includes('official-statistics')
+  );
 
   if (!isAuthenticated) return null;
 
@@ -51,6 +54,11 @@ export default function NavBar() {
     },
     ...(hasDsaFundamentals
       ? [{ href: '/dsa-sandbox', label: t('nav.dsaSandbox'), hasDot: false }]
+      : []),
+    // Not yet run through the i18n pipeline (see the page's own header
+    // comment) -- a plain English label rather than a fake/missing t() key.
+    ...(hasOfficialStatistics
+      ? [{ href: '/sampling-lab', label: 'Sampling Lab', hasDot: false }]
       : []),
     { href: '/assistant', label: t('nav.assistant'), hasDot: false },
     { href: '/voice', label: t('nav.voiceAssistant'), hasDot: false },

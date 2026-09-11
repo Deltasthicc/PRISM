@@ -1,0 +1,1519 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-11",
+  "note": "84 AI-authored MCQs (batch A) covering the five digital-literacy competencies (dl_digital_foundations, dl_cyber_hygiene, dl_collaboration, dl_spreadsheets, dl_data_literacy), grounded in the real, publicly published content of the NIELIT Course on Computer Concepts (CCC) syllabus, CERT-In's Comprehensive Cyber Security Audit Policy Guidelines and Guidelines for Government Entities, I4C's Cyber Hygiene (Basic) Dos & Don'ts manual, and NITI Aayog's National Data and Analytics Platform Vision Document.",
+  "questions": [
+    {
+      "item_id": "ai_dl_digital_foundations_001",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 1.3.1 Components of Computer System",
+      "source_excerpt": "1.3 Components of Computer System -- 1.3.1 Central Processing Unit",
+      "question": "In the NIELIT CCC syllabus's unit on computer basics, which component is described as the part of a computer system responsible for carrying out instructions and processing data?",
+      "options": [
+        "Central Processing Unit (CPU)",
+        "Visual Display Unit (VDU)",
+        "Keyboard",
+        "External hard disk"
+      ],
+      "answer_index": 0,
+      "explanation": "The CPU is the processing component of the syllabus's 'Components of Computer System' list. The VDU is an output device, the keyboard is an input device, and an external hard disk is a storage device -- none of them process instructions."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_002",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 1.3.2-1.3.4",
+      "source_excerpt": "1.3.2 Keyboard, mouse and VDU; 1.3.3 Other Input devices; 1.3.4 Other Output devices",
+      "question": "Under the CCC syllabus's 'Components of Computer System' topic, a mouse is grouped alongside the keyboard as which type of device?",
+      "options": [
+        "An input device",
+        "An output device",
+        "A storage device",
+        "A processing device"
+      ],
+      "answer_index": 0,
+      "explanation": "The syllabus groups keyboard and mouse together as input devices (1.3.2), with VDU/printer-type devices covered separately as output (1.3.4). Storage and processing are separate categories entirely."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_003",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 1.4.2 Concept of Hardware and Software",
+      "source_excerpt": "1.4.2 Software -- 1.4.2.1 Application Software; 1.4.2.2 Systems software",
+      "question": "The CCC syllabus splits software into two categories under 'Concept of Hardware and Software.' Which pair correctly names them?",
+      "options": [
+        "Application software and systems software",
+        "Freeware and shareware",
+        "Open-source and proprietary software",
+        "Utility software and driver software"
+      ],
+      "answer_index": 0,
+      "explanation": "The syllabus's own sub-headings (1.4.2.1, 1.4.2.2) name application software and systems software as the two categories. The other pairings are real distinctions elsewhere in computing but are not this syllabus's stated split."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_004",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 1.4.3",
+      "source_excerpt": "1.4.3 Programming Languages",
+      "question": "Which of these topics is explicitly listed alongside hardware and software under Unit 1 ('Introduction to Computer') of the NIELIT CCC syllabus?",
+      "options": [
+        "Programming Languages",
+        "Cloud Deployment Models",
+        "Machine Learning Algorithms",
+        "Blockchain Fundamentals"
+      ],
+      "answer_index": 0,
+      "explanation": "Programming Languages (1.4.3) is the syllabus's own sub-topic under the hardware/software section. Cloud, machine learning, and blockchain are advanced topics not part of this foundational unit."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_005",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 1.7.1-1.7.2",
+      "source_excerpt": "1.7 Applications of IECT -- 1.7.1 e-governance; 1.7.2 Multimedia and Entertainment",
+      "question": "Under 'Applications of ICT' in the CCC syllabus, e-governance is grouped with which other application area?",
+      "options": [
+        "Multimedia and Entertainment",
+        "Cryptocurrency Trading",
+        "Industrial Robotics",
+        "Satellite Navigation"
+      ],
+      "answer_index": 0,
+      "explanation": "The syllabus names exactly two applications of ICT in this sub-section: e-governance and Multimedia and Entertainment. The other options are not part of this listed pair."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_006",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCC syllabus, Unit 1.5-1.6",
+      "source_excerpt": "1.5 Representation of Data/Information; 1.6 Concept of Data processing",
+      "question": "The CCC syllabus places 'Representation of Data/Information' immediately before 'Concept of Data Processing' in Unit 1. Why does this ordering make pedagogical sense for a foundational digital-literacy course?",
+      "options": [
+        "Understanding how data is represented digitally is a prerequisite for understanding how a computer subsequently processes that data",
+        "Data processing must always be taught before data representation in any curriculum",
+        "The two topics are unrelated and the ordering is arbitrary",
+        "Data representation is only relevant to spreadsheet applications, so it must precede all other computing topics"
+      ],
+      "answer_index": 0,
+      "explanation": "Learners need to grasp how information is encoded (e.g. as digital data) before they can meaningfully understand what 'processing' that data involves. The other options either reverse the logical dependency or dismiss a real pedagogical link."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_007",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 2.2.1",
+      "source_excerpt": "2.2 Basics of Operating System -- 2.2.1 Operating system",
+      "question": "In the CCC syllabus's operating-system unit, what is the operating system's basic role described as?",
+      "options": [
+        "Managing the computer's hardware and software resources so applications can run",
+        "Only providing internet connectivity",
+        "Only formatting text documents",
+        "Only compiling programming language source code"
+      ],
+      "answer_index": 0,
+      "explanation": "An operating system's foundational role, as introduced in this unit, is managing hardware/software resources -- internet connectivity, document formatting, and compiling are specific application-level tasks, not the OS's basic role."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_008",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 2.2.2",
+      "source_excerpt": "2.2.2 Basics of popular operating system (LINUX, WINDOWS)",
+      "question": "Which two operating systems does the NIELIT CCC syllabus name as examples under 'Basics of popular operating system'?",
+      "options": [
+        "LINUX and WINDOWS",
+        "iOS and Android",
+        "macOS and ChromeOS",
+        "Ubuntu and Fedora only"
+      ],
+      "answer_index": 0,
+      "explanation": "The syllabus sub-topic explicitly names LINUX and WINDOWS as its two example operating systems; the other pairs are real operating systems but are not the ones named here."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_009",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 2.3",
+      "source_excerpt": "2.3 The User Interface -- 2.3.1 Task Bar; 2.3.2 Icons; 2.3.3 Start Menu; 2.3.4 Running an Application",
+      "question": "Per the CCC syllabus's 'User Interface' topic, which of these is listed as a component of a GUI-based operating system's interface?",
+      "options": [
+        "Task Bar",
+        "Command-line shell scripting",
+        "Kernel module loading",
+        "Network socket programming"
+      ],
+      "answer_index": 0,
+      "explanation": "Task Bar is one of the four listed GUI-interface sub-topics (2.3.1-2.3.4). The other options are advanced, non-GUI technical tasks outside this foundational unit's scope."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_010",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 2.4.1-2.4.2",
+      "source_excerpt": "2.4 Operating System Simple Setting -- 2.4.1 Changing System Date And Time; 2.4.2 Changing Display Properties",
+      "question": "An officer needs to correct the system clock on a shared office computer after a power outage. Which CCC syllabus topic under 'Operating System Simple Setting' covers this task?",
+      "options": [
+        "Changing System Date and Time",
+        "Changing Display Properties",
+        "Adding and Removing Printers",
+        "Changing Mouse Properties"
+      ],
+      "answer_index": 0,
+      "explanation": "Changing System Date and Time (2.4.1) directly matches correcting the clock. The other sub-topics cover display, printers, and mouse settings, none of which fix the clock."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_011",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 2.5-2.6",
+      "source_excerpt": "2.5 File and Directory Management; 2.6 Types of files",
+      "question": "The CCC syllabus's operating-system unit covers 'File and Directory Management' immediately followed by which related topic?",
+      "options": [
+        "Types of files",
+        "Network firewall configuration",
+        "Database normalization",
+        "Cloud storage billing"
+      ],
+      "answer_index": 0,
+      "explanation": "Types of files (2.6) directly follows File and Directory Management (2.5) in the syllabus outline. Firewalls, database normalization, and cloud billing are unrelated, more advanced topics not part of this unit."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_012",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCC syllabus, Unit 5.2",
+      "source_excerpt": "5.2 Basics of Computer Networks -- 5.2.1 Local Area Network (LAN); 5.2.2 Wide Area Network (WAN)",
+      "question": "An organisation has offices in Delhi and Mumbai that need to exchange data over that long distance, while each office also has its own internal office network. Per the CCC syllabus's networking topic, how should the two needs be matched to LAN and WAN?",
+      "options": [
+        "The internal office network in each city is a LAN, while the Delhi-Mumbai link connecting the two distant offices is a WAN",
+        "Both the internal office network and the Delhi-Mumbai link are LANs",
+        "Both the internal office network and the Delhi-Mumbai link are WANs",
+        "A WAN is used only within a single room, and a LAN spans entire cities"
+      ],
+      "answer_index": 0,
+      "explanation": "The syllabus defines a LAN as covering a small, localized area (like one office) and a WAN as spanning much larger distances -- exactly matching the internal office network to LAN and the inter-city link to WAN. The other options invert or misapply these definitions."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_013",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCC syllabus, Unit 5.4",
+      "source_excerpt": "5.4 Services on Internet -- 5.4.1 World Wide Web and Websites; 5.4.2 Communication on Internet; 5.4.3 Internet Services",
+      "question": "The CCC syllabus separates 'World Wide Web and Websites' from 'Communication on Internet' as two distinct services on the internet. What best explains why they are treated separately?",
+      "options": [
+        "Browsing websites and internet-based communication (e.g. email, messaging) serve different user needs, even though both rely on the same underlying internet infrastructure",
+        "Websites cannot be accessed using the same internet connection used for email",
+        "Communication on the internet does not require an internet connection",
+        "The World Wide Web is a different physical network from the internet"
+      ],
+      "answer_index": 0,
+      "explanation": "The Web and internet communication are functionally distinct services (browsing vs. messaging) built on the same shared infrastructure, which is why the syllabus lists them as separate sub-topics. The other options describe technically false claims about connectivity or infrastructure."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_014",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 5.5.1",
+      "source_excerpt": "5.5 Preparing Computer for Internet Access -- 5.5.1 ISPs and examples (Broadband/Dialup/WiFi)",
+      "question": "A government office wants to connect its computers to the internet. Which CCC syllabus topic covers choosing between options like broadband, dialup, and WiFi?",
+      "options": [
+        "ISPs and examples (Broadband/Dialup/WiFi)",
+        "File and Directory Management",
+        "Elements of Electronic Spread Sheet",
+        "Instant Messaging and Collaboration"
+      ],
+      "answer_index": 0,
+      "explanation": "This sub-topic (5.5.1) explicitly names broadband, dialup, and WiFi as ISP connection examples. The other options belong to entirely different units (OS file management, spreadsheets, and collaboration)."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_015",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 6.2",
+      "source_excerpt": "6.2 Web Browsing Software -- 6.2.1 Popular Web Browsing Software",
+      "question": "What kind of software does Unit 6 of the CCC syllabus ('WWW and Web Browser') primarily teach users to work with?",
+      "options": [
+        "Web browsing software",
+        "Spreadsheet software",
+        "Presentation software",
+        "Email server administration software"
+      ],
+      "answer_index": 0,
+      "explanation": "Unit 6 is centred on web browsing software, as its own title and 6.2 sub-topic state. Spreadsheets and presentations are separate units, and email server administration is not covered at this foundational, user-facing level."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_016",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 6.4",
+      "source_excerpt": "6.4 Search Engines -- 6.4.1 Popular Search Engines/Search for content; 6.4.2 Accessing Web Browser; 6.4.3 Using Favorites Folder; 6.4.4 Downloading Web Pages; 6.4.5 Printing Web Pages",
+      "question": "An officer frequently revisits the same government scheme webpage while still connected to the internet. Which CCC syllabus sub-topic under 'Search Engines' covers saving that page for quick future access?",
+      "options": [
+        "Using Favorites Folder",
+        "Downloading Web Pages",
+        "Printing Web Pages",
+        "Popular Search Engines"
+      ],
+      "answer_index": 0,
+      "explanation": "Using Favorites Folder (6.4.3) is the bookmarking feature for quick return access while online. Downloading and printing save a local/paper copy rather than a quick browser shortcut, and 'Popular Search Engines' is about search, not revisiting a known page."
+    },
+    {
+      "item_id": "ai_dl_digital_foundations_017",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_digital_foundations",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "CCC syllabus, Unit 6.4.4-6.4.5",
+      "source_excerpt": "6.4.4 Downloading Web Pages; 6.4.5 Printing Web Pages",
+      "question": "An officer needs to preserve an official circular published only as a webpage, for offline reference during a field visit with no internet access. Which CCC syllabus sub-topic is most directly relevant?",
+      "options": [
+        "Downloading Web Pages",
+        "Using Favorites Folder",
+        "Popular Search Engines",
+        "Configuring Web Browser"
+      ],
+      "answer_index": 0,
+      "explanation": "Downloading Web Pages (6.4.4) saves a local copy usable without an internet connection. A Favorites/bookmark entry (6.4.3) still requires internet to reopen the live page, and search engines/browser configuration do not address offline access at all."
+    },
+    {
+      "item_id": "ai_dl_collaboration_001",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 7.2.1",
+      "source_excerpt": "7.2 Basics of E-mail -- 7.2.1 What is an Electronic Mail",
+      "question": "Per Unit 7 ('Communication and Collaboration') of the CCC syllabus, what foundational concept is introduced first under 'Basics of E-mail'?",
+      "options": [
+        "What is an Electronic Mail",
+        "Email Addressing",
+        "Configuring Email Client",
+        "Handling SPAM"
+      ],
+      "answer_index": 0,
+      "explanation": "'What is an Electronic Mail' (7.2.1) is the very first sub-topic under Basics of E-mail, before addressing, configuration, or spam handling are introduced."
+    },
+    {
+      "item_id": "ai_dl_collaboration_002",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 7.2.2",
+      "source_excerpt": "7.2.2 Email Addressing",
+      "question": "Which CCC syllabus sub-topic under 'Basics of E-mail' teaches the structure of an email address (e.g. username@domain)?",
+      "options": [
+        "Email Addressing",
+        "Configuring Email Client",
+        "Sorting and Searching emails",
+        "Using Address Book"
+      ],
+      "answer_index": 0,
+      "explanation": "Email Addressing (7.2.2) is the sub-topic on address structure. The other options cover client setup, organizing mail, and storing contacts -- different concerns."
+    },
+    {
+      "item_id": "ai_dl_collaboration_003",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 7.2.3",
+      "source_excerpt": "7.2.3 Configuring Email Client",
+      "question": "Before an officer can send or receive mail through a desktop email program, which CCC syllabus sub-topic must typically be completed first?",
+      "options": [
+        "Configuring Email Client",
+        "Sorting and Searching emails",
+        "Handling SPAM",
+        "Using Smiley"
+      ],
+      "answer_index": 0,
+      "explanation": "Configuring the email client (7.2.3) -- setting up account details -- is the prerequisite step. Sorting, spam handling, and smileys are all activities that come after mail is already flowing."
+    },
+    {
+      "item_id": "ai_dl_collaboration_004",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 7.3.2",
+      "source_excerpt": "7.3 Using E-mails -- 7.3.1 Opening Email Client; 7.3.2 Mailbox: Inbox and Outbox",
+      "question": "In the CCC syllabus's 'Using E-mails' topic, the mailbox is described in terms of which two components?",
+      "options": [
+        "Inbox and Outbox",
+        "Spam and Trash",
+        "Drafts and Sent",
+        "Contacts and Calendar"
+      ],
+      "answer_index": 0,
+      "explanation": "7.3.2 names Inbox and Outbox as the mailbox's two components in this syllabus. The other pairings, while real email features generally, are not the pair named here."
+    },
+    {
+      "item_id": "ai_dl_collaboration_005",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 7.3.3",
+      "source_excerpt": "7.3.3 Creating and Sending a new E-mail",
+      "question": "An officer needs to send a fresh message (not a reply) to a colleague about an upcoming meeting. Which CCC syllabus sub-topic under 'Using E-mails' covers this action?",
+      "options": [
+        "Creating and Sending a new E-mail",
+        "Replying to an E-mail message",
+        "Forwarding an E-mail message",
+        "Sorting and Searching emails"
+      ],
+      "answer_index": 0,
+      "explanation": "Creating and Sending a new E-mail (7.3.3) is specifically about composing an original message, distinct from replying to or forwarding an existing one."
+    },
+    {
+      "item_id": "ai_dl_collaboration_006",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 7.3.4-7.3.5",
+      "source_excerpt": "7.3.4 Replying to an E-mail message; 7.3.5 Forwarding an E-mail message",
+      "question": "What is the key difference between 'Replying to an E-mail' and 'Forwarding an E-mail,' as distinguished in the CCC syllabus?",
+      "options": [
+        "Replying sends a response back to the original sender, while forwarding sends the received message on to a new recipient",
+        "Replying and forwarding always go to the exact same set of recipients",
+        "Forwarding can only be done after the message has been printed",
+        "Replying deletes the original message while forwarding keeps it"
+      ],
+      "answer_index": 0,
+      "explanation": "Reply routes a response back to the sender; forward routes the original message to someone new -- the core distinction the syllabus lists these as separate sub-topics for. The other statements misdescribe both actions."
+    },
+    {
+      "item_id": "ai_dl_collaboration_007",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 7.3.6",
+      "source_excerpt": "7.3.6 Sorting and Searching emails",
+      "question": "An officer's inbox has hundreds of messages, and they need to quickly locate all emails from a specific sender. Which CCC syllabus sub-topic addresses this need?",
+      "options": [
+        "Sorting and Searching emails",
+        "Handling SPAM",
+        "Using Address Book",
+        "Activating Spell checking"
+      ],
+      "answer_index": 0,
+      "explanation": "Sorting and Searching emails (7.3.6) is exactly the skill for finding specific messages in a large inbox. The other sub-topics deal with unwanted mail, storing contacts, and catching typos, respectively."
+    },
+    {
+      "item_id": "ai_dl_collaboration_008",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 7.4.1",
+      "source_excerpt": "7.4 Advance email features -- 7.4.1 Sending document by E-mail",
+      "question": "Which CCC syllabus sub-topic under 'Advance email features' covers sharing a prepared document with a colleague via email?",
+      "options": [
+        "Sending document by E-mail",
+        "Using Smiley",
+        "Internet etiquettes",
+        "Opening Email Client"
+      ],
+      "answer_index": 0,
+      "explanation": "Sending document by E-mail (7.4.1) directly covers attaching and sharing files. The other options concern expressive symbols, behavioral norms, and basic client access."
+    },
+    {
+      "item_id": "ai_dl_collaboration_009",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 7.4.3",
+      "source_excerpt": "7.4.3 Using Address book",
+      "question": "Which CCC syllabus sub-topic covers storing colleagues' email addresses for quick reuse instead of retyping them each time?",
+      "options": [
+        "Using Address book",
+        "Sorting and Searching emails",
+        "Handling SPAM",
+        "Instant Messaging and Collaboration"
+      ],
+      "answer_index": 0,
+      "explanation": "Using Address book (7.4.3) is specifically about saving contacts for reuse. The other sub-topics deal with locating messages, filtering unwanted mail, and messaging/etiquette respectively."
+    },
+    {
+      "item_id": "ai_dl_collaboration_010",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCC syllabus, Unit 7.4.5",
+      "source_excerpt": "7.4.5 Handling SPAM",
+      "question": "Why does the CCC syllabus include 'Handling SPAM' as part of collaborative, everyday email use rather than treating it purely as a technical security topic?",
+      "options": [
+        "Because recognizing and appropriately managing unsolicited or unwanted mail is a practical, everyday skill for anyone collaborating over email, not just IT staff",
+        "Because SPAM only affects email servers and never reaches individual users",
+        "Because SPAM handling is identical to configuring a network firewall",
+        "Because the syllabus treats SPAM purely as a word-processing formatting issue"
+      ],
+      "answer_index": 0,
+      "explanation": "Handling SPAM sits inside 'Advance email features' precisely because it is a routine user-level judgment call, not a server administration task -- which is why every officer, not just IT staff, needs this skill."
+    },
+    {
+      "item_id": "ai_dl_collaboration_011",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 7.4.2",
+      "source_excerpt": "7.4.2 Activating Spell checking",
+      "question": "Which CCC syllabus sub-topic helps an officer catch typing errors before sending a professional email?",
+      "options": [
+        "Activating Spell checking",
+        "Using Smiley",
+        "Mailbox: Inbox and Outbox",
+        "Email Addressing"
+      ],
+      "answer_index": 0,
+      "explanation": "Activating Spell checking (7.4.2) is the sub-topic aimed at catching typos before sending. The other options concern emoticons, mailbox structure, and address format -- not error-checking."
+    },
+    {
+      "item_id": "ai_dl_collaboration_012",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "CCC syllabus, Unit 7.5.1-7.5.2",
+      "source_excerpt": "7.5 Instant Messaging and Collaboration -- 7.5.1 Using Smiley; 7.5.2 Internet etiquettes",
+      "question": "For workplace instant-messaging collaboration, the CCC syllabus pairs 'Using Smiley' with 'Internet etiquettes' in the same topic. What does this pairing suggest about responsible digital collaboration?",
+      "options": [
+        "Both expressive elements (like emoticons) and behavioral norms (etiquette) shape how professionally a message is received, so both matter for collaboration",
+        "Smileys are a formal requirement in all official government communication",
+        "Internet etiquette only applies to email and never to instant messaging",
+        "Emoticons and etiquette are unrelated topics grouped together by coincidence"
+      ],
+      "answer_index": 0,
+      "explanation": "Grouping tone-setting elements (emoticons) with behavioral norms (etiquette) under one heading reflects that both influence how a message lands in a workplace chat -- neither claim in the wrong options matches the syllabus's actual grouping or scope."
+    },
+    {
+      "item_id": "ai_dl_collaboration_013",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCC syllabus, Unit 7.5.2",
+      "source_excerpt": "7.5.2 Internet etiquettes",
+      "question": "An officer CCs an entire department distribution list on a message meant for only one colleague, triggering dozens of unnecessary 'reply-all' responses. Which CCC syllabus sub-topic on responsible teamwork is most relevant to preventing this?",
+      "options": [
+        "Internet etiquettes",
+        "Using Address book",
+        "Activating Spell checking",
+        "Configuring Email Client"
+      ],
+      "answer_index": 0,
+      "explanation": "Internet etiquettes (7.5.2) covers responsible, considerate communication behavior, which includes avoiding unnecessary mass-CCs. The other sub-topics address contact storage, spelling, and account setup -- unrelated to this behavioral lapse."
+    },
+    {
+      "item_id": "ai_dl_collaboration_014",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 3.3.2",
+      "source_excerpt": "3.3 Opening and closing Documents -- 3.3.1 Opening Documents; 3.3.2 Save and Save as",
+      "question": "When a team is collaboratively revising a shared document, using 'Save As' rather than plain 'Save' is closest to which CCC syllabus concept?",
+      "options": [
+        "Save and Save as -- creating a new version or copy of the document rather than overwriting the current file",
+        "Print Preview",
+        "Table Manipulation",
+        "Using The Help"
+      ],
+      "answer_index": 0,
+      "explanation": "'Save As' (part of 3.3.2) creates a distinct file/version, which is the basic mechanism behind keeping track of document revisions during teamwork. Print Preview, Table Manipulation, and Help are unrelated word-processing features."
+    },
+    {
+      "item_id": "ai_dl_collaboration_015",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 3.4.4",
+      "source_excerpt": "3.4 Text Creation and manipulation -- 3.4.4 Cut, Copy and Paste",
+      "question": "Two colleagues are combining sections they wrote separately into one shared report. Which CCC syllabus sub-topic under 'Text Creation and manipulation' covers moving text between documents?",
+      "options": [
+        "Cut, Copy and Paste",
+        "Changing case",
+        "Border and shading",
+        "Draw Table"
+      ],
+      "answer_index": 0,
+      "explanation": "Cut, Copy and Paste (3.4.4) is the mechanism for moving text between documents. Changing case, borders/shading, and table drawing are formatting features unrelated to combining content."
+    },
+    {
+      "item_id": "ai_dl_collaboration_016",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 3.3.3-3.3.4",
+      "source_excerpt": "3.3.3 Page Setup; 3.3.4 Print Preview",
+      "question": "Before circulating a printed agenda for a meeting, which CCC syllabus sub-topics let an officer check how the document will look on paper?",
+      "options": [
+        "Page Setup and Print Preview",
+        "Cut, Copy and Paste",
+        "Bullets and Numbering",
+        "Draw Table"
+      ],
+      "answer_index": 0,
+      "explanation": "Page Setup (3.3.3) and Print Preview (3.3.4) are the syllabus's own sub-topics for checking a document's printed layout before circulating it. The other options are content-editing or formatting features, not print-readiness checks."
+    },
+    {
+      "item_id": "ai_dl_collaboration_017",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 8.3.1",
+      "source_excerpt": "8.3 Creation of Presentation -- 8.3.1 Creating a Presentation Using a Template",
+      "question": "An officer preparing slides for a departmental review meeting wants a consistent, ready-made design instead of building one from scratch. Which CCC syllabus sub-topic under 'Making small presentations' covers this?",
+      "options": [
+        "Creating a Presentation Using a Template",
+        "Adding Headers and Footers",
+        "Transition and Slide Timings",
+        "Inserting Other Objects"
+      ],
+      "answer_index": 0,
+      "explanation": "Creating a Presentation Using a Template (8.3.1) is specifically about starting from a ready-made design. The other sub-topics cover headers/footers, slide-show timing, and inserting objects -- later-stage tasks, not the initial design choice."
+    },
+    {
+      "item_id": "ai_dl_collaboration_018",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_collaboration",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "CCC syllabus, Unit 8.7",
+      "source_excerpt": "8.7 Slide Show -- 8.7.1 Running a Slide Show; 8.7.2 Transition and Slide Timings; 8.7.3 Automating a Slide Show",
+      "question": "For an unattended kiosk display at a public information desk that should show scheme details on a repeating loop during an event, which CCC syllabus 'Slide Show' sub-topic is most directly useful?",
+      "options": [
+        "Automating a Slide Show",
+        "Draw Table",
+        "Using The Help",
+        "Handling SPAM"
+      ],
+      "answer_index": 0,
+      "explanation": "Automating a Slide Show (8.7.3) is built for exactly this unattended, looping-display scenario. Draw Table and Handling SPAM belong to entirely different units, and Using The Help is a general reference feature, not a presentation-automation tool."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_001",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 4.0-4.1",
+      "source_excerpt": "4. SPREAD SHEET -- 4.0 Introduction; 4.1 Objectives",
+      "question": "In the NIELIT CCC syllabus, spreadsheets are introduced as a tool primarily for what kind of work?",
+      "options": [
+        "Organizing and computing structured, tabular data",
+        "Composing formatted prose documents",
+        "Designing slide presentations",
+        "Managing email correspondence"
+      ],
+      "answer_index": 0,
+      "explanation": "Unit 4 is dedicated to spreadsheets for structured, tabular data work. Prose documents, slide design, and email are the subjects of Units 3, 8, and 7 respectively."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_002",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 4.2.1",
+      "source_excerpt": "4.2 Elements of Electronic Spread Sheet -- 4.2.1 Opening of Spread Sheet",
+      "question": "Which CCC syllabus sub-topic under 'Elements of Electronic Spread Sheet' covers launching the spreadsheet application and starting a new worksheet?",
+      "options": [
+        "Opening of Spread Sheet",
+        "Addressing of Cells",
+        "Printing of Spread Sheet",
+        "Saving Workbooks"
+      ],
+      "answer_index": 0,
+      "explanation": "Opening of Spread Sheet (4.2.1) is the launch/start step. Addressing, printing, and saving are later steps in the same 4.2 sub-topic list, not the starting action."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_003",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 4.2.2",
+      "source_excerpt": "4.2.2 Addressing of Cells",
+      "question": "The CCC syllabus's spreadsheet unit covers 'Addressing of Cells.' What does cell addressing (e.g. A1, B2) let a user do?",
+      "options": [
+        "Uniquely refer to a specific cell by its column letter and row number so formulas and functions can point to exact data",
+        "Change the font color of an entire worksheet at once",
+        "Convert a spreadsheet file into a presentation slide",
+        "Send the spreadsheet as an email attachment"
+      ],
+      "answer_index": 0,
+      "explanation": "Cell addressing is the naming convention that lets formulas and functions reference exact data locations. The other options describe unrelated formatting, file-conversion, and emailing actions."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_004",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 4.2.4",
+      "source_excerpt": "4.2.4 Saving Workbooks",
+      "question": "After finishing a day's data entry, which CCC syllabus sub-topic under 'Elements of Electronic Spread Sheet' should an officer use to preserve their work for later?",
+      "options": [
+        "Saving Workbooks",
+        "Addressing of Cells",
+        "Printing of Spread Sheet",
+        "Opening of Spread Sheet"
+      ],
+      "answer_index": 0,
+      "explanation": "Saving Workbooks (4.2.4) is specifically about persisting the file. Addressing, printing, and opening are different actions in the same sub-topic list, not preservation of work."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_005",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 4.2.3",
+      "source_excerpt": "4.2.3 Printing of Spread Sheet",
+      "question": "An officer wants a hard copy of a completed data summary to attach to a physical file. Which CCC syllabus sub-topic covers this?",
+      "options": [
+        "Printing of Spread Sheet",
+        "Creating Text, Number and Date Series",
+        "Changing Cell Height and Width",
+        "Using Formulas"
+      ],
+      "answer_index": 0,
+      "explanation": "Printing of Spread Sheet (4.2.3) directly covers producing a hard copy. The other sub-topics cover data-entry shortcuts, cell sizing, and calculation -- not printing."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_006",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 4.3.1",
+      "source_excerpt": "4.3 Manipulation of Cells -- 4.3.1 Entering Text, Numbers and Dates",
+      "question": "Which CCC syllabus sub-topic covers the basic act of typing text, numeric values, and dates into individual spreadsheet cells?",
+      "options": [
+        "Entering Text, Numbers and Dates",
+        "Creating Text, Number and Date Series",
+        "Editing Worksheet Data",
+        "Inserting and Deleting Rows, Column"
+      ],
+      "answer_index": 0,
+      "explanation": "Entering Text, Numbers and Dates (4.3.1) is the basic data-entry sub-topic, distinct from the automated series-filling, editing, and row/column-management sub-topics listed alongside it."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_007",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 4.3.2",
+      "source_excerpt": "4.3.2 Creating Text, Number and Date Series",
+      "question": "An officer needs a column pre-filled with consecutive dates (Day 1, Day 2, Day 3, and so on) without typing each one manually. Which CCC syllabus sub-topic covers this capability?",
+      "options": [
+        "Creating Text, Number and Date Series",
+        "Entering Text, Numbers and Dates",
+        "Changing Cell Height and Width",
+        "Function"
+      ],
+      "answer_index": 0,
+      "explanation": "Creating Text, Number and Date Series (4.3.2) is specifically about auto-filling sequences, unlike manual entry (4.3.1), cell sizing, or built-in functions."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_008",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 4.3.3",
+      "source_excerpt": "4.3.3 Editing Worksheet Data",
+      "question": "After entering data, an officer notices a figure was mistyped and needs to correct it in place. Which CCC syllabus sub-topic covers this?",
+      "options": [
+        "Editing Worksheet Data",
+        "Inserting and Deleting Rows, Column",
+        "Changing Cell Height and Width",
+        "Printing of Spread Sheet"
+      ],
+      "answer_index": 0,
+      "explanation": "Editing Worksheet Data (4.3.3) covers correcting existing entries. The other sub-topics involve structural row/column changes, cell sizing, and printing, not correcting a mistyped value."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_009",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 4.3.4",
+      "source_excerpt": "4.3.4 Inserting and Deleting Rows, Column",
+      "question": "A new field office needs to be added as an extra row to an existing tabular dataset. Which CCC syllabus sub-topic covers this?",
+      "options": [
+        "Inserting and Deleting Rows, Column",
+        "Changing Cell Height and Width",
+        "Using Formulas",
+        "Charts"
+      ],
+      "answer_index": 0,
+      "explanation": "Inserting and Deleting Rows, Column (4.3.4) is exactly the structural change needed to add a new row. Cell sizing, formulas, and charts do not add new rows."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_010",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCC syllabus, Unit 4.3.5",
+      "source_excerpt": "4.3.5 Changing Cell Height and Width",
+      "question": "Which CCC syllabus sub-topic covers adjusting a spreadsheet so that a long piece of text is not visually cut off within its cell?",
+      "options": [
+        "Changing Cell Height and Width",
+        "Editing Worksheet Data",
+        "Addressing of Cells",
+        "Saving Workbooks"
+      ],
+      "answer_index": 0,
+      "explanation": "Changing Cell Height and Width (4.3.5) is the sizing adjustment sub-topic. Editing data, addressing cells, and saving workbooks do not affect how much of a cell's content is visible."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_011",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 4.4.1",
+      "source_excerpt": "4.4 Function and Charts -- 4.4.1 Using Formulas",
+      "question": "An officer wants a cell to automatically compute the total of two other cells whenever their values change. Which CCC syllabus sub-topic under 'Function and Charts' covers this?",
+      "options": [
+        "Using Formulas",
+        "Charts",
+        "Function",
+        "Printing of Spread Sheet"
+      ],
+      "answer_index": 0,
+      "explanation": "Using Formulas (4.4.1) is the sub-topic for writing an expression that recalculates automatically. Charts visualize data rather than compute it, Function covers named built-in operations (a related but separate sub-topic), and printing is unrelated."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_012",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCC syllabus, Unit 4.4.1-4.4.2",
+      "source_excerpt": "4.4.1 Using Formulas; 4.4.2 Function",
+      "question": "The CCC syllabus lists 'Using Formulas' and 'Function' as two separate sub-topics under 'Function and Charts.' What best distinguishes a spreadsheet formula from a built-in function?",
+      "options": [
+        "A formula is any user-written expression combining cell references and operators, while a function is a predefined, named operation (e.g. a totalling or averaging routine) that can be used inside a formula",
+        "Formulas only work on text values, while functions only work on numeric values",
+        "Functions require an active internet connection to run, while formulas do not",
+        "There is no real difference; the two terms are always interchangeable in every spreadsheet package"
+      ],
+      "answer_index": 0,
+      "explanation": "A formula is any expression the user constructs, while a function is a predefined named operation that can be embedded in a formula -- which is exactly why the syllabus treats them as related but distinct sub-topics. The other statements are factually wrong."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_013",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 4.4.2",
+      "source_excerpt": "4.4.2 Function",
+      "question": "An officer needs to quickly summarize a column of monthly expenditure figures into one total value, without manually adding each entry. Which CCC syllabus sub-topic best supports this?",
+      "options": [
+        "Function",
+        "Addressing of Cells",
+        "Draw Table",
+        "Opening of Spread Sheet"
+      ],
+      "answer_index": 0,
+      "explanation": "Function (4.4.2) covers built-in summarizing operations (such as totals), which directly matches this task. Addressing cells, drawing tables, and opening the spreadsheet do not perform calculations."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_014",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCC syllabus, Unit 4.4.3",
+      "source_excerpt": "4.4.3 Charts",
+      "question": "An officer wants to visually compare expenditure across five districts rather than reading a long list of numbers. Which CCC syllabus sub-topic under 'Function and Charts' covers this?",
+      "options": [
+        "Charts",
+        "Using Formulas",
+        "Function",
+        "Saving Workbooks"
+      ],
+      "answer_index": 0,
+      "explanation": "Charts (4.4.3) is the visualization sub-topic for comparing values at a glance. Formulas and Function compute values but do not visualize them, and Saving Workbooks is unrelated to comparison."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_015",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCC syllabus, Unit 4.4.3",
+      "source_excerpt": "4.4.3 Charts",
+      "question": "For summarizing how a single budget total is divided among four departments, which visual best fits the CCC syllabus's 'Charts' sub-topic goal of clear visual summary?",
+      "options": [
+        "A pie chart showing each department's share of the total",
+        "A single unlabeled data point",
+        "A spreadsheet cell with only the total typed in bold",
+        "A blank worksheet with no chart at all"
+      ],
+      "answer_index": 0,
+      "explanation": "A pie chart is the standard way to show proportional shares of a whole, matching the 'part of a total' structure of the data. The other options provide no visual comparison at all."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_016",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCC syllabus, Unit 4.3.1",
+      "source_excerpt": "4.3.1 Entering Text, Numbers and Dates",
+      "question": "While entering data under the CCC syllabus's 'Entering Text, Numbers and Dates' sub-topic, an officer notices a date was typed inconsistently -- '01/02/26' in some rows and '1-Feb-2026' in others -- within the same column. Why does this matter for later spreadsheet work?",
+      "options": [
+        "Inconsistent formats in the same column can prevent formulas, sorting, and functions from correctly recognizing the values as comparable dates",
+        "Spreadsheet software automatically standardizes all date formats regardless of how they are typed",
+        "Date format consistency only matters for printed output, not for calculations",
+        "It has no effect, since dates are always stored and treated as plain text"
+      ],
+      "answer_index": 0,
+      "explanation": "Mixed date formats in one column risk being read as different data types, breaking sorting and date-based formulas -- exactly the kind of structured-data discipline the spreadsheets competency targets. The other options make false claims about automatic correction or irrelevance."
+    },
+    {
+      "item_id": "ai_dl_spreadsheets_017",
+      "doc_id": "nielit_ccc_syllabus",
+      "competency_id": "dl_spreadsheets",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "CCC syllabus, Unit 4 (Syllabus Outline table) and Unit 1 (for comparison)",
+      "source_excerpt": "Syllabus Outline: 1. Introduction to computer -- 2 theory, 1 tutorial, 4 practical; 4. Spreadsheets -- 4 theory, 2 tutorial, 10 practical",
+      "question": "Compared to Unit 1 ('Introduction to Computer,' 2 theory/1 tutorial/4 practical hours), how does the CCC syllabus's Unit 4 ('Spreadsheets,' 4 theory/2 tutorial/10 practical hours) emphasize learning?",
+      "options": [
+        "It allocates more hours overall, with a strong emphasis on hands-on practical hours over theory",
+        "It allocates fewer total hours than Unit 1",
+        "It has zero practical hours, being purely theoretical",
+        "It has identical hour allocations to Unit 1"
+      ],
+      "answer_index": 0,
+      "explanation": "Unit 4's 10 practical hours (versus Unit 1's 4) and higher totals overall reflect a hands-on, skill-building emphasis for spreadsheets. The other options misstate the actual hour allocations."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_001",
+      "doc_id": "certin_audit_policy",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Comprehensive Cyber Security Audit Policy Guidelines, Section 5 Definitions (i)",
+      "source_excerpt": "Cyber Security Audit - A systematic and independent assessment of an organization's security controls, policies, and procedures to evaluate their effectiveness in protecting information systems and data from cyber threats.",
+      "question": "Per CERT-In's Comprehensive Cyber Security Audit Policy Guidelines, how is a 'Cyber Security Audit' defined?",
+      "options": [
+        "A systematic and independent assessment of an organization's security controls, policies, and procedures",
+        "A one-time password reset performed after a data breach",
+        "A marketing review of an organization's IT vendor contracts",
+        "An informal, unscheduled chat between IT staff about security"
+      ],
+      "answer_index": 0,
+      "explanation": "This is the guideline's own definition (Section 5). A password reset, a vendor-contract review, and an informal chat are not systematic, independent security assessments."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_002",
+      "doc_id": "certin_audit_policy",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Comprehensive Cyber Security Audit Policy Guidelines, Section 3 Objective of the Document",
+      "source_excerpt": "Establish Uniform Standards: Ensure that all cyber security audits follow a common set of standards and procedures, thereby promoting consistency in audit quality, evaluation criteria, and reporting.",
+      "question": "One of the stated objectives of CERT-In's Audit Policy Guidelines is to 'Establish Uniform Standards.' What is this objective meant to achieve?",
+      "options": [
+        "Consistency in audit quality, evaluation criteria, and reporting across different audits",
+        "Allowing each auditor to use entirely different, undocumented methods",
+        "Eliminating the need for any auditee cooperation",
+        "Replacing all audits with automated software scans only"
+      ],
+      "answer_index": 0,
+      "explanation": "The guideline text explicitly links uniform standards to consistent audit quality, evaluation criteria, and reporting. The other options directly contradict the stated purpose of standardization."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_003",
+      "doc_id": "certin_audit_policy",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Comprehensive Cyber Security Audit Policy Guidelines, Section 4 Applicability",
+      "source_excerpt": "This guideline...is applicable to...CERT-In empaneled Auditing Organizations...Auditee Organizations: It is the organization that owns or operates the systems...being evaluated",
+      "question": "CERT-In's Comprehensive Cyber Security Audit Policy Guidelines state that they apply to which two categories of entities?",
+      "options": [
+        "CERT-In empanelled auditing organizations and auditee organizations",
+        "Only private banks, with no government bodies covered",
+        "Only individual citizens using personal devices",
+        "Only foreign technology vendors"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 4 names exactly these two categories. Private banks alone, individual citizens, and foreign vendors are not how the guideline defines its applicability."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_004",
+      "doc_id": "certin_audit_policy",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Comprehensive Cyber Security Audit Policy Guidelines, Section 5 Definitions (vii) Root Cause Analysis",
+      "source_excerpt": "Root Cause Analysis (RCA) - A systematic investigative process used to identify the fundamental causes or underlying factors that contribute to an incident, audit finding, or failure. RCA seeks to address the source of the issue rather than merely its symptoms",
+      "question": "Why does CERT-In's Audit Policy Guidelines' definition of Root Cause Analysis (RCA) emphasize addressing 'the source of the issue rather than merely its symptoms'?",
+      "options": [
+        "Because fixing only the visible symptoms of an audit finding, without addressing its underlying cause, leaves the organization vulnerable to the same issue recurring",
+        "Because RCA is only meant to assign blame to individual employees",
+        "Because symptoms and root causes are always identical in cyber security incidents",
+        "Because RCA replaces the need for any corrective action"
+      ],
+      "answer_index": 0,
+      "explanation": "Treating symptoms without fixing the underlying cause means the same finding is likely to reappear -- that is the practical reasoning behind the definition's emphasis. The other options misstate RCA's purpose."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_005",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CERT-In Guidelines for Government Entities, Section 3.1 Policy Measures",
+      "source_excerpt": "3.1. Nominate a Chief Information Security Officer (CISO) for IT Security and provide the details of this CISO (Point of Contact) to CERT-In",
+      "question": "Per CERT-In's Guidelines for Government Entities, which role must senior management nominate for IT security and report to CERT-In as a point of contact?",
+      "options": [
+        "Chief Information Security Officer (CISO)",
+        "Chief Financial Officer (CFO)",
+        "Public Relations Officer (PRO)",
+        "Network Cable Installer"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 3.1 explicitly requires nominating a CISO. A CFO, PRO, or cable installer are not the role this guideline requires as the security point of contact."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_006",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CERT-In Guidelines for Government Entities, Section 3.4 Policy Measures",
+      "source_excerpt": "Organisations should conduct an internal and external audit of the entire ICT infrastructure...Internal information security audit to be conducted at least once in 6 months. 3rd Party Security audits must be conducted at least once a year.",
+      "question": "According to CERT-In's Guidelines for Government Entities, how frequently must internal information security audits be conducted, at minimum?",
+      "options": [
+        "At least once every 6 months",
+        "Only once, when the system is first installed",
+        "Once every 5 years",
+        "Only after a confirmed breach has already occurred"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 3.4 states internal audits must occur at least once every 6 months. A one-time installation check, a 5-year cycle, or a purely reactive post-breach check do not meet this standard."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_007",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CERT-In Guidelines for Government Entities, Section 3.4 Policy Measures",
+      "source_excerpt": "3rd Party Security audits must be conducted at least once a year. Services of CERT-In empanelled auditors may be utilized for the purpose of external audits.",
+      "question": "A government entity has just completed its internal 6-monthly ICT security audit. Per CERT-In's Guidelines, what additional external audit obligation still applies at least annually?",
+      "options": [
+        "A third-party security audit, which may use CERT-In empanelled auditors",
+        "No further audits are required once the internal audit is done",
+        "A financial audit of the IT department's budget only",
+        "A customer satisfaction survey of citizens using e-governance services"
+      ],
+      "answer_index": 0,
+      "explanation": "The internal audit does not replace the separate, at-least-annual third-party security audit requirement. A budget audit or satisfaction survey is not what this section requires."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_008",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CERT-In Guidelines for Government Entities, Section 4.1.2-4.1.3 Network and infrastructure security",
+      "source_excerpt": "Network should be properly segmented, with separate VLANs...Communication between different VLANs should be denied by default...The firewall rule set should deny traffic by default and a whitelist should be applied",
+      "question": "CERT-In's Guidelines for Government Entities describe both VLAN segmentation and firewall rules as following a 'deny by default' approach. What security principle does this reflect?",
+      "options": [
+        "Only explicitly authorized traffic or connections should be allowed; everything else is blocked unless specifically permitted",
+        "All traffic should be allowed by default to maximize convenience for users",
+        "Firewalls and VLANs should never be deployed together in the same network",
+        "Denying by default means the network has no internet access at all"
+      ],
+      "answer_index": 0,
+      "explanation": "'Deny by default, allow by exception' is the least-privilege style principle described in both the VLAN and firewall passages. The other options describe the opposite approach or misread the guidance entirely."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_009",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CERT-In Guidelines for Government Entities, Section 3.3 Policy Measures",
+      "source_excerpt": "CISO should have a dedicated cybersecurity team, separate from IT operations and infrastructure team. The team would be responsible for: i. monitoring network's security...ii. conducting incident response iii. formulating, enforcing and reviewing IT security policies iv. conducting cybersecurity awareness drills",
+      "question": "Per CERT-In's Guidelines for Government Entities, why must the CISO's dedicated cybersecurity team be kept separate from the IT operations and infrastructure team?",
+      "options": [
+        "So that security monitoring, incident response, and policy enforcement are handled independently rather than by the same team that runs day-to-day IT operations",
+        "Because IT operations staff are not permitted to use email",
+        "Because cybersecurity teams are not allowed to interact with CERT-In",
+        "Because separation eliminates the need for any cybersecurity awareness training"
+      ],
+      "answer_index": 0,
+      "explanation": "Keeping the security function organizationally distinct from operations supports independent monitoring, incident response, and policy oversight. The other options are unrelated or contradicted by the text (the team still runs awareness drills and liaises with CERT-In)."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_010",
+      "doc_id": "i4c_cyber_hygiene",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Cyber Hygiene for Cyber Space (Basic), Section 2 Password Security Management, Dos",
+      "source_excerpt": "Strong passwords should contain combination of upper case, lower case, numbers, 'Special' characters...Always use different passwords for different accounts.",
+      "question": "Per I4C's Cyber Hygiene (Basic) manual's 'Dos' for password security, what should a strong password combine?",
+      "options": [
+        "Upper case, lower case, numbers, and special characters",
+        "Only the user's date of birth and name",
+        "The same single word reused for every account",
+        "Only lower-case letters, kept as short as possible"
+      ],
+      "answer_index": 0,
+      "explanation": "The manual explicitly lists this character-type combination as a strong-password requirement. The other options describe weak, guessable, or reused password practices the manual actually warns against."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_011",
+      "doc_id": "i4c_cyber_hygiene",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Cyber Hygiene for Cyber Space (Basic), Section 2 Password Security Management, Don'ts",
+      "source_excerpt": "Do not use public systems to access banking/sensitive sites. Do not share password, OTP through e-mail, chat or any other electronic communication.",
+      "question": "Per I4C's Cyber Hygiene manual's 'Don'ts' for password security, what should never be shared over email or chat?",
+      "options": [
+        "Password or OTP",
+        "Public holiday schedule",
+        "Office landline number",
+        "Meeting agenda topics"
+      ],
+      "answer_index": 0,
+      "explanation": "The manual specifically names password and OTP as things never to share electronically. A holiday schedule, landline number, and agenda topics are not the sensitive credentials this guidance targets."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_012",
+      "doc_id": "i4c_cyber_hygiene",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Cyber Hygiene for Cyber Space (Basic), Section 5 Social Media Platforms - Safety tips, Don'ts",
+      "source_excerpt": "Do not use social media account without Multi-Factor Authentication (MFA). Never log into social media accounts from untrusted systems.",
+      "question": "An officer wants to better protect their official social media account per I4C's Cyber Hygiene guidance. Which control does the manual recommend enabling?",
+      "options": [
+        "Multi-Factor Authentication (MFA)",
+        "Auto-accepting all incoming friend requests",
+        "Disabling all privacy settings",
+        "Logging in only from public cyber cafes"
+      ],
+      "answer_index": 0,
+      "explanation": "The manual recommends MFA for social media accounts. Auto-accepting requests, disabling privacy settings, and using public cyber cafes are all practices the manual actually discourages."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_013",
+      "doc_id": "i4c_cyber_hygiene",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Cyber Hygiene for Cyber Space (Basic), Section 1.1 USB device Security, Dos",
+      "source_excerpt": "Scan USB device with Anti-virus/Endpoint Protection before its use. Autorun/Autoplay feature shall be disabled in all the computers, while using USB.",
+      "question": "Per I4C's Cyber Hygiene manual, what two precautions are recommended before and while using a USB drive on an office computer?",
+      "options": [
+        "Scan it with anti-virus/endpoint protection first, and keep Autorun/Autoplay disabled",
+        "Enable Autorun so files open automatically for convenience",
+        "Skip scanning entirely, since USB drives cannot carry malware",
+        "Only use USB drives on personal devices, and never scan them at all"
+      ],
+      "answer_index": 0,
+      "explanation": "The manual's own two Dos are scanning before use and disabling Autorun/Autoplay. The other options directly contradict this guidance."
+    },
+    {
+      "item_id": "ai_dl_cyber_hygiene_014",
+      "doc_id": "i4c_cyber_hygiene",
+      "competency_id": "dl_cyber_hygiene",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Cyber Hygiene for Cyber Space (Basic), Section 4 Financial Transactions - Safe Practices, Dos",
+      "source_excerpt": "Verify the name of 'Payee' or QR code before proceeding with the payment. UPI PIN is not needed while receiving payments.",
+      "question": "A citizen receives a message claiming they must enter their UPI PIN to 'receive' a refund payment. Applying I4C's Cyber Hygiene guidance on UPI safety, why is this very likely a scam?",
+      "options": [
+        "The manual states a UPI PIN is never needed to receive a payment, only to send one, so a request for a PIN to 'receive' money contradicts how UPI actually works",
+        "UPI PINs are required for every incoming and outgoing transaction, so the request is normal",
+        "QR codes and payee names are irrelevant to UPI safety per the manual",
+        "The manual recommends sharing UPI PINs whenever a refund is promised"
+      ],
+      "answer_index": 0,
+      "explanation": "The manual explicitly states a UPI PIN is not needed to receive payments, which exposes the scam's false premise. The other options reverse or misstate the manual's actual guidance."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_001",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, Vision statement",
+      "source_excerpt": "Vision: Democratize access to public Government data through a world-class user experience.",
+      "question": "What is NDAP's (National Data and Analytics Platform) officially stated Vision?",
+      "options": [
+        "To democratize access to public Government data through a world-class user experience",
+        "To privatize all government datasets for commercial sale",
+        "To replace all government dashboards with printed reports",
+        "To restrict data access to only central ministries"
+      ],
+      "answer_index": 0,
+      "explanation": "This is the document's own Vision statement. The other options describe the opposite of democratized, user-friendly public access."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_002",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, Mission statement",
+      "source_excerpt": "Mission: Standardize data across multiple Government sources, provide flexible analytics and make it easily accessible in formats conducive for research, innovation, policy making and public consumption.",
+      "question": "Per the NDAP Vision Document, what is the platform's stated Mission built around?",
+      "options": [
+        "Standardizing data across government sources and making it accessible in formats useful for research, innovation, and policymaking",
+        "Digitizing paper records only, with no analytics component",
+        "Building a single mobile app for citizen grievance redressal",
+        "Training government employees exclusively in spreadsheet software"
+      ],
+      "answer_index": 0,
+      "explanation": "The Mission statement names standardization, flexible analytics, and accessible formats. Grievance redressal apps and spreadsheet training are not part of this stated mission."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_003",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, Objectives -- User-centric",
+      "source_excerpt": "User-centric -- Data access is user-friendly and engaging, tailored to the needs of policymakers, bureaucrats, researchers, innovators, data scientists, journalists and citizens alike",
+      "question": "NDAP lists 'User-centric' as one of its three core objectives. What does this objective specifically target?",
+      "options": [
+        "Making data access friendly and engaging, tailored to the varied needs of policymakers, researchers, journalists, and citizens",
+        "Making the platform accessible only to trained IT engineers",
+        "Making all data available exclusively in PDF format",
+        "Limiting access to a single ministry's data at a time"
+      ],
+      "answer_index": 0,
+      "explanation": "The document explicitly names this broad set of user groups the objective is tailored to. Restricting access to IT staff, one format, or one ministry contradicts the stated aim."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_004",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, Objectives -- Coherent",
+      "source_excerpt": "Coherent -- Multiple data sets are presented using a standardized schema, by using common geographical and temporal identifiers",
+      "question": "NDAP's 'Coherent' objective is achieved by presenting datasets using a standardized schema with common identifiers for which two dimensions?",
+      "options": [
+        "Geographical and temporal (region and time period) identifiers",
+        "Font size and color identifiers",
+        "File size and format identifiers",
+        "Employee ID and department code identifiers only"
+      ],
+      "answer_index": 0,
+      "explanation": "The Coherent objective specifically names common geographical and temporal identifiers as the standardizing mechanism. The other pairs are not what the document describes."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_005",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, Objectives -- Up-to-date",
+      "source_excerpt": "Up-to-date -- Standard Operating Procedures are set to ensure data is updated regularly",
+      "question": "How does the NDAP Vision Document propose to keep data 'Up-to-date' as one of its core objectives?",
+      "options": [
+        "By establishing Standard Operating Procedures (SOPs) that ensure data is updated regularly",
+        "By updating data only once every ten years",
+        "By deleting older datasets instead of updating them",
+        "By relying solely on citizens to manually correct government data"
+      ],
+      "answer_index": 0,
+      "explanation": "The document names SOPs for regular updates as the mechanism. Infrequent updates, deletion, or relying solely on citizen correction are not what it describes."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_006",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, Data Sources",
+      "source_excerpt": "Websites of over 50 Ministries and Departments of the Central Government and data.gov.in. Websites of all Departments and Ministries of the State Government, not exceeding 250",
+      "question": "Per the NDAP Vision Document's 'Data Sources' section, roughly how many Central Government Ministries and Departments (plus data.gov.in) were named as sources?",
+      "options": [
+        "Over 50",
+        "Exactly 5",
+        "Over 5,000",
+        "Exactly 1 (only the Ministry of Finance)"
+      ],
+      "answer_index": 0,
+      "explanation": "The document states 'over 50 Ministries and Departments' as a Central Government data source, alongside data.gov.in. The other figures do not match the stated source count."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_007",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NDAP Vision Document, Challenges",
+      "source_excerpt": "Data is not published in a user-centric manner. The current data formats are often not conducive for research and innovation...some datasets are only available in PDF, webpage or as an image, making it difficult for further analysis.",
+      "question": "Per the NDAP Vision Document's 'Challenges' section, why are datasets published only as PDF, webpage, or image formats considered a problem for data literacy and analysis?",
+      "options": [
+        "Such formats are difficult to extract data from and analyze programmatically, costing researchers significant time compared to machine-readable formats",
+        "PDF and image files cannot be viewed on any government computer",
+        "Webpages and PDFs are illegal formats for a government to publish data in",
+        "Such formats always contain incorrect data compared to spreadsheets"
+      ],
+      "answer_index": 0,
+      "explanation": "The document's own reasoning is that these formats are hard to clean and prepare for analysis, wasting researcher time -- not that they are unviewable, illegal, or inherently inaccurate."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_008",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NDAP Vision Document, Challenges -- incoherent data ecosystem",
+      "source_excerpt": "Data ecosystem is incoherent due to different standards. Ministries and Departments do not use a shared standard for common indicators. Attributes like region and time period defined differently...a District Magistrate can access data across all departments for their district, easily, in one platform.",
+      "question": "The NDAP Vision Document uses the example of a District Magistrate wanting cross-department data for their district to illustrate the benefit of solving which challenge?",
+      "options": [
+        "The lack of a shared data standard (coherence) across different ministries and departments",
+        "The lack of internet connectivity in district offices",
+        "The shortage of trained data-entry staff",
+        "The absence of printed government reports"
+      ],
+      "answer_index": 0,
+      "explanation": "The District Magistrate example directly follows the discussion of incoherent, differently-defined standards across departments, illustrating the payoff of solving that specific coherence problem."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_009",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, Approach",
+      "source_excerpt": "We intend to draw inspiration from the best platforms around the world...platforms such as 'datausa.io' and 'data.gov.sg'.",
+      "question": "Per the NDAP Vision Document's 'Approach' section, which two international platforms are named as sources of inspiration?",
+      "options": [
+        "datausa.io and data.gov.sg",
+        "Wikipedia and Google Maps",
+        "Facebook and Instagram",
+        "Amazon and Netflix"
+      ],
+      "answer_index": 0,
+      "explanation": "The document names exactly these two platforms as inspiration for NDAP's user experience. The other pairs are not mentioned in this section."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_010",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, Approach -- building on Indian platforms",
+      "source_excerpt": "data.gov.in provides ready access to data from 165 departments.",
+      "question": "Per the NDAP Vision Document, roughly how many departments' data does the existing Indian platform data.gov.in provide ready access to?",
+      "options": [
+        "165",
+        "5",
+        "1,000",
+        "12"
+      ],
+      "answer_index": 0,
+      "explanation": "The document states data.gov.in provides access to 165 departments' data. The other figures do not match this stated number."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_011",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, Approach -- DISHA",
+      "source_excerpt": "DISHA, by the Ministry of Rural Development, provides access to data from 42 schemes across 20 ministries.",
+      "question": "Per the NDAP Vision Document, the DISHA platform (Ministry of Rural Development) provides access to data covering how many schemes and ministries?",
+      "options": [
+        "42 schemes across 20 ministries",
+        "5 schemes across 2 ministries",
+        "500 schemes across 100 ministries",
+        "1 scheme across 1 ministry"
+      ],
+      "answer_index": 0,
+      "explanation": "The document states this specific figure for DISHA. The other counts do not match the text."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_012",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "NDAP Vision Document, Features",
+      "source_excerpt": "Data export in machine readable format -- Facilitate analysis in R, Tableau, SAS...Enable cross sectoral Analysis",
+      "question": "A researcher wants to import NDAP data directly into a statistical tool like R for analysis, without manually re-typing values. Which NDAP feature makes this possible?",
+      "options": [
+        "Data export in machine-readable format",
+        "The social media share button",
+        "The governance structure documentation",
+        "The Way Forward roadmap"
+      ],
+      "answer_index": 0,
+      "explanation": "The document names machine-readable export (facilitating R/Tableau/SAS analysis) as the relevant feature. The other items are unrelated to importing data into an analysis tool."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_013",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, Features -- Common schema",
+      "source_excerpt": "Common schema across sectors -- ...Enable easy access to data from different sectors",
+      "question": "What is the purpose of NDAP presenting data using a 'common schema across sectors,' per the Vision Document's Features section?",
+      "options": [
+        "To let users easily access and compare data drawn from different sectors, such as health, education, and finance, within one consistent structure",
+        "To ensure only one sector's data is ever visible on the platform at a time",
+        "To require every dataset to be converted into a PDF before publishing",
+        "To restrict cross-sector access to only NITI Aayog staff"
+      ],
+      "answer_index": 0,
+      "explanation": "The document links a common schema to easy access across sectors. The other options describe restrictions the feature is not meant to create."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_014",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, Features -- Database of innovation",
+      "source_excerpt": "Database of innovation with public data -- Showcase innovative uses and top research articles for every search result",
+      "question": "Which NDAP feature is meant to highlight innovative uses and top research articles connected to a user's search on the platform?",
+      "options": [
+        "Database of innovation with public data",
+        "Governance structure chart",
+        "Third-party audit log",
+        "Grand Total hours table"
+      ],
+      "answer_index": 0,
+      "explanation": "This is the feature's own stated purpose in the document. The other options are unrelated governance or unrelated-document artifacts."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_015",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, Governance Structure -- High Powered Steering Committee",
+      "source_excerpt": "A high powered inter-ministerial steering committee under the chairmanship of Vice Chairman, NITI Aayog will be set up to provide direction, oversee progress, guide on data sources, and address various inter-ministerial issues",
+      "question": "Per the NDAP Vision Document's Governance Structure, who chairs the High Powered Steering Committee overseeing the platform?",
+      "options": [
+        "The Vice Chairman, NITI Aayog",
+        "The Prime Minister directly",
+        "A rotating state Chief Minister",
+        "The CEO of a private technology vendor"
+      ],
+      "answer_index": 0,
+      "explanation": "The document names the Vice Chairman, NITI Aayog as chair of this committee. The other roles are not stated as chairing it."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_016",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, Governance Structure -- Technical Advisory Group",
+      "source_excerpt": "Technical Advisory Group consisting of sector and technology experts will be established to provide expert consultation. TAG will provide guidance on the development of the platform, management of data, and aligning the platform for user-needs.",
+      "question": "What role does the Technical Advisory Group (TAG) play in NDAP's governance structure, per the Vision Document?",
+      "options": [
+        "Providing expert consultation and guidance on platform development, data management, and aligning it to user needs",
+        "Directly writing all of the application's code",
+        "Approving the annual government budget for all ministries",
+        "Replacing the High Powered Steering Committee entirely"
+      ],
+      "answer_index": 0,
+      "explanation": "The document describes TAG's role as expert consultation and guidance, not budget approval, coding, or replacing the steering committee."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_017",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, Governance Structure -- Project Management Unit",
+      "source_excerpt": "Project Management Unit -- Established at NITI Aayog to coordinate with different stakeholders and manage various facets of NDAP",
+      "question": "Per the NDAP Vision Document, where is the Project Management Unit that coordinates NDAP's stakeholders established?",
+      "options": [
+        "At NITI Aayog",
+        "At the Reserve Bank of India",
+        "At a private technology startup",
+        "At the United Nations"
+      ],
+      "answer_index": 0,
+      "explanation": "The document states the Project Management Unit is established at NITI Aayog. The other locations are not mentioned in this role."
+    },
+    {
+      "item_id": "ai_dl_data_literacy_018",
+      "doc_id": "ndap_vision",
+      "competency_id": "dl_data_literacy",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NDAP Vision Document, Way Forward",
+      "source_excerpt": "The first version of National Data and Analytics Platform is proposed to be released in 2021. NDAP is a pan-India initiative...Its success requires extensive support and cooperation of various stakeholders such as Central Ministries, State Governments and guidance from experts",
+      "question": "Why does the NDAP Vision Document describe the platform's success as dependent on 'extensive support and cooperation' from Central Ministries, State Governments, and experts, rather than something NITI Aayog can deliver alone?",
+      "options": [
+        "Because NDAP's value depends on aggregating and standardizing data that originates from many different ministries and state governments, whose underlying data collection NITI Aayog does not directly control",
+        "Because NITI Aayog lacks the legal authority to create any government platform",
+        "Because the platform is entirely built and hosted by state governments with no central role at all",
+        "Because cooperation is only needed for choosing the platform's name"
+      ],
+      "answer_index": 0,
+      "explanation": "NDAP is fundamentally an aggregation of data that ministries and states themselves collect and own, so their cooperation is structurally necessary -- the other options either invent a legal barrier or trivialize the described dependency."
+    }
+  ]
+}

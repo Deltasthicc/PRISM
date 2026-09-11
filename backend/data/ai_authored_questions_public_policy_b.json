@@ -1,0 +1,1915 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-11",
+  "note": "Batch B of AI-authored, source-grounded MCQs for the public-policy curriculum's data storytelling, leadership, professional communication, ethics & integrity, decision making, and change management competencies, grounded in the NITI Aayog National Data and Analytics Platform vision document, the Karmayogi Quality Framework, the PIB Mission Karmayogi cabinet announcement, the DARPG Sevottam citizen's charter guidelines, the CCS (Conduct) Rules 1964, the CBC MDO performance-measurement handbook, and UPSC CSP 2023 GS1.",
+  "questions": [
+    {
+      "item_id": "ai_pa_data_storytelling_001",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Vision Document, statement of NDAP's Vision",
+      "source_excerpt": "Vision: Democratize access to public Government data through a world-class user experience.",
+      "question": "The NDAP Vision Document states a one-line 'Vision' for the platform, distinct from its Mission statement. What is that Vision?",
+      "options": [
+        "Democratize access to public Government data through a world-class user experience",
+        "Standardize data across multiple Government sources for research and policy making",
+        "Centralize all Government IT infrastructure under a single national data centre",
+        "Replace all existing departmental dashboards with one unified reporting tool"
+      ],
+      "answer_index": 0,
+      "explanation": "The Vision Document states the Vision verbatim as democratizing access to public Government data through a world-class user experience. The second option is actually NDAP's Mission statement, not its Vision, and the other two describe infrastructure-consolidation goals the document never states."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_002",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Vision Document, statement of NDAP's Mission",
+      "source_excerpt": "Mission: Standardize data across multiple Government sources, provide flexible analytics and make it easily accessible in formats conducive for research, innovation, policy making and public consumption.",
+      "question": "According to the Vision Document, which statement correctly captures NDAP's Mission (as opposed to its Vision)?",
+      "options": [
+        "Democratize access to public Government data through a world-class user experience",
+        "Standardize data across multiple Government sources, provide flexible analytics, and make it easily accessible for research, innovation, policy making and public consumption",
+        "Enforce a single mandatory data format on every Ministry and Department",
+        "Award grants to private startups that build analytics tools on Government data"
+      ],
+      "answer_index": 1,
+      "explanation": "The Mission statement in the Vision Document is to standardize data across sources, provide flexible analytics, and make it accessible in formats useful for research, innovation, policy making and public consumption. The first option is the Vision, not the Mission, and the other two are not stated anywhere in the document."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_003",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Vision Document, 'Objectives' panel (User-centric / Coherent / Up-to-date)",
+      "source_excerpt": "User-centric: Data access is user-friendly and engaging, tailored to the needs of policymakers, bureaucrats, researchers, innovators, data scientists, journalists and citizens alike. Coherent: Multiple data sets are presented using a standardized schema, by using common geographical and temporal identifiers. Up-to-date: Standard Operating Procedures are set to ensure data is updated regularly.",
+      "question": "The Vision Document organizes NDAP's objectives around three qualities of data access. Which set of three correctly names them?",
+      "options": [
+        "Secure, Anonymized, Auditable",
+        "User-centric, Coherent, Up-to-date",
+        "Free, Open-source, Crowd-sourced",
+        "Real-time, Encrypted, Multilingual"
+      ],
+      "answer_index": 1,
+      "explanation": "The document names three objectives: data access should be User-centric (tailored to different user groups), Coherent (a standardized schema with common geographic and temporal identifiers), and Up-to-date (kept current through SOPs). The other option sets are plausible-sounding but not the three terms the document actually uses."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_004",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Vision Document, 'Data Sources' panel",
+      "source_excerpt": "Websites of over 50 Ministries and Departments of the Central Government and data.gov.in. Websites of all Departments and Ministries of the State Government, not exceeding 250.",
+      "question": "As described in the Vision Document's 'Data Sources' section, roughly how broad is the intended scope of data feeding into NDAP?",
+      "options": [
+        "Only data.gov.in and nothing else",
+        "A single pilot Ministry, to be expanded only after a multi-year trial",
+        "Over 50 Central Ministries/Departments plus data.gov.in, and up to 250 State Government Department/Ministry websites",
+        "Only private-sector data partnerships, since Government data was judged too inconsistent to use"
+      ],
+      "answer_index": 2,
+      "explanation": "The Vision Document lists data sources as websites of over 50 Central Ministries and Departments plus data.gov.in, and websites of State Government Departments and Ministries not exceeding 250 -- a genuinely pan-India, multi-source scope from the outset, not a narrow pilot or a private-data-only approach."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_005",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Vision Document, 'Challenges' -- data not published in a user-centric manner",
+      "source_excerpt": "Data is not published in a user-centric manner. The current data formats are often not conducive for research and innovation... some datasets are only available in PDF, webpage or as an image, making it difficult for further analysis.",
+      "question": "The Vision Document identifies a specific challenge with how Indian Government data is currently published. What is it?",
+      "options": [
+        "Most datasets are published only in PDF, webpage, or image form, which is difficult to analyse further even when dashboards with visualisations already exist",
+        "Government departments refuse to publish any data at all, even in dashboards",
+        "All datasets are already machine-readable, but citizens lack the technical skill to use them",
+        "Data is published promptly but only in encrypted formats inaccessible to the public"
+      ],
+      "answer_index": 0,
+      "explanation": "The document notes that while many departments maintain dashboards with visualisations and downloadable options, some datasets remain locked in PDF, webpage or image form, which is hard to use for further research or analysis -- the opposite of the second and fourth options, and a different problem from the third, which assumes clean machine-readable data already exists."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_006",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "Vision Document, 'Challenges' -- data ecosystem incoherence",
+      "source_excerpt": "Data ecosystem is incoherent due to different standards. Ministries and Departments do not use a shared standard for common indicators. Attributes like region and time period defined differently... a District Magistrate can access data across all departments for their district, easily, in one platform.",
+      "question": "The Vision Document uses the example of a District Magistrate needing data 'across all departments for their district, easily, in one platform' to illustrate which specific problem NDAP is meant to solve?",
+      "options": [
+        "The shortage of trained data scientists in district administration",
+        "The lack of internet connectivity in rural districts",
+        "The incoherence caused by different Ministries/Departments defining common attributes like region and time period differently, which prevents datasets from 'speaking to each other'",
+        "The absence of any digitised government data whatsoever"
+      ],
+      "answer_index": 2,
+      "explanation": "The District Magistrate example is used specifically to illustrate the coherence problem: because different Ministries and Departments define shared attributes such as region and time period inconsistently, a single official cannot easily combine their data -- it is not primarily a staffing, connectivity, or digitisation problem."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_007",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Vision Document, 'Approach'",
+      "source_excerpt": "We intend to draw inspiration from the best platforms around the world... as can be seen in platforms such as 'datausa.io' and 'data.gov.sg'.",
+      "question": "The Vision Document names two international platforms that inspired NDAP's approach to user experience. Which pair is it?",
+      "options": [
+        "Google Trends and Kaggle",
+        "datausa.io and data.gov.sg",
+        "OECD.Stat and Eurostat",
+        "World Bank Open Data and IMF DataMapper"
+      ],
+      "answer_index": 1,
+      "explanation": "The Vision Document explicitly names datausa.io and data.gov.sg as platforms whose seamless, interactive user experience NDAP wants to emulate. The other pairs are real international data platforms but are not the ones named in this document."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_008",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Vision Document, 'Approach' -- building on existing Indian platforms",
+      "source_excerpt": "Over the years, notable improvements have taken place in the data publishing ecosystem. For example, data.gov.in provides ready access to data from 165 departments. DISHA, by the Ministry of Rural Development, provides access to data from 42 schemes across 20 ministries.",
+      "question": "Besides drawing on international examples, the Vision Document says NDAP will build on the success of two existing Indian data platforms. Which two does it name, along with their approximate scope?",
+      "options": [
+        "Aadhaar and DigiLocker",
+        "GeM (Government e-Marketplace) and UMANG",
+        "data.gov.in (165 departments) and DISHA (42 schemes across 20 ministries, Ministry of Rural Development)",
+        "MyGov and PM-Kisan portal"
+      ],
+      "answer_index": 2,
+      "explanation": "The document names data.gov.in, which already provides data from 165 departments, and DISHA, run by the Ministry of Rural Development, giving access to data from 42 schemes across 20 ministries, as the two existing Indian platforms NDAP is meant to build on. The other options are real e-governance platforms but serve different purposes and are not mentioned in this document."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_009",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Vision Document, 'Approach' -- common schema across sectors",
+      "source_excerpt": "NDAP will provide access to data from multiple sectors in one place... This will be presented using a common schema, with clear definitions and narratives to help the user navigate the differences between similar data from different sources.",
+      "question": "A researcher wants to compare 'literacy rate' figures published separately by the Ministries of Education, Rural Development, and Statistics, each of which defines the indicator slightly differently. Which NDAP design feature is meant to directly address this situation?",
+      "options": [
+        "A social-media share button attached to each dataset",
+        "A common schema across sectors, with clear definitions and narratives explaining differences between similar indicators from different sources",
+        "A rule restricting the platform to a single ministry's data at a time",
+        "A requirement that all users register with a government email address before viewing any data"
+      ],
+      "answer_index": 1,
+      "explanation": "NDAP's common-schema feature, with explanatory narratives, is designed exactly for this cross-source comparability problem: it helps a user understand and reconcile differences between similarly-named indicators from different Ministries. A share button, a single-ministry restriction, or a login requirement do nothing to resolve definitional inconsistency."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_010",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Vision Document, 'Features'",
+      "source_excerpt": "Features: Facilitate analysis in R, Tableau, SAS. Data export in machine readable format. Common schema across sectors. Database of innovation with public data. User friendly search engine. Social Media share.",
+      "question": "Which of the following is explicitly listed as one of NDAP's planned Features in the Vision Document?",
+      "options": [
+        "Automatic translation of all datasets into every scheduled Indian language",
+        "Facilitating analysis directly in tools such as R, Tableau and SAS, alongside machine-readable data export",
+        "A built-in blockchain ledger for verifying data provenance",
+        "A mobile-only app with no web interface"
+      ],
+      "answer_index": 1,
+      "explanation": "The Vision Document's Features list includes facilitating analysis in R, Tableau and SAS and providing data export in machine-readable format, among others such as a common schema, a database of innovation, a search engine, and social media sharing. None of the other options -- automatic translation, blockchain, or mobile-only design -- appear in the document."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_011",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Vision Document, 'Features'/'Benefits' -- database of innovation",
+      "source_excerpt": "Showcase innovative uses and top research articles for every search result... Database of innovation with public data.",
+      "question": "What is the purpose of the 'database of innovation' feature described in the Vision Document?",
+      "options": [
+        "To store backup copies of raw datasets in case of server failure",
+        "To showcase innovative uses of the data and top research articles alongside each search result, encouraging further research and innovation",
+        "To rank Ministries by how quickly they respond to RTI requests",
+        "To restrict access to datasets until a peer-reviewed paper cites them"
+      ],
+      "answer_index": 1,
+      "explanation": "The 'database of innovation' feature is meant to surface innovative uses and top research articles associated with a search result, so users can see how data has already been used and be inspired to build on it -- not to serve as a backup system, an RTI ranking tool, or an access gate."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_012",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Vision Document, 'Users' panel",
+      "source_excerpt": "Users: Policy Makers, Journalists, Citizens, General Public, Researchers, Academics, Data Scientists, Innovators.",
+      "question": "The Vision Document lists NDAP's intended user groups. Which of the following is explicitly included in that list?",
+      "options": [
+        "Foreign governments only",
+        "Journalists and data scientists, alongside policymakers, researchers, academics, innovators, and the general public",
+        "Only employees of NITI Aayog",
+        "Only registered software developers with an API key"
+      ],
+      "answer_index": 1,
+      "explanation": "The document's Users panel names policymakers, journalists, citizens, the general public, researchers, academics, data scientists and innovators as NDAP's intended audience -- a deliberately broad, non-exclusive list, unlike the narrow groups described in the other options."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_013",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Vision Document, 'Governance Structure' -- High Powered Steering Committee",
+      "source_excerpt": "High Powered Steering Committee: A high powered inter-ministerial steering committee under the chairmanship of Vice Chairman, NITI Aayog will be set up to provide direction, oversee progress, guide on data sources, and address various inter-ministerial issues on collating data.",
+      "question": "Who is designated to chair the High Powered Steering Committee that oversees NDAP, according to the Vision Document's governance structure?",
+      "options": [
+        "The Cabinet Secretary",
+        "The Vice Chairman of NITI Aayog",
+        "The Union Minister of Electronics and Information Technology",
+        "The Comptroller and Auditor General"
+      ],
+      "answer_index": 1,
+      "explanation": "The Vision Document specifies that the inter-ministerial High Powered Steering Committee is chaired by the Vice Chairman of NITI Aayog, who provides direction and resolves inter-ministerial data-collation issues. The other office-holders are not named in this governance structure."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_014",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Vision Document, 'Governance Structure' -- Technical Advisory Group",
+      "source_excerpt": "Technical Advisory Group: A Technical Advisory Group consisting of sector and technology experts will be established to provide expert consultation. TAG will provide guidance on the development of the platform, management of data, and aligning the platform for user-needs.",
+      "question": "What role does the Technical Advisory Group (TAG) play within NDAP's governance structure, per the Vision Document?",
+      "options": [
+        "It approves the annual Union Budget allocation for NITI Aayog",
+        "It provides expert consultation from sector and technology experts on platform development, data management, and aligning the platform to user needs",
+        "It has sole legal authority to shut down the platform if a data breach occurs",
+        "It replaces the Technology Vendor as the entity that builds and operates the platform"
+      ],
+      "answer_index": 1,
+      "explanation": "TAG is an advisory body of sector and technology experts guiding platform development, data management, and user-need alignment -- an advisory, not an operational or budget-approval, role, and distinct from the Technology Vendor that actually builds and runs the platform."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_015",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Vision Document, 'Governance Structure' -- Project Management Unit",
+      "source_excerpt": "Project Management Unit: Established at NITI Aayog to coordinate with different stakeholders and manage various facets of NDAP.",
+      "question": "Where is NDAP's Project Management Unit (PMU) located, and what is its role, according to the Vision Document?",
+      "options": [
+        "At the Ministry of Finance, to control the platform's budget only",
+        "At NITI Aayog, to coordinate with stakeholders and manage various facets of NDAP",
+        "At each State Government's IT department, run independently in every state",
+        "Outside Government, at the technology vendor's own head office"
+      ],
+      "answer_index": 1,
+      "explanation": "The Vision Document places the PMU at NITI Aayog, tasked with coordinating stakeholders and managing NDAP's various facets -- not at the Finance Ministry, decentralised to states, or outsourced entirely to the vendor."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_016",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Vision Document, description of the 'Up-to-date' objective",
+      "source_excerpt": "NDAP will be a reliable platform for up-to-date data. Standard Operating Procedures (SOPs) will be developed to keep data updated. There will be regular tracking of compliance to these SOPs. Further, APIs, web-crawling and other methods will be used to keep the data fully up-to-date.",
+      "question": "A Ministry's dataset on NDAP has not been refreshed in over a year. Based on the Vision Document's stated approach to keeping data current, what mechanism is meant to catch and correct this?",
+      "options": [
+        "Citizens must individually email the Ministry to request an update",
+        "SOPs for regular updates, with tracking of SOP compliance, backed by APIs and web-crawling to keep data current",
+        "The dataset is simply deleted from the platform after six months",
+        "NDAP has no mechanism for this; refreshing data is left entirely to each Ministry's discretion"
+      ],
+      "answer_index": 1,
+      "explanation": "The Vision Document describes a structured 'up-to-date' mechanism: SOPs for updating data, active tracking of compliance with those SOPs, and technical means such as APIs and web-crawling to keep data current -- not an ad hoc citizen-complaint process, automatic deletion, or complete Ministry discretion."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_017",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Vision Document, 'Way Forward'",
+      "source_excerpt": "The first version of National Data and Analytics Platform is proposed to be released in 2021. NDAP is a pan-India initiative by NITI Aayog. Its success requires extensive support and cooperation of various stakeholders such as Central Ministries, State Governments and guidance from experts.",
+      "question": "According to the 'Way Forward' section of the Vision Document, in which year was the first version of NDAP proposed to be released?",
+      "options": [
+        "2019",
+        "2021",
+        "2025",
+        "2030"
+      ],
+      "answer_index": 1,
+      "explanation": "The Vision Document states that the first version of NDAP was proposed to be released in 2021, describing NDAP as a pan-India initiative requiring cooperation from Central Ministries, State Governments, and experts -- the other years are not mentioned."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_018",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Vision Document, synthesis of 'Challenges' and 'Approach' sections",
+      "source_excerpt": "Data ecosystem is incoherent due to different standards... If we can solve this, many use-cases can emerge. For example, a District Magistrate can access data across all departments for their district, easily, in one platform.",
+      "question": "A state government wants to replicate NDAP's District Magistrate use-case at the district level, pulling health, education, and agriculture data into one dashboard. Based on the Vision Document, which two NDAP design elements would matter most for this to work well?",
+      "options": [
+        "A social media share button and a mobile app icon",
+        "A common schema with consistent geographical/temporal identifiers, and a user-friendly search engine tailored to non-technical officials",
+        "A requirement that all three departments merge into a single administrative unit",
+        "A ban on any data more than one year old"
+      ],
+      "answer_index": 1,
+      "explanation": "Combining data from multiple departments into one usable dashboard depends on the coherence objective (a common schema and shared geographic/temporal identifiers so datasets 'speak to each other') and the user-centric objective (an accessible, user-friendly interface for officials who are not data specialists) -- not on administrative mergers, data-age bans, or social/sharing features."
+    },
+    {
+      "item_id": "ai_pa_data_storytelling_019",
+      "doc_id": "ndap_vision",
+      "competency_id": "pa_data_storytelling",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Vision Document, overall design philosophy across 'Overview', 'Challenges' and 'Objectives'",
+      "source_excerpt": "All public government data should be easily accessible to all stakeholders in a user-friendly manner. Further, data across sectors should be coherent to support analysis and dissemination... Coherent: Multiple data sets are presented using a standardized schema.",
+      "question": "Why does the Vision Document treat 'Coherent' as a necessary objective distinct from simply publishing more data online?",
+      "options": [
+        "Because coherence is a legal requirement under the Right to Information Act",
+        "Because more raw data alone does not help users if datasets use inconsistent definitions and standards, making cross-department or cross-sector analysis impossible even when the data is technically 'available'",
+        "Because coherent data takes up less server storage than incoherent data",
+        "Because the document considers data volume less important than data secrecy"
+      ],
+      "answer_index": 1,
+      "explanation": "The document's own 'Challenges' section shows that simply having more data published does not solve the underlying problem: without shared standards for indicators, regions and time periods, datasets cannot be meaningfully combined or compared, which is exactly why 'Coherent' is called out as its own objective rather than folded into general availability. It is not framed as an RTI compliance matter, a storage-efficiency concern, or about secrecy."
+    },
+    {
+      "item_id": "ai_pa_leadership_001",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "KQF, Part II -- The Karmayogi Competency Model's three domains",
+      "source_excerpt": "The KCM identifies three interconnected domains of competency. Behavioural competencies, which includes dispositions, values, and interpersonal capacities... grow in importance with seniority and determine whether technical capability translates into effective public service.",
+      "question": "According to the Karmayogi Quality Framework, why do behavioural competencies matter increasingly at senior levels of the civil service?",
+      "options": [
+        "Because senior officers no longer need functional or domain competencies at all",
+        "Because behavioural competencies -- dispositions, values, and interpersonal capacities -- determine whether an officer's technical capability actually translates into effective public service as their leadership responsibility grows",
+        "Because behavioural competencies are only assessed during recruitment, never afterward",
+        "Because senior officers are exempt from the Karmayogi Competency Model"
+      ],
+      "answer_index": 1,
+      "explanation": "The KQF states that behavioural competencies grow in importance with seniority precisely because they determine whether technical skill converts into real leadership effectiveness -- functional and domain competencies remain necessary, they are simply not sufficient on their own at senior, higher-influence roles."
+    },
+    {
+      "item_id": "ai_pa_leadership_002",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "KQF, Part II -- Administrative Role Family dimension",
+      "source_excerpt": "Administrative Role Family... Initiator: originates files and actions. Reviewer: examines and recommends. Decision Maker: approves, commits resources. Strategic Leader: sets direction, manages performance. Policy Maker: formulates and advises on legislation.",
+      "question": "The Karmayogi Quality Framework calibrates course design partly by 'Administrative Role Family.' Which role in that dimension is described as setting direction and managing performance?",
+      "options": [
+        "Initiator",
+        "Reviewer",
+        "Strategic Leader",
+        "Policy Maker"
+      ],
+      "answer_index": 2,
+      "explanation": "Within the Administrative Role Family dimension, the 'Strategic Leader' role is the one defined as setting direction and managing performance, distinct from an Initiator (originates files), a Reviewer (examines and recommends), and a Policy Maker (formulates and advises on legislation)."
+    },
+    {
+      "item_id": "ai_pa_leadership_003",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "KQF, Part II -- Decision Complexity (S-T-O) lens",
+      "source_excerpt": "Strategic: policy design, systems thinking, cross-sectoral influence, and leadership in complexity.",
+      "question": "In the Karmayogi Quality Framework's S-T-O (Strategic-Tactical-Operational) lens on decision complexity, what specifically characterizes the 'Strategic' level?",
+      "options": [
+        "Procedural accuracy and rule application in citizen-facing execution",
+        "Cross-programme problem-solving and delivery ownership within a single team",
+        "Policy design, systems thinking, cross-sectoral influence, and leadership in complexity",
+        "Filling in standard forms with no room for judgement"
+      ],
+      "answer_index": 2,
+      "explanation": "The Strategic level of the S-T-O lens is defined by policy design, systems thinking, cross-sectoral influence, and leadership in complexity -- procedural accuracy belongs to the Operational level and cross-programme delivery ownership to the Tactical level."
+    },
+    {
+      "item_id": "ai_pa_leadership_004",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "KQF, Foreword",
+      "source_excerpt": "This is what Mission Karmayogi calls, the shift from a rule orientation to a role orientation. Rules are necessary but never sufficient... It is in that space [between rule and situation] that character and competence determine whether a citizen is served with dignity or denied with indifference.",
+      "question": "The KQF Foreword argues that 'the real work of governance happens in the space between what the rule says and what the situation demands.' What leadership implication does it draw from this?",
+      "options": [
+        "That rules should be abolished entirely in favour of officer discretion",
+        "That character and competence in that discretionary space determine whether citizens are served with dignity, so leadership development cannot rely on rule-compliance alone",
+        "That only the most junior officials ever face this discretionary space",
+        "That this space is irrelevant to how learning on iGOT should be designed"
+      ],
+      "answer_index": 1,
+      "explanation": "The Foreword's point is not to abolish rules but to argue that rules alone are insufficient: exercising sound judgement in the gap between rule and situation requires character and competence, which is exactly why leadership-relevant learning must go beyond rule-compliance training -- a theme carried through the rest of the framework, not confined to junior officials."
+    },
+    {
+      "item_id": "ai_pa_leadership_005",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "KQF, Part V -- Governance Architecture, Cadre Controlling Authorities",
+      "source_excerpt": "Cadre Controlling Authorities (CCAs): Career integrators -- set competency benchmarks, align learning with career progression, embed learning in appraisals, and use data for evidence-based decisions.",
+      "question": "Within the KQF's governance architecture, what distinct leadership-development function do Cadre Controlling Authorities (CCAs) perform that Karmayogi Bharat (the platform operator) does not?",
+      "options": [
+        "They build and host the iGOT technology platform",
+        "They act as 'career integrators', setting competency benchmarks and embedding learning outcomes into career progression and appraisals",
+        "They author individual course content for every Ministry",
+        "They audit the financial accounts of the Capacity Building Commission"
+      ],
+      "answer_index": 1,
+      "explanation": "CCAs are explicitly framed as career integrators: they connect learning to career progression by setting competency benchmarks and embedding evidence of learning into appraisals -- a people-development and career-leadership function distinct from Karmayogi Bharat's platform-operations role or CBC's standard-setting role."
+    },
+    {
+      "item_id": "ai_pa_leadership_006",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "KQF, Part II -- Foundation of the Karmayogi Competency Model",
+      "source_excerpt": "This calibration is anchored in competencies; behavioural and functional as specified in the Karmayogi Competency Model (KCM), and domain competencies as defined by each MDO in reference to the KCM.",
+      "question": "Under the Karmayogi Competency Model (KCM), who is responsible for defining domain competencies (as opposed to behavioural and functional competencies)?",
+      "options": [
+        "Each Ministry/Department/Organisation (MDO), in reference to the KCM",
+        "The learner themselves, through self-assessment",
+        "The Capacity Building Commission alone, with no MDO involvement",
+        "The Union Public Service Commission during recruitment"
+      ],
+      "answer_index": 0,
+      "explanation": "The KQF states that while behavioural and functional competencies are specified centrally in the KCM, domain competencies -- the technical knowledge specific to a sector -- are defined by each MDO in reference to the KCM, not by the learner, the CBC alone, or the UPSC."
+    },
+    {
+      "item_id": "ai_pa_leadership_007",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "KQF, Part V -- Accountability table",
+      "source_excerpt": "Content Providers: Execution engine. Build courses to the approved Design-from-Work Declaration. Accountable for the quality signal their courses generate over their full operational life.",
+      "question": "A leadership-development course consistently receives an Amber rating on its Course Performance Index over several months. Based on the KQF's accountability model, who bears primary responsibility for remediating the course?",
+      "options": [
+        "The individual learners who enrolled in it",
+        "The Content Provider that built and remains accountable for the course's quality signal over its full operational life",
+        "The Quality Advisory Council, since it is a regulatory body",
+        "The Cadre Controlling Authority of an unrelated cadre"
+      ],
+      "answer_index": 1,
+      "explanation": "Content Providers are described as the 'execution engine' accountable for their course's quality signal across its entire operational life, including responding to persistent Amber/Red ratings -- the Quality Advisory Council is explicitly an advisory, not regulatory, forum, and neither learners nor an unrelated CCA hold this responsibility."
+    },
+    {
+      "item_id": "ai_pa_leadership_008",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_leadership",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "KQF, Part III Overview -- the Six Stages table",
+      "source_excerpt": "01 Discover -- Who is this learner? ... 02 Design -- Is it built from real work? ... Gate: Capability Blueprint reviewed before development begins.",
+      "question": "A senior officer designing a leadership course skips the Discover and Design gates, going straight to content production because 'leadership is leadership everywhere.' Which KQF principle does this violate?",
+      "options": [
+        "Nothing -- the KQF only applies gates to technical, not leadership, courses",
+        "The requirement that every course be anchored in a specific work context and calibrated to decision complexity, decision archetype, and administrative role family before development begins",
+        "The rule that leadership courses must be at least 60 minutes long",
+        "The rule that only the Capacity Building Commission may design leadership courses"
+      ],
+      "answer_index": 1,
+      "explanation": "The KQF's Discover and Design gates exist precisely because quality course design 'requires that every course be precisely calibrated to the specific context of its intended learner' -- decision complexity, archetype and role family all differ even within 'leadership' -- so skipping these gates undermines a core, non-negotiable principle of the framework, which applies to every competency domain, not just technical ones."
+    },
+    {
+      "item_id": "ai_pa_leadership_009",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB press release, institutional framework",
+      "source_excerpt": "The Union Cabinet... has approved launching of a National Programme for Civil Services Capacity Building (NPCSCB) with the following institutional framework:- (i) Prime Minister's Public Human Resources (HR) Council, (ii) Capacity Building Commission...",
+      "question": "Which body sits at the apex of the NPCSCB institutional framework announced by the Cabinet, chaired by the Prime Minister?",
+      "options": [
+        "The Capacity Building Commission",
+        "The Prime Minister's Public Human Resources (HR) Council",
+        "The Special Purpose Vehicle (SPV)",
+        "The Coordination Unit headed by the Cabinet Secretary"
+      ],
+      "answer_index": 1,
+      "explanation": "The press release lists the Prime Minister's Public HR Council first among the four institutional bodies, and later describes it as the apex body under the Prime Minister's chairmanship providing strategic direction -- the Capacity Building Commission, the SPV, and the Coordination Unit are distinct, subordinate bodies with narrower mandates."
+    },
+    {
+      "item_id": "ai_pa_leadership_010",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PIB press release, 'Background'",
+      "source_excerpt": "A Public Human Resources Council comprising of select Union Ministers, Chief Ministers, eminent public HR practitioners, thinkers, global thought leaders and Public Service functionaries under the Chairmanship of Hon'ble Prime Minister will serve as the apex body for providing strategic direction to the task of Civil Services Reform and capacity building.",
+      "question": "What is distinctive about the composition of the PM's Public HR Council, as announced in the Cabinet press release?",
+      "options": [
+        "It is composed entirely of serving IAS officers",
+        "It draws together Union Ministers, Chief Ministers, HR practitioners, thinkers, global thought leaders, and public service functionaries under the PM's chairmanship -- a deliberately cross-sector strategic leadership body",
+        "It is a purely technical body of software engineers who maintain the iGOT platform",
+        "It consists only of retired civil servants"
+      ],
+      "answer_index": 1,
+      "explanation": "The Council's composition is explicitly cross-sector and cross-level -- Ministers, Chief Ministers, HR practitioners, thought leaders and functionaries -- reflecting its role as an apex strategic-direction body for civil service reform, not a narrow technical, retired-officer, or single-service body."
+    },
+    {
+      "item_id": "ai_pa_leadership_011",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PIB press release, 'Objectives' -- role of the Capacity Building Commission",
+      "source_excerpt": "The role of Commission will be as under- To assist the PM Public Human Resources Council in approving the Annual Capacity Building Plans... To exercise functional supervision over all Central Training Institutions... To suggest policy interventions required in the areas of HR Management and Capacity Building to the Government.",
+      "question": "Which of the following is explicitly listed as a role of the Capacity Building Commission in the Cabinet's announcement?",
+      "options": [
+        "Directly hiring and firing civil servants",
+        "Assisting the PM's Public HR Council in approving Annual Capacity Building Plans and exercising functional supervision over Central Training Institutions",
+        "Setting the annual Union Budget",
+        "Conducting the Civil Services Examination in place of the UPSC"
+      ],
+      "answer_index": 1,
+      "explanation": "The press release assigns the Commission roles such as assisting the PM Council on Capacity Building Plans, functional supervision of Central Training Institutions, standardisation recommendations, and policy suggestions on HR management -- not hiring/firing authority, budget-setting, or examination duties, which remain with other bodies."
+    },
+    {
+      "item_id": "ai_pa_leadership_012",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "PIB press release, 'Salient Features' -- rules-based to roles-based HR",
+      "source_excerpt": "Supporting Transition from 'Rules based' to 'Roles based' HR Management. Aligning work allocation of civil servants by matching their competencies to the requirements of the post.",
+      "question": "A department currently assigns civil servants to posts purely by seniority and rotation schedule, without reference to their demonstrated competencies. Which core guiding principle of Mission Karmayogi does this practice run counter to?",
+      "options": [
+        "The transition from 'rules based' to 'roles based' HR management, which calls for aligning work allocation to an officer's competencies against the requirements of the post",
+        "The requirement that iGOT courses be under 20 minutes long",
+        "The financial cap of Rs 510.86 crore on the programme",
+        "The rule restricting the SPV to a not-for-profit structure"
+      ],
+      "answer_index": 0,
+      "explanation": "Mission Karmayogi's guiding principle of shifting from rules-based to roles-based HR management is specifically about matching work allocation to competencies rather than seniority or rotation alone -- the other options describe unrelated operational or financial details of the programme, not this HR-management principle."
+    },
+    {
+      "item_id": "ai_pa_leadership_013",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB press release, 'Objectives'",
+      "source_excerpt": "Mission Karmayogi aims to prepare the Indian Civil Servant for the future by making him more creative, constructive, imaginative, innovative, proactive, professional, progressive, energetic, enabling, transparent and technology-enabled.",
+      "question": "According to the press release, Mission Karmayogi aims to prepare the civil servant for the future by cultivating which kind of qualities?",
+      "options": [
+        "Strict seniority-based conformity and risk-aversion",
+        "A cluster of qualities including creative, proactive, professional, enabling, transparent and technology-enabled",
+        "Exclusively technical, IT-specific skills with no behavioural component",
+        "Qualities relevant only to officers posted abroad"
+      ],
+      "answer_index": 1,
+      "explanation": "The press release lists a broad cluster of qualities -- creative, constructive, imaginative, innovative, proactive, professional, progressive, energetic, enabling, transparent, and technology-enabled -- explicitly aimed at future-readiness, not seniority-based conformity, a narrow technical focus, or a foreign-posting-specific remit."
+    },
+    {
+      "item_id": "ai_pa_leadership_014",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "PIB press release, institutional framework and Coordination Unit",
+      "source_excerpt": "(iv) Coordination Unit headed by the Cabinet Secretary.",
+      "question": "Why does the NPCSCB institutional framework place a Coordination Unit headed by the Cabinet Secretary alongside the PM's HR Council, the Capacity Building Commission, and the SPV?",
+      "options": [
+        "Because the Cabinet Secretary alone approves individual officers' course grades",
+        "Because a programme spanning strategic direction (PM Council), standard-setting (Commission), and platform operations (SPV) needs a senior cross-government coordination point to keep these separate institutional roles aligned",
+        "Because the SPV is legally required to report only to the Cabinet Secretary and no one else",
+        "Because the Capacity Building Commission cannot function without the Cabinet Secretary's daily sign-off"
+      ],
+      "answer_index": 1,
+      "explanation": "With strategic direction, standard-setting, and platform operations distributed across three different bodies, a Coordination Unit under the Cabinet Secretary -- the seniormost civil servant with cross-ministry reach -- provides the connective coordination the multi-body structure needs; the other options invent authority relationships the press release does not state."
+    },
+    {
+      "item_id": "ai_pa_leadership_015",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PIB press release, 'Salient Features' -- FRAC approach",
+      "source_excerpt": "To calibrate all Civil Service positions to a Framework of Roles, Activities and Competencies (FRACs) approach and to create and deliver learning content relevant to the identified FRACs in every Government entity.",
+      "question": "What is the purpose of calibrating every Civil Service position to a 'Framework of Roles, Activities and Competencies' (FRACs), as described in the Cabinet announcement?",
+      "options": [
+        "To determine each officer's retirement age",
+        "To make explicit what a given post actually requires, so that relevant learning content can be created and delivered against those identified needs",
+        "To rank Ministries by budget size",
+        "To eliminate the need for any performance appraisal"
+      ],
+      "answer_index": 1,
+      "explanation": "FRACs exist to define each position's roles, activities and required competencies explicitly, which then lets the system create and deliver learning content targeted at those specific needs -- not to set retirement ages, rank budgets, or replace appraisals."
+    },
+    {
+      "item_id": "ai_pa_leadership_016",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_leadership",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "PIB press release, 'Background' and 'Salient Features' read together",
+      "source_excerpt": "A transformational change in Civil Service Capacity is proposed to be affected by organically linking the transformation of work culture, strengthening public institutions and adopting modern technology... Supporting Transition from 'Rules based' to 'Roles based' HR Management.",
+      "question": "A Ministry wants to adopt only the iGOT technology platform from Mission Karmayogi, without changing how it allocates work or evaluates competencies. Based on the programme's own stated design, why would this partial adoption likely fall short of its intended leadership and HR transformation?",
+      "options": [
+        "Because iGOT only works if a Ministry also purchases separate hardware from the SPV",
+        "Because the Background explicitly frames the reform as organically linking work-culture transformation, institution-strengthening, and technology together, so technology alone without the rules-to-roles HR shift leaves the core competency-based work-allocation change unaddressed",
+        "Because the press release states iGOT cannot legally be used without Cabinet approval each time",
+        "Because Mission Karmayogi applies only to State Governments, not the technology layer of Central Ministries"
+      ],
+      "answer_index": 1,
+      "explanation": "The programme is explicitly designed as an organic link between work-culture change, institutional strengthening and technology adoption -- adopting only the technology (iGOT) while leaving work allocation and appraisal practices untouched would miss the rules-to-roles HR shift that is the programme's central leadership and HR-management objective, not a hardware, approval, or Central/State jurisdiction issue."
+    },
+    {
+      "item_id": "ai_pa_communication_001",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Guidelines, Chapter 2 -- Format of Citizen's/Client's Charter, the nine sections",
+      "source_excerpt": "The Citizen's Charter for a Ministry/Department should contain the following nine sections: Cover Page, Vision, Mission, Service Standards, Grievance Redress Mechanism, Stakeholders/Clients, Responsibility Centers, Indicative expectations from service recipients, Month and Year for next review of the charter.",
+      "question": "How many mandatory sections does the DARPG guideline prescribe for a Citizen's/Client's Charter, and which of the following is one of them?",
+      "options": [
+        "Five sections, including a 'Budget Summary'",
+        "Nine sections, including 'Indicative expectations from service recipients'",
+        "Three sections, limited to Vision, Mission, and Contact Details",
+        "Twelve sections, including 'Employee Grievance Redressal for HR Matters'"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline specifies exactly nine sections -- Cover Page, Vision, Mission, Service Standards, Grievance Redress Mechanism, Stakeholders/Clients, Responsibility Centers, Indicative expectations from service recipients, and the next review date -- not five, three, or twelve, and there is no separate 'Budget Summary' section."
+    },
+    {
+      "item_id": "ai_pa_communication_002",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Guidelines, Chapter 1 -- Concept of Citizen's/Client's Charter",
+      "source_excerpt": "The Citizen's/Client's Charter is a written declaration by a Government department that highlights the standards of service delivery that it subscribes to... The basic thrust... is to render public services citizen centric by making them demand driven rather than supply driven.",
+      "question": "What is the 'basic thrust' of a Citizen's/Client's Charter, according to the DARPG guideline?",
+      "options": [
+        "To make public services demand driven rather than supply driven, by publicly committing to service standards",
+        "To create a legally enforceable contract citizens can sue on in a civil court",
+        "To reduce the total number of services a department is required to offer",
+        "To replace the need for a Public Grievance Redress Mechanism entirely"
+      ],
+      "answer_index": 0,
+      "explanation": "The guideline states the Charter's basic thrust is making services citizen-centric and demand driven rather than supply driven, through public commitments to service standards -- it explicitly notes the Charter is not enforceable in a court of law, does not aim to shrink service scope, and works alongside, not instead of, the grievance mechanism."
+    },
+    {
+      "item_id": "ai_pa_communication_003",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "Guidelines, Chapter 1 -- Citizens versus Clients",
+      "source_excerpt": "Citizens are... generally referred to as external clients... It cannot be presumed that all citizens are literate or understand the official language, and it may be necessary to communicate with them in the local language also. Clients... are generally referred to as internal clients... it is presumed that all clients are literate and communicating with them in the official language of the service provider agency is sufficient.",
+      "question": "Why does the guideline draw a communication-relevant distinction between 'Citizens' and 'Clients' when a department designs its Charter?",
+      "options": [
+        "Because citizens are assumed to possibly be non-literate or unfamiliar with the official language, requiring local-language communication, while clients (other government agencies/employees) are presumed literate in the official language",
+        "Because the term 'Client' refers only to paying customers of a government-run business",
+        "Because citizens are legally barred from filing grievances, unlike clients",
+        "Because the distinction determines which department gets a bigger printing budget for its Charter"
+      ],
+      "answer_index": 0,
+      "explanation": "The guideline draws this distinction specifically for communication design: citizens, as external members of the public, cannot be assumed literate or fluent in the official language, so local-language communication may be necessary, whereas clients, being part of government, are presumed literate in the official language -- the other options misstate or invent unrelated rationales."
+    },
+    {
+      "item_id": "ai_pa_communication_004",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Guidelines, Chapter 2 -- mandatory requirements, bilingual publication",
+      "source_excerpt": "The Charter is to be made in bilingual version as per requirements of the Official Languages Act and approved by Minister-in-charge before publication... In offices located in Region 'C' it should also be published in the local language in addition to English and Hindi.",
+      "question": "What language requirements does the DARPG guideline impose on a published Citizen's Charter?",
+      "options": [
+        "It may be published in any single language the department prefers",
+        "It must be bilingual (English and Hindi) per the Official Languages Act, and offices in Region 'C' must additionally publish it in the local language",
+        "It must be published only in English, to maintain a uniform national standard",
+        "It must be translated into all 22 scheduled languages regardless of where the office is located"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline mandates a bilingual Charter under the Official Languages Act, with an additional local-language version required for offices in Region 'C' -- not a single-language, English-only, or all-22-languages requirement."
+    },
+    {
+      "item_id": "ai_pa_communication_005",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Guidelines, Chapter 2 -- mandatory requirements, dissemination",
+      "source_excerpt": "After publication twenty copies are required to be sent to the Librarian, Parliament Library... The Charter needs to be placed on the Ministry/Department's website... A single page containing extracts of main services and standards from the charter can be displayed at the Reception and other prominent places.",
+      "question": "Besides placing the Charter on the department's website, what other dissemination steps does the guideline require or recommend?",
+      "options": [
+        "Sending 20 copies to the Parliament Library and displaying a single-page extract of main services and standards at the Reception and other prominent places",
+        "Emailing the Charter individually to every registered taxpayer",
+        "Publishing the Charter exclusively as a mobile app, with no printed or web version",
+        "Filing the Charter with the Election Commission before every general election"
+      ],
+      "answer_index": 0,
+      "explanation": "The guideline requires sending 20 copies to the Parliament Library and recommends a single-page reception-area display of main services and standards, alongside media publicity where warranted -- it does not require individual taxpayer emails, an app-only format, or Election Commission filing."
+    },
+    {
+      "item_id": "ai_pa_communication_006",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "Guidelines, Chapter 2 -- 'Concluding Remarks'",
+      "source_excerpt": "It is imperative that the Citizen's Charter be kept user friendly as well as concise by including all the necessary information, but without clutter, rhetoric, and very lengthy information which may be daunting for the average service recipient. ... it can be provided separately on the website in another document.",
+      "question": "A department drafts a 40-page Citizen's Charter full of departmental jargon and legal cross-references, aiming to be exhaustive. How does this align with the guideline's communication principles?",
+      "options": [
+        "It aligns perfectly, since exhaustiveness is the guideline's top priority",
+        "It conflicts with the guideline, which calls for a concise, user-friendly Charter without clutter or lengthy rhetoric, recommending that very detailed information instead be hosted separately on the website with a reference in the Charter",
+        "It conflicts with the guideline only because 40 pages exceeds a hard legal page limit",
+        "It aligns with the guideline as long as the Charter is printed in colour"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline explicitly warns against clutter, rhetoric, and lengthy content that could overwhelm the average service recipient, recommending that very detailed material be hosted separately online with a simple reference in the Charter -- there is no stated hard page-limit rule, and print colour is irrelevant to the underlying communication principle."
+    },
+    {
+      "item_id": "ai_pa_communication_007",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Guidelines, Chapter 1 -- definition of grievances",
+      "source_excerpt": "Grievances are expressions of resentment against specific acts of omission or commission that are wrong or perceived as wrong, and requiring corrective action to be taken... grievances include complaints by service recipients against non-delivery of services as expected... but do not include requests for service delivery in the normal course.",
+      "question": "Under the DARPG guideline, which of the following would NOT count as a 'grievance' for Sevottam compliance purposes?",
+      "options": [
+        "A complaint that a promised service was not delivered as expected",
+        "A routine, normal-course request for a service the citizen has not yet received (with no complaint of wrongdoing)",
+        "A complaint against a specific act of omission perceived as wrong",
+        "A complaint requiring corrective action by the department"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline explicitly excludes ordinary requests for service delivery in the normal course from the definition of a grievance -- a grievance requires an expression of resentment against a specific act of omission or commission perceived as wrong, which the other three options describe."
+    },
+    {
+      "item_id": "ai_pa_communication_008",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Guidelines, Chapter 1 -- CPGRAMS",
+      "source_excerpt": "One such system extensively being used in the Central Government Ministries/Departments is the Centralized Public Grievance Redress and Monitoring System (CPGRAMS)... The citizens can lodge their grievances from any internet facility on www.pgportal.nic.in.",
+      "question": "What is CPGRAMS, as described in the DARPG guideline?",
+      "options": [
+        "A citizen feedback survey conducted only once every five years",
+        "An internet-based system (accessible via pgportal.nic.in) for lodging, forwarding, and monitoring public grievances across Central Government Ministries and Departments",
+        "A court established specifically to hear service-delivery disputes",
+        "A private company hired to handle all government grievance redress"
+      ],
+      "answer_index": 1,
+      "explanation": "CPGRAMS is described as an internet-based tool, accessible at pgportal.nic.in, for lodging, forwarding, and monitoring grievances across Ministries and Departments -- not a periodic survey, a court, or a private contractor."
+    },
+    {
+      "item_id": "ai_pa_communication_009",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Guidelines, Chapter 4 -- classification criteria for grievances",
+      "source_excerpt": "The Department of Administrative Reforms and Public Grievances has provided five broad suggestive criteria under which the Ministry/Department can categorize their grievances: Charter related, Policy related, Personnel related, Pensioners' related, Vigilance related.",
+      "question": "Which set of categories does DARPG's guideline suggest for classifying grievances so that departments can route them appropriately?",
+      "options": [
+        "Urgent, Routine, Low-priority",
+        "Charter related, Policy related, Personnel related, Pensioners' related, Vigilance related",
+        "Digital, Physical, Telephonic",
+        "Central, State, Local"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline's five suggested classification criteria are Charter related, Policy related, Personnel related, Pensioners' related, and Vigilance related -- the other option sets describe plausible-sounding categorisation schemes that the guideline does not actually use."
+    },
+    {
+      "item_id": "ai_pa_communication_010",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Guidelines, Chapter 4 -- 'Communication to complainant'",
+      "source_excerpt": "At the time of acknowledgement, the complainant should be provided with: a. Grievance number... b. Expected time of redress (Prescribed maximum time limit for completion of redress is three months) c. If not addressed within expected time, action to be taken by complainant.",
+      "question": "A citizen's grievance has just been formally received and acknowledged by a department. According to the guideline, what specific information must the department communicate to the complainant at this point?",
+      "options": [
+        "Only a verbal apology, with no written record",
+        "A grievance number, the expected time of redress (up to a maximum of three months), and what action the complainant can take if that time is exceeded",
+        "The complainant's own Aadhaar number, for department records",
+        "Nothing, since acknowledgement itself is optional under the guideline"
+      ],
+      "answer_index": 1,
+      "explanation": "At acknowledgement, the guideline requires providing a grievance number, the expected redress time (capped at a maximum of three months), and next steps if that time is exceeded -- not a verbal-only response, a request for the complainant's Aadhaar number, or an optional/no-communication approach."
+    },
+    {
+      "item_id": "ai_pa_communication_011",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Guidelines, Chapter 4 -- communication when redress is delayed",
+      "source_excerpt": "If the grievance is not redressed within the expected time, the complainant should be provided with the following information... a. Information on reasons for delay b. Updated expected time of redress c. If not addressed within expected time, action to be taken by complainant.",
+      "question": "A grievance has now exceeded its originally communicated redress timeline. What does the guideline say the department must proactively communicate to the complainant?",
+      "options": [
+        "Nothing further, since the original acknowledgement already covers this",
+        "The reasons for the delay, an updated expected redress time, and what further action the complainant can take if the new deadline is also missed",
+        "A formal legal notice threatening penalties against the complainant",
+        "A request that the complainant resubmit the grievance from scratch"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline requires proactive follow-up communication when a redress deadline is missed: reasons for delay, an updated timeline, and further escalation options -- not silence, a penalty notice against the complainant, or forcing resubmission."
+    },
+    {
+      "item_id": "ai_pa_communication_012",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Guidelines, Chapter 4 -- final redress communication",
+      "source_excerpt": "At the time of final redress, the complainant should be provided with the following information by the office responsible for redress of the grievances: d. Action taken for redress e. If not satisfied with the redress action, avenues for pursuing the matter further.",
+      "question": "When a grievance is finally resolved, what must the closing communication to the complainant include, per the guideline?",
+      "options": [
+        "Only a case-closed stamp with no further detail",
+        "The action taken for redress, and the avenues available to the complainant if they remain unsatisfied with that action",
+        "A survey asking the complainant to rate the officer's promotion prospects",
+        "A demand that the complainant pay a processing fee before the case can close"
+      ],
+      "answer_index": 1,
+      "explanation": "Final redress communication must state the action taken and the avenues for further escalation if the complainant is unsatisfied -- not a bare closure stamp, an unrelated promotion survey, or a fee demand."
+    },
+    {
+      "item_id": "ai_pa_communication_013",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Guidelines, Chapter 4 -- Level of Responsibility for Redress",
+      "source_excerpt": "In order to ensure that grievances are addressed within the prescribed time norms, the GRM should define the levels of responsibility for redress... In case the grievance is not redressed at a particular defined level then an avenue should be available to the complainant to approach the next higher authority. The responsible officials at each level should alert their next superior official well in time.",
+      "question": "Why does the guideline require both a defined escalation ladder for complainants AND an internal 'alert the next superior official' step for staff?",
+      "options": [
+        "Because escalation ladders are a legal formality with no real communication purpose",
+        "Because effective grievance communication needs two channels working together: an external escalation path so the complainant is never stuck without recourse, and an internal early-warning path so supervisors intervene before deadlines are actually missed",
+        "Because only one of the two is ever actually used in practice",
+        "Because the internal alert replaces the need to ever tell the complainant anything"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline pairs an external escalation avenue for the complainant with an internal early-warning obligation on staff so that supervisors can intervene proactively, not just after a citizen complains again -- the two channels serve complementary communication purposes, not a redundant or complainant-excluding one."
+    },
+    {
+      "item_id": "ai_pa_communication_014",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Guidelines, Chapter 3 -- Step 3, stakeholder consultation planning",
+      "source_excerpt": "Prepare a detailed survey plan including information on whether it will be a survey on mail, or data will be collected through open house discussions, or through open advertisement, the timelines for the survey, number of beneficiaries to be surveyed, location... This will help in scheduling stakeholder consultation meets or receiving stakeholder inputs.",
+      "question": "Which methods does the guideline mention for gathering citizen input on service standards before finalising a Citizen's Charter?",
+      "options": [
+        "Only anonymous online polls, since in-person methods are prohibited",
+        "Mail surveys, open house discussions, and open advertisements, among other consultation tools",
+        "A single national referendum held once per Charter cycle",
+        "Consultation is not permitted; Charters are drafted solely by department officials"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline lists mail surveys, open house discussions and open advertisements (among other tools) as ways to gather stakeholder input on service standards -- it does not restrict consultation to online-only polls, mandate a referendum, or forbid stakeholder input altogether."
+    },
+    {
+      "item_id": "ai_pa_communication_015",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Guidelines, Chapter 3 -- Step 8, internal staff communication",
+      "source_excerpt": "Task 1: Send communication to all staff. Send a communication to all staff members enclosing the Charter and advising them on how they will be delivering services in accordance with standards laid down in the Charter. Task 2: Conduct training/orientation sessions for staff on Citizen's Charter.",
+      "question": "After a Charter is finalized and published externally, what internal communication step does the guideline require before staff can be expected to deliver against it?",
+      "options": [
+        "None -- staff are expected to infer the Charter's contents from the published website",
+        "Sending the Charter to all staff with guidance on how they must deliver services against it, followed by training/orientation sessions",
+        "A one-time announcement in a staff newsletter, with no training required",
+        "Making the Charter available only to the Head of Department, who need not share it further"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline requires an explicit internal step: distributing the Charter to all staff with delivery guidance, followed by training and orientation sessions -- not silence, a passive newsletter mention, or restricting the Charter to the Head of Department alone."
+    },
+    {
+      "item_id": "ai_pa_communication_016",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "Guidelines, Chapter 3 -- Step 6, Charter approval process",
+      "source_excerpt": "Task 4: Make Hindi version of final charter. A public document is required to be published in bilingual version... Task 5: Get the Charter approved by Minister-in-charge. Approval of the Charter in bilingual version by the Minister-in-charge is mandatory.",
+      "question": "A department finalizes its Citizen's Charter in English, gets it approved by the Secretary, and publishes it immediately to meet a deadline. What communication-process requirement of the guideline has it skipped?",
+      "options": [
+        "Nothing was skipped; Secretary-level approval of an English-only Charter fully satisfies the guideline",
+        "Preparing the mandatory bilingual (Hindi) version and obtaining approval specifically from the Minister-in-charge before publication",
+        "The requirement to translate the Charter into all state languages before any publication",
+        "The requirement to publish the Charter only after the next Union Budget is passed"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline makes both the bilingual (Hindi) version and sign-off specifically by the Minister-in-charge mandatory before publication -- Secretary-level approval of an English-only Charter satisfies neither requirement, and there is no all-state-languages or Budget-timing rule."
+    },
+    {
+      "item_id": "ai_pa_communication_017",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Guidelines, Chapter 1 -- background of Sevottam-compliance mandatory indicators",
+      "source_excerpt": "The High Power Committee (HPC) on Government Performance chaired by the Cabinet Secretary decided that all RFDs for 2010-2011 will include the following mandatory success indicators: Create a Sevottam compliant system to implement, monitor and review Citizen's Charter... Create a Sevottam Compliant system to redress and monitor public Grievances.",
+      "question": "Why were Citizen's Charter and Grievance Redress Mechanism indicators added as mandatory items to departmental Results-Framework Documents (RFDs), per the guideline's background?",
+      "options": [
+        "Because the High Power Committee on Government Performance, chaired by the Cabinet Secretary, decided all RFDs for 2010-11 would include Sevottam-compliance as a mandatory success indicator",
+        "Because the Supreme Court ordered it in a landmark judgment",
+        "Because state governments unilaterally added it without central direction",
+        "Because it was a requirement imposed by an international lending agency"
+      ],
+      "answer_index": 0,
+      "explanation": "The guideline's background section attributes this mandatory inclusion to a decision of the High Power Committee on Government Performance, chaired by the Cabinet Secretary -- not a court order, a state-level initiative, or an international agency requirement."
+    },
+    {
+      "item_id": "ai_pa_communication_018",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_communication",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Guidelines, Chapter 2 -- Service Standards section design",
+      "source_excerpt": "Service Standards... Main Services include services that are being provided on a regular basis... Departmental Services rendered occasionally under exceptional or extraordinary circumstances should not be a part of Main Services. These should also be aligned with the GRM processes.",
+      "question": "Why does the guideline deliberately exclude occasional, exceptional-circumstance services from the Charter's 'Main Services' table, rather than listing every service a department ever performs?",
+      "options": [
+        "Because exceptional services are legally confidential and cannot be disclosed to citizens",
+        "Because the Charter is meant to communicate clear, dependable standards for the services most citizens routinely rely on, and cluttering it with rarely-invoked exceptional services would undermine that clarity and make the document harder to use",
+        "Because exceptional services never have measurable standards of any kind",
+        "Because only Main Services are eligible for RTI requests"
+      ],
+      "answer_index": 1,
+      "explanation": "This design choice follows the guideline's broader communication principle of keeping the Charter clear and usable: focusing on routinely-availed 'Main Services' keeps the document meaningful for the average citizen, while occasional exceptional services would add clutter without matching that goal -- confidentiality, measurability, and RTI eligibility are not the stated reasons."
+    },
+    {
+      "item_id": "ai_pa_ethics_001",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_ethics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "KQF, Part I -- Seven Commitments table, seventh commitment",
+      "source_excerpt": "7 Ethical & Values Alignment: Constitutional values in course design. Citizen at the last mile (antyodaya) visible in scenarios. Ethical dilemma mandatory at every level.",
+      "question": "What three concrete requirements does the KQF's seventh commitment, 'Ethical & Values Alignment', place on every course?",
+      "options": [
+        "A 5-second load time, 720p video, and offline access",
+        "Constitutional values embedded in course design, the citizen at the last mile (antyodaya) visible in scenarios, and a mandatory ethical dilemma at every level",
+        "A minimum of 70% pass threshold and remediation pathways instead of retakes",
+        "Mandatory SME review and a 12-month content review cycle"
+      ],
+      "answer_index": 1,
+      "explanation": "The seventh commitment specifically requires embedding constitutional values, making the citizen at the last mile (antyodaya) visible in scenarios, and building in a mandatory ethical dilemma at every level -- the other options describe requirements from different commitments (technology standards, assessment design, and content accuracy respectively)."
+    },
+    {
+      "item_id": "ai_pa_ethics_002",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "KQF, Part I -- 'Why Seven?'",
+      "source_excerpt": "The seventh that mentions ethics and values is what makes iGOT something more than a training catalogue. It insists that learning on this platform is civic formation, not compliance training.",
+      "question": "According to the KQF, what distinguishes the seventh commitment (Ethics & Values Alignment) from the first six commitments?",
+      "options": [
+        "It is the only commitment that applies to Group A officers",
+        "It is what makes iGOT 'something more than a training catalogue' by insisting learning is civic formation, not mere compliance training",
+        "It is the only commitment with a numeric pass threshold",
+        "It is optional, unlike the other six commitments"
+      ],
+      "answer_index": 1,
+      "explanation": "The KQF explicitly frames the ethics commitment as the one that elevates iGOT beyond a training catalogue into civic formation -- it is not restricted to Group A officers, does not introduce a numeric threshold (that is the fourth, assessment, commitment), and is stated as an ongoing commitment like the other six, not an optional add-on."
+    },
+    {
+      "item_id": "ai_pa_ethics_003",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "KQF, Part I -- seventh commitment, antyodaya requirement",
+      "source_excerpt": "Citizen at the last mile (antyodaya) visible in scenarios.",
+      "question": "A course on subsidy disbursement uses only abstract, high-level policy language and never depicts an actual citizen receiving or being denied a benefit. Which KQF requirement does this course fail to meet?",
+      "options": [
+        "The technology standard requiring 720p video",
+        "The seventh commitment's requirement that the citizen at the last mile (antyodaya) be visible in scenarios",
+        "The requirement for a Competency Coverage Matrix",
+        "The requirement for offline access"
+      ],
+      "answer_index": 1,
+      "explanation": "The seventh commitment specifically requires that scenarios make the citizen at the last mile visible, so an abstract, citizen-absent course on subsidy disbursement fails this ethics-and-values requirement -- it is unrelated to video resolution, competency mapping, or offline access, which are separate commitments."
+    },
+    {
+      "item_id": "ai_pa_ethics_004",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_ethics",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "KQF, Foreword",
+      "source_excerpt": "That question is at the heart of the Karmayogi Quality Framework... Before any course is built, its author must answer a simple question, 'what specific work decisions will this course help a public official make better'? If that question cannot be answered clearly, the course should not be built. This is not a bureaucratic gate but an ethical one.",
+      "question": "Why does the KQF Foreword describe the 'work-decision' question as 'not a bureaucratic gate but an ethical one'?",
+      "options": [
+        "Because failing to answer it clearly means public money is spent on learning that will not actually improve how officials serve citizens -- treated as a matter of ethical responsibility, not mere procedural compliance",
+        "Because the question is asked only by the Ethics Committee and no one else",
+        "Because answering it wrongly is a criminal offence under the CCS Conduct Rules",
+        "Because it only applies to courses about the Constitution"
+      ],
+      "answer_index": 0,
+      "explanation": "The Foreword frames unclear work-anchoring as an ethical failure because building a course that cannot demonstrably improve real work decisions wastes public resources meant to improve citizen-facing governance -- it is not restricted to an 'Ethics Committee', is not framed as a criminal matter under the Conduct Rules, and is not limited to constitutional-topic courses."
+    },
+    {
+      "item_id": "ai_pa_ethics_005",
+      "doc_id": "cbc_kqf",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "KQF, Executive Summary and Part I",
+      "source_excerpt": "Quality is not a destination. It is a discipline. And it begins with the willingness to keep asking, 'Is the learning we are offering making our people better placed to serve the public'?",
+      "question": "How does the KQF frame the relationship between 'quality' and 'ethics' in civil service learning?",
+      "options": [
+        "As entirely separate concerns handled by different teams with no overlap",
+        "As linked through a continuous discipline of asking whether learning genuinely helps public officials serve the public better, rather than treating quality as a one-time checklist",
+        "As a relationship that only matters for courses rated 'Red' on the Course Performance Index",
+        "As irrelevant to each other, since ethics is covered only in mandatory dilemmas"
+      ],
+      "answer_index": 1,
+      "explanation": "The KQF frames quality as an ongoing discipline centred on whether learning actually improves public service to citizens, which is inseparable from the ethical purpose the seventh commitment articulates -- it is not siloed by team, not limited to Red-rated courses, and not confined only to the mandatory-dilemma requirement."
+    },
+    {
+      "item_id": "ai_pa_ethics_006",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCS Conduct Rules, Rule 3(1) -- General",
+      "source_excerpt": "Every Government servant shall at all times-- (i) maintain absolute integrity; (ii) maintain devotion to duty; ... (vi) maintain high ethical standards and honesty; (vii) maintain political neutrality...",
+      "question": "Which of the following is explicitly listed among a Government servant's general duties under Rule 3(1) of the CCS (Conduct) Rules, 1964?",
+      "options": [
+        "Maintaining absolute integrity and political neutrality at all times",
+        "Joining the ruling political party to demonstrate loyalty",
+        "Publicly criticising any government policy the officer personally disagrees with",
+        "Prioritising personal financial gain over public interest whenever legally possible"
+      ],
+      "answer_index": 0,
+      "explanation": "Rule 3(1) requires Government servants to maintain absolute integrity and political neutrality, among other duties -- the other options directly contradict Rule 3(1)'s requirements on political neutrality, other rules on criticism of government, and its explicit prohibition on deriving personal financial or material benefit."
+    },
+    {
+      "item_id": "ai_pa_ethics_007",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCS Conduct Rules, Rule 3(1)(xiii)-(xv)",
+      "source_excerpt": "(xiii) declare any private interests relating to his public duties and take steps to resolve any conflicts in a way that protects the public interest; ... (xv) not misuse his position as civil servant and not take decisions in order to derive financial or material benefits for himself, his family or his friends.",
+      "question": "What does Rule 3(1) of the CCS Conduct Rules require a Government servant to do when a private interest could conflict with their public duty?",
+      "options": [
+        "Ignore the private interest as long as no one else notices",
+        "Declare the private interest and take steps to resolve any conflict in a way that protects the public interest",
+        "Transfer the decision entirely to a family member to avoid personal involvement",
+        "Resign from the post immediately, since conflicts of interest cannot be managed"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 3(1)(xiii) requires declaration of private interests and active steps to resolve conflicts in favour of the public interest -- it does not permit silent non-disclosure, delegation to a family member (which would itself risk violating the rule against benefiting family), or an automatic resignation requirement."
+    },
+    {
+      "item_id": "ai_pa_ethics_008",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCS Conduct Rules, Rule 3-C -- Prohibition of sexual harassment of working women",
+      "source_excerpt": "(1) No Government servant shall indulge in any act of sexual harassment of any woman at any work place. (2) Every Government servant who is incharge of a work place shall take appropriate steps to prevent sexual harassment to any woman at the work place.",
+      "question": "Under Rule 3-C of the CCS Conduct Rules, what obligation falls specifically on a Government servant who is in charge of a workplace (e.g. a supervisor or office head)?",
+      "options": [
+        "No obligation beyond their own personal conduct",
+        "To take appropriate steps to prevent sexual harassment of any woman at that workplace, in addition to not engaging in it themselves",
+        "To personally investigate and adjudicate every complaint without involving any committee",
+        "To report only complaints that come from women who are permanent Government employees"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 3-C(2) places an affirmative, workplace-wide prevention duty on anyone in charge of a workplace, going beyond just refraining from harassment themselves -- it does not require them to personally adjudicate every case unilaterally, and Rule 3-C's definition of 'workplace' and 'woman' is not limited to permanent employees."
+    },
+    {
+      "item_id": "ai_pa_ethics_009",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCS Conduct Rules, Rule 4 -- Employment of near relatives in Companies or firms",
+      "source_excerpt": "No Class I Officer shall, except with the previous sanction of the Government, permit his son, daughter or other dependant, to accept employment in any company or firm with which he has official dealings or in any other company or firm having official dealings with the Government.",
+      "question": "An officer's official duties involve regular dealings with a private firm. That firm now offers the officer's daughter a job. What does Rule 4 require before she can accept it?",
+      "options": [
+        "Nothing; family members' employment decisions are entirely outside the Conduct Rules",
+        "The officer must obtain the previous sanction of the Government before she accepts employment with a firm he has official dealings with (or urgently report it if sanction cannot be awaited)",
+        "The officer must resign from his post before she can accept the job",
+        "The firm must first stop all official dealings with the Government permanently"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 4 requires a Class I officer to obtain prior Government sanction before a dependant accepts employment with a firm the officer has official dealings with, allowing provisional acceptance with prompt reporting only where sanction cannot be awaited -- it does not exempt family employment altogether, require resignation, or require the firm to sever all Government dealings."
+    },
+    {
+      "item_id": "ai_pa_ethics_010",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCS Conduct Rules, Rule 8 -- Connection with press or other media",
+      "source_excerpt": "No Government servant shall, except with the previous sanction of the Government, own wholly or in part, or conduct or participate in the editing or management of, any newspaper or other periodical publication or electronic media... A Government servant publishing a book or participating in a public media shall at all times make it clear that the views expressed by him are his own and not that of Government.",
+      "question": "If a Government servant publishes a book in their personal capacity, what does Rule 8 require them to make clear?",
+      "options": [
+        "That the book has been approved by the Cabinet Secretariat",
+        "That the views expressed are the officer's own and not those of the Government",
+        "That the book may not be sold for profit under any circumstances",
+        "Nothing; Rule 8 does not apply to personally authored books at all"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 8 requires that a Government servant publishing a book or participating in public media always make clear that the views are personal, not the Government's -- it does not require Cabinet Secretariat approval of book content, impose a no-profit condition, or exempt personally authored books from the rule."
+    },
+    {
+      "item_id": "ai_pa_ethics_011",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCS Conduct Rules, Rule 9 -- Criticism of Government",
+      "source_excerpt": "No Government servant shall... make any statement of fact or opinion (i) which has the effect of an adverse criticism of any current or recent policy or action of the Central Government or a State Government... Provided that nothing in this rule shall apply to any statements made or views expressed by a Government servant in his official capacity or in the due performance of the duties assigned to him.",
+      "question": "A civil servant is required, as part of their official duties, to present an internal analysis to their Ministry that is critical of a recently adopted policy's implementation. Does Rule 9 prohibit this?",
+      "options": [
+        "Yes, because Rule 9 bans all adverse criticism of government policy by any Government servant under any circumstances",
+        "No, because Rule 9's proviso exempts statements made in official capacity or in due performance of assigned duties, which this internal analysis is",
+        "Yes, but only if the analysis is published in a newspaper",
+        "No, but only because the officer holds a Class I post"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 9 targets public, unofficial adverse criticism -- radio broadcasts, publications, press communications, public utterances -- and its proviso explicitly exempts statements made in official capacity or in due performance of assigned duties, which covers an internally required critical analysis; the rule is not an absolute ban, is not conditioned on newspaper publication, and the exemption is not limited to Class I posts."
+    },
+    {
+      "item_id": "ai_pa_ethics_012",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCS Conduct Rules, Rule 13 -- Gifts",
+      "source_excerpt": "On occasions such as weddings, anniversaries, funerals or religious functions... a Government servant may accept gifts from his near relatives or from his personal friends having no official dealings with him, but shall make a report to the Government, if the value of such gift exceeds -- (i) rupees twenty five thousand in the case of a Government servant holding any Group 'A' post...",
+      "question": "A Group 'A' officer receives a wedding gift worth Rs 30,000 from a personal friend who has no official dealings with them. What does Rule 13 require?",
+      "options": [
+        "The gift must be refused outright, since any amount above zero is prohibited",
+        "The officer may accept the gift but must report it to the Government, since its value exceeds the Rs 25,000 threshold prescribed for Group 'A' officers on such occasions",
+        "The officer must donate the gift to a government charity within a week",
+        "No action is needed since wedding gifts are entirely exempt from Rule 13 regardless of value"
+      ],
+      "answer_index": 1,
+      "explanation": "For a Group 'A' officer, Rule 13 sets Rs 25,000 as the threshold above which an occasion-based gift from a friend with no official dealings must be reported to Government -- a Rs 30,000 gift may still be accepted, but must be reported; it need not be refused outright, donated to charity, or treated as fully exempt regardless of value."
+    },
+    {
+      "item_id": "ai_pa_ethics_013",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCS Conduct Rules, Rule 15 -- Private trade or employment",
+      "source_excerpt": "(2) A Government servant may, without the previous sanction of the Government -- (a) undertake honorary work of a social or charitable nature, or (b) undertake occasional work of a literary, artistic or scientific character, or (c) participate in sports activities as an amateur...",
+      "question": "Which of the following activities does Rule 15 explicitly allow a Government servant to undertake WITHOUT prior Government sanction?",
+      "options": [
+        "Engaging directly in a private trade or business for profit",
+        "Undertaking honorary social or charitable work, occasional literary/artistic/scientific work, or amateur sports participation",
+        "Holding an elective office in an incorporated body",
+        "Negotiating for another paid employment while still in service"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 15(2) explicitly carves out honorary social/charitable work, occasional literary/artistic/scientific work, and amateur sports participation as not requiring prior sanction -- private trade, holding elective office, and negotiating other paid employment are exactly the activities Rule 15(1) requires prior sanction for."
+    },
+    {
+      "item_id": "ai_pa_ethics_014",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "CCS Conduct Rules, Rule 16 -- Investments, lending and borrowing",
+      "source_excerpt": "No Government servant who is involved in the decision making process of fixation of price of an Initial Public Offering or Follow-up Public Offering of shares of a Central Public Sector Enterprise shall apply, either himself or through any member of his family or through any other person acting on his behalf, for allotment of shares in the Initial Public Offerings or Follow-up Public Offerings of such Central Public Sector Enterprise.",
+      "question": "An officer sits on the committee that fixes the IPO price for a Central Public Sector Enterprise (CPSE). Can that officer's spouse apply for shares in that same CPSE's IPO?",
+      "options": [
+        "Yes, because Rule 16 only restricts the officer personally, not family members",
+        "No, Rule 16 explicitly bars the officer from applying for such shares either himself, through a family member, or through any other person acting on his behalf, given his role in fixing the IPO price",
+        "Yes, as long as the spouse applies through a different stockbroker",
+        "No, but only if the CPSE is loss-making"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 16(2)(ii) specifically extends the bar to applications made 'through any member of his family or through any other person acting on his behalf,' precisely to prevent the conflict of interest created by the officer's role in fixing the IPO price -- using a different broker or the CPSE's profitability status does not change this restriction."
+    },
+    {
+      "item_id": "ai_pa_ethics_015",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCS Conduct Rules, Rule 18 -- Movable, immovable and valuable property",
+      "source_excerpt": "Every Government servant belonging to any service or holding any post included in Group 'A' and Group 'B' shall submit an annual return in such form as may be prescribed... giving full particulars regarding the immovable property inherited by him or owned or acquired by him or held by him on lease or mortgage.",
+      "question": "Which category of Government servants is required under Rule 18 to submit an ANNUAL return of immovable property, beyond the one-time return filed on first appointment?",
+      "options": [
+        "Only Group 'D' servants",
+        "Group 'A' and Group 'B' officers",
+        "Only officers posted outside India",
+        "No one; only a single return is ever required, filed once at first appointment"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 18(1)(ii) specifically requires Group 'A' and Group 'B' officers to file an annual immovable-property return, in addition to the one-time return on first appointment that applies more broadly -- Group 'D' servants are explicitly exempted by default (Note I), and there is no rule limiting this to officers posted abroad."
+    },
+    {
+      "item_id": "ai_pa_ethics_016",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "medium",
+      "bloom_level": "evaluate",
+      "locator": "CCS Conduct Rules, Rule 3(2) -- integrity of supervisory officers",
+      "source_excerpt": "Every Government servant holding a supervisory post shall take all possible steps to ensure the integrity and devotion to duty of all Government servants for the time being under his control and authority.",
+      "question": "A supervisor discovers that a subordinate is regularly missing deadlines but decides not to intervene because the subordinate is 'not technically breaking any specific numbered rule.' How does this decision measure against Rule 3(2)?",
+      "options": [
+        "It fully complies with Rule 3(2), which applies only to the supervisor's own personal conduct",
+        "It falls short of Rule 3(2), which places an affirmative duty on supervisory officers to take all possible steps to ensure the integrity and devotion to duty of those under their control and authority, not just to avoid personally breaking rules",
+        "It is irrelevant to Rule 3(2), which applies only to Group 'A' supervisors",
+        "It fully complies, since devotion to duty is solely the subordinate's individual responsibility"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 3(2) explicitly extends a supervisor's ethical responsibility beyond their own conduct to actively ensuring integrity and devotion to duty among those they control -- it is not limited to Group 'A' supervisors, and passivity in the face of a known performance problem falls short of this affirmative duty, not merely a personal-conduct standard."
+    },
+    {
+      "item_id": "ai_pa_ethics_017",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_ethics",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCS Conduct Rules, Rule 3(1)(xx) -- confidentiality",
+      "source_excerpt": "maintain confidentiality in the performance of his official duties as required by any laws for the time being in force, particularly with regard to information, disclosure of which may prejudicially affect the sovereignty and integrity of India, the security of the State... or lead to incitement of an offence or illegal or unlawful gain to any person.",
+      "question": "How does Rule 3(1)(xx)'s confidentiality duty interact with Rule 11's requirement that Government servants communicate information under the Right to Information Act?",
+      "options": [
+        "They are contradictory and one of the two rules must simply be ignored",
+        "They are complementary: Rule 11 requires good-faith communication of information under the RTI Act, while Rule 3(1)(xx) preserves confidentiality specifically for information whose disclosure would prejudice sovereignty, security, or enable unlawful gain -- categories the RTI Act's own exemptions are designed to address",
+        "Confidentiality under Rule 3(1)(xx) overrides the RTI Act entirely in every case",
+        "The RTI Act obligation under Rule 11 overrides confidentiality in every case, with no exceptions"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 3(1)(xx)'s confidentiality duty is explicitly tied to categories like sovereignty, security, and prevention of unlawful gain -- the same kind of sensitive-information categories the RTI Act itself exempts from disclosure -- so the two rules work together rather than in blanket contradiction, and neither rule is framed as an absolute override of the other in every case."
+    },
+    {
+      "item_id": "ai_pa_decision_making_001",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CCS Conduct Rules, Rule 3(2)(ii)",
+      "source_excerpt": "No Government servant shall, in the performance of his official duties, or in the exercise of powers conferred on him, act otherwise than in his best judgement except when he is acting under the direction of his official superior.",
+      "question": "Under Rule 3(2)(ii) of the CCS Conduct Rules, when may a Government servant act otherwise than according to their own best judgement?",
+      "options": [
+        "Whenever it is more convenient to do so",
+        "Only when acting under the direction of an official superior",
+        "Whenever a member of the public requests it",
+        "Never; personal judgement must always override any instruction"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 3(2)(ii) makes best judgement the default decision-making standard, with the sole named exception being when acting under an official superior's direction -- convenience or public request are not recognised exceptions, and the rule does not require ignoring lawful superior direction altogether."
+    },
+    {
+      "item_id": "ai_pa_decision_making_002",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCS Conduct Rules, Rule 3(2)(iii)-(iv)",
+      "source_excerpt": "The direction of the official superior shall ordinarily be in writing. Oral direction to subordinates shall be avoided... Where the issue of oral direction becomes unavoidable, the official superior shall confirm it in writing immediately thereafter. A Government servant who has received oral direction... shall seek confirmation of the same in writing as early as possible.",
+      "question": "A subordinate officer receives an unavoidable oral instruction from a superior to deviate from standard procedure on an urgent matter. What does Rule 3(2) require them to do about documenting this decision?",
+      "options": [
+        "Nothing; oral instructions never need to be documented",
+        "Proceed on the oral instruction, but seek written confirmation of it as early as possible, with the superior also expected to confirm it in writing immediately",
+        "Refuse to act until a written order arrives, even if this causes serious operational delay",
+        "Record the instruction only in a personal diary, with no obligation to seek official confirmation"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 3(2)(iii)-(iv) builds documented accountability into urgent oral decisions: the superior should confirm in writing immediately, and the subordinate must also seek written confirmation as early as possible, rather than either ignoring documentation entirely or blocking urgent action pending paperwork."
+    },
+    {
+      "item_id": "ai_pa_decision_making_003",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCS Conduct Rules, Rule 18 Explanation -- 'prescribed authority'",
+      "source_excerpt": "'Prescribed authority' means -- (a)(i) the Government, in the case of a Government servant holding any Group 'A' post... (ii) Head of Department, in the case of a Government servant holding any Group 'B' post; (iii) Head of Office, in the case of a Government servant holding any Group 'C' or Group 'D' post.",
+      "question": "The CCS Conduct Rules delegate certain sanctioning/reporting decisions to a 'prescribed authority' that varies by the officer's group. For a Group 'C' post, who is that prescribed authority?",
+      "options": [
+        "The Government itself, with no delegation possible",
+        "The Head of Office",
+        "The Head of Department",
+        "The Union Public Service Commission"
+      ],
+      "answer_index": 1,
+      "explanation": "The rules define a tiered delegation of decision authority: the Government for Group 'A' posts, the Head of Department for Group 'B' posts, and the Head of Office for Group 'C' or 'D' posts -- a Group 'C' officer's prescribed authority is therefore the Head of Office, not the full Government, the Head of Department, or the UPSC."
+    },
+    {
+      "item_id": "ai_pa_decision_making_004",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCS Conduct Rules, Rule 18 Explanation -- tiered prescribed authority",
+      "source_excerpt": "'Prescribed authority' means -- (a)(i) the Government, in the case of a Government servant holding any Group 'A' post... (ii) Head of Department, in the case of a Government servant holding any Group 'B' post; (iii) Head of Office, in the case of a Government servant holding any Group 'C' or Group 'D' post.",
+      "question": "What decision-making principle does the CCS Conduct Rules' tiered definition of 'prescribed authority' (Government / Head of Department / Head of Office, by group) most clearly reflect?",
+      "options": [
+        "That all conduct-related sanctioning decisions must always go to the highest possible authority regardless of the officer's seniority",
+        "That the level of authority required to sanction or receive a report scales with the seniority/group of the officer concerned, decentralising routine decisions to the appropriate administrative level while keeping higher-group matters at a higher level",
+        "That Group 'C' and 'D' officers require no oversight of any kind",
+        "That decision-making authority is assigned randomly to avoid bias"
+      ],
+      "answer_index": 1,
+      "explanation": "The tiered structure reflects proportionate delegation: decisions concerning more senior (Group 'A') officers escalate to the Government itself, while those for Group 'C'/'D' officers are handled by the Head of Office -- this decentralises routine decisions rather than routing everything to the top, and it is a deliberate seniority-scaled design, not random assignment or an absence of oversight."
+    },
+    {
+      "item_id": "ai_pa_decision_making_005",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCS Conduct Rules, Rule 4(1)-(3) -- near relatives in companies",
+      "source_excerpt": "No Government servant shall in the discharge of his official duties deal with any matter or give or sanction any contract to any company or firm... if any member of his family is employed in that company or firm... and the Government servant shall refer every such matter or contract to his official superior and the matter or contract shall thereafter be disposed of according to the instructions of the authority to whom the reference is made.",
+      "question": "An officer discovers that a contract they are about to approve would go to a firm employing their sibling. What decision-making step does Rule 4(3) require?",
+      "options": [
+        "The officer should approve the contract quickly before anyone notices the connection",
+        "The officer must refer the matter to their official superior, who will then decide how it is disposed of",
+        "The officer must personally reject the firm's bid without informing anyone",
+        "The officer should ask the sibling to resign from the firm within 24 hours"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 4(3) requires the conflicted officer to escalate the decision to their official superior, who then determines how the matter is handled -- it is not left to the officer's own discretion to either quietly approve or unilaterally reject the contract, nor does it impose an obligation on the relative to resign."
+    },
+    {
+      "item_id": "ai_pa_decision_making_006",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCS Conduct Rules, Rule 16(4)(ii)",
+      "source_excerpt": "When a Government servant is appointed or transferred to a post of such nature as would involve him in the breach of any of the provisions of sub-rule (2) or sub-rule (4), he shall forthwith report the circumstances to the prescribed authority and shall thereafter act in accordance with such order as may be made by such authority.",
+      "question": "An officer is transferred to a new post where their existing personal loan arrangement would breach Rule 16. What decision process does Rule 16(4)(ii) prescribe for this situation?",
+      "options": [
+        "The officer should simply terminate the loan without telling anyone",
+        "The officer must forthwith report the circumstances to the prescribed authority and then act according to that authority's order",
+        "The transfer order is automatically cancelled",
+        "The officer may continue the arrangement unchanged, since the conflict arose only because of the transfer"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 16(4)(ii) requires prompt reporting to the prescribed authority followed by acting on that authority's instructions -- the rule does not leave resolution to the officer's unilateral action, automatically cancel the transfer, or allow the conflicting arrangement to continue unaddressed just because the transfer caused it."
+    },
+    {
+      "item_id": "ai_pa_decision_making_007",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCS Conduct Rules, Rule 17 -- Insolvency and habitual indebtedness",
+      "source_excerpt": "A Government servant against whom any legal proceeding is instituted for the recovery of any debt due from him or for adjudging him as an insolvent, shall forthwith report the full facts... The burden of proving that the insolvency or indebtedness was the result of circumstances which... the Government servant could not have foreseen, or over which he had no control... shall be upon the Government servant.",
+      "question": "If insolvency proceedings are brought against a Government servant, where does Rule 17 place the burden of proving the insolvency was due to unforeseeable circumstances?",
+      "options": [
+        "On the Government, which must prove the officer was reckless",
+        "On the Government servant themselves, who must prove the circumstances were unforeseeable or beyond their control",
+        "On the court, which decides without input from either party",
+        "The burden is split equally between the officer and the Government"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 17 explicitly places the burden of proof on the Government servant to show that insolvency or indebtedness resulted from circumstances they could not foresee or control -- it is not on the Government to prove recklessness, nor is it court-only or evenly split."
+    },
+    {
+      "item_id": "ai_pa_decision_making_008",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CCS Conduct Rules, Rule 19(1) and proviso",
+      "source_excerpt": "No Government servant shall, except with the previous sanction of the Government, have recourse to any Court or to the Press for the vindication of any official act... Provided that if no such sanction is received by the Government servant within a period of three months from the date of receipt of his request... he shall be free to assume that the permission as sought for has been granted to him.",
+      "question": "An officer requests Government sanction to go to court to vindicate an official act that was publicly and defamatorily criticised. Four months pass with no response. Under Rule 19(1)'s proviso, what may the officer now decide?",
+      "options": [
+        "They must wait indefinitely until an explicit written sanction arrives",
+        "They may treat the sanction as deemed granted, since more than three months have passed with no response",
+        "They must resubmit the request every month until an answer is given",
+        "They must abandon the matter entirely, since silence means refusal"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 19(1)'s proviso creates a deemed-sanction default after three months of silence, giving the officer a clear basis to decide to proceed -- it does not require indefinite waiting, repeated monthly resubmission, or treating silence as an implicit refusal."
+    },
+    {
+      "item_id": "ai_pa_decision_making_009",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCS Conduct Rules, Rule 15(1)-(2) -- weighing permitted versus restricted activity",
+      "source_excerpt": "(1) ...no Government servant shall, except with the previous sanction of the Government -- (a) engage directly or indirectly in any trade or business... (2) A Government servant may, without the previous sanction of the Government -- (a) undertake honorary work of a social or charitable nature...",
+      "question": "An officer is invited to (i) become a paid partner in a private trading firm, and (ii) separately, to serve as an unpaid volunteer coordinator for a registered charitable society. How should the officer decide between these under Rule 15?",
+      "options": [
+        "Both require prior Government sanction equally",
+        "The paid trading-firm partnership requires prior Government sanction under Rule 15(1), while the honorary charitable work is permitted under Rule 15(2) without needing prior sanction",
+        "Neither requires any sanction or reporting of any kind",
+        "The charitable work is prohibited outright, while the trading partnership is unrestricted"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 15 draws a clear line: engaging in trade or business for profit falls under the restricted activities of sub-rule (1) requiring prior sanction, while honorary social or charitable work is explicitly permitted without prior sanction under sub-rule (2) -- the two situations are not treated identically, and the trading partnership is the one that is restricted, not the charitable role."
+    },
+    {
+      "item_id": "ai_pa_decision_making_010",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CCS Conduct Rules, Rule 4(2)(i) proviso -- urgent decisions",
+      "source_excerpt": "Provided that where the acceptance of the employment cannot await prior permission of the Government or is otherwise considered urgent, the matter shall be reported to the Government; and the employment may be accepted provisionally subject to the permission of the Government.",
+      "question": "A dependant of a Class I officer receives a time-sensitive job offer that cannot wait for the normal sanction process. What decision path does Rule 4(2)(i)'s proviso allow in such an urgent situation?",
+      "options": [
+        "The offer must simply be declined, since sanction cannot be obtained in time",
+        "The employment may be accepted provisionally, subject to the Government's permission, provided the matter is reported to the Government",
+        "The officer may grant self-sanction on the Government's behalf",
+        "The urgency exception does not exist; all cases must wait for prior permission regardless of consequence"
+      ],
+      "answer_index": 1,
+      "explanation": "The proviso is designed exactly for time-pressured decisions: provisional acceptance is allowed, conditioned on prompt reporting and eventual Government permission -- it does not force an automatic decline, does not permit the officer to self-sanction, and does contemplate genuine urgency as an exception to the 'always wait' default."
+    },
+    {
+      "item_id": "ai_pa_decision_making_011",
+      "doc_id": "ccs_conduct_rules_1964",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CCS Conduct Rules, Rule 20 -- Canvassing of non-official or other outside influence",
+      "source_excerpt": "No Government servant shall bring or attempt to bring any political or other outside influence to bear upon any superior authority to further his interests in respect of matters pertaining to his service under the Government.",
+      "question": "Why does Rule 20 restrict a Government servant from using outside influence on a superior authority to further their own service interests?",
+      "options": [
+        "Because outside influence would help superiors make faster decisions",
+        "Because decisions on an officer's own service matters should be made on their merits by the proper authority, not skewed by external pressure the officer brings to bear",
+        "Because only Ministers are allowed to canvass superior authorities",
+        "Because outside influence is permitted for promotions but not for transfers"
+      ],
+      "answer_index": 1,
+      "explanation": "Rule 20 protects the integrity of service-related decision-making by preventing an officer from distorting it through political or other outside pressure -- it is not about decision speed, is not a special carve-out limited to Ministers, and draws no distinction between promotions and transfers."
+    },
+    {
+      "item_id": "ai_pa_decision_making_012",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_decision_making",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GS Paper I, printed Instructions -- penalty for wrong answers",
+      "source_excerpt": "THERE WILL BE PENALTY FOR WRONG ANSWERS MARKED BY A CANDIDATE IN ALL THE QUESTIONS. (i) There are four alternatives for the answer to every question. For each question for which a wrong answer is given by the candidate, one-third of the marks assigned to that question will be deducted as penalty.",
+      "question": "What penalty does the UPSC CSP 2023 GS Paper I instruction sheet specify for a wrong answer, out of four alternatives per question?",
+      "options": [
+        "No penalty at all; only correct answers earn marks",
+        "One-third of the marks assigned to that question is deducted",
+        "The full marks of that question plus an additional question's marks are deducted",
+        "The candidate is disqualified from the exam entirely"
+      ],
+      "answer_index": 1,
+      "explanation": "The printed instructions state a one-third negative-marking penalty for each wrong answer among the four alternatives -- there is a real penalty (unlike the first option), it is capped at one-third of that question's marks rather than more (third option), and it does not trigger disqualification (fourth option)."
+    },
+    {
+      "item_id": "ai_pa_decision_making_013",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GS Paper I, printed Instructions -- penalty for wrong answers",
+      "source_excerpt": "(i) ...one-third of the marks assigned to that question will be deducted as penalty. (iii) If a question is left blank, i.e., no answer is given by the candidate, there will be no penalty for that question.",
+      "question": "A candidate can confidently eliminate two of the four options on a question but is unsure between the remaining two. Given the exam's one-third negative-marking rule and the fact that leaving a question blank carries no penalty, what does this decision structure imply?",
+      "options": [
+        "Guessing among the remaining two options is always a bad idea, since any wrong answer carries a penalty",
+        "Having narrowed it to two options with even odds, the expected value of guessing is positive relative to leaving it blank, since a 50% chance of full marks and a 50% chance of a one-third deduction is better than a guaranteed zero from a blank",
+        "Leaving the question blank is always better than guessing, no matter how many options have been eliminated",
+        "The penalty rule only applies if the candidate answers more than 50 questions"
+      ],
+      "answer_index": 1,
+      "explanation": "This is a classic decision-under-uncertainty trade-off: with two options left and even odds, the expected value of guessing (half chance of full marks against half chance of a one-third deduction) exceeds the guaranteed zero of a blank -- the first and third options ignore this expected-value comparison, and the penalty rule is not conditioned on how many questions are attempted."
+    },
+    {
+      "item_id": "ai_pa_decision_making_014",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GS Paper I, printed Instructions, item 4",
+      "source_excerpt": "This Test Booklet contains 100 items (questions)... You will select the response which you want to mark on the Answer Sheet. In case you feel that there is more than one correct response, mark the response which you consider the best. In any case, choose ONLY ONE response for each item.",
+      "question": "If a candidate feels that more than one of the four options could be defensible, what does the exam's own instructions require them to do?",
+      "options": [
+        "Mark all the options they consider defensible, to maximise their chance of credit",
+        "Select and mark only the one response they consider the best, since only one response may ever be marked per item",
+        "Leave the question blank to avoid the dilemma",
+        "Write a short justification in the margin explaining their reasoning"
+      ],
+      "answer_index": 1,
+      "explanation": "The instructions require committing to a single best response even amid genuine ambiguity between plausible options -- marking multiple options is explicitly against the rules (and, per the penalty instructions, is itself treated as a wrong answer), leaving it blank sacrifices any chance of credit unnecessarily, and there is no provision for written justification in an OMR-based test."
+    },
+    {
+      "item_id": "ai_pa_decision_making_015",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GS Paper I, printed Instructions -- multiple responses",
+      "source_excerpt": "(ii) If a candidate gives more than one answer, it will be treated as a wrong answer even if one of the given answers happens to be correct and there will be same penalty as above to that question.",
+      "question": "Why does the exam's marking scheme treat marking two answers to hedge one's bets as equivalent to marking a single wrong answer, even if one of the two happens to be correct?",
+      "options": [
+        "Because the exam wants to reward candidates who are unsure by giving partial credit",
+        "Because allowing multiple marked answers to sometimes count as correct would let candidates avoid the actual decision the question demands, undermining the entire single-best-answer format the negative-marking scheme is designed to enforce",
+        "Because OMR machines are incapable of reading more than one filled circle",
+        "Because this rule only applies to the last ten questions of the paper"
+      ],
+      "answer_index": 1,
+      "explanation": "Treating a hedged, multi-marked response as simply wrong closes off an escape hatch from making an actual decision -- if hedging could sometimes pay off, it would undercut the very discipline of committing to one best answer that the format is built around; it is not intended as partial credit, is not an OMR hardware limitation, and applies to every question, not just the last ten."
+    },
+    {
+      "item_id": "ai_pa_decision_making_016",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_decision_making",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GS Paper I, Statement-I / Statement-II analytical format",
+      "source_excerpt": "Statement-I: The Supreme Court of India has held in some judgements that the reservation policies made under Article 16(4) of the Constitution of India would be limited by Article 335 for maintenance of efficiency of administration. Statement-II: Article 335 of the Constitution of India defines the term 'efficiency of administration.' Which one of the following is correct in respect of the above statements?",
+      "question": "The 'Statement-I / Statement-II' question format used in this paper asks a candidate to decide on the truth of each statement AND on whether one explains the other. As a decision-making technique, what does this format specifically test?",
+      "options": [
+        "Simple recall of a single isolated fact, with no relationship to evaluate",
+        "The ability to make two nested decisions: first, whether each statement is independently true, and second, whether a genuine explanatory relationship holds between them -- since two true statements need not actually explain each other",
+        "Whether the candidate can guess the examiner's personal opinion",
+        "Whether the candidate can complete the question within ten seconds"
+      ],
+      "answer_index": 1,
+      "explanation": "This format deliberately separates truth-evaluation from relationship-evaluation: a candidate must decide if Statement-I is true, decide if Statement-II is true, and then separately judge whether Statement-II genuinely explains Statement-I -- two true statements can still fail to be causally or logically linked, which is exactly the structured, two-layer decision this format is designed to test, not simple recall, opinion-guessing, or speed alone."
+    },
+    {
+      "item_id": "ai_pa_decision_making_017",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_decision_making",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GS Paper I, 'how many of the above statements are correct' format",
+      "source_excerpt": "Consider the following statements... How many of the above statements are correct? (a) Only one (b) Only two (c) Only three (d) All four",
+      "question": "The paper repeatedly uses a 'how many of the above statements are correct' format with options like 'Only one' / 'Only two' / 'Only three' / 'All four.' What decision-making skill does this format specifically require, beyond simply knowing facts?",
+      "options": [
+        "Guessing based on which option letter appears most often in the paper",
+        "Independently evaluating the truth of each individual statement first, and only then aggregating those separate judgements into a single combined count-based decision",
+        "Selecting 'All four' whenever unsure, since it is statistically the safest choice",
+        "Ignoring the individual statements and answering based on the topic title alone"
+      ],
+      "answer_index": 1,
+      "explanation": "This format requires evaluating each statement on its own merits first and only then combining those individual true/false judgements into one aggregate decision about the count -- it specifically penalises shortcuts like picking a 'safe-looking' option, favouring one answer letter, or skipping statement-by-statement evaluation in favour of the general topic alone."
+    },
+    {
+      "item_id": "ai_pa_decision_making_018",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_decision_making",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "GS Paper I, printed Instructions read together (items 4, 6, and penalty rules)",
+      "source_excerpt": "This Test Booklet contains 100 items (questions)... All items carry equal marks... THERE WILL BE PENALTY FOR WRONG ANSWERS MARKED BY A CANDIDATE IN ALL THE QUESTIONS.",
+      "question": "Given that all 100 items carry equal marks and every wrong answer (on any item) carries the same one-third penalty, what time-allocation decision does this design push a candidate toward?",
+      "options": [
+        "Spending the vast majority of the two hours on the first ten questions, since early questions matter more",
+        "Triaging across all 100 equally-weighted items -- since no single question is worth more than another -- rather than over-investing time in a few difficult questions at the expense of easier ones later in the booklet",
+        "Answering questions in reverse order, since later questions are worth more marks",
+        "Ignoring time management entirely, since the penalty rule does not interact with pacing decisions"
+      ],
+      "answer_index": 1,
+      "explanation": "Because every item is equally weighted and the same penalty structure applies throughout, the rational decision is to triage time across all 100 questions rather than sinking disproportionate time into a handful of hard ones -- position in the booklet does not change a question's value (ruling out the first, third options), and equal weighting is directly a pacing-relevant fact, not something disconnected from time management."
+    },
+    {
+      "item_id": "ai_pa_change_management_001",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CBC Handbook, 'Need for Comprehensive Performance Measurement', competency-to-performance chain",
+      "source_excerpt": "Figure: Competency Acquisition and Demonstration Process -- Capacity Building Intervention -> Cognitive Gain -> Behavioural Change -> Improvement in Workplace Performance.",
+      "question": "The CBC Handbook models the path from a training intervention to real change in the workplace as a four-step chain. What is that chain, in order?",
+      "options": [
+        "Capacity Building Intervention, Cognitive Gain, Behavioural Change, Improvement in Workplace Performance",
+        "Recruitment, Onboarding, Promotion, Retirement",
+        "Budget Allocation, Procurement, Training Delivery, Certificate Issuance",
+        "Policy Announcement, Media Coverage, Public Reaction, Policy Withdrawal"
+      ],
+      "answer_index": 0,
+      "explanation": "The Handbook's figure specifically models a capacity-building intervention leading first to cognitive gain, then behavioural change, and finally improved workplace performance -- the other chains describe unrelated HR, procurement, or media-cycle processes, not this change-management logic model."
+    },
+    {
+      "item_id": "ai_pa_change_management_002",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "CBC Handbook, 'Need for Comprehensive Performance Measurement'",
+      "source_excerpt": "While these capacity building efforts may lead to cognitive gains, no system currently measures their effectiveness or impact on performance. As these interventions expand, it is essential to establish a clear framework to assess their effect on civil service outcomes.",
+      "question": "Why does the CBC Handbook argue that a dedicated performance measurement framework is essential as capacity-building interventions expand?",
+      "options": [
+        "Because cognitive gains automatically guarantee behavioural change, so measurement is just a formality",
+        "Because without measurement, there is no way to know whether training-driven cognitive gains are actually translating into behavioural change and improved workplace performance, especially as interventions scale up",
+        "Because measurement frameworks are required only for interventions costing above a certain budget",
+        "Because the Handbook considers workplace performance impossible to measure in principle"
+      ],
+      "answer_index": 1,
+      "explanation": "The Handbook's concern is precisely that cognitive gains from training are not automatically verified as producing behavioural or performance change, and this gap becomes more consequential as interventions scale -- it does not claim measurement is unnecessary, does not condition this on a budget threshold, and does not claim workplace performance is unmeasurable."
+    },
+    {
+      "item_id": "ai_pa_change_management_003",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CBC Handbook, 'Performance and Competency Measurement Methodology'",
+      "source_excerpt": "The performance measurement methodology... involves deploying three measurement tools: competency assessments, 360-degree feedback assessments, and Event or Metadata Informed Tracking (EMIT) data.",
+      "question": "Which three measurement tools does the CBC Handbook combine to build a holistic picture of an official's competency and workplace performance during a change effort?",
+      "options": [
+        "Annual confidential reports, exit interviews, and social media sentiment analysis",
+        "Competency assessments, 360-degree feedback, and Event or Metadata Informed Tracking (EMIT) data",
+        "Standardized IQ tests, physical fitness tests, and language proficiency tests",
+        "Budget utilisation reports, audit findings, and vigilance clearances"
+      ],
+      "answer_index": 1,
+      "explanation": "The Handbook names competency assessments (PIAA), 360-degree feedback from supervisors/peers/supervisees, and EMIT data drawn from MIS/eHRMS/eOffice/iGOT systems as its three triangulated measurement tools -- the other lists describe plausible but different HR or audit instruments not named here."
+    },
+    {
+      "item_id": "ai_pa_change_management_004",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "CBC Handbook, 'Stages of Measuring Performance'",
+      "source_excerpt": "This performance measurement methodology involves four steps that the CBUs of each MDO should go through to measure the performance of their officials: 1 Prepare, 2 Operationalise, 3 Implement Assessments, 4 Analyse and Share Data.",
+      "question": "What are the four sequential stages the CBC Handbook prescribes for an MDO's Capacity Building Unit (CBU) to roll out performance measurement?",
+      "options": [
+        "Prepare, Operationalise, Implement Assessments, Analyse and Share Data",
+        "Plan, Execute, Monitor, Close",
+        "Recruit, Train, Deploy, Retire",
+        "Announce, Consult, Legislate, Enforce"
+      ],
+      "answer_index": 0,
+      "explanation": "The Handbook names exactly these four stages -- Prepare, Operationalise, Implement Assessments, and Analyse and Share Data -- as the rollout sequence for each MDO's CBU; the other four-stage lists are generic project-management or policy cycles that do not match the Handbook's own terminology."
+    },
+    {
+      "item_id": "ai_pa_change_management_005",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CBC Handbook, Stage 1 'Prepare', Step 1.1",
+      "source_excerpt": "1.1 Conducting Introductory Meeting: CBU should convene a senior leadership (Secretary, Additional/Joint Secretaries, etc.) to align on the performance measurement exercise and confirm implementation.",
+      "question": "A CBU wants to roll out a new performance measurement exercise but skips engaging senior leadership, going straight to identifying participants. What change-management risk does this skip create, per the Handbook's own sequencing?",
+      "options": [
+        "None; senior leadership involvement is only a formality the Handbook mentions in passing",
+        "It risks proceeding without confirmed leadership alignment on the vision, timelines and key focus areas -- the very outcome Step 1.1 is designed to secure before any further rollout steps begin",
+        "It speeds up the process, since leadership meetings are the main bottleneck the Handbook warns against",
+        "It only matters for MDOs with more than 46 lakh employees"
+      ],
+      "answer_index": 1,
+      "explanation": "Step 1.1 exists specifically to secure senior leadership alignment -- captured in minutes on vision, timelines, and focus areas -- as the documented starting point of the rollout; skipping it undermines the sequencing the Handbook prescribes, is not described as a mere formality, is not framed as removing a bottleneck, and is not conditioned on organisation size."
+    },
+    {
+      "item_id": "ai_pa_change_management_006",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CBC Handbook, Stage 1 'Prepare', Step 1.2",
+      "source_excerpt": "1.2 Identifying Participants: Officials participating in the performance measurement exercise should be identified. Participant lists and organograms should be digitally recorded and updated on e-HRMS and iGOT.",
+      "question": "What expected outcome does the Handbook specify for Step 1.2, 'Identifying Participants'?",
+      "options": [
+        "A dynamic, digitised list of officials and roles available on e-HRMS/iGOT",
+        "A signed non-disclosure agreement from every participant",
+        "A reduction in the total number of sanctioned posts",
+        "A public press release naming all participating officials"
+      ],
+      "answer_index": 0,
+      "explanation": "The Handbook's expected outcome for this step is a dynamic, digitised list of officials and roles maintained on e-HRMS and iGOT -- it does not call for NDAs, post reductions, or public naming of participants."
+    },
+    {
+      "item_id": "ai_pa_change_management_007",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CBC Handbook, Stage 1 'Prepare', Step 1.3",
+      "source_excerpt": "1.3 Identifying Appropriate Competencies: e-HRMS should be used to map roles and select behavioural and functional competencies from the Karmayogi Competency Model (KCM). Capacity Building Plans (CBPs) should be prepared and shared on MyiGOT. Competency Needs Assessments (CNAs) should be conducted...",
+      "question": "Before an MDO can assess officials against meaningful benchmarks, what preparatory step does the Handbook require regarding competencies?",
+      "options": [
+        "Skip competency mapping entirely and use a generic, one-size-fits-all assessment for every role",
+        "Map roles and select relevant behavioural and functional competencies from the KCM, conduct Competency Needs Assessments, and prepare role-specific Capacity Building Plans",
+        "Wait for the Union Cabinet to individually approve every official's competency list",
+        "Use only the previous year's performance appraisal score, with no fresh competency mapping"
+      ],
+      "answer_index": 1,
+      "explanation": "Step 1.3 requires grounding the whole exercise in role-specific competency mapping against the KCM, CNAs, and CBPs -- a deliberately tailored approach rather than a generic assessment, individual Cabinet approval, or relying solely on last year's appraisal score."
+    },
+    {
+      "item_id": "ai_pa_change_management_008",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CBC Handbook, Stage 2 'Operationalise', Step 2.1",
+      "source_excerpt": "CBC and Karmayogi Bharat should authorise independent institutions to develop assessment items, with CBC ensuring their quality, clarity, and alignment with the KCM. CBU should conduct contextual reviews to ensure cultural and role-specific relevance. Karmayogi Bharat should leverage AI and engage expert linguists to provide multilingual translations.",
+      "question": "Why does the Handbook combine independent institutions authoring assessment items, CBU contextual review, AND multilingual translation as three separate steps within 'Operationalising Competency Assessments,' rather than treating one as sufficient?",
+      "options": [
+        "Because each step addresses a different risk: item quality/KCM-alignment (independent authoring + CBC quality control), local relevance (CBU contextual review), and equitable access across languages (AI-assisted, linguist-reviewed translation) -- omitting any one leaves a real gap",
+        "Because the Handbook requires exactly three steps for no substantive reason, purely as a bureaucratic formality",
+        "Because only one of the three steps is actually ever used in real MDOs",
+        "Because translation is only needed if fewer than 20 ministries participate"
+      ],
+      "answer_index": 0,
+      "explanation": "Each of the three sub-steps targets a distinct rollout risk: technical quality and competency-alignment, contextual/cultural fit for the specific role, and equitable multilingual access -- change efforts that skip any one of these risk producing assessments that are technically sound but locally irrelevant, or relevant but inaccessible to non-English/Hindi speakers; the step is not arbitrary, is not merely nominal, and is not conditioned on ministry count."
+    },
+    {
+      "item_id": "ai_pa_change_management_009",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CBC Handbook, Stage 2 'Operationalise', Step 2.2",
+      "source_excerpt": "2.2 Feedback Assessments Operationalising the 360-degree: Feedback questionnaires should include two concise, multilingual sections: overall competency demonstration and specific examples of competency in action. Questions should be positively framed to promote honest and constructive input.",
+      "question": "Why does the Handbook specify that 360-degree feedback questions should be 'positively framed'?",
+      "options": [
+        "To flatter officials regardless of their actual performance",
+        "To promote honest and constructive input from assessors, rather than discouraging candid feedback through an adversarial or accusatory tone",
+        "Because negative framing is illegal under the CCS Conduct Rules",
+        "Because positively framed questions take less time to translate"
+      ],
+      "answer_index": 1,
+      "explanation": "The Handbook links positive framing directly to encouraging honest, constructive responses from peers, supervisors and supervisees -- it is not about flattery regardless of merit, is not a legal requirement under the Conduct Rules, and translation time is not the stated rationale."
+    },
+    {
+      "item_id": "ai_pa_change_management_010",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CBC Handbook, Stage 2 'Operationalise', Step 2.2",
+      "source_excerpt": "CBU should validate the assessor-assessee list against APAR records, organisational charts, self-reported roles, and recent work orders.",
+      "question": "Before launching 360-degree feedback, an MDO's CBU cross-checks its proposed list of who will assess whom against APAR records, organisational charts, and recent work orders. What change-management purpose does this validation step serve?",
+      "options": [
+        "It has no real purpose; it is a redundant paperwork exercise",
+        "It ensures the assessor-assessee relationships genuinely reflect current working relationships, so feedback comes from people actually positioned to observe the official's competencies, protecting the credibility of the whole exercise",
+        "It is required only so the CBU can bill the MDO for administrative overhead",
+        "It replaces the need for the feedback survey itself"
+      ],
+      "answer_index": 1,
+      "explanation": "Cross-checking the assessor-assessee list against multiple authoritative sources ensures feedback comes from people who actually work with the official being assessed, which is essential to the exercise's credibility and usefulness -- it is not framed as redundant, a billing device, or a substitute for actually running the survey."
+    },
+    {
+      "item_id": "ai_pa_change_management_011",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CBC Handbook, Stage 3 'Implement Assessments', Step 3.3",
+      "source_excerpt": "3.3 Ensuring Timely Completion: Participation and completion rates should be monitored in real time via iGOT. Automated alerts and follow-ups for pending assessments should be used.",
+      "question": "How does the Handbook propose to keep a rolled-out assessment exercise from stalling due to incomplete participation?",
+      "options": [
+        "By publicly shaming officials who have not completed their assessments",
+        "By monitoring participation and completion rates in real time via iGOT, with automated alerts and follow-ups for pending assessments",
+        "By cancelling the exercise for the whole MDO if even one official fails to complete it",
+        "By making completion entirely optional, with no follow-up of any kind"
+      ],
+      "answer_index": 1,
+      "explanation": "The Handbook relies on real-time completion monitoring and automated alerts/follow-ups to sustain participation -- not public shaming, an all-or-nothing cancellation rule, or leaving completion purely optional with no reinforcement."
+    },
+    {
+      "item_id": "ai_pa_change_management_012",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CBC Handbook, Stage 3 'Implement Assessments', Step 3.4",
+      "source_excerpt": "3.4 Gathering Feedback on Assessments: Feedback should be collected through surveys, interviews, and focus group discussions. Responses should be analysed to identify trends, challenges, and improvement areas... to refine future assessment cycles.",
+      "question": "After the first round of a performance-measurement rollout, the CBU gathers feedback on the exercise itself through surveys and focus groups. What is this step's role in the overall change process, per the Handbook?",
+      "options": [
+        "It exists purely for record-keeping, with no influence on future cycles",
+        "It closes a feedback loop: insights from officials at all levels are used to refine future assessment cycles, improve satisfaction, and strengthen assessment design and delivery",
+        "It is used solely to identify officials for disciplinary action",
+        "It replaces the need for the Analyse and Share Data stage entirely"
+      ],
+      "answer_index": 1,
+      "explanation": "Step 3.4 is explicitly a continuous-improvement mechanism: feedback on the rollout itself feeds back into refining future cycles, rather than being an inert record, a disciplinary tool, or a substitute for the separate data-analysis stage that follows."
+    },
+    {
+      "item_id": "ai_pa_change_management_013",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CBC Handbook, Stage 4 'Analyse and Share Data', Step 4.2",
+      "source_excerpt": "4.2 Triangulating Information: Data from competency assessments, 360 feedback, end-of-course assessments, and workflow applications should be combined. Integrated data should be used to compute overall competency scores.",
+      "question": "What does the Handbook mean by 'triangulating information' in Stage 4 of the performance measurement rollout?",
+      "options": [
+        "Discarding all but one data source to simplify reporting",
+        "Combining data from competency assessments, 360-degree feedback, end-of-course assessments, and workflow applications to compute a more reliable, integrated competency score",
+        "Sending the same report to three different Ministries for redundant approval",
+        "Using GPS location data to verify where officials completed their training"
+      ],
+      "answer_index": 1,
+      "explanation": "Triangulation here means deliberately combining multiple independent data sources -- competency assessments, 360 feedback, course assessments and workflow application data -- into an integrated score, rather than relying on a single source, seeking redundant sign-offs, or using location data, which is not mentioned."
+    },
+    {
+      "item_id": "ai_pa_change_management_014",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CBC Handbook, Stage 4 'Analyse and Share Data', Steps 4.3",
+      "source_excerpt": "4.3 Generating Individual Reports: Personalised reports should be auto-generated on iGOT showing scores across competencies and sub-themes. Benchmarking should be included to show strengths and areas for improvement. Strict confidentiality should be maintained. 4.3 Generating MDO Reports: MDO-level reports should be produced on iGOT for leadership review.",
+      "question": "The Handbook produces both individual officer reports and separate MDO-level reports from the same underlying data. Why maintain this two-level reporting structure during a change rollout?",
+      "options": [
+        "Because individual reports are for officer development with strict confidentiality, while MDO-level reports aggregate data for leadership to see organisation-wide gaps and trends -- each serves a different audience and change-management purpose",
+        "Because the two reports always show contradictory conclusions and must be reconciled manually",
+        "Because individual reports are optional and only MDO-level reports are ever actually produced",
+        "Because MDO-level reports are shared publicly on social media to increase transparency"
+      ],
+      "answer_index": 0,
+      "explanation": "The two report types serve distinct purposes: confidential individual reports support personal development and benchmarking, while MDO-level reports give leadership an aggregate view of gaps and trends to inform organisational decisions -- they are not described as contradictory, individual reports are not optional filler, and there is no social-media publication step mentioned."
+    },
+    {
+      "item_id": "ai_pa_change_management_015",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_change_management",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "CBC Handbook, closing paragraph",
+      "source_excerpt": "By linking competency acquisition to performance, the framework generates essential data to advance a role-based Human Resource Management System, ensuring the right person is in the right role at the right time. Sustaining this progress will depend on continuous refinement, strong leadership, and a culture of learning.",
+      "question": "According to the Handbook's own closing assessment, what three factors will determine whether the shift to a role-based HR system, once launched, is actually sustained over time?",
+      "options": [
+        "A one-time budget allocation, a signed MoU, and a press release",
+        "Continuous refinement, strong leadership, and a culture of learning",
+        "A permanent freeze on the assessment methodology once finalised",
+        "Complete automation with no further human involvement"
+      ],
+      "answer_index": 1,
+      "explanation": "The Handbook explicitly names continuous refinement, strong leadership, and a culture of learning as what sustains this change over time -- not a one-off budget or MoU, a frozen unchanging methodology (which would contradict 'continuous refinement'), or full automation removing human leadership from the picture."
+    },
+    {
+      "item_id": "ai_pa_change_management_016",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_change_management",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB press release, 'Salient Features'",
+      "source_excerpt": "The core guiding principles of the Programme will be: Supporting Transition from 'Rules based' to 'Roles based' HR Management... To emphasize on 'on-site learning' to complement the 'off-site' learning, To create an ecosystem of shared training infrastructure including that of learning materials, institutions and personnel.",
+      "question": "Which of the following is explicitly listed as a core guiding principle of Mission Karmayogi's change agenda?",
+      "options": [
+        "Abolishing all off-site (classroom) training in favour of on-site learning only",
+        "Creating an ecosystem of shared training infrastructure -- learning materials, institutions and personnel -- across Government, alongside the shift from rules-based to roles-based HR management",
+        "Privatising all Central Training Institutions",
+        "Restricting capacity building to only the most senior civil servants"
+      ],
+      "answer_index": 1,
+      "explanation": "The press release names building a shared training-infrastructure ecosystem, alongside the rules-to-roles HR shift, as core guiding principles -- it explicitly frames on-site learning as complementing, not replacing, off-site learning, and does not mention privatising CTIs or restricting the programme to senior officers only."
+    },
+    {
+      "item_id": "ai_pa_change_management_017",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "PIB press release, 'Background'",
+      "source_excerpt": "A transformational change in Civil Service Capacity is proposed to be affected by organically linking the transformation of work culture, strengthening public institutions and adopting modern technology to build civil service capacity with the overall aim of ensuring efficient delivery of services to citizens.",
+      "question": "A Ministry decides to adopt the iGOT platform (the technology piece of Mission Karmayogi) but makes no effort to change existing work culture or strengthen institutional processes. How does this compare with the change model described in the programme's Background section?",
+      "options": [
+        "It fully matches the model, since technology adoption alone is described as sufficient",
+        "It falls short of the model, which explicitly links technology adoption together with work-culture transformation and institution-strengthening as three organically connected elements of the intended transformational change",
+        "It exceeds the model's ambitions, since technology-only adoption is considered the more advanced approach",
+        "It is irrelevant to the model, which applies only to State Governments"
+      ],
+      "answer_index": 1,
+      "explanation": "The Background section frames the intended change as an organic link between three elements -- work-culture transformation, institution-strengthening, and technology adoption -- so pursuing only the technology piece is a partial implementation of the model, not a full match, an advanced variant, or something limited to States only."
+    },
+    {
+      "item_id": "ai_pa_change_management_018",
+      "doc_id": "pib_mission_karmayogi",
+      "competency_id": "pa_change_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PIB press release, 'Salient Features' -- FRAC calibration as an implementation mechanism",
+      "source_excerpt": "To calibrate all Civil Service positions to a Framework of Roles, Activities and Competencies (FRACs) approach and to create and deliver learning content relevant to the identified FRACs in every Government entity.",
+      "question": "As a change management mechanism, what problem does calibrating every Civil Service position to a FRAC (Framework of Roles, Activities and Competencies) solve during the rules-to-roles transition?",
+      "options": [
+        "It abolishes the need for any further HR policy work",
+        "It gives every Government entity a shared, position-specific reference point -- what the role actually requires -- against which relevant learning content can be built and rolled out consistently across the civil service",
+        "It determines which officers are eligible for foreign postings",
+        "It sets the exact salary of every civil service post"
+      ],
+      "answer_index": 1,
+      "explanation": "FRACs provide a consistent, position-level reference of roles, activities and competencies that anchors learning-content development across every Government entity, which is what makes a consistent rules-to-roles rollout possible at scale -- it is not about ending HR policy work, foreign-posting eligibility, or salary-setting."
+    }
+  ]
+}

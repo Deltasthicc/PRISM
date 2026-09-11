@@ -1,0 +1,1861 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-11",
+  "note": "Batch A of AI-authored, source-grounded MCQs for the public-policy curriculum's governance, policy design, public finance, programme management, monitoring & evaluation, and impact evaluation competencies, grounded in the DARPG Sevottam guidelines, the NITI Aayog founding resolution, the Fifteenth Finance Commission highlights, the CBC MDO performance-measurement handbook, the Aspirational Districts Programme backgrounder, the DMEO PMGSY evaluation, and UPSC CSP 2023 GS1.",
+  "questions": [
+    {
+      "item_id": "ai_pa_governance_foundations_001",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Guideline document title and preamble",
+      "source_excerpt": "The guideline is titled 'Guidelines for Designing and Implementing SEVOTTAM Compliant Citizen's/Client's Charter & Grievance Redress Mechanism.' 'Sevottam' combines the Hindi words for service ('Seva') and excellence ('Uttam').",
+      "question": "The DARPG guideline on citizen's/client's charters is built around a service-delivery model called 'Sevottam.' What does the name itself signify?",
+      "options": [
+        "A specific IT platform used to file grievances online",
+        "Excellence in service delivery ('Seva' + 'Uttam'), the guiding principle of the model",
+        "The name of the committee that drafted India's Right to Information Act",
+        "A grading system used only for evaluating passport offices"
+      ],
+      "answer_index": 1,
+      "explanation": "'Sevottam' combines 'Seva' (service) and 'Uttam' (excellence), naming DARPG's citizen-centric service delivery excellence framework. It is not an IT platform, is unrelated to the RTI Act, and is meant to apply across government departments generally, not only passport offices."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_002",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Guideline's description of the Sevottam framework's structure",
+      "source_excerpt": "The Sevottam model comprises three components: Citizen's Charter, Public Grievance Redress Mechanism, and Service Delivery Capability.",
+      "question": "The Sevottam framework is organised around three components. Which set correctly identifies them?",
+      "options": [
+        "Citizen's Charter, Public Grievance Redress Mechanism, Service Delivery Capability",
+        "Right to Information, e-Governance, Digital India",
+        "Budget Allocation, Expenditure Audit, Performance Review",
+        "Central Vigilance, Lokpal, Ombudsman"
+      ],
+      "answer_index": 0,
+      "explanation": "Sevottam's three components are the Citizen's Charter (service standards), the Public Grievance Redress Mechanism (handling complaints), and Service Delivery Capability (organisational readiness to deliver). The other option sets list unrelated governance instruments not part of the model."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_003",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Guideline's discussion of the Citizen's Charter component",
+      "source_excerpt": "A Citizen's Charter states the services a department provides, the standards it commits to, and how grievances will be addressed.",
+      "question": "Within the Sevottam framework, what is the primary function of the Citizen's Charter component?",
+      "options": [
+        "To fix the annual budget ceiling for a department",
+        "To publicly declare the services offered, the standards committed to, and how complaints will be handled",
+        "To assign disciplinary action against non-performing officials",
+        "To determine promotion criteria for civil servants"
+      ],
+      "answer_index": 1,
+      "explanation": "A Citizen's Charter is a public commitment listing the services provided, measurable service standards, and the grievance-handling process, so citizens know what to expect. It is not a budgeting, disciplinary, or promotion instrument."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_004",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Guideline's section on grievance redress",
+      "source_excerpt": "The grievance redress mechanism is meant to receive, register, investigate, and work toward a satisfactory resolution of citizen complaints within a defined process.",
+      "question": "A citizen submits a complaint about a delayed service under a department's Sevottam-compliant grievance mechanism. Which of the following best reflects how the Public Grievance Redress Mechanism (PGRM) is meant to function?",
+      "options": [
+        "It ignores complaints unless they are submitted in person at the head office",
+        "It receives, registers, investigates, and works toward a satisfactory resolution of the complaint within a defined process",
+        "It refers every complaint automatically to a court of law",
+        "It only applies to complaints about corruption, not about service delays"
+      ],
+      "answer_index": 1,
+      "explanation": "The PGRM is an administrative process for receiving, recording, investigating and resolving citizen grievances -- including delays -- within set timelines, not a judicial referral system, and it is not restricted to corruption complaints or in-person submissions."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_005",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Guideline's section on Service Delivery Capability",
+      "source_excerpt": "Service Delivery Capability includes the standard operating procedures, staff orientation/training, and infrastructure needed to meet the charter's commitments.",
+      "question": "A department has published an ambitious Citizen's Charter promising fast turnaround times, but its Sevottam compliance assessment flags it as deficient in 'Service Delivery Capability.' What does this most likely mean?",
+      "options": [
+        "The department has not yet translated its charter's promises into the standard operating procedures, trained staff, and infrastructure needed to actually deliver on them",
+        "The department has not registered its charter with the Ministry of Finance",
+        "The department's charter uses too many languages for citizens to understand",
+        "The department has exceeded its promised standards and needs to lower them"
+      ],
+      "answer_index": 0,
+      "explanation": "Service Delivery Capability is the internal readiness -- processes, trained staff, systems, infrastructure -- needed to meet what the Citizen's Charter promises. A charter with ambitious promises but weak capability shows good intentions outrunning operational readiness; the other options describe unrelated or implausible issues."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_006",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Guideline's discussion of the underlying service-standard-setting cycle",
+      "source_excerpt": "The underlying approach requires organisations to define services and clients, set standards, build capability, perform, monitor, evaluate independently, and improve.",
+      "question": "Sevottam's underlying model treats a citizen's charter not as a one-time document but as a repeating cycle. Which sequence best matches that cycle's logic?",
+      "options": [
+        "Publish the charter once, then leave it unchanged indefinitely",
+        "Define services and clients, set standards, build capability, perform, monitor performance, evaluate impact, and feed lessons back into improvement",
+        "Set standards only after an independent audit is complete",
+        "Skip standard-setting and jump directly to grievance redress"
+      ],
+      "answer_index": 1,
+      "explanation": "The model behind Sevottam-compliant charters is cyclical: define what is delivered and to whom, set standards, build the capability to meet them, deliver, monitor and independently evaluate performance, and feed lessons back into improvement -- not a static, one-time publication, nor a sequence that skips standard-setting."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_007",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Resolution's preamble",
+      "source_excerpt": "The Cabinet Secretariat Resolution dated 1 January 2015 constitutes NITI Aayog in place of the Planning Commission.",
+      "question": "The Cabinet Secretariat's Resolution of 1 January 2015 constituted NITI Aayog. Which institution did it replace?",
+      "options": [
+        "The Finance Commission",
+        "The Planning Commission",
+        "The Election Commission",
+        "The Union Public Service Commission"
+      ],
+      "answer_index": 1,
+      "explanation": "The 1 January 2015 resolution dissolved the Planning Commission, which had existed since 1950, and replaced it with NITI Aayog. It did not touch the Finance Commission, Election Commission, or UPSC, which are separate constitutional/statutory bodies."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_008",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Resolution's stated rationale for the new institution",
+      "source_excerpt": "The resolution reorients national planning away from the Planning Commission's more centralised approach toward cooperative federalism, with States actively involved in shaping national priorities.",
+      "question": "The resolution frames NITI Aayog's creation as part of a shift in how the Union government engages with States on development planning. What is that shift best described as?",
+      "options": [
+        "A move from cooperative federalism back toward central planning targets",
+        "A move from a centralised, top-down planning model toward a cooperative-federalism model with States as active partners",
+        "A move to abolish all Union-State consultation on development",
+        "A move to transfer all planning powers entirely to individual states with no central coordination"
+      ],
+      "answer_index": 1,
+      "explanation": "The resolution reorients national planning away from the Planning Commission's more centralised approach toward 'cooperative federalism,' with States actively involved in shaping national priorities -- not abolishing coordination, reversing the shift, or removing the Centre's role entirely."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_009",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Resolution's listed objectives",
+      "source_excerpt": "To evolve a shared vision of national development priorities, sectors and strategies with the active involvement of States in the light of national objectives.",
+      "question": "One objective in the resolution reads: 'To evolve a shared vision of national development priorities, sectors and strategies with the active involvement of States...'. What does this objective primarily commit NITI Aayog to?",
+      "options": [
+        "Setting national priorities unilaterally and informing States afterward",
+        "Co-developing national development priorities together with State governments rather than dictating them centrally",
+        "Delegating all priority-setting entirely to individual States with no national-level vision",
+        "Limiting States' role to implementation only, with no input into priority-setting"
+      ],
+      "answer_index": 1,
+      "explanation": "The objective explicitly calls for a 'shared vision' developed 'with the active involvement of States' -- a collaborative process, not a unilateral, delegated, or implementation-only role for States."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_010",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Resolution's institutional design -- Governing Council",
+      "source_excerpt": "NITI Aayog's Governing Council comprises the Chief Ministers of all States and Lieutenant Governors of Union Territories, chaired by the Prime Minister.",
+      "question": "NITI Aayog's Governing Council includes the Chief Ministers of all States and the Lieutenant Governors of Union Territories, chaired by the Prime Minister. Why is this composition significant for governance design?",
+      "options": [
+        "It ensures every major policy decision is made without any State input",
+        "It institutionalises direct, regular participation of State political leadership in national policy deliberation, rather than routing it only through bureaucratic channels",
+        "It removes the Prime Minister from any role in national planning",
+        "It replaces the need for any Union ministries to be involved in development planning"
+      ],
+      "answer_index": 1,
+      "explanation": "Putting all Chief Ministers and UT Lt. Governors on the Governing Council under the Prime Minister's chairmanship builds direct political-level Centre-State engagement into the institution's design -- the opposite of excluding State input, and it does not remove the PM or the ministries from the process."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_011",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Resolution's objective on national security and economic strategy",
+      "source_excerpt": "To ensure, on areas that are specifically referred to it, that the interests of national security are incorporated in economic strategy and policy.",
+      "question": "The resolution assigns NITI Aayog a role in ensuring national security interests are incorporated into economic strategy and policy, for matters referred to it. What does this reveal about the intended scope of the institution?",
+      "options": [
+        "It is meant to function purely as a fiscal auditor with no role beyond budget-checking",
+        "Its policy-advisory mandate extends beyond conventional economic planning to cross-cutting concerns such as national security, when specifically referred",
+        "It has been given command authority over the armed forces",
+        "It replaces the National Security Council in all matters"
+      ],
+      "answer_index": 1,
+      "explanation": "This objective shows NITI Aayog's advisory remit was designed to be broader than routine economic planning, covering cross-cutting concerns like national security when a matter is referred to it -- but it grants no military command authority and does not replace the National Security Council."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_012",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Resolution's listed objectives",
+      "source_excerpt": "To pay special attention to the sections of our society that may be at risk of not benefitting adequately from economic progress.",
+      "question": "Among NITI Aayog's stated objectives is paying special attention to groups 'at risk of not benefitting adequately from economic progress.' Which governance principle does this most directly reflect?",
+      "options": [
+        "Fiscal austerity above all other considerations",
+        "Inclusive governance -- ensuring economic growth's benefits reach vulnerable and marginalised groups, not just the already well-off",
+        "Strict market deregulation as the primary development strategy",
+        "Centralising all welfare spending decisions in one ministry"
+      ],
+      "answer_index": 1,
+      "explanation": "This objective reflects a commitment to inclusive governance: actively watching for and addressing groups that growth might otherwise bypass. It is not primarily about austerity, deregulation, or centralising welfare administration."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_013",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Examination's overall structure and purpose",
+      "source_excerpt": "The paper is an objective-type General Studies paper covering polity, governance, economy, and current affairs, used to screen candidates for the civil services.",
+      "question": "The UPSC Civil Services (Preliminary) Examination's General Studies Paper I is an objective-type test covering polity, governance, economy, geography, and current affairs. What is its primary institutional purpose?",
+      "options": [
+        "To directly appoint candidates to specific ministries without further stages",
+        "To screen candidates' general awareness and reasoning ability as an initial stage before the Mains examination and interview for recruitment to the civil services",
+        "To evaluate candidates only on their handwriting and language skills",
+        "To replace the need for an interview stage entirely"
+      ],
+      "answer_index": 1,
+      "explanation": "GS Paper I of the Preliminary examination is a screening stage -- testing general awareness and analytical ability -- before candidates proceed to the Mains written examination and the Personality Test. It is not itself a final appointment or a skills-only test, and it does not eliminate the interview stage."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_014",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "2023 paper's item on prison administration",
+      "source_excerpt": "Prisons in India are managed by State Governments and governed by the Prisons Act, 1894 -- a topic tested in the 2023 paper.",
+      "question": "One of the 2023 paper's questions concerns how prisons in India are administered. Which statement correctly reflects that governance arrangement?",
+      "options": [
+        "Prisons are managed exclusively by the Union Home Ministry with no State role",
+        "Prisons are managed by State Governments and governed under a colonial-era statute, the Prisons Act, 1894",
+        "Prisons are managed by the judiciary directly, bypassing the executive",
+        "There is no statutory framework governing prisons in India"
+      ],
+      "answer_index": 1,
+      "explanation": "Prison administration in India is a State subject, carried out by State Governments, with the Prisons Act, 1894 as the foundational statute -- not a Union-only function, not judiciary-run, and not without a statutory basis."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_015",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "2023 paper's item on the Production-Linked Incentive scheme",
+      "source_excerpt": "The paper tests awareness of the Production-Linked Incentive (PLI) scheme, a Union government instrument to boost domestic manufacturing.",
+      "question": "The 2023 paper includes a question on India's 'Production-Linked Incentive' (PLI) scheme. As a governance instrument, what is the PLI scheme designed to do?",
+      "options": [
+        "Provide financial incentives to companies based on their incremental domestic production/sales, to boost domestic manufacturing and reduce import dependence",
+        "Provide a fixed subsidy to every registered company regardless of output",
+        "Directly nationalise private manufacturing units",
+        "Waive all import duties on finished consumer goods"
+      ],
+      "answer_index": 0,
+      "explanation": "PLI schemes tie government incentive payouts to a company's incremental production or sales performance in targeted sectors, aiming to boost domestic manufacturing and reduce import dependence -- not a flat unconditional subsidy, nationalisation, or a blanket duty waiver."
+    },
+    {
+      "item_id": "ai_pa_governance_foundations_016",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_governance_foundations",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "2023 paper's item on the G20",
+      "source_excerpt": "The paper tests that the G20 serves as a platform where Finance Ministers and Central Bank Governors of member countries discuss international economic and financial issues.",
+      "question": "The 2023 paper tests knowledge of the G20 grouping. In its original conception, what was the G20 primarily created as a platform for?",
+      "options": [
+        "Military coordination between member nations",
+        "Finance Ministers and Central Bank Governors of member countries to discuss international economic and financial issues",
+        "Resolving territorial disputes between member states",
+        "Selecting the head of the United Nations"
+      ],
+      "answer_index": 1,
+      "explanation": "The G20 originated as a forum for Finance Ministers and Central Bank Governors to discuss international economic and financial stability, later expanding to Leaders' Summits -- its founding purpose was economic/financial coordination, not military, territorial, or UN-related matters."
+    },
+    {
+      "item_id": "ai_pa_policy_design_001",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Resolution's rationale for establishing NITI Aayog",
+      "source_excerpt": "NITI Aayog replaced the Planning Commission, which had allocated central plan funds to states, and was instead designed as an advisory think tank.",
+      "question": "The resolution replaced the Planning Commission -- which had allocated central plan funds to states -- with NITI Aayog, designed instead as an advisory think tank. What does this shift in institutional design represent?",
+      "options": [
+        "A shift from a fund-allocating planning body to a policy-advisory, think-tank model without direct control over plan funds",
+        "No real change -- NITI Aayog retained identical fund-allocation powers",
+        "A shift that gave NITI Aayog control over the entire Union Budget",
+        "A shift that abolished all central planning functions permanently"
+      ],
+      "answer_index": 0,
+      "explanation": "NITI Aayog was deliberately designed without the Planning Commission's power to allocate plan funds, functioning instead as an advisory/think-tank body -- a genuine design change, not a continuation of the old allocative role, and not a takeover of the Union Budget or an end to planning altogether."
+    },
+    {
+      "item_id": "ai_pa_policy_design_002",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Resolution's first listed objective",
+      "source_excerpt": "To evolve a shared vision of national development priorities, sectors and strategies with the active involvement of States in the light of national objectives.",
+      "question": "From a policy-design standpoint, why does the resolution insist that national development priorities be evolved 'with the active involvement of States' rather than being fixed centrally and merely communicated to them?",
+      "options": [
+        "Because policies designed without buy-in from the implementing states risk poor ownership and weak on-the-ground implementation",
+        "Because the Constitution legally prohibits any central role in planning",
+        "Because States have no relevant information to contribute to policy design",
+        "Because it was purely a symbolic gesture with no bearing on implementation"
+      ],
+      "answer_index": 0,
+      "explanation": "Involving States early in shaping priorities builds ownership and reflects on-the-ground realities that implementing governments know best -- policies designed top-down without such buy-in typically face weaker implementation. States clearly have relevant local knowledge, and the resolution treats this as a substantive design choice, not a symbolic one."
+    },
+    {
+      "item_id": "ai_pa_policy_design_003",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Resolution's second listed objective",
+      "source_excerpt": "To foster cooperative federalism through structured support initiatives and mechanisms with the States on a continuous basis, recognising that strong States make a strong nation.",
+      "question": "The objective on cooperative federalism describes 'structured support initiatives and mechanisms with the States on a continuous basis.' What does 'continuous' signal about how this objective was meant to be designed, as opposed to a one-off consultation?",
+      "options": [
+        "An ongoing, sustained engagement process rather than a single consultative event",
+        "A process that only occurs once every five years, matching the old Five-Year Plans",
+        "A process limited to written correspondence with no institutional mechanism",
+        "A process that ends once a State's plan document is approved"
+      ],
+      "answer_index": 0,
+      "explanation": "Describing the support as 'continuous' signals an ongoing engagement mechanism, not a single event, a rigid five-year cycle carried over from the old planning model, or a process that terminates upon approval of a document."
+    },
+    {
+      "item_id": "ai_pa_policy_design_004",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Resolution's third listed objective",
+      "source_excerpt": "To develop mechanisms to formulate credible plans at the village level and aggregate these progressively at higher levels of government.",
+      "question": "The resolution calls for plans to be formulated 'at the village level' and then 'aggregated progressively at higher levels.' As a policy-design approach, what does this represent?",
+      "options": [
+        "A top-down approach where national targets are broken down and imposed on villages",
+        "A bottom-up approach where local-level plans build upward to inform higher-level (state and national) planning",
+        "An approach that excludes village-level input entirely from national planning",
+        "An approach applicable only to urban municipal planning"
+      ],
+      "answer_index": 1,
+      "explanation": "Building plans starting at the village level and aggregating them upward is explicitly a bottom-up design, the opposite of a top-down target-imposition model -- and it is described for village-level (rural) planning, not limited to urban municipalities, nor does it exclude local input."
+    },
+    {
+      "item_id": "ai_pa_policy_design_005",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Resolution's fourth listed objective",
+      "source_excerpt": "To ensure, on areas that are specifically referred to it, that the interests of national security are incorporated in economic strategy and policy.",
+      "question": "Why might a policy-design resolution explicitly call out incorporating 'national security' interests into economic strategy, rather than treating economic and security policy as entirely separate domains?",
+      "options": [
+        "Because good policy design recognises that some economic decisions (e.g. strategic industries, border-area development) have security implications that need to be factored in during design, not as an afterthought",
+        "Because national security concerns automatically override every economic consideration in all circumstances",
+        "Because the resolution intends to merge the Ministry of Defence into the economic planning body",
+        "Because this is a purely ceremonial clause with no design implication"
+      ],
+      "answer_index": 0,
+      "explanation": "Explicitly naming national security as a design consideration reflects an understanding that certain economic choices carry security implications worth weighing during policy design -- a factor to incorporate, not an automatic override, no institutional merger with Defence, and a substantive rather than ceremonial clause."
+    },
+    {
+      "item_id": "ai_pa_policy_design_006",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Resolution's fifth listed objective",
+      "source_excerpt": "To pay special attention to the sections of our society that may be at risk of not benefitting adequately from economic progress.",
+      "question": "In designing a theory of change for national development, why would a planning body explicitly build in a step to identify groups 'at risk of not benefitting adequately' from growth, rather than assuming growth benefits everyone equally?",
+      "options": [
+        "Because economic growth does not automatically translate into equal benefits for all groups, so a deliberate equity check is needed in the design",
+        "Because it is a legal requirement with no connection to actual outcomes",
+        "Because such groups do not exist in a growing economy",
+        "Because this step replaces the need for any economic growth strategy at all"
+      ],
+      "answer_index": 0,
+      "explanation": "Growth does not automatically distribute benefits evenly, so a deliberate design step to identify and support at-risk groups reflects equity-aware policy design -- not a symbolic legal box-tick, and it does not deny such groups exist or substitute for a growth strategy but complements it."
+    },
+    {
+      "item_id": "ai_pa_policy_design_007",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Resolution's objective on strategic and long-term policy frameworks",
+      "source_excerpt": "To design strategic and long term policy and programme frameworks and initiatives, and monitor their progress and their efficacy.",
+      "question": "This objective pairs 'designing' policy frameworks with a duty to 'monitor their progress and efficacy.' Why is bundling design and monitoring into a single institutional mandate significant for policy design?",
+      "options": [
+        "It closes the loop between designing a policy and learning whether it actually works, rather than treating design and evaluation as unconnected activities",
+        "It means the institution designs policy but is legally barred from ever reviewing it again",
+        "It means monitoring happens only once, at the very start of a policy's life",
+        "It has no bearing on how policies are eventually revised"
+      ],
+      "answer_index": 0,
+      "explanation": "Combining design and monitoring in one mandate builds a feedback loop -- an institution that designs a policy is also responsible for tracking whether it works -- rather than being barred from revisiting it, doing a one-time check, or being disconnected from eventual policy revision."
+    },
+    {
+      "item_id": "ai_pa_policy_design_008",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Resolution's objective on resolving inter-sectoral and inter-departmental issues",
+      "source_excerpt": "To provide a platform for resolution of inter-sectoral and inter-departmental issues in order to accelerate the implementation of the development agenda.",
+      "question": "Two ministries disagree over overlapping responsibilities for a rural infrastructure scheme, stalling its rollout. Which of NITI Aayog's stated design objectives is most directly meant to address a situation like this?",
+      "options": [
+        "Its role as a platform for resolving inter-sectoral and inter-departmental issues to accelerate implementation",
+        "Its objective to pay special attention to at-risk sections of society",
+        "Its objective to incorporate national security interests into economic strategy",
+        "Its role in fostering cooperative federalism with States"
+      ],
+      "answer_index": 0,
+      "explanation": "The resolution specifically designs NITI Aayog to serve as a coordination platform for resolving inter-sectoral/inter-departmental disputes so implementation is not stalled -- the other listed objectives address equity, security, and Centre-State relations rather than inter-ministerial coordination."
+    },
+    {
+      "item_id": "ai_pa_policy_design_009",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Resolution's objective on maintaining a resource centre",
+      "source_excerpt": "To provide a resource centre for research on good governance and best practices in sustainable and equitable development as well as help their dissemination to stake-holders.",
+      "question": "The resolution tasks NITI Aayog with maintaining a 'resource centre' on good governance and best practices for dissemination to stakeholders. What role does this play in policy design across the country?",
+      "options": [
+        "It positions NITI Aayog as a knowledge-sharing hub so that successful approaches in one state can inform policy design elsewhere, rather than each state reinventing solutions in isolation",
+        "It restricts research findings to internal government use only, with no external dissemination",
+        "It requires every state to adopt identical policies regardless of local context",
+        "It replaces the need for any state-specific policy research"
+      ],
+      "answer_index": 0,
+      "explanation": "A resource centre that disseminates best practices spreads learning across states so good ideas travel, rather than being reinvented independently everywhere -- it is meant for dissemination, does not force uniform policy, and does not eliminate the need for local research."
+    },
+    {
+      "item_id": "ai_pa_policy_design_010",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Resolution's objective on national and international partnerships",
+      "source_excerpt": "To provide a platform for national and international partnerships towards sustainable development goals.",
+      "question": "Why would the body responsible for domestic development planning also be given an explicit objective to build 'national and international partnerships towards sustainable development goals'?",
+      "options": [
+        "Because development challenges (e.g. climate, poverty) often require external expertise, funding, or coordinated global commitments that a purely domestic body could not access alone",
+        "Because it removes any role for India's Ministry of External Affairs in development matters",
+        "Because domestic development goals have no connection to global sustainable development frameworks",
+        "Because international partnerships were meant only for defence cooperation"
+      ],
+      "answer_index": 0,
+      "explanation": "Linking domestic planning to international partnerships lets the institution draw on external expertise, funding and globally coordinated commitments that purely domestic action cannot fully deliver -- it does not sideline the Ministry of External Affairs, and domestic and global development goals are explicitly connected, not unrelated."
+    },
+    {
+      "item_id": "ai_pa_policy_design_011",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Resolution's objective on technology upgradation and capacity building",
+      "source_excerpt": "To focus on technology upgradation and capacity building for implementation of programmes and initiatives.",
+      "question": "A well-designed policy can still fail if the implementing agency lacks the technical skills or systems to execute it. Which of the resolution's objectives is aimed directly at preventing that kind of implementation failure?",
+      "options": [
+        "Its objective to focus on technology upgradation and capacity building for implementation of programmes and initiatives",
+        "Its objective to incorporate national security interests into economic strategy",
+        "Its objective to pay special attention to at-risk sections of society",
+        "Its objective to foster cooperative federalism with structured support mechanisms"
+      ],
+      "answer_index": 0,
+      "explanation": "The objective on technology upgradation and capacity building is specifically about building the operational capability needed to execute programmes well -- directly addressing implementation gaps, unlike the equity-, security-, or federalism-focused objectives."
+    },
+    {
+      "item_id": "ai_pa_policy_design_012",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Resolution's objective describing NITI Aayog as a think tank",
+      "source_excerpt": "To actualise the vision of the Prime Minister to provide a critical directional and strategic input into the development process, functioning as a think tank that provides governments at the central and state levels with relevant strategic and technical advice.",
+      "question": "The resolution describes NITI Aayog as functioning as a 'think tank' providing 'directional and strategic input,' in contrast to the Planning Commission's earlier role of directly allocating plan funds. What is the key design trade-off in choosing an advisory think-tank model over a fund-allocating one?",
+      "options": [
+        "The think-tank model gains flexibility to advise broadly and adapt to changing priorities, but trades away the direct financial leverage the old model used to compel state compliance",
+        "There is no trade-off -- the think-tank model retains identical financial leverage over states",
+        "The think-tank model gives NITI Aayog binding legislative power over states",
+        "The think-tank model removes any need for the institution to engage with states at all"
+      ],
+      "answer_index": 0,
+      "explanation": "An advisory think-tank can be more flexible and issue-responsive, but it gives up the direct budgetary lever the Planning Commission held over states -- a genuine design trade-off, not a costless equivalence, and it grants no legislative power or excuse to disengage from states."
+    },
+    {
+      "item_id": "ai_pa_policy_design_013",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Resolution's objective on encouraging partnerships with think tanks and research institutions",
+      "source_excerpt": "To provide advice and encourage partnerships between key stakeholders and national and international like-minded Think Tanks, as well as educational and policy research institutions.",
+      "question": "Why does the resolution explicitly encourage partnerships with 'national and international...Think Tanks, as well as educational and policy research institutions' rather than relying solely on internal government expertise for policy design?",
+      "options": [
+        "Because external research and academic institutions can bring specialised, independent analysis that broadens and strengthens the evidence base behind policy choices",
+        "Because government officials are legally barred from doing any policy analysis themselves",
+        "Because think tanks are given final decision-making authority over government policy",
+        "Because this objective applies only to foreign governments, not research institutions"
+      ],
+      "answer_index": 0,
+      "explanation": "Bringing in external think tanks and research institutions widens the pool of specialised, independent analysis feeding into policy design -- it supplements rather than replaces internal capacity, does not hand think tanks decision-making authority, and covers both national and international, think-tank and academic, institutions."
+    },
+    {
+      "item_id": "ai_pa_policy_design_014",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Resolution's objective on creating a knowledge and innovation hub",
+      "source_excerpt": "To create a knowledge, innovation and entrepreneurial support system through a collaborative community of national and international experts, practitioners and other partners.",
+      "question": "One objective envisions NITI Aayog helping create a 'knowledge, innovation and entrepreneurial support system through a collaborative community' of experts and practitioners. What kind of policy-design function does this describe?",
+      "options": [
+        "Convening a network that connects experts, practitioners, and partners so ideas and innovations can be surfaced and channelled into policy, rather than the institution generating all ideas internally",
+        "Directly funding start-up companies as venture capital investments",
+        "Replacing India's universities with a single central research body",
+        "Restricting policy input to only serving central government employees"
+      ],
+      "answer_index": 0,
+      "explanation": "This objective is about convening a broad collaborative network to surface knowledge and innovation for policy use, not about acting as a venture-capital fund, replacing universities, or limiting input to internal government staff."
+    },
+    {
+      "item_id": "ai_pa_policy_design_015",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Resolution's section on NITI Aayog's composition",
+      "source_excerpt": "The Governing Council comprises the Chief Ministers of all States and Lieutenant Governors of Union Territories.",
+      "question": "As a matter of institutional design, who sits on NITI Aayog's Governing Council alongside the Prime Minister as Chairperson?",
+      "options": [
+        "Only the Union Cabinet Ministers",
+        "The Chief Ministers of all States and Lieutenant Governors of Union Territories",
+        "Only the Chief Ministers of States ruled by the same party as the Union government",
+        "Only District Magistrates nominated by the Union Home Ministry"
+      ],
+      "answer_index": 1,
+      "explanation": "The Governing Council is designed to include the Chief Ministers of all States and the Lieutenant Governors of Union Territories -- a deliberately inclusive, party-neutral design -- not limited to Union ministers, ruling-party-aligned states, or district-level officials."
+    },
+    {
+      "item_id": "ai_pa_policy_design_016",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Resolution's provision for Regional Councils",
+      "source_excerpt": "Regional Councils will be formed to address specific issues and contingencies impacting more than one state or a region, comprising Chief Ministers of States and Lt. Governors of UTs, convened by the Prime Minister for a specified tenure.",
+      "question": "The resolution provides for 'Regional Councils' to address issues affecting more than one State or a region, convened by the Prime Minister for a specified tenure. What policy-design problem does this mechanism solve?",
+      "options": [
+        "It creates a flexible, time-bound consultative structure for cross-boundary issues that don't fit neatly within a single state's jurisdiction or the full Governing Council's broad national agenda",
+        "It permanently replaces the Governing Council for all decision-making",
+        "It removes the need for the Prime Minister's involvement in regional issues",
+        "It applies only to disputes between two central ministries, not states"
+      ],
+      "answer_index": 0,
+      "explanation": "Regional Councils give the institution a flexible, tenure-bound mechanism to tackle issues spanning multiple states or a region -- filling a gap between single-state matters and the full national Governing Council agenda -- rather than replacing the Council, excluding the PM, or being limited to inter-ministerial disputes."
+    },
+    {
+      "item_id": "ai_pa_policy_design_017",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Resolution's provision on part-time members",
+      "source_excerpt": "Part time members: maximum of 2, from leading universities, research organisations and other relevant institutions in an ex-officio capacity, on a rotational basis.",
+      "question": "The resolution allows up to two 'part-time members' drawn from leading universities and research organisations, serving on a rotational basis. What design purpose does rotating part-time academic membership serve, compared to permanent full-time appointments only?",
+      "options": [
+        "It lets the institution periodically refresh its access to current academic and technical expertise without permanently embedding any single set of external individuals in government",
+        "It ensures the same two academics remain on the body for life",
+        "It removes any role for external experts, keeping the body purely bureaucratic",
+        "It only allows retired judges to serve in these roles"
+      ],
+      "answer_index": 0,
+      "explanation": "Rotating part-time membership lets NITI Aayog periodically draw in fresh academic/technical expertise without permanently fixing who holds those seats -- the opposite of lifetime tenure, of excluding external experts, or of restricting the role to retired judges."
+    },
+    {
+      "item_id": "ai_pa_policy_design_018",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_policy_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Resolution's provision on the Chief Executive Officer",
+      "source_excerpt": "Chief Executive Officer: to be appointed by the Prime Minister for a fixed tenure, in the rank of Secretary to the Government of India.",
+      "question": "The resolution specifies that NITI Aayog's Chief Executive Officer is appointed by the Prime Minister for a fixed tenure, at the rank of Secretary to the Government of India. Why does giving the CEO a defined tenure and a specific administrative rank matter for the institution's functioning?",
+      "options": [
+        "A fixed tenure and clear administrative rank give the CEO the standing to coordinate with other government departments and provide continuity and stability in running the organisation's day-to-day work",
+        "It ensures the CEO position is only symbolic, with no actual administrative responsibility",
+        "It gives the CEO higher authority than the Prime Minister on all matters",
+        "It ties the CEO's tenure to the term of a specific State's Chief Minister"
+      ],
+      "answer_index": 0,
+      "explanation": "Fixing the CEO's tenure and pegging their rank to Secretary-level gives them recognised standing to work across government machinery, plus administrative continuity -- it does not make the role symbolic, does not place the CEO above the Prime Minister, and has no link to any State Chief Minister's term."
+    },
+    {
+      "item_id": "ai_pa_public_finance_001",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB backgrounder's key highlights on the divisible pool",
+      "source_excerpt": "The Commission recommended that States' share in the central divisible pool of taxes be maintained at 41% for the 2021-26 period.",
+      "question": "What share of the central divisible pool of taxes did the Fifteenth Finance Commission recommend devolving to States for the 2021-26 award period?",
+      "options": [
+        "41%",
+        "50%",
+        "32%",
+        "60%"
+      ],
+      "answer_index": 0,
+      "explanation": "The Fifteenth Finance Commission recommended a vertical devolution of 41% of the divisible pool of central taxes to States for 2021-26. The other figures do not match its recommendation."
+    },
+    {
+      "item_id": "ai_pa_public_finance_002",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PIB backgrounder's explanation of the change from the Fourteenth Finance Commission's recommendation",
+      "source_excerpt": "The recommended 41% share is about 1 percentage point lower than the Fourteenth Finance Commission's 42%, adjusted to account for the changed status of Jammu & Kashmir and Ladakh as Union Territories.",
+      "question": "The Fifteenth Finance Commission's 41% vertical devolution share is about one percentage point lower than the Fourteenth Finance Commission's 42%. What explains this specific adjustment?",
+      "options": [
+        "A reduction to account for Jammu & Kashmir and Ladakh becoming Union Territories, which are funded directly from the Union's resources rather than through State devolution",
+        "A punitive cut applied because States failed to meet fiscal deficit targets",
+        "An increase, not a decrease, was actually recommended",
+        "A change unrelated to any administrative reorganisation"
+      ],
+      "answer_index": 0,
+      "explanation": "The roughly 1-percentage-point reduction reflects the reorganisation of Jammu & Kashmir into two Union Territories, no longer eligible for the State share of devolution and instead funded from Union resources -- not a punitive fiscal measure, and the change was a decrease, not an increase."
+    },
+    {
+      "item_id": "ai_pa_public_finance_003",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB backgrounder's table of horizontal devolution criteria",
+      "source_excerpt": "Criteria and weights for horizontal devolution include income distance (45%), area (15%), population 2011 (15%), demographic performance (12.5%), forest and ecology (10%), and tax and fiscal efforts (2.5%).",
+      "question": "Among the Fifteenth Finance Commission's horizontal devolution criteria for distributing funds among States, which criterion carries the single largest weight?",
+      "options": [
+        "Population (2011)",
+        "Income distance",
+        "Forest and ecology",
+        "Tax and fiscal efforts"
+      ],
+      "answer_index": 1,
+      "explanation": "Income distance -- how far a State's per-capita income lies from the State with the highest per-capita income -- carries the largest weight (45%), reflecting an equity-focused emphasis on need. Population, forest cover, and tax effort each carry smaller weights."
+    },
+    {
+      "item_id": "ai_pa_public_finance_004",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PIB backgrounder's description of the income distance criterion",
+      "source_excerpt": "Income distance measures the gap between a State's per-capita income and that of the State with the highest per-capita income.",
+      "question": "The 'income distance' criterion, weighted at 45% in horizontal devolution, is based on the gap between a State's per-capita income and that of the State with the highest per-capita income. What principle does this criterion embody?",
+      "options": [
+        "Equity -- poorer states (with a larger income gap) receive proportionately more, to help offset income disparities across states",
+        "Population control -- rewarding states that reduced their birth rates",
+        "Environmental protection -- rewarding states with more forest cover",
+        "Fiscal discipline -- rewarding states that collect more of their own tax revenue"
+      ],
+      "answer_index": 0,
+      "explanation": "Income distance is an equity criterion: states further behind the richest state in per-capita income receive a larger share, narrowing disparities. It has nothing to do with population control, forests, or own-tax effort, which are separate criteria."
+    },
+    {
+      "item_id": "ai_pa_public_finance_005",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "PIB backgrounder's description of the demographic performance criterion",
+      "source_excerpt": "The demographic performance criterion rewards States for their performance on population-related indicators, using a reference period distinct from the raw 2011 Census population figure.",
+      "question": "The demographic performance criterion (weight 12.5%) is meant to reward States for their performance on population-related indicators. What does this criterion primarily recognise?",
+      "options": [
+        "States' efforts in managing population growth/fertility, using a reference period distinct from the raw 2011 Census population figure",
+        "The absolute size of a State's population, favouring the most populous States",
+        "The percentage of a State's population living in forested areas",
+        "How much foreign direct investment a State has attracted"
+      ],
+      "answer_index": 0,
+      "explanation": "The demographic performance criterion rewards states for controlling population growth, using demographic indicators rather than simply favouring the largest population -- distinct from the separate 'population (2011)' criterion, and unrelated to forest cover or FDI."
+    },
+    {
+      "item_id": "ai_pa_public_finance_006",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "PIB backgrounder's description of the forest and ecology criterion",
+      "source_excerpt": "The forest and ecology criterion compensates States with large forest cover for the development opportunities they forgo through conservation.",
+      "question": "The forest and ecology criterion (weight 10%) in horizontal devolution is intended to do what?",
+      "options": [
+        "Compensate States with large forest cover for the development opportunities they forgo by conserving forest land",
+        "Penalise States that have any forest cover at all",
+        "Reward States purely based on total geographical area, regardless of land use",
+        "Fund only afforestation projects directly, bypassing State budgets entirely"
+      ],
+      "answer_index": 0,
+      "explanation": "This criterion recognises that States with extensive forest cover bear an opportunity cost -- restricted industrial/agricultural development -- for conservation, and compensates them accordingly, rather than penalising forest cover, rewarding raw area regardless of land use, or bypassing state budgets."
+    },
+    {
+      "item_id": "ai_pa_public_finance_007",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "PIB backgrounder's description of the tax and fiscal effort criterion",
+      "source_excerpt": "The tax and fiscal effort criterion rewards States for a stronger relative effort in mobilising their own tax revenues.",
+      "question": "The tax and fiscal effort criterion (weight 2.5%) in horizontal devolution rewards States for what?",
+      "options": [
+        "Demonstrating stronger effort in mobilising their own tax revenues, relative to their fiscal capacity",
+        "Spending the largest absolute amount on capital expenditure",
+        "Having the lowest population growth in the country",
+        "Maintaining the largest area of protected forest land"
+      ],
+      "answer_index": 0,
+      "explanation": "The tax and fiscal effort criterion rewards states that make a stronger relative effort to raise their own tax revenues -- fiscal discipline and effort -- rather than rewarding capital spending totals, low population growth, or forest cover, which are separate criteria."
+    },
+    {
+      "item_id": "ai_pa_public_finance_008",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "PIB backgrounder's section on local government grants",
+      "source_excerpt": "The Commission recommended grants to local governments -- rural and urban local bodies -- alongside State-level tax devolution.",
+      "question": "Beyond the formula-based devolution, the Fifteenth Finance Commission also recommended grants to local governments (rural and urban bodies). What is the primary rationale for such grants existing alongside State-level devolution?",
+      "options": [
+        "To strengthen fiscal resources at the third tier of government (panchayats and municipalities), which formula-based devolution to States does not directly address",
+        "To eliminate the need for any State-level government spending",
+        "To fund only central government office buildings in state capitals",
+        "To replace the State Finance Commissions entirely"
+      ],
+      "answer_index": 0,
+      "explanation": "Local government grants target the third tier -- panchayats and municipalities -- ensuring fiscal resources reach local bodies directly, which state-level devolution formulas do not guarantee; they do not eliminate state spending, fund only central offices, or replace State Finance Commissions."
+    },
+    {
+      "item_id": "ai_pa_public_finance_009",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "PIB backgrounder's section on revenue deficit grants",
+      "source_excerpt": "Revenue deficit grants address a projected gap between a State's assessed revenue receipts (including its share of devolution) and its assessed revenue expenditure.",
+      "question": "Revenue deficit grants recommended by the Commission are meant to address what specific fiscal situation for eligible States?",
+      "options": [
+        "A projected gap between a State's assessed revenue receipts (including its share of devolution) and its assessed revenue expenditure",
+        "A surplus in a State's capital account",
+        "A shortfall in central government's own tax collection",
+        "A dispute between two States over a shared river's water allocation"
+      ],
+      "answer_index": 0,
+      "explanation": "Revenue deficit grants bridge the gap for States whose assessed revenue expenditure exceeds their assessed revenue receipts (post-devolution) -- not a capital surplus, a central government shortfall, or an inter-state water dispute, which are handled through entirely different mechanisms."
+    },
+    {
+      "item_id": "ai_pa_public_finance_010",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "PIB backgrounder's section on disaster management grants",
+      "source_excerpt": "The Commission's disaster management grants framework distinguishes funding for mitigation and for response.",
+      "question": "The Commission's recommendations on disaster management grants continue a framework built around funds for both mitigation and response. What is the key distinction between 'mitigation' and 'response' funding in this framework?",
+      "options": [
+        "Mitigation funding supports measures to reduce disaster risk before it strikes, while response funding supports relief and recovery after a disaster occurs",
+        "Mitigation funding is only for earthquakes, while response funding is only for floods",
+        "Both terms mean exactly the same thing and are interchangeable",
+        "Mitigation funding is provided only to the Union government, never to States"
+      ],
+      "answer_index": 0,
+      "explanation": "Mitigation funds support pre-disaster risk-reduction measures, while response funds support relief and recovery once a disaster has occurred -- a substantive distinction in purpose and timing, not interchangeable terms, not hazard-specific, and States do receive disaster management funding."
+    },
+    {
+      "item_id": "ai_pa_public_finance_011",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "PIB backgrounder's section on sector-specific, state-specific, and performance grants",
+      "source_excerpt": "Alongside formula-based tax devolution, the Commission recommended sector-specific grants (e.g. health, education), state-specific grants, and performance-based incentives.",
+      "question": "Alongside formula-based tax devolution, the Commission recommended sector-specific grants (e.g. health, education), state-specific grants, and performance-based incentives. Why does a Finance Commission use these additional, more targeted instruments rather than relying only on the general devolution formula?",
+      "options": [
+        "Because a single general formula cannot address every state's unique circumstances or incentivise specific policy priorities and reform performance the way targeted grants can",
+        "Because targeted grants are legally required to be smaller than the vertical devolution share in every case",
+        "Because sector-specific grants replace the need for any general devolution formula",
+        "Because performance-based incentives are given equally to every state regardless of performance"
+      ],
+      "answer_index": 0,
+      "explanation": "General devolution formulas are necessarily broad and cannot capture every state's specific needs or reward specific reform efforts, which is why targeted grants exist alongside them -- these complement rather than replace the general formula, and performance incentives are tied to actual performance, not distributed equally regardless of it."
+    },
+    {
+      "item_id": "ai_pa_public_finance_012",
+      "doc_id": "pib_finance_commission_xv",
+      "competency_id": "pa_public_finance",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "PIB backgrounder's overall framework of devolution plus grants",
+      "source_excerpt": "The Commission's recommendations combine formula-based vertical/horizontal devolution with a layered system of local government, revenue deficit, disaster, sector-specific, state-specific and performance grants.",
+      "question": "Taken together, the Fifteenth Finance Commission's design -- a formula-based vertical/horizontal devolution plus a layered system of local government, revenue deficit, disaster, sector-specific, state-specific and performance grants -- reflects what underlying approach to fiscal federalism?",
+      "options": [
+        "A layered approach that combines objective, needs- and equity-based formula devolution with targeted, need- or performance-specific grants to address gaps the formula alone cannot",
+        "A purely formula-only approach with no role for any discretionary or targeted grants",
+        "A system where all funds are distributed equally to every State regardless of any criteria",
+        "A system that eliminates any distinction between States and local governments"
+      ],
+      "answer_index": 0,
+      "explanation": "The Commission's overall design layers a broad, criteria-based devolution formula with targeted grants addressing specific gaps (deficits, disasters, sectors, local bodies, performance) -- a deliberately layered, not purely formulaic, not equal-for-all, and not local-government-blind approach to fiscal federalism."
+    },
+    {
+      "item_id": "ai_pa_public_finance_013",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_public_finance",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "2023 paper's item on Fifteenth Finance Commission criteria",
+      "source_excerpt": "The paper tests whether candidates know that the Fifteenth Finance Commission used additional criteria -- such as demographic performance, forest and ecology, and tax and fiscal effort -- beyond population, area, and income distance for horizontal tax devolution.",
+      "question": "One 2023 prelims question asks how many criteria, besides population, area, and income distance, the Fifteenth Finance Commission used for horizontal tax devolution among States. Which of the following is one of those additional criteria?",
+      "options": [
+        "Forest and ecology",
+        "Literacy rate",
+        "Number of Lok Sabha seats",
+        "State's coastline length"
+      ],
+      "answer_index": 0,
+      "explanation": "Forest and ecology is one of the additional horizontal devolution criteria used by the Fifteenth Finance Commission (alongside demographic performance and tax and fiscal effort), beyond population, area, and income distance. Literacy rate, Lok Sabha seat count, and coastline length are not among the Commission's devolution criteria."
+    },
+    {
+      "item_id": "ai_pa_public_finance_014",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_public_finance",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "2023 paper's item on the G20",
+      "source_excerpt": "The paper tests the original institutional purpose of the G20: a platform for Finance Ministers and Central Bank Governors.",
+      "question": "The 2023 paper tests the original institutional purpose of the G20. As a fiscal/economic coordination body, the G20 initially brought together which set of officials?",
+      "options": [
+        "Finance Ministers and Central Bank Governors",
+        "Defence Ministers and military chiefs",
+        "Trade union leaders",
+        "Chief Justices of member countries"
+      ],
+      "answer_index": 0,
+      "explanation": "The G20 was originally founded as a forum for Finance Ministers and Central Bank Governors of major economies to discuss international financial stability and economic coordination -- not defence officials, labour leaders, or judiciary heads."
+    },
+    {
+      "item_id": "ai_pa_public_finance_015",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_public_finance",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "2023 paper's item on Digital Public Infrastructure as a G20 priority",
+      "source_excerpt": "The paper tests awareness of India's G20 priorities, including Digital Public Infrastructure (DPI).",
+      "question": "The 2023 paper also tests awareness of India's G20 priorities, including 'Digital Public Infrastructure' (DPI). In the context of public finance and governance, what does DPI broadly refer to?",
+      "options": [
+        "Shared, foundational digital systems (such as digital identity and payments platforms) that governments and economies build upon to deliver services and enable financial inclusion at scale",
+        "A single private company's proprietary banking software",
+        "A physical road and bridge construction programme",
+        "A defence procurement database"
+      ],
+      "answer_index": 0,
+      "explanation": "Digital Public Infrastructure refers to foundational, often open, digital systems -- like digital identity and payment rails -- that both government and private actors can build services on top of, expanding financial inclusion and service delivery; it is not a single company's private software, physical infrastructure, or a defence system."
+    },
+    {
+      "item_id": "ai_pa_public_finance_016",
+      "doc_id": "upsc_csp2023_gs1",
+      "competency_id": "pa_public_finance",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "2023 paper's item on the Production-Linked Incentive scheme",
+      "source_excerpt": "The paper tests awareness of the Production-Linked Incentive scheme as a conditional, performance-linked government expenditure instrument.",
+      "question": "From a public-finance perspective, the Production-Linked Incentive (PLI) scheme represents which kind of government expenditure instrument?",
+      "options": [
+        "A performance-linked subsidy/incentive expenditure, disbursed based on companies achieving incremental production or sales targets, rather than an unconditional grant",
+        "A one-time capital grant with no performance conditions attached",
+        "A reduction in the corporate tax rate applicable to all companies uniformly",
+        "A loan guarantee scheme with no incentive-linked disbursement"
+      ],
+      "answer_index": 0,
+      "explanation": "PLI is structured as conditional, performance-linked expenditure -- funds are disbursed only as companies hit incremental production/sales milestones -- distinguishing it from an unconditional one-time grant, a uniform tax-rate cut, or a loan-guarantee instrument."
+    },
+    {
+      "item_id": "ai_pa_program_management_001",
+      "doc_id": "aspirational_districts_pib",
+      "competency_id": "pa_program_management",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PIB backgrounder's description of the programme's broad strategy",
+      "source_excerpt": "The broad strategy of the Aspirational Districts Programme includes: Convergence - between Central and State Schemes; Collaboration - between Centre, State, District Administration, Development Partners and Citizens; Competition - between Districts.",
+      "question": "The Aspirational Districts Programme's broad delivery strategy rests on three pillars. Which set correctly names them?",
+      "options": [
+        "Convergence, Collaboration, Competition",
+        "Centralisation, Delegation, Automation",
+        "Planning, Budgeting, Auditing",
+        "Recruitment, Training, Promotion"
+      ],
+      "answer_index": 0,
+      "explanation": "The programme's official strategy names Convergence (between Central and State schemes), Collaboration (across Centre, State, district administration, partners, and citizens) and Competition (between districts) as its three pillars -- the other option sets are unrelated management terms."
+    },
+    {
+      "item_id": "ai_pa_program_management_002",
+      "doc_id": "aspirational_districts_pib",
+      "competency_id": "pa_program_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PIB backgrounder's section on institutional arrangement",
+      "source_excerpt": "For each district, a central Prabhari officer of the rank of Additional Secretary/Joint Secretary has been nominated.",
+      "question": "For each Aspirational District, a central 'Prabhari officer' of Additional Secretary/Joint Secretary rank is nominated. What programme-management function does this role serve?",
+      "options": [
+        "It gives each district a dedicated, senior central-government point of contact/champion to help drive and coordinate its transformation",
+        "It transfers full administrative control of the district away from the State government",
+        "It is a ceremonial title with no operational responsibility",
+        "It duplicates the role of the elected Member of Parliament for that district"
+      ],
+      "answer_index": 0,
+      "explanation": "The Prabhari officer gives each district a senior, named central-government champion to help coordinate and drive progress -- it does not strip the State government of administrative control, is not merely ceremonial, and is distinct from an elected MP's role."
+    },
+    {
+      "item_id": "ai_pa_program_management_003",
+      "doc_id": "aspirational_districts_pib",
+      "competency_id": "pa_program_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PIB backgrounder's section on institutional arrangement",
+      "source_excerpt": "An Empowered Committee under the convener-ship of CEO, NITI Aayog has been notified to ensure convergence in schemes and address specific issues brought out by Prabhari officers.",
+      "question": "An Empowered Committee, convened by the CEO of NITI Aayog, was set up under the Aspirational Districts Programme. What is this committee's primary role?",
+      "options": [
+        "Ensuring convergence between different government schemes and resolving specific issues raised by Prabhari officers",
+        "Directly disbursing salaries to district-level government staff",
+        "Conducting judicial review of state government decisions",
+        "Selecting which political party governs a given district"
+      ],
+      "answer_index": 0,
+      "explanation": "The Empowered Committee exists to ensure scheme convergence and resolve issues flagged by Prabhari officers -- a coordination and problem-resolution function, not payroll administration, judicial review, or any role in district-level politics."
+    },
+    {
+      "item_id": "ai_pa_program_management_004",
+      "doc_id": "aspirational_districts_pib",
+      "competency_id": "pa_program_management",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "PIB backgrounder's section on the Champions of Change dashboard",
+      "source_excerpt": "Champions of Change (CoC) is the backbone of the Aspirational Districts Programme. The new CoC digital platform facilitates advanced data analytics, digitised project management workflow, and machine-learning capabilities.",
+      "question": "The 'Champions of Change' digital platform is described as the backbone of the Aspirational Districts Programme, supporting data analytics and digitised project management workflows. What programme-management function does this platform primarily serve?",
+      "options": [
+        "It provides a real-time, data-driven monitoring and project-management backbone to track each district's progress",
+        "It functions solely as a public grievance redress portal, unrelated to programme progress",
+        "It replaces the need for any Prabhari officer or Empowered Committee",
+        "It is used exclusively for internal staff recruitment"
+      ],
+      "answer_index": 0,
+      "explanation": "Champions of Change is built as a data-analytics and project-management platform to track district progress in real time -- it is not a grievance portal, does not replace the human coordination roles, and is not a recruitment tool."
+    },
+    {
+      "item_id": "ai_pa_program_management_005",
+      "doc_id": "aspirational_districts_pib",
+      "competency_id": "pa_program_management",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "PIB backgrounder's section on Delta ranking",
+      "source_excerpt": "This programme focuses on the strength of each district, measuring progress by ranking districts on a monthly basis. The ranking is based on the incremental progress made across 49 Key Performance Indicators.",
+      "question": "Rather than ranking districts only once against a fixed baseline, the programme also produces a monthly 'Delta ranking' based on incremental progress on 49 KPIs. Why does adding this incremental ranking matter for programme management, compared to a single static baseline ranking alone?",
+      "options": [
+        "It lets even a historically low-performing district be recognised for the pace of its recent improvement, creating an ongoing incentive to keep improving rather than being permanently judged only against its starting position",
+        "It replaces the need for any baseline measurement at all",
+        "It ranks districts only once every five years instead of monthly",
+        "It measures each district's improvement relative to districts in other countries"
+      ],
+      "answer_index": 0,
+      "explanation": "A monthly incremental (delta) ranking rewards recent progress regardless of a district's starting point, sustaining motivation for continuous improvement -- it complements rather than replaces the baseline, is explicitly monthly, and compares districts within India, not internationally."
+    },
+    {
+      "item_id": "ai_pa_program_management_006",
+      "doc_id": "aspirational_districts_pib",
+      "competency_id": "pa_program_management",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "PIB backgrounder's table of theme weights and data-points",
+      "source_excerpt": "Health & Nutrition 30% (31 data-points); Education 30% (14); Agriculture & Water Resources 20% (12); Financial Inclusion 5% (6); Skill Development 5% (10); Basic Infrastructure 10% (8). Total 100% (81 data-points).",
+      "question": "The programme's composite ranking weights Health & Nutrition and Education at 30% each, Agriculture & Water Resources at 20%, and Financial Inclusion, Skill Development, and Basic Infrastructure at smaller shares. As a programme-management choice, what does this weighting scheme achieve?",
+      "options": [
+        "It signals which thematic areas are treated as the highest programme priorities for districts to focus scarce implementation effort and resources on",
+        "It guarantees every theme receives an identical share of district-level budgets",
+        "It has no bearing on how districts prioritise their own action plans",
+        "It is recalculated separately for every individual district based on local preference"
+      ],
+      "answer_index": 0,
+      "explanation": "Assigning higher weights to Health & Nutrition and Education signals that these are the programme's top priorities, guiding districts on where to focus limited implementation effort -- the weighting is a common national scheme, not identical budget shares, and not irrelevant to district planning."
+    },
+    {
+      "item_id": "ai_pa_program_management_007",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_program_management",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Handbook's description of the target audience -- Ministries, Departments and Organisations (MDOs)",
+      "source_excerpt": "The handbook is addressed to Ministries, Departments and Organisations (MDOs) responsible for planning and delivering capacity-building interventions for their personnel.",
+      "question": "The Capacity Building Commission's handbook on performance measurement is addressed to 'MDOs.' In the Mission Karmayogi context, what does MDO refer to?",
+      "options": [
+        "Ministries, Departments and Organisations",
+        "Municipal Development Officers only",
+        "Medical Data Officers",
+        "Multilateral Development Organisations (international agencies)"
+      ],
+      "answer_index": 0,
+      "explanation": "In the Mission Karmayogi/Capacity Building Commission framework, MDO stands for Ministries, Departments and Organisations -- the government entities responsible for planning and delivering capacity-building for their own staff -- not municipal or medical officers, and not international multilateral bodies."
+    },
+    {
+      "item_id": "ai_pa_program_management_008",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_program_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Handbook's stated rationale",
+      "source_excerpt": "Capacity-building efforts may improve individual knowledge and skills, but without a clear measurement approach, MDOs cannot tell whether this translates into improved on-the-job performance or service delivery.",
+      "question": "What core programme-management gap does the Capacity Building Commission's handbook aim to address for MDOs running capacity-building interventions?",
+      "options": [
+        "The absence of a clear approach for measuring whether capacity-building efforts actually translate into improved performance and service delivery, not just completed training",
+        "A shortage of physical classroom space for government training",
+        "The complete absence of any training programmes for civil servants",
+        "A legal ban on evaluating civil servants' performance"
+      ],
+      "answer_index": 0,
+      "explanation": "The handbook's rationale is that MDOs often lack a clear framework for measuring whether training-based capacity building actually improves on-the-job performance and service delivery -- not that classroom space is lacking, that training programmes are absent, or that a legal prohibition exists on evaluating performance."
+    },
+    {
+      "item_id": "ai_pa_program_management_009",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_program_management",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "Handbook's distinction between training completion and performance improvement",
+      "source_excerpt": "The handbook distinguishes between merely tracking training completion and assessing actual performance improvement.",
+      "question": "The handbook distinguishes between merely tracking training completion and assessing actual performance improvement. If an MDO only reports 'X employees completed Y training hours,' which type of measure is it reporting?",
+      "options": [
+        "An output measure, not necessarily evidence of improved outcomes",
+        "A pure impact/outcome measure of performance change",
+        "A measure of citizen satisfaction with service delivery",
+        "A financial audit measure of budget utilisation"
+      ],
+      "answer_index": 0,
+      "explanation": "Training completion counts (employees trained, hours logged) are output measures -- they show activity happened, but do not by themselves demonstrate that on-the-job performance or service delivery improved, which is the outcome the handbook pushes MDOs to measure separately."
+    },
+    {
+      "item_id": "ai_pa_program_management_010",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_program_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Handbook's description of the measurement approach's steps",
+      "source_excerpt": "The approach involves defining clear Key Performance Indicators (KPIs) tied to the intended capacity-building outcomes before tracking progress against them.",
+      "question": "According to the handbook's performance-measurement approach, what needs to happen before an MDO can meaningfully track whether a capacity-building intervention is working?",
+      "options": [
+        "Clear Key Performance Indicators (KPIs) linked to the intended outcomes must be defined first",
+        "All employees must first complete every available training course, regardless of relevance",
+        "The MDO must first eliminate its training budget entirely",
+        "A parliamentary committee must approve every individual employee's training record"
+      ],
+      "answer_index": 0,
+      "explanation": "The handbook's approach starts with defining clear, outcome-linked KPIs -- without that step, later monitoring has nothing meaningful to track against. It does not require exhaustive training completion, budget elimination, or parliamentary sign-off on individual records."
+    },
+    {
+      "item_id": "ai_pa_program_management_011",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_program_management",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Handbook's description of continuous, dashboard-based monitoring",
+      "source_excerpt": "The approach envisages continuous, real-time tracking of capacity-building KPIs through a dashboard, rather than periodic, ad hoc reviews.",
+      "question": "The handbook's approach favours continuous, dashboard-based tracking of capacity-building KPIs. What programme-management advantage does continuous monitoring offer over infrequent, ad hoc reviews?",
+      "options": [
+        "It surfaces performance gaps sooner, allowing MDOs to make timely course corrections rather than discovering problems only much later",
+        "It removes any need for MDOs to define KPIs in the first place",
+        "It eliminates the value of any human judgment in interpreting the data",
+        "It only works for MDOs with fewer than ten employees"
+      ],
+      "answer_index": 0,
+      "explanation": "Continuous monitoring surfaces issues early enough for timely correction, unlike infrequent ad hoc reviews that may catch problems only long after they have compounded -- it still requires clearly defined KPIs, does not eliminate human interpretation, and is not limited by organisation size."
+    },
+    {
+      "item_id": "ai_pa_program_management_012",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_program_management",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Handbook's overall purpose as a shared methodology for MDOs",
+      "source_excerpt": "The Capacity Building Commission's handbook provides MDOs with a structured, common methodology for measuring capacity-building performance.",
+      "question": "By providing MDOs with a structured methodology for measuring capacity-building performance, the Capacity Building Commission's handbook is itself an example of what broader programme-management principle?",
+      "options": [
+        "Building standardised organisational capability/tools so that many different implementing units can apply a consistent measurement approach, rather than each one improvising its own method",
+        "Centralising all capacity-building delivery into a single ministry, eliminating MDOs' role entirely",
+        "Replacing the need for MDOs to have any monitoring function of their own",
+        "Applying only to private-sector companies, not government MDOs"
+      ],
+      "answer_index": 0,
+      "explanation": "A shared handbook/methodology standardises how many different MDOs measure performance, avoiding fragmented, inconsistent approaches -- it does not centralise delivery into one ministry, does not remove MDOs' own monitoring responsibility, and is meant for government MDOs, not private companies."
+    },
+    {
+      "item_id": "ai_pa_program_management_013",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_program_management",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Guideline's section on Service Delivery Capability",
+      "source_excerpt": "Service Delivery Capability includes the standard operating procedures, staff orientation/training, and infrastructure needed to meet the charter's commitments.",
+      "question": "From a programme (implementation) management perspective, why does Sevottam treat 'Service Delivery Capability' as a distinct component from the Citizen's Charter itself, rather than assuming a published charter is sufficient?",
+      "options": [
+        "Because publishing service standards is not the same as having the trained staff, processes, and systems in place to actually deliver on them -- capability has to be built and managed separately",
+        "Because Service Delivery Capability refers only to the physical size of a department's office building",
+        "Because the Citizen's Charter and Service Delivery Capability must always be published as one identical document",
+        "Because capability-building is entirely outside any government department's control"
+      ],
+      "answer_index": 0,
+      "explanation": "Sevottam separates capability from the charter because promising standards on paper does not guarantee an organisation can deliver them -- capability (staff, SOPs, systems) has to be deliberately built and managed as its own implementation workstream, not reduced to office size, merged into one document, or treated as beyond a department's control."
+    },
+    {
+      "item_id": "ai_pa_program_management_014",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_program_management",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Guideline's discussion of the underlying service-standard-setting cycle",
+      "source_excerpt": "The underlying approach requires organisations to define services and clients, set standards, build capability, perform, monitor, evaluate independently, and improve.",
+      "question": "Viewed as a programme-delivery cycle -- define, set standards, build capability, perform, monitor, evaluate, improve -- what happens if an organisation skips the 'monitor performance' step but still claims to be improving continuously?",
+      "options": [
+        "Its claimed 'continuous improvement' would lack any real evidence base, since improvement decisions are supposed to be driven by what monitoring reveals",
+        "Nothing changes, since monitoring has no connection to the improvement step",
+        "The organisation would automatically fail to define its services or clients",
+        "It would only affect grievance redress and nothing else in service delivery"
+      ],
+      "answer_index": 0,
+      "explanation": "In the model's cyclical logic, 'improvement' is supposed to be informed by what monitoring and evaluation reveal about actual performance -- skipping monitoring removes the evidence base that improvement claims should rest on. It does not retroactively undo an earlier step, and it affects the whole cycle's credibility, not just grievance redress."
+    },
+    {
+      "item_id": "ai_pa_program_management_015",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_program_management",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Guideline's section on grievance redress as a feedback channel",
+      "source_excerpt": "A grievance redress mechanism receives, records, investigates, and addresses complaints, revealing recurring service delivery issues.",
+      "question": "In programme management terms, why is a formal grievance redress mechanism useful to the people running a public-service delivery programme, beyond simply satisfying individual complainants?",
+      "options": [
+        "It surfaces recurring, systemic delivery problems that programme managers might not otherwise detect, functioning as an early-warning/feedback channel",
+        "It has no informational value to programme managers -- its only purpose is closing individual complaints",
+        "It is purely a legal formality with no link to improving service delivery",
+        "It replaces the need for any performance monitoring of the programme"
+      ],
+      "answer_index": 0,
+      "explanation": "Beyond resolving individual complaints, a well-run grievance mechanism reveals recurring or systemic problems that feed back into programme management as an early-warning signal -- it is not purely a legal formality, does have real informational value for managers, and complements rather than replaces performance monitoring."
+    },
+    {
+      "item_id": "ai_pa_program_management_016",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_program_management",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Guideline's discussion of Citizen's Charter service standards and timelines",
+      "source_excerpt": "A Citizen's Charter states measurable service standards, including timelines a department commits to for delivering a given service.",
+      "question": "A department's Citizen's Charter commits to specific service timelines (e.g. issuing a certificate within a stated number of days). How does publishing such a timeline function as a programme-management tool, not just a citizen-facing promise?",
+      "options": [
+        "It creates an internal benchmark that the department's own delivery process must be planned and staffed to meet, making the promise a management target as well as a public commitment",
+        "It has no effect on how the department internally plans its workflow",
+        "It is legally unenforceable and therefore carries no management significance",
+        "It only applies to departments with fewer than five employees"
+      ],
+      "answer_index": 0,
+      "explanation": "A published timeline becomes an internal delivery benchmark that shapes staffing and process planning, not merely an external-facing promise disconnected from internal management -- and it applies regardless of department size."
+    },
+    {
+      "item_id": "ai_pa_program_management_017",
+      "doc_id": "darpg_sevottam",
+      "competency_id": "pa_program_management",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Guideline's discussion of Sevottam compliance assessment/certification",
+      "source_excerpt": "Departments can be assessed and certified as Sevottam compliant based on adherence to its three components.",
+      "question": "Departments can be assessed and certified as 'Sevottam compliant' based on adherence to its three components. What programme-management role does this compliance certification play?",
+      "options": [
+        "It functions as an external quality-assurance checkpoint, verifying that a department's charter, grievance mechanism, and delivery capability actually meet the model's standards, rather than relying only on the department's own self-assessment",
+        "It automatically increases a department's budget allocation with no further review",
+        "It replaces the need for the department to have a Citizen's Charter at all",
+        "It applies only to central government departments, never to any assessment process for states"
+      ],
+      "answer_index": 0,
+      "explanation": "Compliance certification provides an external quality-assurance checkpoint against the Sevottam standards, rather than leaving assessment purely to internal self-reporting -- it does not itself change budget allocations, does not remove the need for a charter, and the framework's use is not confined to a single level of government."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_001",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Handbook's opening rationale",
+      "source_excerpt": "The handbook identifies the absence of a clear, consistent system to measure how capacity-building interventions actually affect on-the-job performance and service delivery.",
+      "question": "What foundational monitoring-and-evaluation gap does the Capacity Building Commission's handbook identify regarding government capacity-building efforts before it proposes its measurement approach?",
+      "options": [
+        "The absence of a clear, consistent system to measure how capacity-building interventions actually affect on-the-job performance and service delivery",
+        "A complete absence of any capacity-building or training activity across government",
+        "A shortage of physical training venues nationwide",
+        "A prohibition on collecting any employee performance data"
+      ],
+      "answer_index": 0,
+      "explanation": "The handbook's starting premise is that while capacity-building activity exists, there had been no clear system for measuring its actual effect on performance and service delivery -- not that training itself was absent, that venues were lacking, or that performance data collection was prohibited."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_002",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Handbook's distinction between output and outcome indicators",
+      "source_excerpt": "The handbook distinguishes tracking training completion (an output) from assessing actual performance improvement (an outcome).",
+      "question": "For monitoring and evaluation purposes, why is it important for an MDO to track outcome indicators (e.g. observed improvement in a specific job function) separately from output indicators (e.g. training hours completed)?",
+      "options": [
+        "Because a high output number (lots of training delivered) does not guarantee the outcome (actual performance improvement) occurred, and only outcome tracking can confirm whether the intervention worked",
+        "Because output and outcome indicators always move in perfect lockstep, so tracking either one is redundant",
+        "Because outcome indicators are easier and faster to collect than output indicators",
+        "Because output indicators are irrelevant to any M&E framework and should never be collected"
+      ],
+      "answer_index": 0,
+      "explanation": "Outputs and outcomes can diverge -- lots of training delivered does not guarantee it changed actual performance -- so a sound M&E design tracks both, using outcome data to judge whether the intervention truly worked. Outcome data is typically harder, not easier, to collect than output counts, and outputs remain useful as an intermediate indicator, not an irrelevant one."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_003",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Handbook's description of the measurement approach's first step",
+      "source_excerpt": "The approach starts with defining Key Performance Indicators (KPIs) before establishing a baseline and target.",
+      "question": "In designing a monitoring framework for a capacity-building programme, the handbook's approach starts with defining Key Performance Indicators (KPIs). Why must this happen before setting any baseline or target?",
+      "options": [
+        "Because a baseline and target are only meaningful once you know exactly what indicator you are measuring against them",
+        "Because KPIs can be defined at any point, even after the programme has ended, with no effect on the evaluation",
+        "Because targets should always be set before deciding what to measure",
+        "Because baselines are unnecessary once KPIs exist"
+      ],
+      "answer_index": 0,
+      "explanation": "A baseline and a target both need a defined indicator to be measured against -- defining KPIs first is a logical prerequisite, not something that can be deferred to the end of a programme, and baselines remain necessary even once KPIs are defined, to know the starting point for measuring change."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_004",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Handbook's description of real-time, dashboard-based tracking",
+      "source_excerpt": "The approach favours real-time monitoring of capacity-building KPIs through a dashboard.",
+      "question": "The handbook's approach favours real-time monitoring of capacity-building KPIs through a dashboard. In monitoring-and-evaluation terms, what is the primary value of 'real-time' rather than only end-of-cycle reporting?",
+      "options": [
+        "It creates a continuous learning loop, letting MDOs spot underperforming indicators and adjust while the programme is still running, rather than only learning about problems after it has ended",
+        "It removes any need to ever conduct an end-of-cycle evaluation",
+        "It is valuable only for financial audits, not for capacity-building programmes",
+        "It means data only needs to be collected once a year"
+      ],
+      "answer_index": 0,
+      "explanation": "Real-time dashboards enable a continuous learning loop -- catching underperformance while there is still time to act -- rather than discovering issues only in a final end-of-cycle report; it complements rather than replaces periodic evaluation, applies to programme monitoring broadly, and implies frequent, not once-yearly, data collection."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_005",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Handbook's description of data-driven goal setting",
+      "source_excerpt": "The approach describes data-driven goal setting as part of continuous performance analysis.",
+      "question": "The handbook describes 'data-driven goal setting' as part of its approach. What does this most likely mean in an M&E context, as opposed to setting targets once and never revisiting them?",
+      "options": [
+        "Targets are set and periodically revised based on what the monitoring data shows about actual progress, rather than being fixed permanently at the outset",
+        "Targets are chosen entirely at random, independent of any data",
+        "Only one target is ever set for the lifetime of any programme, with no revision",
+        "Data is collected but deliberately never used to inform any targets"
+      ],
+      "answer_index": 0,
+      "explanation": "Data-driven goal setting implies targets are informed and periodically revised based on actual monitoring data, rather than fixed once at the start and never revisited -- the opposite of random target-setting or data collection that is never actually used."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_006",
+      "doc_id": "cbc_capacity_report",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "Handbook's overall purpose as a shared measurement methodology",
+      "source_excerpt": "The Capacity Building Commission issued a common performance-measurement handbook for MDOs rather than leaving each to design its own.",
+      "question": "Why does it matter, from an M&E systems-design standpoint, that the Capacity Building Commission issued a dedicated handbook on performance measurement specifically for MDOs, rather than leaving each MDO to invent its own approach?",
+      "options": [
+        "A shared methodology improves comparability and quality of M&E practice across many different government organisations, instead of leaving quality dependent on each MDO's own ad hoc effort",
+        "It guarantees that every MDO will report identical numerical results regardless of actual performance",
+        "It removes the need for any MDO to collect its own data going forward",
+        "It applies only to one specific ministry and no others"
+      ],
+      "answer_index": 0,
+      "explanation": "A common, shared measurement methodology raises the floor and improves comparability of M&E practice across many MDOs, rather than leaving quality dependent on each organisation's own improvised approach -- it does not force identical results irrespective of performance, does not eliminate MDOs' own data collection, and is meant to apply broadly across MDOs."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_007",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Resolution's objective on designing and monitoring policy frameworks",
+      "source_excerpt": "To design strategic and long term policy and programme frameworks and initiatives, and monitor their progress and their efficacy.",
+      "question": "The resolution's objective to 'design strategic and long term policy and programme frameworks... and monitor their progress and their efficacy' assigns NITI Aayog what kind of ongoing role, beyond one-time policy design?",
+      "options": [
+        "A continuing monitoring-and-evaluation role, tracking whether policies and programmes are actually working over time",
+        "A role limited strictly to drafting documents, with no tracking of implementation afterward",
+        "A role that ends the moment a policy framework is approved",
+        "A purely ceremonial role with no connection to actual programme data"
+      ],
+      "answer_index": 0,
+      "explanation": "By explicitly pairing 'design' with a duty to 'monitor progress and efficacy,' the resolution assigns an ongoing M&E function, not a one-time drafting role that stops once a document is approved, and not a ceremonial function disconnected from real programme performance."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_008",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Resolution's objective on monitoring/evaluation and resource identification",
+      "source_excerpt": "To actively monitor and evaluate the implementation of programmes and initiatives, including the identification of the needed resources so as to strengthen the probability of success and scope of delivery.",
+      "question": "This objective links monitoring and evaluation directly to 'identification of the needed resources so as to strengthen the probability of success.' What does this reveal about how the resolution expects M&E findings to be used?",
+      "options": [
+        "M&E findings are expected to feed forward into practical decisions about resourcing, so problems identified through monitoring translate into corrective action, not just a report",
+        "M&E findings are meant to be filed away with no further action taken",
+        "M&E is meant only to justify shutting down every underperforming programme immediately, with no resourcing adjustments considered",
+        "M&E has no connection at all to how much funding or staffing a programme receives"
+      ],
+      "answer_index": 0,
+      "explanation": "Explicitly linking M&E to identifying 'needed resources' shows the resolution expects monitoring findings to feed forward into resourcing decisions to improve delivery -- not to be filed away unused, not to trigger automatic programme termination, and clearly connected to funding/staffing decisions."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_009",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Resolution's objective on village-level plan aggregation",
+      "source_excerpt": "To develop mechanisms to formulate credible plans at the village level and aggregate these progressively at higher levels of government.",
+      "question": "The resolution calls for credible plans to be formulated at the village level and then aggregated progressively upward. From a monitoring-and-evaluation design standpoint, why does starting data/plans at the most local level support more credible higher-level indicators?",
+      "options": [
+        "Because indicators built up from accurate, locally grounded information are less likely to be distorted than figures imposed top-down without local verification",
+        "Because village-level data is always less accurate than data estimated at the national level",
+        "Because aggregation upward has no bearing on the credibility of any resulting indicator",
+        "Because this approach only applies to financial indicators, not to any other kind of development indicator"
+      ],
+      "answer_index": 0,
+      "explanation": "Grounding indicators in locally verified, bottom-up information tends to produce more credible aggregated figures than numbers imposed from the top without local grounding -- the opposite of assuming local data is always less accurate, and the aggregation logic is described generally for development plans, not restricted to financial indicators."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_010",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Resolution's objective on the resource centre",
+      "source_excerpt": "To provide a resource centre for research on good governance and best practices in sustainable and equitable development as well as help their dissemination to stake-holders.",
+      "question": "NITI Aayog's role as a 'resource centre' for research and best practices, disseminated to stakeholders, supports which specific monitoring-and-evaluation function across states?",
+      "options": [
+        "Spreading effective evaluation approaches and lessons learned from one state or programme so that others can adopt or adapt them, rather than every state having to independently discover the same lessons",
+        "Preventing any state from developing its own evaluation capacity",
+        "Restricting evaluation findings so that only the Union government ever sees them",
+        "Replacing the need for any state to conduct its own monitoring"
+      ],
+      "answer_index": 0,
+      "explanation": "A resource centre that shares best practices helps spread effective evaluation lessons across states, avoiding duplicated learning -- it does not prevent states from building their own capacity, does not restrict findings to the Union government alone, and does not substitute for each state doing its own monitoring."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_011",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Resolution's overall design as an advisory, non-allocative body",
+      "source_excerpt": "NITI Aayog was designed as an advisory think tank without the Planning Commission's power to allocate plan funds to States.",
+      "question": "Because NITI Aayog, unlike the Planning Commission, does not directly control plan-fund allocations to states, how does the resolution's monitoring-and-evaluation mandate become especially important to its ability to influence state performance?",
+      "options": [
+        "Without financial leverage, credible monitoring and evaluation evidence becomes one of NITI Aayog's main tools for persuading states and driving improved performance through comparison, feedback, and reputational incentives",
+        "Monitoring and evaluation become irrelevant once financial leverage is removed",
+        "The resolution compensates for the lack of financial control by granting NITI Aayog direct disciplinary power over state officials",
+        "States are legally compelled to follow every NITI Aayog recommendation regardless of any evidence"
+      ],
+      "answer_index": 0,
+      "explanation": "With no direct control over plan funds, NITI Aayog leans more heavily on the credibility of its monitoring and evaluation work -- using evidence, comparison, and reputational/peer incentives -- to influence states, rather than compulsion; it holds no direct disciplinary power over state officials and state compliance is not legally compelled."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_012",
+      "doc_id": "niti_founding_resolution",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "Resolution's shift from Five-Year-Plan review cycles to continuous engagement",
+      "source_excerpt": "The resolution replaces the Planning Commission's Five-Year Plan model with continuous, structured engagement and ongoing identification of resource needs.",
+      "question": "The Planning Commission's Five-Year Plans were built around fixed multi-year targets reviewed at set intervals. How does the monitoring-and-evaluation orientation implied by NITI Aayog's resolution objectives (continuous structured engagement, real-time identification of resource needs) differ from that older model?",
+      "options": [
+        "It leans toward more continuous, ongoing tracking and course-correction rather than waiting for fixed, multi-year review points",
+        "There is no meaningful difference -- both models are described in the resolution as identical",
+        "NITI Aayog's approach abandons target-setting of any kind",
+        "The resolution mandates reviews only once every five years, exactly matching the old Plan cycle"
+      ],
+      "answer_index": 0,
+      "explanation": "The resolution's objectives (continuous structured support, ongoing identification of resource needs) point toward a more continuous monitoring orientation than the older fixed multi-year Five-Year-Plan review cycle -- it does not abandon target-related thinking altogether, is not identical to the old model, and is not tied to a rigid five-year review interval."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_013",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Document's institutional background",
+      "source_excerpt": "The PMGSY evaluation was conducted by what later became the Development Monitoring and Evaluation Office (DMEO), formed in 2015 by merging the erstwhile Programme Evaluation Organisation and Independent Evaluation Office, as an attached office of NITI Aayog.",
+      "question": "The PMGSY evaluation was conducted by what later became the Development Monitoring and Evaluation Office (DMEO). How was DMEO formed?",
+      "options": [
+        "By merging the earlier Programme Evaluation Organisation and Independent Evaluation Office into a single attached office of NITI Aayog",
+        "By splitting NITI Aayog into two separate, unrelated bodies",
+        "As a private-sector consultancy hired on a one-time basis",
+        "As a new wing of the Union Ministry of Finance with no link to NITI Aayog"
+      ],
+      "answer_index": 0,
+      "explanation": "DMEO was created in 2015 by merging the erstwhile Programme Evaluation Organisation and the Independent Evaluation Office into a single attached office under NITI Aayog -- not by splitting NITI Aayog, and not as a private consultancy or Finance Ministry wing."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_014",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Document's title -- 'A Quick Concurrent Evaluation of PMGSY'",
+      "source_excerpt": "The report's title describes it as a quick concurrent evaluation, conducted while PMGSY implementation was ongoing.",
+      "question": "The report is titled 'A Quick Concurrent Evaluation of PMGSY.' What does labelling an evaluation 'concurrent' indicate about its timing, in monitoring-and-evaluation terms?",
+      "options": [
+        "It was conducted while the programme was still ongoing/being implemented, rather than only after it had fully concluded",
+        "It was conducted only after the scheme had been permanently shut down",
+        "It refers to two entirely unrelated schemes being evaluated together",
+        "It means the evaluation used no data at all, only expert opinion"
+      ],
+      "answer_index": 0,
+      "explanation": "'Concurrent' evaluation means the assessment happens alongside ongoing implementation, not only after a programme ends (that would be an 'ex-post' evaluation) -- it does not refer to evaluating unrelated schemes together, nor does it imply an absence of data."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_015",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "Document's rationale for evaluating PMGSY while implementation is ongoing",
+      "source_excerpt": "A concurrent evaluation allows findings to feed back into an ongoing programme, unlike an evaluation conducted only after completion.",
+      "question": "What is the main monitoring-and-evaluation advantage of a 'concurrent' evaluation of an ongoing scheme like PMGSY, compared to waiting until the scheme is fully complete to evaluate it?",
+      "options": [
+        "Findings can feed back into the programme while it is still running, allowing implementers to make mid-course corrections rather than only learning lessons after it is too late to act",
+        "It produces identical findings to a post-completion evaluation, so the timing makes no practical difference",
+        "It removes the need to ever conduct a follow-up evaluation later",
+        "It can only be conducted using satellite imagery, with no field or administrative data"
+      ],
+      "answer_index": 0,
+      "explanation": "The core value of concurrent evaluation is enabling mid-course correction while the programme is still active -- timing does make a practical difference compared to waiting until completion, it does not preclude later follow-up evaluations, and it is not restricted to any single data-collection method."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_016",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PMGSY's well-known implementation tracking system",
+      "source_excerpt": "PMGSY implementation is tracked through the Online Management, Monitoring and Accounting System (OMMAS), a management information system used to track project status and expenditure.",
+      "question": "PMGSY's implementation has long been tracked through an online system known as OMMAS. What is OMMAS primarily used for?",
+      "options": [
+        "Tracking project status, physical progress, and expenditure of PMGSY road works through a management information system",
+        "Issuing driving licences to residents of connected habitations",
+        "Selecting which state gets to host the scheme's annual conference",
+        "Auditing unrelated urban housing schemes"
+      ],
+      "answer_index": 0,
+      "explanation": "OMMAS (Online Management, Monitoring and Accounting System) is PMGSY's management information system for tracking the physical and financial progress of road works -- unrelated to driving licences, hosting conferences, or auditing other, unrelated urban schemes."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_017",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Document's discussion of road quality and maintenance as evaluation indicators",
+      "source_excerpt": "The evaluation examines road quality/durability and post-construction maintenance arrangements as part of assessing PMGSY's delivery.",
+      "question": "A monitoring-and-evaluation exercise for a rural road connectivity scheme like PMGSY needs to look beyond simply 'how many kilometres were built.' Why is tracking road quality and post-construction maintenance arrangements also an important indicator?",
+      "options": [
+        "Because a road that deteriorates quickly without proper maintenance may stop delivering reliable connectivity soon after construction, undermining the scheme's actual purpose even though the kilometre-built target was met",
+        "Because road quality has no bearing on whether a habitation stays connected over time",
+        "Because kilometres built is the only indicator that matters for any road scheme",
+        "Because maintenance is entirely the responsibility of individual villagers, with no institutional tracking needed"
+      ],
+      "answer_index": 0,
+      "explanation": "Quality and maintenance determine whether connectivity, once achieved, actually lasts -- a road that is built but not maintained can quickly become unusable, meaning the raw 'kilometres constructed' output can overstate real, sustained connectivity. Maintenance is typically an institutional responsibility, not left solely to villagers."
+    },
+    {
+      "item_id": "ai_pa_monitoring_evaluation_018",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_monitoring_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Document's discussion of connectivity and usage outcomes",
+      "source_excerpt": "The evaluation assesses usage-based outcomes -- such as access to markets, schools, and health facilities -- beyond the count of roads constructed.",
+      "question": "Beyond counting roads constructed, an evaluation of PMGSY's actual effect would also look at usage-based outcome indicators, such as whether connected habitations show improved access to markets, schools, or health facilities. Why is this outcome-level check necessary in addition to the output count?",
+      "options": [
+        "Because building a road does not automatically guarantee it translates into meaningfully improved access and use by the local population -- that has to be separately verified",
+        "Because roads are, by definition, never actually used once constructed",
+        "Because output counts (kilometres built) are always a perfect substitute for outcome data",
+        "Because outcome-level checks are legally prohibited under PMGSY's evaluation framework"
+      ],
+      "answer_index": 0,
+      "explanation": "A constructed road is an output; whether it actually improves people's access to markets, schools, or health facilities is a separate outcome question that needs its own verification -- output counts are not automatically equivalent to outcomes, and there is no such prohibition on outcome-level assessment."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_001",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Document's methodology note on the 'quick concurrent' evaluation design",
+      "source_excerpt": "A quick concurrent evaluation trades some methodological depth for speed, providing early evidence while the programme is still being implemented.",
+      "question": "How does a 'quick concurrent evaluation' of PMGSY, conducted while the scheme is still being implemented, typically differ in rigour from a full ex-post impact evaluation conducted years after roads are built?",
+      "options": [
+        "It trades some methodological rigour and long-run outcome data for speed, providing early, directional evidence rather than definitive proof of long-term impact",
+        "It is always more methodologically rigorous than any later ex-post evaluation",
+        "There is no meaningful difference between the two types of evaluation",
+        "It focuses exclusively on outcomes occurring decades after implementation"
+      ],
+      "answer_index": 0,
+      "explanation": "A quick, concurrent evaluation prioritises speed and early feedback over the years of follow-up data and rigorous comparison-group designs a full ex-post impact evaluation can use -- it typically offers directional, not definitive, evidence, is not inherently more rigorous, and differs clearly from a later evaluation rather than being identical to it."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_002",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "General impact-evaluation concept illustrated using PMGSY",
+      "source_excerpt": "Impact evaluation of a road connectivity scheme requires estimating what would have happened to a village without the road -- the counterfactual.",
+      "question": "In evaluating PMGSY's impact on a village's economic activity, evaluators need to estimate the 'counterfactual' -- what would have happened without the road. Why is the counterfactual central to impact evaluation, as opposed to simple monitoring?",
+      "options": [
+        "Because impact is defined as the difference between what actually happened with the intervention and what would have happened without it, not simply what happened after the intervention",
+        "Because the counterfactual is simply the exact same data as what was observed after the road was built",
+        "Because monitoring and impact evaluation are identical activities requiring no separate counterfactual concept",
+        "Because a counterfactual only matters for evaluating urban infrastructure, not rural roads"
+      ],
+      "answer_index": 0,
+      "explanation": "Impact is fundamentally a comparison between the observed outcome and the counterfactual (what would have happened anyway) -- without an estimate of that counterfactual, one cannot distinguish the road's actual effect from other changes happening regardless. It is not the same as post-intervention data, and this need for a counterfactual is precisely what distinguishes impact evaluation from simple monitoring."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_003",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "General impact-evaluation concept illustrated using PMGSY",
+      "source_excerpt": "A simple before-after comparison of a village's outcomes cannot rule out other concurrent changes as the true cause.",
+      "question": "Suppose an evaluator compares a village's income levels before and after PMGSY connects it to a market town, and attributes the entire income increase to the new road. What is the key methodological problem with this simple before-after comparison?",
+      "options": [
+        "It cannot rule out that other factors occurring over the same period (e.g. a good monsoon, other government schemes, general economic growth) also contributed to or fully explain the income change",
+        "Before-after comparisons are always the single most rigorous method available for any impact evaluation",
+        "There is no methodological problem, since only PMGSY could possibly affect village income",
+        "The problem only arises if the road happens to be paved rather than unpaved"
+      ],
+      "answer_index": 0,
+      "explanation": "A simple before-after comparison confounds the road's effect with any other changes happening over the same period -- weather, other schemes, broader economic trends -- so it cannot cleanly isolate PMGSY's contribution. It is not the most rigorous available method precisely for this reason, other factors clearly could affect income, and the issue has nothing to do with pavement type."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_004",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "General impact-evaluation concept illustrated using PMGSY's eligibility rules",
+      "source_excerpt": "PMGSY has historically prioritised connectivity for habitations above a fixed population threshold, differing by area category.",
+      "question": "PMGSY has historically prioritised connectivity for habitations above a fixed population threshold. In principle, how could this rule-based cutoff be used to support a more credible impact evaluation design, compared to simply comparing any connected village to any unconnected one?",
+      "options": [
+        "By comparing habitations just above and just below the population cutoff, which are likely to be otherwise similar, isolating the road's effect from broader differences between very large and very small habitations",
+        "By ensuring that every habitation in the country was connected at exactly the same time, eliminating any need for comparison",
+        "By guaranteeing that population size has no relationship to which habitations get connected first",
+        "By making it impossible to ever construct a comparison group"
+      ],
+      "answer_index": 0,
+      "explanation": "Habitations just above and just below a population cutoff tend to be otherwise similar, so comparing them approximates a natural experiment that better isolates the road's effect from confounding differences -- unlike comparing very differently sized villages at large. Connectivity was explicitly staggered by criteria like population, not universally simultaneous, and the cutoff is exactly what makes a comparison group possible."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_005",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "General impact-evaluation concept illustrated using PMGSY",
+      "source_excerpt": "Kilometres of road constructed is an output; increased household income from better market access would be a downstream impact.",
+      "question": "For PMGSY, 'kilometres of all-weather road constructed' is an output, while 'increased household income from better market access' would be a downstream impact. Why is this distinction important when designing an impact evaluation?",
+      "options": [
+        "Because achieving the output does not automatically prove the intended downstream impact occurred -- that requires its own separate evidence and causal analysis",
+        "Because outputs and impacts are simply two different names for exactly the same measurement",
+        "Because only outputs can ever be reliably measured, while impacts can never be measured at all",
+        "Because impact evaluations should only ever look at outputs, never at downstream effects"
+      ],
+      "answer_index": 0,
+      "explanation": "Outputs (roads built) and impacts (income, welfare changes) are conceptually distinct -- completing the output doesn't guarantee the hoped-for downstream impact materialised, so impact evaluation must gather separate evidence on the downstream outcome, not just confirm the output was delivered."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_006",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "General impact-evaluation concept illustrated using PMGSY's quick-evaluation timing",
+      "source_excerpt": "Downstream impacts of connectivity, such as changes in school enrolment or household income, typically take years to materialise and stabilise.",
+      "question": "Why might a 'quick' evaluation of PMGSY be well-suited to assessing outputs (roads completed, quality) but poorly suited to detecting the programme's full downstream impact (e.g. long-run changes in school enrollment or household income)?",
+      "options": [
+        "Because many downstream impacts take years to materialise and stabilise, so a quick evaluation conducted soon after construction may be too early to capture them reliably",
+        "Because downstream impacts always appear before the road itself is even completed",
+        "Because outputs, unlike impacts, cannot be assessed quickly under any evaluation design",
+        "Because there is no realistic time lag between building a road and any resulting change in household income"
+      ],
+      "answer_index": 0,
+      "explanation": "Downstream impacts like income or enrollment changes often take years to show up and stabilise, so an evaluation conducted soon after construction risks measuring too early -- outputs like completed kilometres, by contrast, are observable almost immediately. Impacts do not precede the intervention that causes them, and there typically is a meaningful time lag to account for."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_007",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "General impact-evaluation concept illustrated using overlapping rural schemes",
+      "source_excerpt": "Villages receiving PMGSY roads may simultaneously benefit from rural electrification or drinking-water schemes, complicating attribution.",
+      "question": "Many villages that received PMGSY roads may also have simultaneously benefited from rural electrification or drinking-water schemes. Why does this overlap complicate an impact evaluation that tries to attribute income or welfare changes specifically to PMGSY?",
+      "options": [
+        "Because it becomes difficult to separate PMGSY's specific contribution to observed changes from the effects of the other concurrent interventions occurring in the same villages",
+        "Because it makes it impossible for any village to ever receive more than one government scheme",
+        "Because concurrent schemes always cancel out each other's effects entirely, leaving a net-zero impact to measure",
+        "Because it means PMGSY itself could not have had any road-construction activity in those villages"
+      ],
+      "answer_index": 0,
+      "explanation": "When multiple schemes reach the same villages around the same time, isolating any one scheme's specific contribution to observed changes becomes harder -- a classic attribution challenge in impact evaluation. It doesn't mean villages can't receive multiple schemes, doesn't imply the effects cancel out, and doesn't affect whether PMGSY's own construction activity happened."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_008",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "General impact-evaluation concept illustrated using PMGSY baseline data needs",
+      "source_excerpt": "Documenting a habitation's pre-construction status provides the reference point needed for later impact comparisons.",
+      "question": "Why would it matter for future PMGSY impact evaluations that baseline data (e.g. a habitation's income, school attendance, or market access before road construction) be collected prior to a road being built?",
+      "options": [
+        "Without a documented pre-intervention baseline, there is no reliable starting point against which to measure how much things changed after the road was built",
+        "Baseline data has no bearing on measuring change over time",
+        "Baseline data is only useful if collected after the intervention is already complete",
+        "Baseline data collection is required only for schemes unrelated to infrastructure"
+      ],
+      "answer_index": 0,
+      "explanation": "A pre-intervention baseline is the reference point against which any later change is measured -- without it, there is no reliable way to know how much things actually changed. Baseline data is valuable precisely because it is collected before the intervention, and this logic applies broadly, not only to non-infrastructure schemes."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_009",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "General impact-evaluation concept illustrated using road maintenance and sustained impact",
+      "source_excerpt": "The sustainability of a road's condition affects whether an initial positive impact on connectivity-related outcomes persists.",
+      "question": "If a road built under PMGSY falls into disrepair a few years after construction due to inadequate maintenance, what does this imply about interpreting any initially observed positive impact (e.g., a short-term rise in market visits)?",
+      "options": [
+        "The initial positive impact could fade or reverse over time, so a credible impact evaluation should consider how sustained the intervention (and its effects) actually are, not just an early snapshot",
+        "The initial positive impact is guaranteed to be permanent regardless of the road's later condition",
+        "Maintenance quality has no relationship to whether a connectivity-based impact persists over time",
+        "Once any positive impact is observed once, no further evaluation is ever needed"
+      ],
+      "answer_index": 0,
+      "explanation": "If connectivity later degrades due to poor maintenance, an initially positive impact may not persist -- sound impact evaluation should therefore look at sustainability over time, not just an early snapshot, since maintenance quality directly affects whether the connectivity (and its benefits) endures."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_010",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Document's institutional background -- DMEO's independence",
+      "source_excerpt": "DMEO was structured as an independent evaluation office, formed by merging the Programme Evaluation Organisation and Independent Evaluation Office, rather than being run directly by the implementing ministry.",
+      "question": "DMEO was structured as an 'independent' evaluation office rather than being run directly by the ministry implementing PMGSY. Why does this independence matter for the credibility of impact findings?",
+      "options": [
+        "An evaluator with some distance from the implementing ministry is less likely to face pressure to report favourable results, improving the credibility of its impact conclusions",
+        "Independence has no bearing on how credible an evaluation's findings are perceived to be",
+        "Independent evaluators are legally barred from ever reporting positive findings about a scheme",
+        "Independence means the evaluator cannot access any data about the scheme it is evaluating"
+      ],
+      "answer_index": 0,
+      "explanation": "An evaluator with structural distance from the implementing ministry is less prone to conflict-of-interest pressure to produce favourable findings, strengthening the credibility of its impact assessments -- independence does not bar positive findings when warranted, nor does it cut off the evaluator's access to programme data it needs to do its job."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_011",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "General impact-evaluation concept illustrated using a with-and-without design",
+      "source_excerpt": "Comparing currently connected habitations to otherwise-similar unconnected ones at the same point in time is a 'with-and-without' comparison design.",
+      "question": "Instead of a before-after comparison, an evaluator could compare currently-connected habitations against otherwise-similar, still-unconnected habitations at the same point in time -- a 'with-and-without' design. What is the main benefit of this approach over a simple before-after comparison?",
+      "options": [
+        "By comparing two groups at the same point in time, it helps control for common time-varying factors (like a shared monsoon or a shared economic trend) that would otherwise confound a before-after comparison of a single village",
+        "It requires comparing a village only to itself, exactly as a before-after design does",
+        "It eliminates any need to find habitations that are otherwise similar to each other",
+        "It can only be used for evaluating urban, not rural, connectivity schemes"
+      ],
+      "answer_index": 0,
+      "explanation": "Comparing connected and unconnected habitations at the same time point helps net out shared time-varying influences that a single village's before-after comparison cannot separate from the road's own effect. It is a genuinely different design from before-after, does require finding otherwise-comparable habitations, and applies equally in principle to rural connectivity contexts like PMGSY."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_012",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "General impact-evaluation concept illustrated using access vs welfare outcomes",
+      "source_excerpt": "Improved physical access to a market or clinic does not automatically translate into improved household welfare outcomes.",
+      "question": "Why might an impact evaluation of PMGSY need to separately assess 'access' outcomes (e.g., can residents physically reach a market or clinic more easily) from 'welfare' outcomes (e.g., did household income or health actually improve)?",
+      "options": [
+        "Because improved access is a necessary step but does not automatically guarantee that welfare gains follow -- other constraints (cost, information, demand) could still prevent access from translating into better outcomes",
+        "Because access and welfare outcomes are, by definition, exactly the same thing and never need separate measurement",
+        "Because welfare outcomes always improve automatically the moment physical access improves, with no exceptions",
+        "Because access outcomes are impossible to measure in any rural connectivity evaluation"
+      ],
+      "answer_index": 0,
+      "explanation": "Physical access is often a necessary but not sufficient condition for welfare gains -- other barriers such as affordability, awareness, or demand-side constraints can prevent improved access from translating into actual income or health improvements, which is why evaluators track both separately."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_013",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "General impact-evaluation concept illustrated using rapid vs panel data collection",
+      "source_excerpt": "A quick evaluation is more likely to rely on rapid household or administrative data collection than on a long-running panel survey.",
+      "question": "A 'quick' evaluation is more likely to rely on rapid household or administrative data collection than on a long-running panel survey tracking the same households over many years. What trade-off does this represent for impact evaluation?",
+      "options": [
+        "Faster, lighter data collection speeds up delivery of findings but generally sacrifices some statistical power and the ability to track the same units' changes over a long period",
+        "There is no trade-off at all -- rapid data collection is strictly superior to long-panel surveys in every respect",
+        "Rapid data collection always produces more statistically powerful results than a multi-year panel survey",
+        "Administrative data can never be used for any impact evaluation purpose"
+      ],
+      "answer_index": 0,
+      "explanation": "Rapid data collection methods deliver findings faster but typically involve smaller samples or single time-points, sacrificing the statistical power and long-run tracking a multi-year panel survey would offer -- a genuine trade-off, not a strict superiority in either direction, and administrative data remains a legitimate, if limited, input for impact assessment."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_014",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "General impact-evaluation concept illustrated using PMGSY's prioritisation criteria",
+      "source_excerpt": "PMGSY has prioritised connecting larger and certain specific-category (hill, desert, tribal, conflict-affected) habitations first, rather than connecting all habitations at random.",
+      "question": "PMGSY has prioritised connecting larger and more specific-category habitations (e.g., certain hill, desert, tribal or conflict-affected areas) first. If an evaluator simply compares all already-connected habitations to all not-yet-connected ones nationally, what selection-bias risk arises?",
+      "options": [
+        "The two groups may differ systematically in ways related to the prioritisation criteria themselves (e.g. size or terrain), so any observed outcome difference could reflect those pre-existing differences rather than the road's true causal effect",
+        "No selection-bias risk exists, since which habitations get connected first is entirely random",
+        "Selection bias only affects urban infrastructure evaluations, never rural road programmes",
+        "The prioritisation criteria guarantee that connected and unconnected habitations are always statistically identical"
+      ],
+      "answer_index": 0,
+      "explanation": "Because connection was not random but based on criteria like population size and category, a national comparison of all connected versus all unconnected habitations risks conflating the road's effect with pre-existing differences tied to those very selection criteria -- a textbook selection-bias problem, not confined to urban settings, and not eliminated by the existence of prioritisation rules, which is precisely the source of the bias."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_015",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "evaluate",
+      "locator": "General impact-evaluation concept illustrated using how findings should be interpreted",
+      "source_excerpt": "A quick concurrent evaluation's findings are best treated as early, directional evidence rather than a definitive impact verdict.",
+      "question": "How should policymakers appropriately interpret the findings of a 'quick concurrent evaluation' of PMGSY, given its speed-oriented design?",
+      "options": [
+        "As early, directional evidence useful for identifying implementation issues and enabling course correction, rather than as a definitive, final verdict on the programme's long-term impact",
+        "As the single, final, unchallengeable word on PMGSY's long-term impact, requiring no further evaluation",
+        "As having no practical use for policymaking whatsoever",
+        "As applicable only to programmes outside the rural development sector"
+      ],
+      "answer_index": 0,
+      "explanation": "Given its speed-oriented, concurrent design, such an evaluation is best treated as early, directional evidence for course correction -- not a final, definitive impact verdict, but also not something without practical value, and its logic applies to the rural road programme it was designed to study."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_016",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "General impact-evaluation concept illustrated using variation across overlapping schemes",
+      "source_excerpt": "Where habitations received different combinations of concurrent schemes, comparing across those combinations can help isolate a single scheme's contribution.",
+      "question": "Given that rural transformation often results from multiple concurrent schemes (roads, electrification, water supply) rather than any single one, what evaluation-design step can help better isolate PMGSY's specific contribution?",
+      "options": [
+        "Explicitly comparing habitations that received PMGSY roads but not the other concurrent schemes against habitations that received the other schemes but not PMGSY, where such variation exists",
+        "Assuming that any observed change is automatically caused entirely by PMGSY, regardless of what else changed",
+        "Refusing to evaluate any village that also received another government scheme",
+        "Concluding that isolating any single scheme's effect is always completely impossible, so no attempt should ever be made"
+      ],
+      "answer_index": 0,
+      "explanation": "Where variation exists in which combination of schemes different habitations received, comparing across those different combinations can help isolate PMGSY's own contribution -- a more careful design than either assuming full attribution to PMGSY alone or giving up on attribution entirely by excluding overlapping villages."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_017",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "General impact-evaluation concept illustrated using complementary evaluation timelines",
+      "source_excerpt": "A quick concurrent evaluation and a later rigorous impact evaluation with matched comparison groups serve complementary purposes.",
+      "question": "How does a 'quick concurrent evaluation' of PMGSY relate to a later, more rigorous ex-post impact evaluation that might use matched comparison groups and multi-year outcome data?",
+      "options": [
+        "The two are complementary -- the quick evaluation offers early operational feedback, while the later rigorous evaluation is better positioned to establish credible long-term causal impact",
+        "The quick evaluation makes any later rigorous impact evaluation entirely redundant",
+        "The two evaluation types are functionally identical and interchangeable in every respect",
+        "A rigorous ex-post evaluation must always be conducted before any concurrent evaluation is attempted"
+      ],
+      "answer_index": 0,
+      "explanation": "A quick concurrent evaluation and a later rigorous impact evaluation serve complementary purposes -- fast operational feedback versus credible long-term causal attribution -- rather than one making the other redundant, being interchangeable, or requiring a fixed sequencing where the rigorous one must always come first."
+    },
+    {
+      "item_id": "ai_pa_impact_evaluation_018",
+      "doc_id": "dmeo_pmgsy_eval",
+      "competency_id": "pa_impact_evaluation",
+      "difficulty": "hard",
+      "bloom_level": "create",
+      "locator": "Synthesis question drawing on the document's evaluation-design challenges",
+      "source_excerpt": "A credible causal assessment of PMGSY's long-term impact would combine a documented baseline, a credible comparison group, and outcome data timed to allow downstream effects to emerge.",
+      "question": "Drawing on the challenges above (counterfactual estimation, selection bias, attribution amid concurrent schemes, and time lags), which evaluation design would best support a credible assessment of PMGSY's causal impact on household income several years after road construction?",
+      "options": [
+        "A design using pre-construction baseline data, a matched or rule-based comparison group of otherwise-similar unconnected habitations, and outcome data collected long enough after construction for downstream effects to materialise",
+        "A single post-construction survey of only the connected habitations, with no comparison group and no baseline data",
+        "A one-week data collection exercise conducted immediately after roads are declared complete",
+        "A design that ignores any habitations that also received other rural development schemes, discarding all available data on them"
+      ],
+      "answer_index": 0,
+      "explanation": "Combining a documented pre-intervention baseline, a credible comparison group (matched or based on a rule like the population-threshold cutoff), and outcome measurement timed to allow downstream effects to emerge is the strongest available design among these options -- unlike a single post-hoc survey with no comparison or baseline, an immediate one-week snapshot too early to catch downstream effects, or discarding informative data on habitations that also received other schemes, which could instead be used to help isolate PMGSY's own contribution."
+    }
+  ]
+}

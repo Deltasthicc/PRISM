@@ -272,6 +272,77 @@ def test_generate_quiz_falls_back_deterministically_without_api_key(monkeypatch)
         assert question["difficulty"] in {"easy", "medium", "hard"}
 
 
+# ─── deterministic answer-index derivation (never trust a bare stated index) ───
+
+def _make_llm_item(**overrides):
+    item = {
+        "question": "What does sampling design determine?",
+        "options": ["The frame and weights", "The font used", "The office address", "The logo"],
+        "option_truth": [True, False, False, False],
+        "explanation": "The source states sampling design determines the frame and weights.",
+        "source_excerpt": "Sampling design determines which frame is used",
+        "competency": "Sampling",
+        "bloom_level": "understand",
+        "difficulty": "medium",
+    }
+    item.update(overrides)
+    return item
+
+
+def test_answer_index_is_derived_from_option_truth_not_a_stated_index():
+    from services.quiz_generator import _derive_answer_index
+
+    # A separately-stated answer_index is not even read anymore -- only
+    # option_truth decides. This is the exact mismatch class this feature
+    # exists to make impossible: an LLM's explanation and its answer_index
+    # field drifting apart with nothing to catch it.
+    item = _make_llm_item(option_truth=[False, False, True, False], answer_index=0)
+    assert _derive_answer_index(item) == 2
+
+
+def test_negation_question_derives_the_one_false_option():
+    from services.quiz_generator import _derive_answer_index
+
+    item = _make_llm_item(
+        is_negation=True,
+        option_truth=[True, True, False, True],
+    )
+    assert _derive_answer_index(item) == 2
+
+
+def test_ambiguous_option_truth_is_rejected_not_guessed():
+    from services.quiz_generator import _derive_answer_index
+
+    # Two options marked true (or zero) for a normal question is a
+    # structural failure, not a 50/50 guess -- reject the item outright.
+    assert _derive_answer_index(_make_llm_item(option_truth=[True, True, False, False])) is None
+    assert _derive_answer_index(_make_llm_item(option_truth=[False, False, False, False])) is None
+
+
+def test_validate_questions_rejects_items_with_missing_option_truth():
+    from services.quiz_generator import _validate_questions
+
+    source = "Sampling design determines which frame is used, how weights are computed."
+    legacy_item = {
+        "question": "What does sampling design determine?",
+        "options": ["The frame and weights", "The font used", "The office address", "The logo"],
+        "answer_index": 0,  # old-style field, no longer trusted or read
+        "source_excerpt": "Sampling design determines which frame is used",
+    }
+    with pytest.raises(ValueError):
+        _validate_questions([legacy_item], source, requested_count=1)
+
+
+def test_validate_questions_accepts_a_well_formed_option_truth_item():
+    from services.quiz_generator import _validate_questions
+
+    source = "Sampling design determines which frame is used, how weights are computed."
+    item = _make_llm_item(source_excerpt="Sampling design determines which frame is used")
+    validated = _validate_questions([item], source, requested_count=1)
+    assert len(validated) == 1
+    assert validated[0]["answer_index"] == 0
+
+
 def test_estimate_difficulty_scales_with_term_and_sentence_length():
     from services.quiz_generator import _estimate_difficulty
 

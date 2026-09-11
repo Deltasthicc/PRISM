@@ -1,0 +1,1879 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-12",
+  "note": "Batch 4 of AI-authored, source-grounded MCQs for the official-statistics curriculum, covering os_sdg_indicators, os_metadata_standards, os_statistical_programming, os_data_management_sql, os_apis_interoperability and os_open_data.",
+  "questions": [
+    {
+      "item_id": "ai_os_sdg_indicators_001",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "SDG National Indicator Framework 2026, Target 1.1",
+      "source_excerpt": "Target 1.1: By 2030, eradicate extreme poverty for all people everywhere... National Indicator is under development",
+      "question": "Per MoSPI's SDG National Indicator Framework 2026, what does the entry for Target 1.1 (eradicating extreme poverty measured at USD 1.25/day) show in place of a National Indicator?",
+      "options": [
+        "\"National Indicator is under development\"",
+        "A fully defined indicator sourced from NITI Aayog",
+        "A proxy indicator borrowed from the Global Indicator Framework",
+        "An indicator marked \"Discontinued\""
+      ],
+      "answer_index": 0,
+      "explanation": "For Target 1.1, the NIF 2026 document has not yet finalised a national indicator and explicitly states 'National Indicator is under development' rather than providing indicator metadata, showing that NIF coverage of the 169 SDG targets is still evolving for some targets."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_002",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "SDG NIF 2026, Indicator 1.2.2",
+      "source_excerpt": "1.2.2: Proportion of men, women and children of all ages living in poverty in all its dimensions... Periodicity: 3 Years... NITI Aayog",
+      "question": "Per the SDG NIF 2026, what is the reporting periodicity of Indicator 1.2.2 (proportion of the population living in multidimensional poverty)?",
+      "options": [
+        "3 years",
+        "Annual",
+        "5 years",
+        "Monthly"
+      ],
+      "answer_index": 0,
+      "explanation": "Indicator 1.2.2, the Multidimensional Poverty Index-based measure sourced from NITI Aayog, is listed in the NIF 2026 with a periodicity of 3 years, distinct from Indicator 1.2.1's 5-year periodicity for the national poverty line measure."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_003",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "SDG NIF 2026, Indicator 1.3.1",
+      "source_excerpt": "1.3.1: Proportion of population covered by at least one social protection benefit... Ministry of Labour and Employment... Disaggregated by sex and age groups",
+      "question": "Per the SDG NIF 2026, which Ministry is listed as the data source for Indicator 1.3.1 (proportion of population covered by at least one social protection benefit)?",
+      "options": [
+        "Ministry of Labour and Employment",
+        "Ministry of Women and Child Development",
+        "Ministry of Rural Development",
+        "NITI Aayog"
+      ],
+      "answer_index": 0,
+      "explanation": "The NIF 2026 attributes Indicator 1.3.1 to the Ministry of Labour and Employment (International Labour Affairs Section), which compiles social-protection coverage data disaggregated by sex and age group at the national level."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_004",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "SDG NIF 2026, Indicator 3.1.1",
+      "source_excerpt": "3.1.1: Maternal Mortality Ratio (MMR)... Office of the Registrar General & Census Commissioner, India... reported under the Sample Registration System (SRS)",
+      "question": "Per the SDG NIF 2026, which office compiles India's Maternal Mortality Ratio (Indicator 3.1.1) using data from the Sample Registration System?",
+      "options": [
+        "Office of the Registrar General & Census Commissioner, India",
+        "National AIDS Control Organisation",
+        "Central TB Division",
+        "Directorate of National Vector Borne Disease Control Programme"
+      ],
+      "answer_index": 0,
+      "explanation": "MMR (Indicator 3.1.1) is sourced from the Office of the Registrar General & Census Commissioner of India, under the Ministry of Home Affairs, which derives the ratio from maternal deaths and live births reported through the Sample Registration System (SRS)."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_005",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "SDG NIF 2026, Indicator 3.1.2",
+      "source_excerpt": "3.1.2: Percentage of births attended by skilled health personnel... Data is collected in NFHS... Periodicity: 3 years",
+      "question": "Per the SDG NIF 2026, which survey is the data source for Indicator 3.1.2 (percentage of births attended by skilled health personnel)?",
+      "options": [
+        "National Family Health Survey (NFHS)",
+        "Periodic Labour Force Survey (PLFS)",
+        "Annual Survey of Industries (ASI)",
+        "Sample Registration System (SRS)"
+      ],
+      "answer_index": 0,
+      "explanation": "Indicator 3.1.2 is compiled by the Ministry of Health and Family Welfare from the National Family Health Survey (NFHS), which asks women aged 15-49 about skilled attendance at their most recent live birth, and is released with a 3-year periodicity."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_006",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "SDG NIF 2026, Indicator 3.2.1",
+      "source_excerpt": "3.2.1: Under-five Mortality Rate... Greville's Method... Data is collected under Sample Registration System.",
+      "question": "Per the SDG NIF 2026's metadata for Indicator 3.2.1 (Under-five Mortality Rate), which computation method is named for deriving the rate from Sample Registration System data?",
+      "options": [
+        "Greville's Method",
+        "Tendulkar Committee methodology",
+        "Direct standardisation",
+        "Chain-linking method"
+      ],
+      "answer_index": 0,
+      "explanation": "The NIF 2026 metadata for Under-five Mortality Rate specifically names Greville's Method as the computation approach applied to SRS-based age-specific mortality data, distinguishing it from the Tendulkar methodology used for poverty indicator 1.2.1."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_007",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "SDG NIF 2026, Indicator 3.3.1",
+      "source_excerpt": "3.3.1: Number of new HIV infections per 1,000 uninfected population... National AIDS Control Organization... Partial match with GIF 3.3.1",
+      "question": "Per the SDG NIF 2026, which agency provides data for Indicator 3.3.1 (new HIV infections per 1,000 uninfected population)?",
+      "options": [
+        "National AIDS Control Organization (NACO)",
+        "Central TB Division",
+        "Directorate of National Vector Borne Disease Control Programme",
+        "Indian Council of Medical Research"
+      ],
+      "answer_index": 0,
+      "explanation": "Indicator 3.3.1 is sourced from the National AIDS Control Organization under the Ministry of Health and Family Welfare, and the NIF 2026 marks its mapping to the Global Indicator Framework as only a 'Partial match', unlike several other Goal 3 indicators marked 'Exact match'."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_008",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "SDG NIF 2026, Indicator 3.3.2",
+      "source_excerpt": "3.3.2: Tuberculosis incidence per 1,00,000 population... Central TB Division... Level of Disaggregation: National... Exact match with GIF 3.3.2",
+      "question": "Per the SDG NIF 2026, at what level of disaggregation is Indicator 3.3.2 (Tuberculosis incidence) reported?",
+      "options": [
+        "National only, with no further breakdown",
+        "State/UT",
+        "District",
+        "Rural/Urban"
+      ],
+      "answer_index": 0,
+      "explanation": "Unlike most Goal 3 indicators that disaggregate to State/UT level, the NIF 2026 lists Indicator 3.3.2's Level of Disaggregation as National, meaning the TB incidence rate compiled by the Central TB Division is not further broken down sub-nationally in this framework."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_009",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "SDG NIF 2026, Indicator 4.1.1",
+      "source_excerpt": "4.1.1: Percentage of students... achieving at least a minimum proficiency level... National Achievement Survey (NAS) 2017 and 2021... PARAKH Rashtriya Sarvekshan 2024",
+      "question": "Per the SDG NIF 2026, which two survey instruments together supply the data for Indicator 4.1.1 (learning-outcome proficiency of school students)?",
+      "options": [
+        "National Achievement Survey (NAS) and PARAKH Rashtriya Sarvekshan",
+        "Periodic Labour Force Survey and Time Use Survey",
+        "Annual Status of Education Report and Census",
+        "NFHS and Economic Census"
+      ],
+      "answer_index": 0,
+      "explanation": "The NIF 2026 documents Indicator 4.1.1 as drawing on NCERT's National Achievement Survey (2017 and 2021 rounds) and its successor PARAKH Rashtriya Sarvekshan (2024 round), both conducted for the Department of School Education & Literacy."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_010",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "SDG NIF 2026, Indicator 4.1.2",
+      "source_excerpt": "4.1.2: Completion rate for grade 5, grade 8 and grade 12... Data is available on the website: https://dashboard.udiseplus.gov.in",
+      "question": "Per the SDG NIF 2026, which dashboard is cited as the data-availability reference for Indicator 4.1.2 (completion rate at grades 5, 8 and 12)?",
+      "options": [
+        "UDISE+ dashboard",
+        "SDG India Dashboard",
+        "PARAKH dashboard",
+        "National Data and Analytics Platform"
+      ],
+      "answer_index": 0,
+      "explanation": "The NIF 2026 lists the UDISE+ (Unified District Information System for Education Plus) dashboard, maintained by the Department of School Education & Literacy, as where completion-rate data for Indicator 4.1.2 is published."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_011",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "SDG NIF 2026, Indicator 5.1.1",
+      "source_excerpt": "...a questionnaire comprising 42 Yes/No questions under the following four areas of law... Overarching legal frameworks and public life; Violence against women; Employment and economic benefits; Marriage and family",
+      "question": "Per the SDG NIF 2026's metadata for Indicator 5.1.1 (legal frameworks for gender equality), how many Yes/No questions does the underlying assessment questionnaire comprise?",
+      "options": [
+        "42",
+        "17",
+        "100",
+        "306"
+      ],
+      "answer_index": 0,
+      "explanation": "The NIF 2026 describes Indicator 5.1.1 as based on a 42-question Yes/No legal-framework assessment spanning four areas of law, drawn from CEDAW and the Beijing Platform for Action, and compiled by the Ministry of Women and Child Development."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_012",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "SDG NIF 2026, Indicator 5.1.2",
+      "source_excerpt": "5.1.2: Per lakh women that have been subjected to dowry offences... National Crime Record Bureau... Publication: Crime in India",
+      "question": "Per the SDG NIF 2026, which publication is cited as the reference source for Indicator 5.1.2 (dowry-offence rate per lakh women)?",
+      "options": [
+        "\"Crime in India\" (NCRB)",
+        "\"Women and Men in India\" (MoSPI)",
+        "SDG India Index Report (NITI Aayog)",
+        "Annual Report, PLFS"
+      ],
+      "answer_index": 0,
+      "explanation": "Indicator 5.1.2 is compiled by the National Crime Records Bureau (Ministry of Home Affairs) from its annual 'Crime in India' publication, expressing registered dowry offences as a rate per 1,00,000 female population."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_013",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "SDG NIF 2026, Indicator 6.1.1",
+      "source_excerpt": "6.1.1: Percentage of household getting safe and adequate drinking water... Rural: Ministry of Jal Shakti... Urban: Ministry of Housing and Urban Affairs (AMRUT Scheme)",
+      "question": "Per the SDG NIF 2026, which Ministry/Scheme is the data source for the urban component of Indicator 6.1.1 (piped water supply coverage)?",
+      "options": [
+        "Ministry of Housing and Urban Affairs, under the AMRUT Scheme",
+        "Ministry of Jal Shakti, under the Jal Jeevan Mission",
+        "Ministry of Rural Development",
+        "Ministry of Environment, Forest and Climate Change"
+      ],
+      "answer_index": 0,
+      "explanation": "Indicator 6.1.1 is jointly sourced: the rural component comes from the Department of Drinking Water and Sanitation (Ministry of Jal Shakti), while the urban component comes from the AMRUT Mission Directorate under the Ministry of Housing and Urban Affairs."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_014",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "SDG NIF 2026, Indicator 7.1.1",
+      "source_excerpt": "7.1.1: Percentage of households electrified... percentage of households that have been electrified under the 'Saubhagya' scheme... Ministry of Power... Central Electricity Authority",
+      "question": "Per the SDG NIF 2026, Indicator 7.1.1 (percentage of households electrified) measures coverage achieved under which government scheme?",
+      "options": [
+        "Saubhagya scheme",
+        "Ujjwala Yojana",
+        "AMRUT Scheme",
+        "Jal Jeevan Mission"
+      ],
+      "answer_index": 0,
+      "explanation": "The NIF 2026 defines Indicator 7.1.1 as the percentage of eligible households electrified under the 'Saubhagya' (Pradhan Mantri Sahaj Bijli Har Ghar Yojana) scheme, compiled by the Central Electricity Authority for the Ministry of Power."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_015",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "SDG NIF 2026, Indicator 7.3.1",
+      "source_excerpt": "7.3.1: Energy intensity measured in terms of primary energy and GDP, (in mega joules per rupee)... Numerator: Total Primary Energy... Denominator: Gross Domestic Product at constant price... Multiplier: Nil",
+      "question": "Per the SDG NIF 2026, Indicator 7.3.1 (energy intensity) is expressed in which unit of measurement?",
+      "options": [
+        "Mega joules per rupee",
+        "Percent",
+        "Per 1,00,000 population",
+        "Kilowatt-hours per capita"
+      ],
+      "answer_index": 0,
+      "explanation": "Energy intensity (Indicator 7.3.1) is computed as total primary energy divided by GDP at constant prices, with no multiplier applied, giving a unit of mega joules per rupee -- distinguishing it from the percentage- or rate-based units used by most other NIF indicators."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_016",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "SDG NIF 2026, Indicator 8.1.1",
+      "source_excerpt": "8.1.1: Annual growth rate of GDP (adjusted to price changes) per capita... Ministry of Statistics and Programme Implementation, National Accounts Division",
+      "question": "Per the SDG NIF 2026, which Division within MoSPI is credited as the data source for Indicator 8.1.1 (annual growth rate of real GDP per capita)?",
+      "options": [
+        "National Accounts Division",
+        "Social Statistics Division",
+        "Economic Statistics Division",
+        "Coordination and Publication Division"
+      ],
+      "answer_index": 0,
+      "explanation": "Indicator 8.1.1 is attributed to MoSPI's National Accounts Division, which compiles real (price-adjusted) GDP per capita growth as an exact match to the corresponding Global Indicator Framework indicator."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_017",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "SDG NIF 2026, Indicator 16.1.1",
+      "source_excerpt": "16.1.1: Number of victims of intentional homicide per 1,00,000 population... Numerator: Number of victims reported under Murder (IPC Section 302IPC)",
+      "question": "Per the SDG NIF 2026, Indicator 16.1.1 (intentional homicide victims per 1,00,000 population) is computed using victims registered under which legal provision?",
+      "options": [
+        "Section 302 of the Indian Penal Code (Murder)",
+        "Section 376 of the Indian Penal Code",
+        "The POCSO Act",
+        "The Dowry Prohibition Act, 1961"
+      ],
+      "answer_index": 0,
+      "explanation": "The NIF 2026 defines the numerator for Indicator 16.1.1 as victims registered under IPC Section 302 (Murder), compiled by the National Crime Records Bureau and published in 'Crime in India', with a 'Partial match' to the corresponding Global Indicator."
+    },
+    {
+      "item_id": "ai_os_sdg_indicators_018",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_sdg_indicators",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "SDG NIF 2026, Indicator 17.1.1",
+      "source_excerpt": "17.1.1: Total government revenue as a proportion of GDP, by source... Numerator: Ministry of Finance... Denominator: Ministry of Statistics and Programme Implementation",
+      "question": "Per the SDG NIF 2026, Indicator 17.1.1 (total government revenue as a proportion of GDP) draws its numerator and denominator from two different sources -- which Ministry supplies the GDP denominator?",
+      "options": [
+        "Ministry of Statistics and Programme Implementation",
+        "Ministry of Finance",
+        "NITI Aayog",
+        "Reserve Bank of India"
+      ],
+      "answer_index": 0,
+      "explanation": "For Indicator 17.1.1, the NIF 2026 metadata splits sourcing across two agencies: the Ministry of Finance supplies total revenue receipts (the numerator) while MoSPI's National Accounts Division supplies GDP at current prices (the denominator), illustrating how a single NIF indicator can combine data from multiple source ministries."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_001",
+      "doc_id": "nmds_2",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NMDS for Statistical Products, Section A.1, p.3",
+      "source_excerpt": "The Metadata process is fully integrated in the Generic Statistical Business Process Model (GSBPM) which has metadata as one of the key elements in the version 5.1.",
+      "question": "Per MoSPI's National Metadata Structure (NMDS) document, metadata is described as fully integrated into which UNECE statistical process model?",
+      "options": [
+        "The Generic Statistical Business Process Model (GSBPM)",
+        "The System of National Accounts (SNA)",
+        "The ISO/IEC 11179 metadata registry standard",
+        "The Dublin Core metadata schema"
+      ],
+      "answer_index": 0,
+      "explanation": "NMDS Section A explicitly states that the metadata process is fully integrated into the Generic Statistical Business Process Model (GSBPM version 5.1), the UNECE reference model for statistical production, distinguishing it from generic metadata standards like Dublin Core or ISO/IEC 11179 used elsewhere in e-governance."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_002",
+      "doc_id": "nmds_2",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NMDS, Section D 'Metadata Management' core principles, p.5",
+      "source_excerpt": "i. Metadata Handling: a. Statistical Business Process Model b. Active, not Passive c. Reuse for Efficiency d. Version Preservations",
+      "question": "Per NMDS's core principles for 'Metadata Handling', which principle warns that metadata's usefulness will 'degrade with time' unless it is compiled and maintained on an ongoing basis?",
+      "options": [
+        "Active, not Passive",
+        "Reuse for Efficiency",
+        "Version Preservation",
+        "Single Source"
+      ],
+      "answer_index": 0,
+      "explanation": "NMDS's Metadata Management section (D.2) explains that metadata must be actively, not passively, maintained -- 'the currency, and thus use of Metadata will degrade with time' if it is not kept current -- one of four principles listed under 'Metadata Handling'."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_003",
+      "doc_id": "nmds_2",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "NMDS, Section D, 'Metadata Authority' principles, p.5",
+      "source_excerpt": "ii. Metadata Authority e. Registration f. Single Source g. One Entry/Update h. Standards Variations",
+      "question": "Per NMDS's 'Metadata Authority' principles, which principle calls for metadata to be recorded and updated at only one authoritative place to avoid inconsistent duplicate copies?",
+      "options": [
+        "Single Source",
+        "Version Preservation",
+        "Capture at Source",
+        "Variant Formats"
+      ],
+      "answer_index": 0,
+      "explanation": "Under 'Metadata Authority', NMDS lists 'Single Source' (alongside Registration, One Entry/Update and Standards Variations) as the principle ensuring metadata has one authoritative origin rather than multiple, potentially inconsistent, copies across systems."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_004",
+      "doc_id": "nmds_2",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NMDS, Concept 7.1 'Comparability - over time', p.14",
+      "source_excerpt": "Distinguish three broad possibilities: 1. There have been no changes... 2. There have been some changes but not enough to warrant... a break in series. 3. There have been sufficient changes to warrant the designation of a break in series.",
+      "question": "Per NMDS Concept 7.1 ('Comparability - over time'), how many broad possibilities does the guidance distinguish when assessing whether a statistical series has a 'break'?",
+      "options": [
+        "Three",
+        "Two",
+        "Four",
+        "Five"
+      ],
+      "answer_index": 0,
+      "explanation": "NMDS instructs producers to distinguish three possibilities when reporting comparability over time: no changes, some changes not warranting a break in series, or sufficient changes to warrant designating a break in series."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_005",
+      "doc_id": "nmds_2",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NMDS, Concept 5.1 'Sampling error', footnote 3, p.13",
+      "source_excerpt": "In international terminology, A1 is simply used for Sampling Errors. In other words, indicator for Sampling Errors is denoted by A1.",
+      "question": "Per NMDS's guidance on Concept 5.1 ('Sampling error'), what shorthand code does international (ESS) terminology use to denote the Sampling Errors quality indicator?",
+      "options": [
+        "A1",
+        "Q1",
+        "SE-1",
+        "T7"
+      ],
+      "answer_index": 0,
+      "explanation": "NMDS's footnote on Concept 5.1 notes that in international (European Statistical System) terminology, the Sampling Errors indicator is simply denoted 'A1', a convention it asks producer reports to reference when reporting sampling error ranges."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_006",
+      "doc_id": "nmds_2",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NMDS, Concept 3.6 'Data access', p.11",
+      "source_excerpt": "Title: Name by which the data is known; Dataset Edition: Edition of data (ex: first, second, final etc); Dataset Reference data type... Presentation Format... Dataset Language... Status/Version",
+      "question": "Per NMDS's Concept 3.6 ('Data access'), which of the following is one of the specific sub-details a data producer should mention about a dataset?",
+      "options": [
+        "Dataset Edition (e.g., first, second, final)",
+        "Staff headcount of the producing division",
+        "The dataset's retail price in the app store",
+        "The producer's annual training budget"
+      ],
+      "answer_index": 0,
+      "explanation": "NMDS's Data access concept lists specific sub-details users need, including Title, Dataset Edition, Reference data type, Presentation Format, Dataset Language and Status/Version -- none of which concern the producing agency's staffing or budget."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_007",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "NDSAP Implementation Guidelines, Section 7.2, p.20-21",
+      "source_excerpt": "Frequency (Required): It mentions the time interval over which the dataset is published... Granularity of Data: It mentions the time interval over which the data inside the dataset is collected/updated",
+      "question": "Per NDSAP's metadata elements for Resources, how does the 'Frequency' field differ from the 'Granularity of Data' field?",
+      "options": [
+        "Frequency is how often the dataset is published on the OGD Platform, while Granularity is how often the underlying data is itself collected or updated",
+        "Frequency refers to file size, while Granularity refers to file format",
+        "Frequency is optional while Granularity is mandatory for every dataset",
+        "Frequency applies only to Apps, while Granularity applies only to Datasets"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP's Section 7.2 distinguishes the two fields precisely: 'Frequency' records the publication interval of the dataset on the OGD Platform, whereas 'Granularity of Data' records the interval at which the underlying data is collected or updated -- a useful distinction for interoperable metadata since a dataset can be republished more or less often than its data changes."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_008",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Section 7.1, p.20",
+      "source_excerpt": "Asset Jurisdiction (Required): This is a required field to identify the exact location or area to which the catalog and resources (dataset/apps) caters to viz. entire country, state/province, district, city, etc.",
+      "question": "Per NDSAP's required metadata elements for a Catalog, which field records the exact geographic or administrative scope (country, state, district, etc.) that the catalog covers?",
+      "options": [
+        "Asset Jurisdiction",
+        "Sector & Sub-Sector",
+        "Group Name",
+        "Keywords"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP's Catalog-level metadata schema requires an 'Asset Jurisdiction' field identifying the precise geographic area -- entire country, state/province, district or city -- to which a catalog's resources apply, separate from the sector/sub-sector classification field."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_009",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Section 7.2, p.20",
+      "source_excerpt": "Reference URLs: This may include description to the study design, instrumentation, implementation, limitations, and appropriate use of the dataset or tool.",
+      "question": "Per NDSAP's metadata guidance, what kind of information may a Resource's 'Reference URLs' field describe?",
+      "options": [
+        "Study design, instrumentation, implementation, limitations, and appropriate use of the dataset",
+        "Only the dataset's file download link",
+        "The names of citizens who requested the dataset",
+        "The department's annual budget allocation"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP describes 'Reference URLs' as a metadata field for linking to documentation on study design, instrumentation, implementation, limitations and appropriate use of a dataset or tool -- helping users judge fitness for purpose, consistent with good statistical metadata practice."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_010",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, definitions 2.7, p.24",
+      "source_excerpt": "Metadata allows the data to be traced to a known origin and know quality.",
+      "question": "Per NDSAP's definitions, besides describing who/when/what/where/why/how data were generated, metadata also allows data to be traced to what?",
+      "options": [
+        "A known origin and known quality",
+        "A known file size",
+        "A known market price",
+        "A known download counter"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP's definition of metadata (2.7) adds that, beyond describing the circumstances of data generation, metadata lets users trace a dataset back to a known origin and known quality -- key to establishing trust in shared government data."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_011",
+      "doc_id": "sif_guideline",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "SIF Guideline v1.1, Section D, para 8, p.4",
+      "source_excerpt": "The Union Cabinet in its meeting held on 24th October 2018, approved the constitution of a High Level Steering Committee (HLSC) under chairmanship of Chief Statistician of India (CSI) & Secretary, MoSPI...",
+      "question": "Per MoSPI's SIF Guideline, the High Level Steering Committee (HLSC) tasked with periodically reviewing and refining the National Indicator Framework is chaired by whom?",
+      "options": [
+        "The Chief Statistician of India (CSI) & Secretary, MoSPI",
+        "The NITI Aayog Vice Chairman",
+        "The Cabinet Secretary",
+        "The Registrar General of India"
+      ],
+      "answer_index": 0,
+      "explanation": "The SIF Guideline records that the Union Cabinet (24 October 2018) approved an HLSC, chaired by the Chief Statistician of India and Secretary, MoSPI, with data-source Ministry Secretaries and NITI Aayog as members, to institutionalise periodic review of the NIF's indicator metadata and coverage."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_012",
+      "doc_id": "sif_guideline",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "SIF Guideline v1.1, Section E, para 9, p.4",
+      "source_excerpt": "MoSPI, in collaboration with the office of United Nations Resident Coordinator (UNRC), India has developed a dashboard on SDGs in India. SDG Dashboard has provision to visualise data from national level up to district level for NIF",
+      "question": "Per the SIF Guideline, MoSPI's SDG Dashboard (developed with the UN Resident Coordinator's office) can visualise National Indicator Framework data down to which administrative level?",
+      "options": [
+        "District level",
+        "Block level",
+        "Village level",
+        "Only national level"
+      ],
+      "answer_index": 0,
+      "explanation": "The SIF Guideline notes that MoSPI's SDG Dashboard, built with the UN Resident Coordinator's office, provides for statistical monitoring and visualisation of NIF data all the way from the national level down to the district level."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_013",
+      "doc_id": "nas_state_district",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "National Accounts Statistics: Manual on Estimation of State and District Income, Preface, p.i",
+      "source_excerpt": "One of the mandates of the Central Statistical Organisation (CSO) is laying down norms and standards and evolving concepts, definitions, methodology and classification in relation to statistics.",
+      "question": "Per the Preface of MoSPI's National Accounts Statistics manual, laying down norms and standards while evolving which set of elements is described as a core CSO mandate underpinning documents like this manual?",
+      "options": [
+        "Concepts, definitions, methodology and classification",
+        "Server infrastructure and firewall rules",
+        "Recruitment rules for statistical staff",
+        "Foreign exchange reserve targets"
+      ],
+      "answer_index": 0,
+      "explanation": "The manual's Preface frames it as fulfilling CSO's mandate to lay down norms and standards while evolving concepts, definitions, methodology and classification for statistics -- the same documentation discipline that underlies formal metadata standards work."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_014",
+      "doc_id": "nas_state_district",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Accounts Statistics: Manual on Estimation of State and District Income, Introduction, para 1, p.1",
+      "source_excerpt": "...this manual, which is intended to guide the compilers of state and district income estimates in the State Directorates of Economics and Statistics (State DESs) by providing them with the conceptual, methodological and source data related issues in the compilation of these estimates.",
+      "question": "What was MoSPI's National Accounts Statistics manual on State and District Income specifically prepared to document for State DES compilers?",
+      "options": [
+        "Conceptual, methodological and source-data issues in compiling SDP/DDP estimates",
+        "The salary scales of State DES officials",
+        "A list of approved hardware vendors",
+        "The tax code applicable to state government income"
+      ],
+      "answer_index": 0,
+      "explanation": "The manual's Introduction states its purpose is to guide State Directorates of Economics and Statistics by documenting the conceptual, methodological, and source-data issues involved in compiling State and District Domestic Product estimates -- exactly the kind of methodology documentation that good metadata practice requires."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_015",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "SDG NIF 2026, indicator metadata schema (e.g., Indicator 1.2.1)",
+      "source_excerpt": "Computation: Numerator: Total population (rural/urban) living below the national (rural/urban) poverty line; Denominator: Total population (rural/urban) during the reference period; Multiplier: 100",
+      "question": "Across its per-indicator metadata records, the SDG NIF 2026 structures the 'Computation' field around which three consistent components?",
+      "options": [
+        "Numerator, Denominator and Multiplier",
+        "Title, Author and Publisher",
+        "Sample size, Confidence interval and P-value",
+        "Input, Process and Output"
+      ],
+      "answer_index": 0,
+      "explanation": "Every indicator's metadata block in the NIF 2026 documents its Computation as a Numerator, Denominator and Multiplier, giving each of the framework's indicators a consistent, auditable formula -- a practical example of standardised statistical metadata."
+    },
+    {
+      "item_id": "ai_os_metadata_standards_016",
+      "doc_id": "sdg_nif_2026",
+      "competency_id": "os_metadata_standards",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "SDG NIF 2026, indicator metadata schema (e.g., Indicator 1.2.1)",
+      "source_excerpt": "Periodicity: 5 Years; Level of Disaggregation: State/UT; Type of Disaggregation: Geographical location (rural/urban)",
+      "question": "Beyond 'Periodicity' and 'Unit of Measurement', which pair of metadata fields does the SDG NIF 2026 use to describe how an indicator's data can be broken down?",
+      "options": [
+        "Level of Disaggregation and Type of Disaggregation",
+        "Source Code and Target Code",
+        "Access Method and Access Type",
+        "Data Format and File Size"
+      ],
+      "answer_index": 0,
+      "explanation": "Each NIF 2026 indicator record separately captures the 'Level of Disaggregation' (e.g., National, State/UT) and the 'Type of Disaggregation' (e.g., rural/urban, sex, age group), letting users know both how granular and along which dimension the published data can be split."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_001",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar 2021-22, Domain Specific Training Programme table, p.12",
+      "source_excerpt": "Python Training for Statisticians ... C R Rao AIMSC, Hyderabad",
+      "question": "Per NSSTA's Training Calendar, which institute delivers the 'Python Training for Statisticians' domain-specific course for in-service ISS officers?",
+      "options": [
+        "C R Rao Advanced Institute of Mathematics, Statistics and Computer Science (AIMSC), Hyderabad",
+        "Indian Institute of Technology, Kanpur",
+        "Indian Institute of Management, Ahmedabad",
+        "International Statistical Education Centre, Kolkata"
+      ],
+      "answer_index": 0,
+      "explanation": "NSSTA's Domain Specific Training Programme table lists 'Python Training for Statisticians' as delivered by C R Rao AIMSC, Hyderabad, one of several institutes NSSTA partners with for one-week technical courses for in-service Indian Statistical Service officers."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_002",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar, Python Training for Statisticians syllabus, p.12",
+      "source_excerpt": "Packages for Data Science, numpy, Pandas, Packages for Data Science (Contd.), Payplot, seaborn, Packages for Data Science (Contd.), sci-py",
+      "question": "Per NSSTA's syllabus for 'Python Training for Statisticians', which of the following is explicitly listed as a Python data-science package covered in the course?",
+      "options": [
+        "pandas",
+        "Django",
+        "TensorFlow.js",
+        "Node.js"
+      ],
+      "answer_index": 0,
+      "explanation": "The syllabus lists numpy, pandas, matplotlib/seaborn, sci-py and scikit-learn as the data-science packages covered -- web/ML-serving frameworks like Django, TensorFlow.js or Node.js are not part of this course."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_003",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NSSTA Training Calendar, Python Training for Statisticians syllabus, p.12",
+      "source_excerpt": "List and Dictionary Comprehensions, File operations, Modules and Packages, Error and Exception handling",
+      "question": "Per NSSTA's Python Training for Statisticians syllabus, 'List and Dictionary ___' appears alongside file operations, modules/packages, and error/exception handling as a core topic. What fills the blank?",
+      "options": [
+        "Comprehensions",
+        "Encryption",
+        "Serialization",
+        "Compilation"
+      ],
+      "answer_index": 0,
+      "explanation": "The course syllabus explicitly lists 'List and Dictionary Comprehensions' as a topic taught alongside file operations, modules and packages, and error/exception handling -- core Python idioms for concise data transformation."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_004",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NSSTA Training Calendar, Python Training for Statisticians syllabus, p.12",
+      "source_excerpt": "Types of Learning, Types of Models, Models Building (under 'Packages for EDA-sci-kit learn')",
+      "question": "Per NSSTA's Python Training for Statisticians syllabus, topics like 'Types of Learning', 'Types of Models' and 'Model Building' are grouped under which broader syllabus heading?",
+      "options": [
+        "Packages for EDA -- scikit-learn",
+        "Office Procedures and Establishment",
+        "GFR and Vigilance",
+        "Parliamentary Procedure"
+      ],
+      "answer_index": 0,
+      "explanation": "The syllabus places 'Types of Learning', 'Types of Models' and 'Model Building' under the 'Packages for EDA -- sci-kit learn' section, following 'Importing Data' and 'Data Pre-Processing' -- the exploratory-data-analysis and modelling portion of the Python course."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_005",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar, Domain Specific Training Programme table, p.9",
+      "source_excerpt": "Handling Large Scale Data & Data Analysis using R (More than one course) IIT, Kanpur / IASRI",
+      "question": "Per NSSTA's Training Calendar, which institutes are proposed to deliver the 'Handling Large Scale Data & Data Analysis using R' domain course?",
+      "options": [
+        "IIT Kanpur / IASRI",
+        "NSSTA, Greater NOIDA",
+        "IIM Ahmedabad",
+        "ISI Kolkata"
+      ],
+      "answer_index": 0,
+      "explanation": "NSSTA's Domain Specific Training Programme table lists IIT Kanpur and IASRI as the proposed institutes for 'Handling Large Scale Data & Data Analysis using R', a course open to all ISS officers."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_006",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NSSTA Training Calendar, course content, p.9",
+      "source_excerpt": "preferably using live NSSO / Census data, handling of unit level data of NSSO including understanding concept and use of multipliers and estimation procedure",
+      "question": "Per NSSTA's syllabus for the R-based large-scale data analysis course, practical exercises are preferably conducted using live data from which source?",
+      "options": [
+        "NSSO / Census unit-level data",
+        "World Bank Open Data",
+        "A synthetic simulated dataset",
+        "Aadhaar enrolment logs"
+      ],
+      "answer_index": 0,
+      "explanation": "The course content specifies that practical orientation to data analysis in R should preferably use live NSSO or Census data, including handling unit-level records with their associated multipliers and estimation procedures -- tying the programming skill directly to India's official statistics data."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_007",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NSSTA Training Calendar, course content, p.9",
+      "source_excerpt": "logistic / log-linear analysis, factor analysis, cluster analysis - preferably using live NSSO / Census data",
+      "question": "Per NSSTA's R-based 'Handling Large Scale Data' course content, which multivariate technique is listed alongside logistic/log-linear analysis and factor analysis?",
+      "options": [
+        "Cluster analysis",
+        "Blockchain consensus analysis",
+        "Linear programming duality",
+        "Network penetration testing"
+      ],
+      "answer_index": 0,
+      "explanation": "The course content lists descriptive analysis, regression analysis, logistic/log-linear analysis, factor analysis and cluster analysis together as the multivariate techniques to be practised in R using live survey/census data."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_008",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar, Domain Specific Training Programme table, p.10",
+      "source_excerpt": "Big Data Analysis (1 week programme) Dr. MCRHRD, Hyderabad/ C R Rao AIMSC, Hyderabad/ IIT Madras",
+      "question": "Per NSSTA's Training Calendar, the one-week 'Big Data Analysis' domain course may be delivered at which set of institutes?",
+      "options": [
+        "MCRHRD Hyderabad / C R Rao AIMSC Hyderabad / IIT Madras",
+        "NIFM Faridabad only",
+        "ISTM New Delhi only",
+        "Labour Bureau Shimla only"
+      ],
+      "answer_index": 0,
+      "explanation": "NSSTA's table lists Dr. MCRHRD Hyderabad, C R Rao AIMSC Hyderabad, and IIT Madras as the alternative institutes proposed for the one-week 'Big Data Analysis' course."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_009",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "NSSTA Training Calendar, Big Data Analysis course content, p.10",
+      "source_excerpt": "predictive analytics, data mining techniques, forecasting, survival analysis, cluster analysis, linear and logistic regression, missing value patterns, optimization of data effectively using tools in R, SAS, SPSS and Excel",
+      "question": "Per NSSTA's 'Big Data Analysis' course content, which statistical software tools are named for effectively optimizing data, alongside R?",
+      "options": [
+        "SAS, SPSS and Excel",
+        "MATLAB, Julia and Stata",
+        "Tableau, Power BI and Looker",
+        "MongoDB, Cassandra and Redis"
+      ],
+      "answer_index": 0,
+      "explanation": "The Big Data Analysis course content explicitly names R, SAS, SPSS and Excel as the tools for data optimization, predictive analytics and cluster/regression analysis -- not visualization-only BI tools or NoSQL databases."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_010",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NSSTA Training Calendar, Big Data Analysis course content, p.10",
+      "source_excerpt": "Data Science, Concept of Big Data, Fundamental knowledge on Analytics and how it assists in data driven decision making",
+      "question": "Per NSSTA's 'Big Data Analysis' course description, fundamental knowledge of Analytics is framed as assisting which broader organisational capability?",
+      "options": [
+        "Data-driven decision making",
+        "Payroll processing",
+        "Physical file archiving",
+        "Vehicle fleet management"
+      ],
+      "answer_index": 0,
+      "explanation": "NSSTA frames the Big Data Analysis course's analytics fundamentals as assisting 'data driven decision making', positioning the course's technical content (visualization, predictive analytics, data mining) within a decision-support purpose for officers."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_011",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar, Domain Specific Training Programme table, p.11",
+      "source_excerpt": "Artificial Intelligence (AI) and Concept of Block Chain ... Usage of Block Chain Technologies in Land Records",
+      "question": "Per NSSTA's course on 'Artificial Intelligence (AI) and Concept of Block Chain', blockchain technology is discussed in the context of which specific application?",
+      "options": [
+        "Land Records",
+        "Stock market trading",
+        "Cryptocurrency mining",
+        "Online voting systems"
+      ],
+      "answer_index": 0,
+      "explanation": "NSSTA's AI/Blockchain course content specifically covers 'Usage of Block Chain Technologies in Land Records' as one of its disruptive-technology examples relevant to official statistics and governance."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_012",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar, Domain Specific Training Programme table, p.13",
+      "source_excerpt": "Training on Artificial Intelligence and Machine learning IIT-Madras Two-Weeks",
+      "question": "Per NSSTA's Training Calendar, the two-week domain course titled 'Training on Artificial Intelligence and Machine Learning' is delivered by which institute?",
+      "options": [
+        "IIT Madras",
+        "IIT Kanpur",
+        "IISc Bangalore",
+        "C R Rao AIMSC Hyderabad"
+      ],
+      "answer_index": 0,
+      "explanation": "NSSTA's Domain Specific Training Programme table lists IIT Madras as the institute for the two-week 'Training on Artificial Intelligence and Machine Learning' course -- distinct from the one-week AI/Blockchain course offered by C R Rao AIMSC/IISc/IIT Madras jointly."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_013",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar, Course 2 module list, p.6",
+      "source_excerpt": "Course 2 - IT and data analytics: Module 2.1 - Advance IT; Module 2.2 - Data Analysis through statistical packages; Module 2.4 - Data Mining and applications; Module 2.5 - Big Data Analysis",
+      "question": "In NSSTA's ISS Probationary curriculum, which module of Course 2 ('IT and data analytics') is titled 'Data Analysis through statistical packages'?",
+      "options": [
+        "Module 2.2",
+        "Module 2.1",
+        "Module 2.4",
+        "Module 2.5"
+      ],
+      "answer_index": 0,
+      "explanation": "Course 2 of the ISS Probationary curriculum runs Module 2.1 (Advance IT), 2.2 (Data Analysis through statistical packages), 2.3 (unit-level data with SPSS and R), 2.4 (Data Mining and applications) and 2.5 (Big Data Analysis) in that sequence."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_014",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NSSTA Training Calendar, ISS Probationary training overview, p.6",
+      "source_excerpt": "Course 2 - IT and data analytics",
+      "question": "Within NSSTA's Two-Year Probationary Training for ISS officers, 'IT and data analytics' is organized as which numbered Course among the four broad courses?",
+      "options": [
+        "Course 2",
+        "Course 1",
+        "Course 3",
+        "Course 4"
+      ],
+      "answer_index": 0,
+      "explanation": "The ISS probationary curriculum is organized into four courses: Course 1 (Proficiency in Official Statistics), Course 2 (IT and data analytics), Course 3 (Management and administrative skills), and Course 4 (Practical experience through attachment) -- IT/data analytics is Course 2."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_015",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NSSTA Training Calendar, Annexure I, item 15, p.22",
+      "source_excerpt": "Core IT including a part of Big Data, Data Warehousing and Data Analytics ... IIRS & FSI, DehraDun",
+      "question": "Per Annexure-I of NSSTA's Training Calendar, the ISS Probationers' 'Core IT' module (covering Big Data, Data Warehousing and Data Analytics) is conducted at which institute(s)?",
+      "options": [
+        "IIRS & FSI, Dehradun",
+        "NIFM, Faridabad",
+        "ISTM, New Delhi",
+        "Labour Bureau, Shimla"
+      ],
+      "answer_index": 0,
+      "explanation": "Annexure-I of the Training Calendar lists the Core IT module (Big Data, Data Warehousing and Data Analytics component) as being held at IIRS & FSI (Indian Institute of Remote Sensing & Forest Survey of India), Dehradun, alongside the GIS and environment statistics module."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_016",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "NSSTA Training Calendar, Cohort Based Training Programme (CBTP), Stage 2, p.7",
+      "source_excerpt": "Stage 2 (Foundation Course for two weeks AI, Big Data, Blockchain etc.)",
+      "question": "In NSSTA's three-stage Cohort Based Training Programme (CBTP) for ISS officers with 8-10 years of service, which technologies form the two-week Stage 2 Foundation Course, following Stage 1's Machine Learning course?",
+      "options": [
+        "AI, Big Data, Blockchain, etc.",
+        "SQL, ETL and Data Warehousing",
+        "GIS and remote sensing",
+        "Cybersecurity and networking"
+      ],
+      "answer_index": 0,
+      "explanation": "After Stage 1's 12-week online Machine Learning using Python course, CBTP's Stage 2 is a two-week Foundation Course covering AI, Big Data, Blockchain and related emerging technologies, before Stage 3's one-week Management foundation course."
+    },
+    {
+      "item_id": "ai_os_statistical_programming_017",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_statistical_programming",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NSSTA Training Calendar, Course 2 module list, p.6",
+      "source_excerpt": "Module 2.4 - Data Mining and applications",
+      "question": "In NSSTA's ISS Probationary 'IT and data analytics' course, which module immediately follows 'Working with unit level data using SPSS and R' (Module 2.3)?",
+      "options": [
+        "Module 2.4 -- Data Mining and applications",
+        "Module 2.1 -- Advance IT",
+        "Module 3.1 -- Basic management concepts",
+        "Module 1.5 -- Monitoring and Evaluation"
+      ],
+      "answer_index": 0,
+      "explanation": "Course 2's five modules run in sequence 2.1 through 2.5; Module 2.4 ('Data Mining and applications') directly follows Module 2.3 ('Working with unit level data using SPSS and R'), before the course concludes with 2.5 ('Big Data Analysis')."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_001",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "MDDS Health Domain Overview Report, Section 5, p.14",
+      "source_excerpt": "This standard is a result of the following principles of semantic theory, combined with basic principles of data modelling... based on the standard ISO/IEC 11179",
+      "question": "Which international standard underlies MDDS Health Domain's conceptual data-element design (Object Class, Attribute, Value Domain)?",
+      "options": [
+        "ISO/IEC 11179",
+        "ISO 9001",
+        "IEEE 802.11",
+        "RFC 2616"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS Health Domain's Common Data Elements are explicitly built on ISO/IEC 11179, the international metadata-registry standard for representing data elements as a combination of Object Class, Attribute, Concept and Value Domain."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_002",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "MDDS Health Domain Overview Report, Section 6.I, p.17",
+      "source_excerpt": "An example of a GUID in its standard form is 40e74fae-c0ab-11dfb090-0017f2300bf5.",
+      "question": "Per MDDS Health Domain, which example value is given to illustrate the standard form of a facility's Global Unique Identifier (GUID)?",
+      "options": [
+        "40e74fae-c0ab-11dfb090-0017f2300bf5",
+        "ABC-13-05-0001",
+        "IN-2024-HLTH-0007",
+        "A92.0"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS Health Domain illustrates the GUID's standard form with the example '40e74fae-c0ab-11dfb090-0017f2300bf5', generated by a standardized algorithm to guarantee global uniqueness regardless of who generates it or where -- unlike the human-readable NIN format."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_003",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "MDDS Health Domain Overview Report, Section 6.I(b), p.17",
+      "source_excerpt": "Facility National Identification Number (NIN) - NIN is a 10 digit random number given for each facility (public & private) engaged in providing some form of health care services.",
+      "question": "Per MDDS Health Domain, what is the format of a facility's National Identification Number (NIN)?",
+      "options": [
+        "A 10-digit random number",
+        "A 16-character alphanumeric code",
+        "A QR code",
+        "A biometric hash"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS defines the NIN as a 10-digit random number assigned to each public or private facility providing healthcare services, used at the front-end for human-readable identification alongside the back-end GUID."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_004",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "MDDS Health Domain Overview Report, Section 6.II(a), p.19",
+      "source_excerpt": "The Health Domain MDDS Committee proposes to use Aadhar Number as unique patient identifier.",
+      "question": "Which national identifier does MDDS Health Domain propose as the primary unique Patient Identifier?",
+      "options": [
+        "Aadhaar Number (UIDAI)",
+        "PAN Card Number",
+        "Voter ID Number",
+        "Ration Card Number"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS Health Domain proposes the 12-digit Aadhaar Number issued by UIDAI as the primary unique patient identifier, with alternate IDs (Election ID, Driving License, Ration Card, PAN) as fallbacks when a patient lacks an Aadhaar number."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_005",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "MDDS Health Domain Overview Report, Section 6.II(a), p.19",
+      "source_excerpt": "in case patient does not have Aadhar Number a provision has been made for the use of Alternate ID, issued by any other competent authority e.g. Election ID, Driving License ID, Ration Card ID, PAN Card ID, BPL ID etc.",
+      "question": "Per MDDS Health Domain, if a patient lacks an Aadhaar number, which of the following may be used as an Alternate ID?",
+      "options": [
+        "Election ID, Driving License ID, or PAN Card ID",
+        "A hospital's internal file number only",
+        "No substitute is permitted; registration is denied",
+        "The patient's mobile phone IMEI number"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS explicitly permits Election ID, Driving License ID, Ration Card ID, PAN Card ID or BPL ID as Alternate Identifiers when a patient does not have an Aadhaar number, ensuring no patient is turned away for lack of one specific ID."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_006",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "MDDS Health Domain Overview Report, Section 6.II(b), p.20",
+      "source_excerpt": "Healthcare Provider Identifiers: Each provider would be given a unique identifier and for this purpose individual registration number from respective registration councils would be used. E.g. for Allopathic Doctors registration number given by MCI",
+      "question": "Per MDDS Health Domain, Healthcare Provider Identifiers are primarily based on what?",
+      "options": [
+        "Individual registration numbers issued by the provider's professional registration council (e.g., MCI for allopathic doctors)",
+        "The provider's Aadhaar number",
+        "A randomly generated GUID with no external reference",
+        "The employing hospital's NIN"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS bases Healthcare Provider Identifiers on registration numbers from the relevant professional council -- e.g. the Medical Council of India (MCI) for allopathic doctors, or the Nursing Council for nurses -- falling back to a UID/alternate-UID only where no registration authority exists."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_007",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "MDDS Health Domain Overview Report, Section 5, Figure 1, p.15",
+      "source_excerpt": "the abstract concept 'Frequency of Medication' is combined with the object class 'Medication Order' and is associated with Attribute 'Frequency' to form the data element concept 'Medication Frequency'",
+      "question": "In MDDS's worked example of the ISO/IEC 11179 meta-model, what is the Object Class paired with the Attribute 'Frequency' to form the Data Element Concept 'Medication Frequency'?",
+      "options": [
+        "Medication Order",
+        "Patient Record",
+        "Pharmacy Inventory",
+        "Prescription Number"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS's Figure 1 illustrates the ISO/IEC 11179 meta-model with 'Medication Order' as the Object Class and 'Frequency' as the Attribute, together forming the Data Element Concept 'Medication Frequency', whose Value Domain is the code directory {BID, TID, QID, HS, SOS, Stat}."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_008",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "MDDS Health Domain Overview Report, Section 5, p.15",
+      "source_excerpt": "If the data element has a long list of values that are liable to change or be modified due to the business needs of the Health domain then it is advisable to create a Code Directory for those values.",
+      "question": "Per MDDS's Value Domain concept, when should a data element's permissible values be organized as a full 'Code Directory' rather than a simple fixed value list?",
+      "options": [
+        "When the list of values is long and liable to change or grow over time",
+        "Whenever the data element has only two possible values",
+        "Only for financial identifiers",
+        "Never -- Code Directories are reserved for drug names only"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS distinguishes a simple value list (a short, fixed set) from a Code Directory (used when the permissible values are numerous and expected to grow or be revised over time), giving such values room to mature with review."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_009",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "MDDS Health Domain Overview Report, Executive Summary, p.8",
+      "source_excerpt": "For identification of diseases, clinical procedures, laboratory and diagnostic tests and therapeutic interventions, standards referenced by MDDS committee include ICD-10, SNOMED-CT, LOINC...",
+      "question": "Which classification system does MDDS Health Domain reference for coding diseases and causes of death?",
+      "options": [
+        "ICD-10",
+        "LOINC",
+        "SNOMED CT",
+        "HL7 v3 RIM"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS Health Domain references ICD-10 (International Classification of Diseases, 10th revision) for classifying diseases and other health problems recorded on health and vital records, including the WHO Morbidity and Mortality tabulation lists derived from it."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_010",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "MDDS Health Domain Overview Report, Section 5, p.16",
+      "source_excerpt": "LOINC for Lab: LOINC is a universal code system to identify laboratory and clinical observations to facilitate exchange and storage of clinical results or vital signs",
+      "question": "Which coding standard does MDDS Health Domain reference specifically for laboratory and clinical observations?",
+      "options": [
+        "LOINC",
+        "ICD-10",
+        "HL7 v2.x",
+        "CCD"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS references LOINC (Logical Observation Identifiers Names and Codes) as the universal code system for identifying laboratory and clinical observations, distinct from ICD-10 (diagnosis coding) or HL7 (message/document interoperability standards)."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_011",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "MDDS Health Domain Overview Report, Section 5, p.16",
+      "source_excerpt": "Procedure & Radiology Codes (preferred primary terminology): SNOMED CT.",
+      "question": "Per MDDS Health Domain, which terminology is preferred as the primary code set for Procedure and Radiology codes?",
+      "options": [
+        "SNOMED CT",
+        "ICD-10",
+        "LOINC",
+        "WHO ICF"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS names SNOMED CT as its preferred primary terminology for Procedure and Radiology codes, alongside ICD-10 for diagnosis, LOINC for lab observations, and WHO ICF for functioning/disability classification."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_012",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "MDDS Health Domain Overview Report, Introduction, p.10",
+      "source_excerpt": "The exercise yielded to approximate 1000 data elements which were regrouped and formatted into 39 entities for better assimilation and presentation.",
+      "question": "Per MDDS Health Domain, its approximately 1000 identified data elements were regrouped into how many logical entities?",
+      "options": [
+        "39",
+        "11",
+        "1000",
+        "4"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS Health Domain's Introduction states that its roughly 1000 common data elements were regrouped and formatted into 39 entities (e.g., Patient, Examination, Diagnosis, Mortality, Pharmacy) for better assimilation and presentation."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_013",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "MDDS Health Domain Overview Report, Section 3, p.12",
+      "source_excerpt": "each data element is classified into four categories... Prospective Generic Across Domain (Viz.: PGAD)... Prospective Generic Within Domain (Viz.: PGWD)... Custom (Viz.: C)... Application (Viz.: A)",
+      "question": "Under MDDS's four-category classification of data elements, which category denotes elements usable across other e-governance domains beyond health?",
+      "options": [
+        "PGAD (Prospective Generic Across Domain)",
+        "PGWD (Prospective Generic Within Domain)",
+        "Custom (C)",
+        "Application (A)"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS classifies each data element as PGAD (usable across domains), PGWD (common only within health domain), Custom (customised from a standardised generic element), or Application (specific to one application) -- PGAD is the cross-domain category."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_014",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "MDDS Health Domain Overview Report, Section 3, p.12",
+      "source_excerpt": "Data elements which are common within health domain (Prospective Generic Within Domain (Viz.: PGWD))",
+      "question": "Under MDDS's same four-category classification, which category denotes data elements common across applications within the health domain, but not necessarily useful outside it?",
+      "options": [
+        "PGWD (Prospective Generic Within Domain)",
+        "PGAD (Prospective Generic Across Domain)",
+        "Custom (C)",
+        "Application (A)"
+      ],
+      "answer_index": 0,
+      "explanation": "PGWD data elements are common within the health domain's own applications but are not marked as generically reusable across other e-governance domains the way PGAD elements are."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_015",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "MDDS Health Domain Overview Report, Section 6.I, p.18",
+      "source_excerpt": "Facility identification and associated attributes can be categories in four major groups... Facility Signature Domain: Information which will help in identification of each facility with its attributes... facility type, address, Geocode, facility access... and region... indicator, hierarchy of facility, facility operational status...",
+      "question": "Per MDDS Health Domain, which of its four Facility-attribute domains groups facility type, address, geocode, and operational status?",
+      "options": [
+        "Facility Signature Domain",
+        "Facility Services Domain",
+        "Facility Human Resource Domain",
+        "Facility Infrastructure Domain"
+      ],
+      "answer_index": 0,
+      "explanation": "MDDS's Facility Signature Domain groups identity-defining attributes -- facility type, address, geocode, accessibility, rural/urban region, hierarchy, operational status and ownership -- distinct from the Services, Human Resource, and Infrastructure domains."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_016",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "MDDS Health Domain Overview Report, Executive Summary, p.8",
+      "source_excerpt": "the document provides annexures... The Meta Data and Data Standards are developed following the guidelines set by the MeitY and are organised in four parts: Part I: The Overview... Part IV: Metadata of Data Elements",
+      "question": "MDDS Health Domain's Meta Data and Data Standards are organised into four parts; which part contains 'Metadata of Data Elements'?",
+      "options": [
+        "Part IV",
+        "Part I",
+        "Part II",
+        "Part III"
+      ],
+      "answer_index": 0,
+      "explanation": "The four parts are Part I (Overview -- this report), Part II (Data Elements Quick Reference), Part III (Code Directories Quick Reference), and Part IV (Metadata of Data Elements), with Parts II-IV published only as soft copies."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_017",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "MDDS Health Domain Overview Report, Section 6.VII, p.20",
+      "source_excerpt": "For generic names- drug list from National Formulary of India (NFI) is used as the code directory.",
+      "question": "Per MDDS Health Domain, which national source is used as the Code Directory for generic drug names?",
+      "options": [
+        "National Formulary of India (NFI)",
+        "Central Drugs Standard Control Organisation product list",
+        "WHO Essential Medicines List only",
+        "State-specific formularies with no central list"
+      ],
+      "answer_index": 0,
+      "explanation": "For generic drug names, MDDS Health Domain's Code Directory draws on the National Formulary of India (NFI); brand-name code directories are left to each application to source, though MoHFW's SNOMED-CT-based drug/substance codes are recommended going forward."
+    },
+    {
+      "item_id": "ai_os_data_management_sql_018",
+      "doc_id": "mdds_health",
+      "competency_id": "os_data_management_sql",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "MDDS Health Domain Overview Report, Section 1, p.11",
+      "source_excerpt": "The Health Domain MDDS Committee is an initiative, constituted on Sept 2012, under the chairmanship of Joint Secretary (Policy) with the senior technical officer of NIC as its member secretary. The secretariat is located in the National Health System Resource Centre (NHSRC)",
+      "question": "The Health Domain MDDS Committee, constituted in September 2012, was chaired at which level and secretariated by which body?",
+      "options": [
+        "Chaired by Joint Secretary (Policy), MoHFW, with secretariat at the National Health System Resource Centre (NHSRC)",
+        "Chaired by the Cabinet Secretary, with secretariat at NIC Headquarters",
+        "Chaired by the Union Health Minister, with secretariat at AIIMS Delhi",
+        "Chaired by the UIDAI Director General, with secretariat at MeitY"
+      ],
+      "answer_index": 0,
+      "explanation": "The Health Domain MDDS Committee was constituted in September 2012 under the chairmanship of the Joint Secretary (Policy), MoHFW, with a senior NIC technical officer as member secretary and its secretariat housed at the National Health System Resource Centre (NHSRC)."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_001",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Policy on Open APIs for GoI -- Definitions, 'Domain'",
+      "source_excerpt": "Domain: A sub-category within an IT field; specific purposes within a Domain constitute an 'Area.'",
+      "question": "Per the Government of India's Policy on Open APIs definitions, what is a 'Domain'?",
+      "options": [
+        "A sub-category within an IT field, within which specific purposes constitute an 'Area'",
+        "A registered internet domain name such as .gov.in",
+        "A physical data centre location",
+        "A type of encryption algorithm"
+      ],
+      "answer_index": 0,
+      "explanation": "The Open API Policy defines 'Domain' as a sub-category within an IT field, with specific purposes inside that Domain constituting an 'Area' -- a classification concept used to organize government APIs by sector."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_002",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Policy on Open APIs for GoI -- Definitions, 'Government Organization'",
+      "source_excerpt": "Government Organization - Refers to all Ministries, Departments, offices, statutory bodies, and autonomous bodies at Central and State levels, excluding those offering commercial services.",
+      "question": "Per the Open API Policy's definitions, which entities are excluded from the definition of 'Government Organization'?",
+      "options": [
+        "Government-linked bodies that offer commercial services",
+        "Autonomous bodies at the State level",
+        "Statutory bodies at the Central level",
+        "Departments within a Ministry"
+      ],
+      "answer_index": 0,
+      "explanation": "The policy defines 'Government Organization' broadly to cover Ministries, Departments, offices, statutory and autonomous bodies at Central and State levels, but explicitly excludes those offering commercial services, distinguishing public-interest bodies from commercial public sector undertakings."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_003",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "Policy on Open APIs for GoI -- Definitions, 'e-Governance'",
+      "source_excerpt": "e-Governance - A procedural approach enabling Government, citizens, businesses, and stakeholders to conduct activities using Information and Communication Technology tools.",
+      "question": "How does the Open API Policy define 'e-Governance'?",
+      "options": [
+        "A procedural approach enabling Government, citizens, businesses, and stakeholders to conduct activities using ICT tools",
+        "A law mandating all government forms be digitized",
+        "A single unified government mobile application",
+        "A cybersecurity certification programme for government staff"
+      ],
+      "answer_index": 0,
+      "explanation": "The policy frames e-Governance as a procedural approach -- not a specific tool or law -- through which Government, citizens, businesses and other stakeholders conduct activities using Information and Communication Technology."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_004",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Policy on Open APIs for GoI -- Definitions, 'Systems'",
+      "source_excerpt": "Systems - 'A group of interacting, interrelated, or interdependent elements forming a complex whole,' including Information Systems combining people, hardware, software, and networks.",
+      "question": "Per the Open API Policy's definitions, a 'System' combining people, hardware, software and networks is more specifically termed what?",
+      "options": [
+        "An Information System",
+        "A Legacy System",
+        "An Open API",
+        "A Data Owner"
+      ],
+      "answer_index": 0,
+      "explanation": "The policy defines 'Systems' generally as interacting/interdependent elements forming a complex whole, and specifically identifies an 'Information System' as the combination of people, hardware, software, and networks -- the kind of system that exposes or consumes APIs."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_005",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Policy on Open APIs for GoI -- Definitions, 'Legacy System'",
+      "source_excerpt": "Legacy System - An older method, technology, or application that remains in use despite newer alternatives being available.",
+      "question": "How does the Open API Policy define a 'Legacy System'?",
+      "options": [
+        "An older method, technology, or application that remains in use despite newer alternatives being available",
+        "A system that has been formally decommissioned",
+        "Any system older than five years, regardless of use",
+        "A system without API support by design"
+      ],
+      "answer_index": 0,
+      "explanation": "The policy defines a Legacy System purely by continued use despite the availability of newer alternatives -- age or lack of API support alone does not make a system 'legacy' under this definition."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_006",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Policy on Open APIs for GoI -- Definitions, 'New Version of Legacy System'",
+      "source_excerpt": "New Version of Legacy System - A legacy system undergoing major version changes involving functional, architectural, technological, or design modifications.",
+      "question": "Per the Open API Policy, what qualifies a 'New Version of Legacy System'?",
+      "options": [
+        "A legacy system undergoing major version changes involving functional, architectural, technological, or design modifications",
+        "Any legacy system that has received a security patch",
+        "A legacy system that has been renamed",
+        "A legacy system moved to a different data centre with no code changes"
+      ],
+      "answer_index": 0,
+      "explanation": "The policy reserves 'New Version of Legacy System' for major version changes -- functional, architectural, technological or design modifications -- not for routine patches, renaming, or infrastructure moves that leave the system otherwise unchanged."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_007",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Policy on Open APIs for GoI -- Definitions, cross-reference to NDSAP-2012",
+      "source_excerpt": "National Data Sharing and Accessibility Policy (NDSAP-2012) - Policy facilitating access to Government shareable data in human and machine-readable formats.",
+      "question": "The Open API Policy's definitions page cross-references which earlier data-sharing policy from 2012?",
+      "options": [
+        "National Data Sharing and Accessibility Policy (NDSAP-2012)",
+        "The Right to Information Act, 2005",
+        "The Aadhaar Act, 2016",
+        "The Digital India Act, 2012"
+      ],
+      "answer_index": 0,
+      "explanation": "The Open API Policy's definitions explicitly cross-reference NDSAP-2012, the policy facilitating access to Government-owned shareable data in human- and machine-readable formats -- showing the two policies were designed to work together."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_008",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Policy on Open APIs for GoI -- Definitions, cross-reference to National Cyber Security Policy",
+      "source_excerpt": "National Cyber Security Policy 2013 - Policy protecting information infrastructure and preventing cyber threats.",
+      "question": "Besides NDSAP-2012, which other national policy does the Open API Policy's definitions page cross-reference?",
+      "options": [
+        "National Cyber Security Policy 2013",
+        "National Education Policy 2020",
+        "National Health Policy 2017",
+        "National IPR Policy 2016"
+      ],
+      "answer_index": 0,
+      "explanation": "The Open API Policy also cross-references the National Cyber Security Policy 2013, which protects information infrastructure and addresses cyber threats -- relevant since exposing government data via APIs raises security considerations the two policies jointly address."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_009",
+      "doc_id": "apisetu_definitions",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Policy on Open APIs for GoI -- Definitions, 'Open API'",
+      "source_excerpt": "Open API - The API that has been exposed to enable other systems to interact with that system, potentially offered free and without reuse restrictions.",
+      "question": "Per the Open API Policy's definition, an Open API is one that is exposed to enable other systems to interact with it, and is potentially offered under what condition?",
+      "options": [
+        "Free and without reuse restrictions",
+        "Only to paying subscribers",
+        "Only to other Government of India systems",
+        "Only after a background security clearance of the consumer"
+      ],
+      "answer_index": 0,
+      "explanation": "The policy's definition of Open API notes it may potentially be offered free of cost and without restrictions on reuse -- as opposed to a generic API, which may carry access or licensing restrictions."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_010",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Section 6.3, p.15",
+      "source_excerpt": "Metadata discovery is a way to fetch datasets and metadata information from different eGov applications. Desired eGov applications have to define the source and type of tool to be used to fetch dataset and metadata from their servers. The data.gov.in tool would crawl at source at specified time",
+      "question": "Per NDSAP Implementation Guidelines, what is 'metadata discovery' in the context of consuming datasets from eGov applications?",
+      "options": [
+        "A mechanism where the data.gov.in tool crawls a defined source at scheduled times to fetch datasets and metadata",
+        "A one-time manual upload process requiring no automation",
+        "A legal audit of an eGov application's licensing compliance",
+        "A method for renaming files to match a naming convention"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP describes metadata discovery as an automated mechanism: eGov applications define a source and tool type, and the data.gov.in import tool crawls that source at specified intervals to fetch datasets and their metadata without manual intervention."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_011",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Section 6.3, p.15",
+      "source_excerpt": "data.gov.in supports both REST and SOAP based web service over HTTP.",
+      "question": "Per NDSAP Implementation Guidelines, which two web-service protocols does the data.gov.in platform support for consuming datasets over HTTP?",
+      "options": [
+        "REST and SOAP",
+        "FTP and SMTP",
+        "MQTT and CoAP",
+        "gRPC and GraphQL"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP states that data.gov.in supports both REST and SOAP based web services over HTTP for programmatically fetching datasets from eGov applications' servers."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_012",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NDSAP Implementation Guidelines, Section 6.3, p.15",
+      "source_excerpt": "Using REST based web services provides more flexibility to share data over XML as well as JSON format.",
+      "question": "Per NDSAP Implementation Guidelines, which type of web service is noted as providing more flexibility to share data in both XML and JSON formats?",
+      "options": [
+        "REST-based web services",
+        "SOAP-based web services only",
+        "FTP-based file transfer",
+        "Telnet-based remote access"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP specifically credits REST-based web services with more flexibility for sharing data in both XML and JSON, compared to SOAP, which is XML-centric by design."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_013",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Section 6.3, p.15",
+      "source_excerpt": "XML files: Structured XML files are one of the good sources for the data import.",
+      "question": "Besides relational databases and CSV/spreadsheets, which structured file format does NDSAP list as a good source for automated data import into the OGD Platform?",
+      "options": [
+        "XML files",
+        "PDF scans",
+        "PowerPoint slides",
+        "Compiled binaries"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP lists relational databases, CSV files/spreadsheets, XML files, and Web Services/JSON as the four data source formats supported for metadata discovery and import into the OGD Platform."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_014",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "NDSAP Implementation Guidelines, Section 6.3, p.15",
+      "source_excerpt": "Stored procedures or Database Triggers can be written to periodically export the data into a dataset in CSV or XML format which can be consumed by data.gov.in data import tool",
+      "question": "Per NDSAP, how can an eGov application automate periodic export of its relational-database records for OGD Platform consumption?",
+      "options": [
+        "By writing stored procedures or database triggers that periodically export data into CSV or XML",
+        "By manually re-typing records into a web form each quarter",
+        "By disabling the database and switching entirely to spreadsheets",
+        "By emailing screenshots of database tables to NIC"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP recommends stored procedures or database triggers to periodically export relational-database data into CSV or XML files, which the data.gov.in import tool then consumes to build data catalogs automatically."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_015",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Section 4.0, p.9",
+      "source_excerpt": "Open Source Driven - Developed completely using Open Source Stack, facilitating cost saving in terms of software and licenses and also provisioning community participation... APIs to access datasets etc.",
+      "question": "Per NDSAP Implementation Guidelines, what software development approach underlies the OGD Platform, enabling cost savings and community contribution of features like APIs to access datasets?",
+      "options": [
+        "An Open Source Stack",
+        "A proprietary closed-source licence from a single vendor",
+        "A mainframe-only architecture",
+        "A pay-per-API-call commercial model"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP describes the OGD Platform as 'Open Source Driven', built entirely on an Open Source software stack, which saves on licensing costs and lets the community contribute further modules, including APIs to access datasets."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_016",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Section 4.0, p.10",
+      "source_excerpt": "It also provides a platform to express and discuss the kind of Datasets, APPs & APIs they would like to have.",
+      "question": "Per NDSAP, the OGD Platform's 'Communities' component lets citizens express and discuss what, in relation to programmatic access?",
+      "options": [
+        "The kind of Datasets, Apps & APIs they would like to have",
+        "Their personal banking preferences",
+        "Complaints about unrelated government services",
+        "Requests for physical office visits"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP describes the Communities component as letting citizens open forums and discussions not just about published data, but also about the kind of Datasets, Apps and APIs they would like the platform to offer -- feeding demand signals back to departments."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_017",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NDSAP Implementation Guidelines, Section 6.8, 'DON'Ts', p.19",
+      "source_excerpt": "Don't publish hand written note, as it is very difficult for machines to process. Scanning text via Optical Character Recognition (OCR) results in many matching and formatting errors. Information shared in the widely used PDF format is very difficult for machines to parse.",
+      "question": "Per NDSAP's 'DON'Ts for Data Contribution', which widely used format is specifically flagged as difficult for machines to parse, especially when derived from OCR of handwritten notes?",
+      "options": [
+        "PDF",
+        "CSV",
+        "JSON",
+        "XML"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP explicitly warns against publishing hand-written notes or scanned PDFs, since OCR introduces matching and formatting errors and PDF itself is described as very difficult for machines to parse -- directly relevant to designing machine-consumable, interoperable APIs and datasets."
+    },
+    {
+      "item_id": "ai_os_apis_interoperability_018",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_apis_interoperability",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Section 6.8, 'DON'Ts', p.18",
+      "source_excerpt": "Don't impose 'Terms of Service', attribution requirements, restrictions on dissemination and so on, which act as barriers to public use of data.",
+      "question": "Per NDSAP's 'DON'Ts for Data Contribution and Approval', what practice regarding Terms of Service and attribution is discouraged as a barrier to data (and API) reuse?",
+      "options": [
+        "Imposing Terms of Service or attribution requirements that restrict dissemination",
+        "Publishing data without any description",
+        "Using CSV instead of XML",
+        "Allowing anonymous public access to open datasets"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP's DON'Ts explicitly discourage imposing Terms of Service, attribution requirements, or dissemination restrictions on open data, since these act as barriers to the same public and machine (including API) reuse the policy is designed to enable."
+    },
+    {
+      "item_id": "ai_os_open_data_001",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Annexure II 'Five Star Open Data', p.32",
+      "source_excerpt": "as (2) plus non-proprietary format (e.g. CSV instead of excel)",
+      "question": "Per NDSAP's 'Five Star Open Data' scheme (Annexure II), what does 3-star open data add on top of 2-star (machine-readable) data?",
+      "options": [
+        "A non-proprietary format (e.g., CSV instead of Excel)",
+        "A unique URI for every data item",
+        "Links to other people's data",
+        "An open licence permitting reuse"
+      ],
+      "answer_index": 0,
+      "explanation": "The Five Star scheme in NDSAP's Annexure II builds cumulatively: 1-star is open-licensed web data in any format, 2-star adds machine-readability, and 3-star further requires a non-proprietary, open format such as CSV instead of a proprietary one like Excel."
+    },
+    {
+      "item_id": "ai_os_open_data_002",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Annexure II 'Five Star Open Data', p.33",
+      "source_excerpt": "All the above plus, Use open standards from W3C (RDF and SPARQL) to identify things, so that people can point at your stuff using an URI",
+      "question": "Per NDSAP's Five Star Open Data scheme, what distinguishes 4-star open data from 3-star?",
+      "options": [
+        "Using open W3C standards (RDF and SPARQL) so data items can be identified and pointed to via a URI",
+        "Simply publishing data under any open licence",
+        "Converting data from XML to JSON",
+        "Adding a human-readable description field"
+      ],
+      "answer_index": 0,
+      "explanation": "4-star open data, per the Five Star scheme reproduced in NDSAP, requires using open W3C standards such as RDF and SPARQL and assigning URIs to data items -- turning tabular 3-star data into linkable 'data in the Web' rather than merely 'data on the Web'."
+    },
+    {
+      "item_id": "ai_os_open_data_003",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Annexure II 'Five Star Open Data', p.34",
+      "source_excerpt": "All the above, plus: Link your data to other people's data to provide context",
+      "question": "What additional step is required to reach the highest, '5-star', tier of NDSAP's Five Star Open Data scheme?",
+      "options": [
+        "Linking your data to other people's or organizations' data to provide context",
+        "Simply publishing the data as a PDF with an open licence",
+        "Charging a nominal usage fee to sustain the platform",
+        "Restricting access to registered government users only"
+      ],
+      "answer_index": 0,
+      "explanation": "The Five Star scheme's top tier requires linking one's own (already 4-star, URI-identified) data to other people's data on the web to provide context, creating a genuinely linked open data ecosystem, per NDSAP's Annexure II."
+    },
+    {
+      "item_id": "ai_os_open_data_004",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Section 5.1, p.11",
+      "source_excerpt": "a senior officer at the level of Joint Secretary or above is to be nominated as the Data Controller or Nodal Officer for the Department/Organization/State",
+      "question": "Per NDSAP Implementation Guidelines, at what minimum seniority level must a Ministry/Department nominate its 'Data Controller' (Nodal Officer)?",
+      "options": [
+        "Joint Secretary or above",
+        "Under Secretary or above",
+        "Any Group B officer",
+        "The Minister-in-charge personally"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP requires the Data Controller/Nodal Officer to be a senior officer at the level of Joint Secretary or above, reflecting the accountability the role carries for a Department's entire open-data programme."
+    },
+    {
+      "item_id": "ai_os_open_data_005",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Section 6.0, p.14",
+      "source_excerpt": "Catalogs/Resources along with the metadata contributed by the Data Contributor pass through a predefined workflow to the Data Controller; who in turn ensures that it is in compliance with the NDSAP Policy. Catalogs/Resources are published only after approval of Data Controller.",
+      "question": "Per NDSAP Implementation Guidelines, who must approve a dataset contributed by a Data Contributor before it is published on the OGD Platform?",
+      "options": [
+        "The Data Controller",
+        "Any member of the public who requested it",
+        "The NDSAP PMU directly, bypassing the Department",
+        "The dataset auto-publishes with no approval step"
+      ],
+      "answer_index": 0,
+      "explanation": "Data Contributors prepare and submit catalogs/resources with metadata, but these pass through a workflow requiring the Data Controller's approval for NDSAP-policy compliance before NDSAP PMU pushes them live on the OGD Platform."
+    },
+    {
+      "item_id": "ai_os_open_data_006",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Section 5.3, p.12",
+      "source_excerpt": "each data contributor would be able to contribute the data as per the given metadata format... which is based on the Dublin Core Standards.",
+      "question": "Per NDSAP Implementation Guidelines, the metadata format used by Data Contributors to describe datasets is based on which standard?",
+      "options": [
+        "Dublin Core Standards",
+        "SDMX",
+        "ISO/IEC 11179",
+        "Schema.org"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP states that the web-based Dataset Management System's metadata format for contributors is based on the Dublin Core Standards, a widely used generic metadata element set for describing digital resources."
+    },
+    {
+      "item_id": "ai_os_open_data_007",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Section 8.0, p.24",
+      "source_excerpt": "8.1 Open Access... 8.2 Registered Access... 8.3 Restricted Access",
+      "question": "Which of the following is NOT one of NDSAP's three defined types of data access?",
+      "options": [
+        "Premium Access",
+        "Open Access",
+        "Registered Access",
+        "Restricted Access"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP defines exactly three types of access -- Open, Registered, and Restricted -- based on whether access requires registration/authorization; 'Premium Access' is not a category the policy defines, though pricing of registered/restricted data is addressed separately."
+    },
+    {
+      "item_id": "ai_os_open_data_008",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Section 8.3, p.24",
+      "source_excerpt": "Restricted Access - Data declared as restricted, by Government of India policies, will be accessible only through and under authorization.",
+      "question": "Per NDSAP, how is 'Restricted Access' data made available to users?",
+      "options": [
+        "Only through and under authorization, as declared by Government of India policies",
+        "Freely, with no registration or authorization required",
+        "Only via a one-time payment, with no other conditions",
+        "Only to foreign government agencies"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP defines Restricted Access as applying to data specifically declared restricted by GoI policy, accessible only through and under formal authorization -- more tightly controlled than Registered Access, which only requires registration."
+    },
+    {
+      "item_id": "ai_os_open_data_009",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Section 3.2, p.8",
+      "source_excerpt": "CSV (Comma separated Values), XLS (spread sheet- Excel), ODS..., XML..., RDF..., KML..., GML..., RSS/ATOM",
+      "question": "Which of the following is listed among NDSAP's recommended open, machine-readable data formats for the OGD Platform?",
+      "options": [
+        "CSV (Comma Separated Values)",
+        "PSD (Photoshop Document)",
+        "EXE (Windows executable)",
+        "DOCX password-protected file"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP lists CSV, XLS, ODS, XML, RDF, KML, GML and RSS/ATOM as recommended open formats for publishing data on the OGD Platform -- proprietary binary or executable formats are not part of this list."
+    },
+    {
+      "item_id": "ai_os_open_data_010",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Section 3.1, p.7",
+      "source_excerpt": "within the first three months at least 5 high value datasets need to be published",
+      "question": "Per NDSAP's implementation timeline, how many high-value datasets must a Ministry/Department publish on the OGD Platform within the first three months of the policy's notification?",
+      "options": [
+        "At least 5",
+        "At least 50",
+        "Exactly 1",
+        "All of its datasets"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP requires each Ministry/Department to publish at least 5 high-value datasets within the first three months of notification, with all remaining datasets due within one year and then quarterly updates thereafter."
+    },
+    {
+      "item_id": "ai_os_open_data_011",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Section 12, p.28",
+      "source_excerpt": "g) Thereafter, all data sets are to be uploaded regularly every quarter.",
+      "question": "Per NDSAP, once the one-year deadline for uploading all datasets has passed, how frequently must new/updated datasets be uploaded to the OGD Platform?",
+      "options": [
+        "Every quarter",
+        "Every five years",
+        "Only once, with no further updates",
+        "Whenever the Cabinet Secretariat orders a review"
+      ],
+      "answer_index": 0,
+      "explanation": "After the one-year window for uploading all identified datasets, NDSAP requires ongoing quarterly uploads, sustaining the platform as a living, regularly refreshed data source rather than a one-time archive."
+    },
+    {
+      "item_id": "ai_os_open_data_012",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NDSAP Implementation Guidelines, Annexure III, 'Ten Principles', Principle 2, p.35",
+      "source_excerpt": "Datasets released by the government should be primary source data. This includes the original information collected by the government, details on how the data was collected and the original source documents",
+      "question": "Per the Sunlight Foundation's 'Ten Principles for Opening Up Government Information', reproduced in NDSAP's Annexure III, the principle of 'Primacy' requires released datasets to be:",
+      "options": [
+        "Primary source data -- the original information as collected, with details on collection method and source documents",
+        "Summarized into a single aggregate national figure",
+        "Available only in printed form for archival integrity",
+        "Reviewed and re-derived by a third-party auditor before release"
+      ],
+      "answer_index": 0,
+      "explanation": "'Primacy' in the Ten Principles requires primary source data -- the original information as collected, plus details of how it was collected and the original source documents -- so users can verify it was collected and recorded properly, rather than only derived or summarized figures."
+    },
+    {
+      "item_id": "ai_os_open_data_013",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NDSAP Implementation Guidelines, Annexure III, 'Ten Principles', p.35",
+      "source_excerpt": "The principles are completeness, primacy, timeliness, ease of physical and electronic access, machine readability, nondiscrimination, use of commonly owned standards, licensing, permanence and usage costs.",
+      "question": "Per NDSAP's Annexure III, 'nondiscrimination' is listed as one of the Ten Principles for Opening Up Government Information -- alongside which other principle concerned specifically with the technical form of the data?",
+      "options": [
+        "Machine readability",
+        "Usage costs",
+        "Permanence",
+        "Licensing"
+      ],
+      "answer_index": 0,
+      "explanation": "The Ten Principles list completeness, primacy, timeliness, ease of access, machine readability, nondiscrimination, use of commonly owned standards, licensing, permanence and usage costs together; 'machine readability' specifically addresses whether the data's technical format allows automated processing, complementing 'nondiscrimination' (who may access it)."
+    },
+    {
+      "item_id": "ai_os_open_data_014",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDSAP Implementation Guidelines, Annexure I, definitions 2.5, p.24",
+      "source_excerpt": "Geospatial Data - All data which is geographically referenced",
+      "question": "Per NDSAP's definitions, what is 'Geospatial Data'?",
+      "options": [
+        "All data which is geographically referenced",
+        "Only satellite imagery",
+        "Only Census population counts",
+        "Data collected exclusively by state governments"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP defines Geospatial Data simply as any data that is geographically referenced, a broad definition covering far more than satellite imagery alone -- maps, location-tagged datasets, and administrative boundary data all qualify."
+    },
+    {
+      "item_id": "ai_os_open_data_015",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "NDSAP Implementation Guidelines, Annexure I, definitions 2.8-2.9, p.24",
+      "source_excerpt": "Negative List - Non-sharable data as declared by the departments/organizations... Restricted Data -Data which are accessible only through a prescribed process of registration and authorization by respective departments / organizations.",
+      "question": "Per NDSAP's definitions, how does 'Restricted Data' differ from data on a department's 'Negative List'?",
+      "options": [
+        "Restricted Data is accessible through a prescribed registration/authorization process, whereas Negative List data is not shared at all",
+        "They are simply two names for the same thing",
+        "Negative List data is always geospatial, while Restricted Data never is",
+        "Restricted Data requires no approval, while Negative List data requires Cabinet approval"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP distinguishes the two: Negative List data is declared non-sharable altogether, while Restricted Data can still be accessed, but only through a prescribed process of registration and authorization -- a meaningfully lighter restriction than outright non-sharing."
+    },
+    {
+      "item_id": "ai_os_open_data_016",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Section 12, p.28",
+      "source_excerpt": "Data will remain the property of the agency/department/ ministry/ entity which collected them and reside in their IT enabled facility for sharing and providing access.",
+      "question": "Per NDSAP's legal framework provisions, who retains ownership of data shared under the policy?",
+      "options": [
+        "The agency/department/ministry that originally collected the data",
+        "The National Informatics Centre, as platform operator",
+        "The citizen who requests and downloads the data",
+        "The Department of Science & Technology, as policy nodal agency"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP's legal framework clarifies that sharing data on the OGD Platform does not transfer ownership: data remains the property of the collecting agency/department/ministry, which continues to host it within its own IT facility even as it is made accessible via the platform."
+    },
+    {
+      "item_id": "ai_os_open_data_017",
+      "doc_id": "ndsap_impl",
+      "competency_id": "os_open_data",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "NDSAP Implementation Guidelines, Annexure I, Preamble para 1.1, p.23",
+      "source_excerpt": "Section 4(2) of the Right to Information Act, 2005 reads 'It shall be a constant endeavor of every public authority to take steps... to provide as much information suo motu to the public at regular intervals'",
+      "question": "NDSAP's preamble cites Section 4(2) of which Act as supporting proactive (suo motu) disclosure of government information?",
+      "options": [
+        "The Right to Information Act, 2005",
+        "The Aadhaar Act, 2016",
+        "The Information Technology Act, 2000",
+        "The Collection of Statistics Act, 2008"
+      ],
+      "answer_index": 0,
+      "explanation": "NDSAP's preamble quotes Section 4(2) of the RTI Act, 2005, which obliges public authorities to proactively (suo motu) disclose information to the public at regular intervals -- framing NDSAP as extending this proactive-disclosure principle into structured, machine-readable open data."
+    }
+  ]
+}

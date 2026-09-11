@@ -23,6 +23,14 @@ is always prefixed "ai_" (vs. hand-authored's "ha_") so the two pools can
 never collide on id even though both loaders build their own separate
 duplicate-item-id/duplicate-question-text checks independently -- see
 tests/test_ai_authored_questions.py for the cross-pool check.
+
+Content is split across multiple ai_authored_questions*.json files (one per
+authoring batch/curriculum-slice) rather than one ever-growing array, purely
+so independent batches can be added as separate, non-conflicting PRs -- two
+branches both appending to the same JSON array's tail produce a merge
+conflict on every subsequent PR, while two branches each adding their own
+new file merge cleanly. All matching files are loaded and validated together
+below; there is no meaning to which file a given item lives in beyond that.
 """
 from __future__ import annotations
 
@@ -31,7 +39,8 @@ from pathlib import Path
 
 from services.competency_docs import get_document
 
-QUESTIONS_PATH = Path(__file__).resolve().parent.parent / "data" / "ai_authored_questions.json"
+DATA_DIRECTORY = Path(__file__).resolve().parent.parent / "data"
+QUESTIONS_GLOB = "ai_authored_questions*.json"
 
 GENERATION_MODE = "ai-source-grounded"
 
@@ -49,21 +58,23 @@ _questions_cache: list[dict] | None = None
 def _all_questions() -> list[dict]:
     global _questions_cache
     if _questions_cache is None:
-        with QUESTIONS_PATH.open(encoding="utf-8") as handle:
-            payload = json.load(handle)
-        questions = payload["questions"]
+        questions: list[dict] = []
+        for path in sorted(DATA_DIRECTORY.glob(QUESTIONS_GLOB)):
+            with path.open(encoding="utf-8") as handle:
+                payload = json.load(handle)
+            questions.extend(payload["questions"])
         for item in questions:
             item.setdefault("question_type", "mcq")
             item["generation_mode"] = GENERATION_MODE
             _validate_ai_authored_item(item)
         item_ids = [item["item_id"] for item in questions]
         if len(item_ids) != len(set(item_ids)):
-            raise ValueError("ai_authored_questions.json contains duplicate item_id values")
+            raise ValueError("ai_authored_questions*.json files contain duplicate item_id values")
         if any(not item_id.startswith("ai_") for item_id in item_ids):
-            raise ValueError("ai_authored_questions.json item_id values must be prefixed 'ai_'")
+            raise ValueError("ai_authored_questions*.json item_id values must be prefixed 'ai_'")
         normalized_text = [" ".join(item["question"].lower().split()) for item in questions]
         if len(normalized_text) != len(set(normalized_text)):
-            raise ValueError("ai_authored_questions.json contains duplicate question text")
+            raise ValueError("ai_authored_questions*.json files contain duplicate question text")
         _questions_cache = questions
     return _questions_cache
 

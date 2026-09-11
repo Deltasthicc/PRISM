@@ -73,18 +73,37 @@ def test_validate_rejects_unknown_doc_id():
 
 def test_loader_rejects_item_id_without_ai_prefix(tmp_path, monkeypatch):
     # Enforced in _all_questions() (a whole-file invariant), not per-item
-    # validation -- exercise it through a scratch file so the two id
+    # validation -- exercise it through a scratch directory so the two id
     # namespaces (hand-authored "ha_", ai-authored "ai_") can never collide.
-    bad_path = tmp_path / "ai_authored_questions.json"
+    bad_path = tmp_path / "ai_authored_questions_scratch.json"
     bad_path.write_text(
         json.dumps({"questions": [_valid_item(item_id="ha_wrong_prefix")]}),
         encoding="utf-8",
     )
-    monkeypatch.setattr(ai_authored_questions, "QUESTIONS_PATH", bad_path)
+    monkeypatch.setattr(ai_authored_questions, "DATA_DIRECTORY", tmp_path)
     monkeypatch.setattr(ai_authored_questions, "_questions_cache", None)
 
     with pytest.raises(ValueError, match="prefixed 'ai_'"):
         ai_authored_questions._all_questions()
+
+
+def test_loader_merges_multiple_batch_files(tmp_path, monkeypatch):
+    # Two batches, two files -- this is the whole point of the glob: separate
+    # authoring PRs each add their own file instead of both editing the tail
+    # of one shared array (which would conflict on every subsequent merge).
+    (tmp_path / "ai_authored_questions_batch_a.json").write_text(
+        json.dumps({"questions": [_valid_item(item_id="ai_batch_a_1", question="Batch A question?")]}),
+        encoding="utf-8",
+    )
+    (tmp_path / "ai_authored_questions_batch_b.json").write_text(
+        json.dumps({"questions": [_valid_item(item_id="ai_batch_b_1", question="Batch B question?")]}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(ai_authored_questions, "DATA_DIRECTORY", tmp_path)
+    monkeypatch.setattr(ai_authored_questions, "_questions_cache", None)
+
+    loaded_ids = {item["item_id"] for item in ai_authored_questions._all_questions()}
+    assert loaded_ids == {"ai_batch_a_1", "ai_batch_b_1"}
 
 
 def test_validate_rejects_bad_difficulty():

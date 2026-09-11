@@ -379,6 +379,28 @@ export const samplingLab = {
     }),
 };
 
+// Real enroll/complete lifecycle for the iGOT/NSSTA course recommendations
+// already computed by services/learning_catalog.py::recommend_courses() and
+// returned in the `courses` field of learning.getPathway() -- see
+// routes/course_enrollment.py for the "igot"/"nssta" simulated-provider
+// contract and the provider_imported evidence it writes on completion.
+export const courseEnrollment = {
+  enroll: (playerId, courseId, title) =>
+    request('/learning/catalogue/enroll', {
+      method: 'POST',
+      body: { player_id: playerId, course_id: courseId, title },
+    }),
+
+  complete: (enrollmentId, playerId) =>
+    request(`/learning/catalogue/enrollments/${enrollmentId}/complete`, {
+      method: 'POST',
+      body: { player_id: playerId },
+    }),
+
+  list: (playerId) =>
+    request(`/learning/catalogue/enrollments?player_id=${encodeURIComponent(playerId)}`),
+};
+
 // Multipart requests (file upload) can't go through request() above -- the
 // browser must set its own multipart boundary in the Content-Type header,
 // which request()'s hardcoded 'application/json' would clobber.

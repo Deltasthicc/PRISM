@@ -106,10 +106,30 @@ class SimulatedIGOTAdapter:
         return ProviderResult(self.status, {"provider_record_id": provider_record_id, "found": False})
 
     def request_enrolment(self, provider_record_id: str, *, idempotency_key: str) -> ProviderResult:
-        return ProviderResult(self.status, {"accepted": False, "reason": "simulation-only"}, idempotency_key)
+        # A real provider genuinely accepting an enrolment request is exactly
+        # the behavior this simulator exists to demonstrate -- the previous
+        # accepted=False/"simulation-only" response made it impossible to
+        # ever demo the enroll -> complete -> competency-update loop
+        # end-to-end, which is the actual point of having this adapter at
+        # all (routes/course_enrollment.py is the caller).
+        return ProviderResult(
+            self.status,
+            {"accepted": True, "provider_record_id": provider_record_id, "status": "enrolled"},
+            idempotency_key,
+        )
 
     def import_completions(self, *, cursor: str | None = None) -> ProviderResult:
         return ProviderResult(self.status, {"events": [], "next_cursor": None})
+
+    def report_completion(self, provider_record_id: str) -> ProviderResult:
+        """Simulation-only -- deliberately not part of LearningProviderAdapter's
+        Protocol. Confirms one specific enrolment as complete on request,
+        standing in for a real provider's asynchronous completion signal
+        (which import_completions() would otherwise poll for in bulk, on a
+        schedule this demo has no reason to wait on). A live adapter would
+        never need this method; it would get real completion events from the
+        actual provider instead."""
+        return ProviderResult(self.status, {"provider_record_id": provider_record_id, "completed": True})
 
     def health_check(self) -> ProviderResult:
         return ProviderResult(self.status, {"capabilities": []})

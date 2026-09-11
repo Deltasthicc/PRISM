@@ -11,6 +11,7 @@ import { RadarChart } from '@/components/RadarChart';
 import { VectorBalanceCard } from '@/components/VectorBalanceCard';
 import { CompetencyVectorCard } from '@/components/CompetencyVectorCard';
 import { InferenceRationaleCard } from '@/components/InferenceRationaleCard';
+import { RecommendedCourses } from '@/components/RecommendedCourses';
 import Panel from '@/components/ui/Panel';
 import { BarChart3, Code, Gavel, Sparkles } from 'lucide-react';
 
@@ -260,6 +261,8 @@ export default function StatsPage() {
           {selectedDimension && (
             <InferenceRationaleCard dimension={selectedDimension} onViewLearningPathway={() => router.push('/academy')} />
           )}
+
+          <RecommendedCourses playerId={player.player_id} courses={pathwayData?.courses} />
         </>
       )}
     </div>

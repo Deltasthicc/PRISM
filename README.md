@@ -12,7 +12,7 @@
 ![Languages](https://img.shields.io/badge/UI-11%20languages-orange)
 ![Tests](https://img.shields.io/badge/backend%20tests-969-brightgreen)
 
-[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
+[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Recommended Learning](#-recommended-learning--igotnssta-enrollment) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
 </div>
 
@@ -134,6 +134,16 @@ A bounded, hands-on sampling-design lab ([`frontend/app/sampling-lab/`](frontend
 - A correct submission writes real practice evidence into `AccuracyHistory` for `os_sampling_design` — the same table Prerequisite Pathways reads, so lab completions move the map exactly like a competency quiz or DSA Sandbox submission does.
 - This lab existed, fully built and unit-tested, before it had a route or a frontend page — found and wired up as part of closing out the platform for the demo. Scoped to one Official Statistics competency for now, not the full AI/Data Science/Cloud/Cybersecurity/Automation lab set a from-scratch build would eventually cover.
 
+## 🎓 Recommended Learning & iGOT/NSSTA enrollment
+
+Every tracked skill gap gets real, ranked course recommendations, and a learner can actually act on them — not just look at a list ([`frontend/components/RecommendedCourses.jsx`](frontend/components/RecommendedCourses.jsx), [`backend/services/learning_catalog.py`](backend/services/learning_catalog.py), [`backend/routes/course_enrollment.py`](backend/routes/course_enrollment.py)):
+
+- **Real, gap-ranked recommendations** — `recommend_courses()` takes the same severity-ranked skill gaps `/stats` and Prerequisite Pathways already use and, for each of the top 5, returns one **iGOT Karmayogi** course, one **NSSTA TPAC** training entry, and one **in-app practice** link — directly answering PS-26101's "personalized learning recommendations of iGOT Course Module as well as NSSTA's TPAC recommended Training Programme" requirement.
+- **A real, persisted enroll → complete lifecycle**, not a dead link — `POST /learning/catalogue/enroll` and `POST /learning/catalogue/enrollments/{id}/complete` write and update an actual `course_enrollments` row per learner, idempotently (enrolling twice, or completing twice, is a no-op, not a duplicate).
+- **Honestly simulated, never pretending to be live** — `igot`/`nssta` enrollment goes through `SimulatedIGOTAdapter`, which always reports `status: "SIMULATED"` (see [Known limitations](#-known-limitations) — no real iGOT/NSSTA API contract exists yet to integrate against). What's real is everything on PRISM's side of that boundary: the ranking, the persistence, the idempotency, and the lifecycle.
+- **No fabricated competency claims** — completing a course writes an `EvidenceRecord` with `evidence_type="provider_imported"`, a type `learning_engine.py` deliberately excludes from competency scoring (`UNSCORED_EVIDENCE_TYPES`). A simulated provider signal is recorded for transparency, never used to inflate a skill level that hasn't actually been demonstrated.
+- In-app practice recommendations have no enrollment step — they're a direct link into `/dungeon`'s adaptive quest for that competency, since there's nothing to "enroll" in beyond visiting the page.
+
 ## 🤖 Learner Assistant (RAG)
 
 A real, access-filtered, cited retrieval engine ([`backend/ai/retrieval.py`](backend/ai/retrieval.py), [`ai/assistant.py`](backend/ai/assistant.py), exposed at `/assistant` in the frontend) — not a general-purpose chatbot, and it says so:
@@ -152,7 +162,7 @@ Being honest about this line is the point of this section — the frontend has a
 | Route | Status |
 |---|---|
 | `/login` → `/register` → `/baseline-assessment` | **Real.** Resolves an actual backend player via `useAuthStore`, then a real profile form, then a source-cited baseline quiz served by `routes/competency_quiz.py`. |
-| `/stats` | **Real.** Every number comes from `GET /learning/pathway` — no hardcoded competency data. |
+| `/stats` | **Real.** Every number comes from `GET /learning/pathway` — no hardcoded competency data, including the recommended-courses list — see [Recommended Learning](#-recommended-learning--igotnssta-enrollment) below. |
 | `/dungeon` ("Prerequisite Pathways") | **Real, for all four curricula.** Driven by `GET /learning/pathway/{player_id}` (the same engine `/stats` uses) merged with real per-player room unlock status from `GET /game/dungeon/{id}`. "Practice this competency" opens `/practice`, a plain quiz scoped to that one competency; finishing it updates `AccuracyHistory`, which is what flips a room to unlocked/weak/mastered and advances the "biggest gap" pointer — verified live across every curriculum, not just DSA. |
 | `/dsa-sandbox` | **Real.** See [DSA Sandbox](#-dsa-sandbox) below — real code, a real Judge0 judge, no simulated pass/fail. |
 | `/sampling-lab` | **Real.** See [Virtual Lab](#-virtual-lab-official-statistics) below — bounded, deterministic sample-size tasks, no learner code execution. |
@@ -242,6 +252,7 @@ Then open `http://localhost:3000`.
 | `learning_competency.py` | `/learning` | Competency assessment, pathway, curricula listing |
 | `learning_content.py` | `/learning` | Quiz/content generation and listing |
 | `learning_integration.py` | `/learning` | External catalog (iGOT/NSSTA) integration status |
+| `course_enrollment.py` | `/learning/catalogue` | Real enroll/complete lifecycle for recommended iGOT/NSSTA courses — see [Recommended Learning](#-recommended-learning--igotnssta-enrollment) |
 | `learning_analytics.py` | `/learning` | Admin overview & analytics |
 | `competency_quiz.py` | `/learning/competency-quiz` | Source-cited competency quiz bank — by topic (baseline) or by a single `competency_id` (`/practice`) |
 | `dsa_sandbox.py` | `/learning/dsa-sandbox` | Real Judge0 code execution — see [DSA Sandbox](#-dsa-sandbox) |
@@ -267,7 +278,7 @@ Then open `http://localhost:3000`.
 
 ## 🧪 Tests & CI
 
-- **994 backend tests** (969 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
+- **1,014 backend tests** (989 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
 - **No frontend test suite** exists yet — `frontend/package.json` only defines `dev`/`build`/`start`/`lint`.
 - [`ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`:
   - `backend-tests` — `pip-audit` + full pytest suite against Postgres
@@ -287,6 +298,7 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 
 - `DISABLE_AUTH=true` in the deployed demo means there is no real identity check on any request — see [Auth model](#-auth-model-read-this-before-you-judge-the-security).
 - `/integration-registry` is a visual mockup with no backend behind it; `/guild` has a real backend endpoint waiting but no UI wired to it yet.
+- iGOT/NSSTA course enrollment ([Recommended Learning](#-recommended-learning--igotnssta-enrollment)) is a real, persisted lifecycle on PRISM's side, but the provider itself is `SimulatedIGOTAdapter` — no real iGOT Karmayogi or NSSTA API contract exists to integrate against yet, so "enroll"/"complete" never leave this app.
 - The optional gamified practice layer (Quest Mode: `/character`, `/combat`, `/boss/[dungeonId]`, `/guild`, `/leaderboard`) is off by default and intentionally not part of the front-page pitch for now — see the [real-vs-mockup table](#-whats-real-and-whats-a-mockup) if you need the detail.
 - The Learner Assistant's answer quality without a working `GEMINI_API_KEY` is extractive (it quotes the top-matching evidence directly rather than synthesizing prose) — real and honestly labeled, but a configured key gives noticeably better answers. The 176-excerpt seed corpus is UPSC-exam-style passages, so some phrasing reads more like an exam question than a textbook explanation.
 - The voice pipeline's `/voice` UI is real but has two real constraints: TTS output needs a local Piper model you supply yourself (STT and the text answer work without one), and live microphone capture through a real browser has not been verified in this development environment (no physical microphone available here) — the WebSocket protocol itself was verified end-to-end with a real generated speech sample. See [Voice AI pipeline](#-voice-ai-pipeline).

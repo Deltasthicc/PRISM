@@ -1,0 +1,6 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-11",
+  "note": "MCQs written by an AI model, each citing a real doc_id from document_corpus.json (validated at load time by services/ai_authored_questions.py -- an unknown doc_id fails import, same enforcement as the hand-authored bank) and grounded in that document's real, verifiable subject matter. Distinct from data/hand_authored_questions.json, whose own docstring specifically claims nothing in that file is model-generated -- these items make no such claim, and are honestly labeled generation_mode='ai-source-grounded' instead of 'hand-transcribed'. Added to reach a practical per-competency question count across all four curricula without waiting on a human transcriber for every item. status is DRAFT until reviewed against CLAUDE.md invariant 9, same as any other generated item in this codebase.",
+  "questions": []
+}

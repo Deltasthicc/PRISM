@@ -1,0 +1,1375 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-11",
+  "note": "AI-authored, source-grounded MCQs for the official-statistics curriculum (batch 1): os_statistical_foundations, os_data_collection, os_sampling_design, os_data_quality and os_official_statistics.",
+  "questions": [
+    {
+      "item_id": "ai_os_statistical_foundations_001",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: limit theorems in probability",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus tests classical probability and inference theory, including the Central Limit Theorem, as a foundational topic; the exact wording of any single question cannot be transcribed from the scanned page images, so this item is grounded in the paper's well-established syllabus area rather than a specific transcribed question.",
+      "question": "The Central Limit Theorem is one of the most widely used results in statistical inference. What does it state, in its classical (Lindeberg-Levy) form?",
+      "options": [
+        "The sample mean of a large number of i.i.d. random variables with finite mean and variance is approximately normally distributed, regardless of the shape of the parent distribution",
+        "Any sequence of random variables converges to a normal distribution as the sample size increases, even without finite variance",
+        "The sample variance converges to the population variance as sample size increases, which is only true for normal populations",
+        "The sum of two normally distributed random variables is normally distributed only if they are independent"
+      ],
+      "answer_index": 0,
+      "explanation": "The Lindeberg-Levy Central Limit Theorem states that if X1,...,Xn are i.i.d. with finite mean mu and finite variance sigma^2, then the standardized sample mean sqrt(n)(Xbar - mu)/sigma converges in distribution to a standard normal random variable as n grows, regardless of the parent distribution's shape. This is why the normal distribution is used so widely to approximate sampling distributions of means even when the underlying population is not normal. Option B is wrong because finite variance is a required condition; option C describes a law-of-large-numbers-type consistency statement, not the CLT and it is not restricted to normal populations; option D is a distinct, narrower fact about sums of independent normal variables, not the CLT."
+    },
+    {
+      "item_id": "ai_os_statistical_foundations_002",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: laws of large numbers",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers probability limit theorems including the Weak Law of Large Numbers; grounded in that well-established syllabus area, not a specific transcribed question, since the paper is a scanned page-image PDF.",
+      "question": "The Weak Law of Large Numbers (WLLN) for a sequence of i.i.d. random variables with finite mean mu states that the sample mean converges to mu in which sense?",
+      "options": [
+        "Almost surely, meaning the sample mean equals mu exactly for all sufficiently large n with probability 1",
+        "In probability: for any small positive number, the probability that the sample mean differs from mu by more than that amount goes to zero as n increases",
+        "In distribution, meaning the sample mean's distribution becomes normal as n increases",
+        "Uniformly over all possible values of mu simultaneously, independent of the sample size"
+      ],
+      "answer_index": 1,
+      "explanation": "The Weak Law of Large Numbers is a statement of convergence in probability: P(|Xbar_n - mu| > epsilon) -> 0 as n -> infinity, for every epsilon > 0. It does not claim the stronger almost-sure convergence (that is the content of the Strong Law of Large Numbers), and it says nothing about the shape of the sampling distribution becoming normal (that is the Central Limit Theorem, a separate result). Option D misstates the law as a uniform, sample-size-independent guarantee, which is not what convergence in probability means."
+    },
+    {
+      "item_id": "ai_os_statistical_foundations_003",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: correlation and measures of association",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers correlation and regression as core descriptive-statistics topics; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "Karl Pearson's product-moment correlation coefficient (r) between two variables is bounded within which range?",
+      "options": [
+        "0 to 1, since correlation can never be negative",
+        "-1 to +1, where the sign indicates the direction of the linear relationship and the magnitude indicates its strength",
+        "-infinity to +infinity, since it depends on the units of measurement of both variables",
+        "0 to 100, expressed as a percentage of shared variance"
+      ],
+      "answer_index": 1,
+      "explanation": "The Pearson correlation coefficient is defined as the covariance of two variables divided by the product of their standard deviations, and by the Cauchy-Schwarz inequality this ratio is always bounded between -1 and +1. A value near +1 indicates a strong positive linear relationship, near -1 a strong negative linear relationship, and near 0 indicates little or no linear relationship. Unlike covariance, r is unit-free because the standard deviations in the denominator cancel out the units, which rules out option C. Option D confuses r with r-squared (the coefficient of determination), which is the proportion of variance explained and does range from 0 to 1 (or 0% to 100%)."
+    },
+    {
+      "item_id": "ai_os_statistical_foundations_004",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: theory of hypothesis testing",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers the theory of testing hypotheses, including the Neyman-Pearson approach to constructing most powerful tests; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "The Neyman-Pearson Lemma is used to find the most powerful test of a simple null hypothesis against a simple alternative hypothesis, at a fixed significance level. What does the lemma say the most powerful test's rejection region is based on?",
+      "options": [
+        "The sample mean exceeding a threshold determined only by the sample size, regardless of which distributions are being compared",
+        "The likelihood ratio of the alternative hypothesis's density to the null hypothesis's density exceeding a constant chosen to fix the Type I error rate",
+        "The p-value of the test statistic falling below 0.05, which the lemma proves is optimal for any pair of hypotheses",
+        "The sample variance being significantly different from its value under the null hypothesis"
+      ],
+      "answer_index": 1,
+      "explanation": "The Neyman-Pearson Lemma states that for testing a simple H0: theta = theta0 against a simple H1: theta = theta1 at significance level alpha, the most powerful test rejects H0 when the likelihood ratio L(theta1)/L(theta0) exceeds some constant k, where k is chosen so that the test has size exactly alpha. This gives the test with the highest possible power among all tests of that size, for that specific pair of hypotheses. Option A is wrong because the threshold depends on the specific alternative and null densities, not just sample size; option C wrongly generalizes a conventional significance threshold into a universal optimality claim; option D describes a variance-comparison test, not the general Neyman-Pearson construction."
+    },
+    {
+      "item_id": "ai_os_statistical_foundations_005",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: errors in hypothesis testing",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers Type I and Type II errors and the power of a test as core hypothesis-testing concepts; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "In hypothesis testing, what is the fundamental trade-off between Type I error and Type II error for a fixed sample size?",
+      "options": [
+        "There is no trade-off; both can be reduced simultaneously without limit by choosing a stricter significance level",
+        "Reducing the probability of a Type I error (rejecting a true null hypothesis) by using a smaller significance level typically increases the probability of a Type II error (failing to reject a false null hypothesis), unless the sample size is increased",
+        "Type I error only matters for one-tailed tests, while Type II error only matters for two-tailed tests",
+        "Type II error is always smaller than Type I error for any well-designed test"
+      ],
+      "answer_index": 1,
+      "explanation": "For a fixed sample size, the significance level alpha (Type I error probability) and beta (Type II error probability) move in opposite directions: making the rejection region smaller (lowering alpha, to reduce false rejections of a true null) shrinks the region where H1 leads to rejection, which raises beta, the chance of failing to detect a genuinely false null hypothesis. The only way to reduce both simultaneously is to increase the sample size, which sharpens the test's ability to discriminate between the two hypotheses. Options C and D are false generalizations; the alpha/beta trade-off applies to one-tailed and two-tailed tests alike, and there is no general rule that beta is always smaller than alpha."
+    },
+    {
+      "item_id": "ai_os_statistical_foundations_006",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: interval estimation",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers interval estimation and confidence intervals as a core inference topic; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "A 95% confidence interval for a population mean is correctly interpreted as which of the following?",
+      "options": [
+        "There is a 95% probability that the true population mean falls within this specific, already-computed interval",
+        "If the same sampling and interval-construction procedure were repeated many times, approximately 95% of the resulting intervals would contain the true population mean",
+        "95% of the individual observations in the population fall within this interval",
+        "The sample mean is correct with 95% certainty"
+      ],
+      "answer_index": 1,
+      "explanation": "In classical (frequentist) inference, the population mean is a fixed, unknown constant, not a random variable, so once a specific interval is computed from a given sample, that interval either does or does not contain the true mean -- there is no meaningful 'probability' attached to that one interval, which rules out option A. The correct interpretation is about the long-run behaviour of the procedure: across repeated samples, about 95% of the constructed intervals would capture the true mean. Option C confuses a confidence interval for the mean with a prediction or tolerance interval covering individual observations, and option D is simply not a meaningful statistical statement."
+    },
+    {
+      "item_id": "ai_os_statistical_foundations_007",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: efficiency of estimators",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers the Cramer-Rao inequality and efficient estimation as core estimation-theory topics; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "The Cramer-Rao Lower Bound (CRLB) gives a theoretical lower bound on the variance of which kind of estimator, and what is that bound expressed in terms of?",
+      "options": [
+        "Any estimator whatsoever, biased or unbiased; the bound is the sample size divided by the population variance",
+        "Unbiased estimators of a parameter; the bound is the reciprocal of the Fisher information contained in the sample about that parameter",
+        "Only maximum likelihood estimators; the bound is always exactly zero for large samples",
+        "Sample proportions only, and the bound is p(1-p)/n regardless of the underlying distribution"
+      ],
+      "answer_index": 1,
+      "explanation": "The Cramer-Rao inequality states that for any unbiased estimator T of a parameter theta, Var(T) >= 1/I(theta), where I(theta) is the Fisher information the sample carries about theta. An estimator that attains this bound is called an efficient (or minimum variance bound) estimator. The bound is not defined for arbitrary biased estimators in the same simple form (a bias-correction term enters for biased estimators), so option A is wrong; the bound is not specific to MLEs (though MLEs are often asymptotically efficient), ruling out option C; and option D describes a specific formula for the variance of a sample proportion under simple random sampling, not the general CRLB."
+    },
+    {
+      "item_id": "ai_os_statistical_foundations_008",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: methods of estimation",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers classical methods of point estimation, including the method of moments, alongside maximum likelihood estimation; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "The method of moments estimates unknown population parameters by which basic procedure?",
+      "options": [
+        "Maximizing the likelihood function of the observed sample with respect to the parameters",
+        "Equating population moments (expressed as functions of the unknown parameters) to the corresponding sample moments, and solving the resulting equations for the parameters",
+        "Minimizing the sum of squared deviations between observed and fitted values",
+        "Choosing the parameter values that make the sample median equal to the population median"
+      ],
+      "answer_index": 1,
+      "explanation": "The method of moments sets up as many equations as there are unknown parameters, each equating a theoretical (population) moment -- such as E[X] or E[X^2], written as a function of the parameters -- to the corresponding sample moment computed from the data, and then solves this system for the parameter estimates. This is procedurally distinct from maximum likelihood estimation (option A, which maximizes a likelihood function instead) and from least squares (option C, which minimizes squared residuals, typically in a regression context). Option D describes a median-matching approach, which is not the method of moments."
+    },
+    {
+      "item_id": "ai_os_statistical_foundations_009",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_statistical_foundations",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: properties of estimators",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers the large-sample (asymptotic) properties of estimators, including consistency, as a core estimation-theory topic; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "An estimator is said to be a 'consistent' estimator of a parameter theta if it has which property?",
+      "options": [
+        "Its expected value equals theta exactly for every sample size, however small",
+        "It converges in probability to theta as the sample size grows without bound, even if it is biased for small samples",
+        "It has the smallest possible variance among all estimators of theta, for every sample size",
+        "It is normally distributed for every sample size"
+      ],
+      "answer_index": 1,
+      "explanation": "Consistency is a large-sample property: an estimator T_n is consistent for theta if T_n converges in probability to theta as n approaches infinity, i.e., for any epsilon > 0, P(|T_n - theta| > epsilon) -> 0. Notably, a consistent estimator can be biased for finite samples (a common example is the MLE of variance under a normal model, which is biased but consistent) as long as that bias vanishes asymptotically, which is why option A (exact unbiasedness at every sample size) is not required. Option C describes minimum-variance unbiasedness (efficiency), a separate property, and option D describes asymptotic normality, another separate large-sample property that a consistent estimator need not automatically have."
+    },
+    {
+      "item_id": "ai_os_data_collection_001",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Introduction, para 1.7",
+      "source_excerpt": "The Census of India 2011 will be conducted in two phases, namely i) Houselisting and Housing Census and ii) Population Enumeration. The first phase of the Census will be conducted in the period April to September, 2010... The field work of the second phase (Population Enumeration) will be carried out during February-March, 2011.",
+      "question": "Per the Census of India 2011 Instruction Manual, the Census was conducted in two separate phases. What were they, in order?",
+      "options": [
+        "Houselisting and Housing Census, followed later by Population Enumeration",
+        "Population Enumeration, followed later by Houselisting and Housing Census",
+        "A pilot Census followed by the full Census, both covering population and housing together",
+        "Rural Census followed by Urban Census, each covering both housing and population"
+      ],
+      "answer_index": 0,
+      "explanation": "The manual states the 2011 Census had two phases: the Houselisting and Housing Census came first (April-September 2010), building the base of buildings, census houses and households, and the Population Enumeration phase followed later (February-March 2011), which counted individual persons. Houselisting had to precede Population Enumeration because it established the frame of houses and households that enumerators used in the second phase. The other options invert the real order or describe divisions (pilot/full, rural/urban) that are not how the manual splits the exercise."
+    },
+    {
+      "item_id": "ai_os_data_collection_002",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Legal Provisions, para 2.2(i), Census Act 1948",
+      "source_excerpt": "The following are the rights of an Enumerator/Supervisor conferred by the Census Act to facilitate Census operations: (i) To enter the house, enclosure, vessel or any other place occupied by the household for the purpose of carrying out the Census, having regard to local customs. [Section 9]",
+      "question": "Under Section 9 of the Census Act, 1948, what specific right does the Act confer on an enumerator or supervisor to enable them to carry out Houselisting?",
+      "options": [
+        "The right to seize any household documents needed to verify answers",
+        "The right to enter the house, enclosure, vessel, or any other place occupied by the household for Census purposes, having regard to local customs",
+        "The right to compel a household to relocate temporarily during data collection",
+        "The right to levy a fine directly on any household that refuses entry"
+      ],
+      "answer_index": 1,
+      "explanation": "Section 9 of the Census Act, 1948 gives enumerators and supervisors the legal right to enter a house, enclosure, vessel, or other place occupied by a household in order to carry out Census operations, while being mindful of local customs, and also to paint or affix numbers on the building or Census house as necessary. It does not grant a right to seize documents, compel relocation, or personally impose fines -- penalties for obstruction are separately provided for and enforced through the legal process, not directly by the enumerator, which rules out the other options."
+    },
+    {
+      "item_id": "ai_os_data_collection_003",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Filling up of the Schedule, Columns 4-6 (Material of Floor/Wall/Roof)",
+      "source_excerpt": "Col. 4: Material of Floor... Col. 5: Material of Wall... Col. 6: Material of Roof -- the schedule records the predominant material used in the floor, wall and roof of each census house.",
+      "question": "In the Census 2011 Houselisting schedule, columns 4, 5 and 6 record the predominant material of the floor, wall and roof of a census house. Why does the manual ask for the 'predominant' material rather than every material present?",
+      "options": [
+        "Because only wealthy households were surveyed and their houses used only one material throughout",
+        "Because a single census house may be built using more than one material in a given component, and enumerators must record whichever one covers the largest area of that component",
+        "Because the predominant material determines whether the household is classified as Institutional or Normal",
+        "Because the Census Act, 1948 legally prohibits recording more than one material per house"
+      ],
+      "answer_index": 1,
+      "explanation": "Real houses are frequently built with mixed materials -- for example, a floor that is partly cement and partly mud, or a roof with more than one covering -- so the schedule instructs enumerators to identify and record whichever single material covers the predominant (largest) part of that structural component, rather than trying to list every material used. This choice makes the housing-condition data usable for large-scale tabulation and comparison across millions of houses. The material of construction has nothing to do with the Normal/Institutional household classification (which depends on how residents live and take meals, not on building materials), and there is no such prohibition in the Census Act."
+    },
+    {
+      "item_id": "ai_os_data_collection_004",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Filling up of the Schedule, Col. 7 (Ascertain use of census house)",
+      "source_excerpt": "Col. 7 : Ascertain use of census house... A few illustrations for making entries under column 7.",
+      "question": "Column 7 of the Houselisting schedule asks the enumerator to record the 'use' of a census house. Which of the following best describes what this column is designed to capture?",
+      "options": [
+        "Whether the census house is used for residential purposes, non-residential purposes (such as a shop or factory), or a mixed residence-cum-other use",
+        "Whether the census house was built before or after India's independence",
+        "Whether the census house is owned by a government department or a private individual",
+        "Whether the census house is located in a rural or an urban area"
+      ],
+      "answer_index": 0,
+      "explanation": "Column 7 classifies each census house by how it is actually used -- wholly residential, wholly non-residential (such as shop, office, factory, school, or place of worship), or a mixed residence-cum-other-use category (e.g., 'residence-cum-shop') -- because this determines which subsequent columns of the schedule apply. Wholly non-residential houses, for instance, are not asked the household-amenity and asset questions that apply to residences. Ownership (captured separately in Column 16), the era of construction, and rural/urban location (captured through location particulars, not column 7) are different pieces of information recorded elsewhere in the schedule."
+    },
+    {
+      "item_id": "ai_os_data_collection_005",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Filling up of the Schedule, Col. 8 (Condition of the census house)",
+      "source_excerpt": "Col. 8 : Condition of the census house -- the schedule records the physical condition of each census house.",
+      "question": "Column 8 of the Census 2011 Houselisting schedule records the 'condition of the census house'. What is this condition assessment meant to distinguish between?",
+      "options": [
+        "Whether the house is good, livable, or dilapidated",
+        "Whether the house is new construction or a renovated older structure",
+        "Whether the house is insured or uninsured",
+        "Whether the house has passed a municipal safety inspection"
+      ],
+      "answer_index": 0,
+      "explanation": "Column 8 asks the enumerator to visually assess and record whether the structural condition of the census house is 'good' (no repairs needed), 'livable' (needs only minor repairs), or 'dilapidated' (needs major repairs or reconstruction, or is unfit for habitation). This condition data feeds directly into national estimates of housing stock quality and housing shortage used for housing-policy planning, which is exactly the utility the manual's introduction highlights. It is not about the age of construction, insurance status, or formal inspection certificates, none of which the enumerator is equipped or asked to verify."
+    },
+    {
+      "item_id": "ai_os_data_collection_006",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Filling up of the Schedule, Col. 16 (Ownership status of this house)",
+      "source_excerpt": "Col. 16 : Ownership status of this house -- the schedule records whether the household occupying the census house owns or rents it.",
+      "question": "Column 16 of the Houselisting schedule records the 'ownership status' of the house occupied by a household. What basic distinction does this column draw?",
+      "options": [
+        "Whether the house is owned or rented by the household living in it",
+        "Whether the house is registered in the name of a man or a woman",
+        "Whether the house was built by the government or by a private builder",
+        "Whether the household has a home loan outstanding on the house"
+      ],
+      "answer_index": 0,
+      "explanation": "Column 16 distinguishes between households that own the house they live in versus those that occupy it on rent (including rent-free arrangements provided by an employer are treated separately from ordinary owned/rented status in the detailed instructions, but the basic distinction the column draws is owned versus rented). This tenure-status information is a core housing indicator used in national housing-shortage and urban-planning estimates. It does not ask about the gender of the registered owner, who constructed the house, or outstanding loan liabilities, which are outside the scope of this column."
+    },
+    {
+      "item_id": "ai_os_data_collection_007",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Filling up of the Schedule, Col. 17, paras 4.73-4.74 (Number of dwelling rooms)",
+      "source_excerpt": "Col.17 : Number of dwelling rooms exclusively in possession of this household... Do not include kitchen, bathroom, latrine, store room, passageway and verandah. Include living room, bedroom, drawing room, dining room, servant's room if within the house...",
+      "question": "Per the Census 2011 manual's instructions for Column 17 (number of dwelling rooms), which of the following rooms should NOT be counted as a 'dwelling room'?",
+      "options": [
+        "A bedroom used exclusively by the household",
+        "A drawing room used exclusively by the household",
+        "A kitchen used exclusively by the household",
+        "A dining room used exclusively by the household"
+      ],
+      "answer_index": 2,
+      "explanation": "The manual explicitly excludes kitchen, bathroom, latrine, store room, passageway and verandah from the count of 'dwelling rooms', even when they are used exclusively by the household, because a dwelling room is meant to capture usable living space rather than every enclosed area in the house. Bedrooms, drawing rooms, dining rooms and living rooms, by contrast, are explicitly included as dwelling rooms when in the household's exclusive possession. This distinction matters for housing-congestion indicators (like persons-per-room), which would be distorted if service spaces like kitchens and bathrooms were counted as if they were livable rooms."
+    },
+    {
+      "item_id": "ai_os_data_collection_008",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Filling up of the Schedule, Col. 19, paras 4.79-4.82 (Main source of drinking water)",
+      "source_excerpt": "4.81 Tap Water from treated source: ...refers to a source of drinking water which is provided to individual households through pipes from a treatment plant... 4.82 Tap water from un-treated source: If a household is drawing drinking water through pipes... without treatment, such a source should be treated as Tap water from Un-treated source.",
+      "question": "The Census 2011 Houselisting schedule distinguishes 'Tap water from treated source' from 'Tap water from un-treated source' under the main source of drinking water. What determines which of these two codes applies to a household?",
+      "options": [
+        "Whether the household boils the water themselves before drinking it",
+        "Whether the water reaching the household through pipes has passed through a treatment plant, regardless of whether the pipe itself looks the same in both cases",
+        "Whether the household pays a water bill to the municipal authority",
+        "Whether the tap is located inside or outside the house"
+      ],
+      "answer_index": 1,
+      "explanation": "The manual makes clear that the mere fact that water flows from a tap is not sufficient to code it as 'treated' -- what matters is whether the water supplied through that pipe has actually passed through a treatment plant (municipal or panchayat treatment works, private housing estate treatment, etc.) before reaching the household. If a household draws water through pipes from an untreated source (such as an untreated river, tank, or borewell fed directly into a pipe network), it is coded as 'tap water from un-treated source' even though it looks identical to treated tap water at the point of use. Whether the household boils the water, pays a bill, or the tap's location are not the criteria used for this classification."
+    },
+    {
+      "item_id": "ai_os_data_collection_009",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Filling up of the Schedule, Col. 21, para on Main source of lighting",
+      "source_excerpt": "Col.21 : Main Source of lighting : Electricity-1/Kerosene-2/Solar-3/Other oil-4/Any other-5/No lighting-6.",
+      "question": "In the Census 2011 Houselisting schedule, Column 21 records the household's main source of lighting. Which code is assigned when a household's main source of lighting is electricity?",
+      "options": [
+        "Code 1",
+        "Code 3",
+        "Code 5",
+        "Code 6"
+      ],
+      "answer_index": 0,
+      "explanation": "The schedule's fixed code list for Column 21 assigns Code 1 to Electricity, Code 2 to Kerosene, Code 3 to Solar, Code 4 to Other oil, Code 5 to Any other source, and Code 6 to No lighting at all. The manual further clarifies that if a household has an electricity connection but experiences frequent outages or load-shedding, it is still coded as electricity (Code 1) as long as electricity is the intended main source, since the column measures the source of supply rather than the reliability of that supply."
+    },
+    {
+      "item_id": "ai_os_data_collection_010",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Filling up of the Schedule, Col. 22, para 4.92 (Latrine within the premises)",
+      "source_excerpt": "4.92 ...several households may be sharing a common latrine. All such common latrines cannot be treated as public latrines. The essential point of difference between a common latrine and a public latrine is that while a common latrine is available only for the exclusive use of the households concerned, a public latrine is accessible to any member of the public, either on payment or free.",
+      "question": "Per the Census 2011 manual's instructions for latrine facility, what is the essential difference between a 'common latrine' (which can still count as being 'within the premises') and a 'public latrine' (which does not)?",
+      "options": [
+        "A common latrine is free of cost, while a public latrine always charges a fee",
+        "A common latrine is available only for the exclusive use of the specific households sharing it, while a public latrine is accessible to any member of the public, whether free or paid",
+        "A common latrine is located indoors, while a public latrine is always located outdoors",
+        "A common latrine is maintained by a private owner, while a public latrine is always maintained by the government"
+      ],
+      "answer_index": 1,
+      "explanation": "The manual explicitly draws the line on exclusivity of access, not on cost, location, or maintenance authority: a common latrine is shared by only the specific households who have arranged to use it and is not open to outsiders, so it still counts as 'within the premises' for those households, whereas a public latrine is open to any member of the general public (whether they pay a fee, such as at a Sulabh Souchalaya, or use it free), and is therefore never counted as being within any particular household's premises. Cost, indoor/outdoor placement, and who maintains the facility are not the defining criteria the manual uses for this distinction."
+    },
+    {
+      "item_id": "ai_os_data_collection_011",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Filling up of the Schedule, Col. 23, paras 4.94-4.98 (Type of latrine facility, pit latrines)",
+      "source_excerpt": "Pit latrines... may be of the following types: a pit latrine with a squatting slab or platform is called a 'Pit latrine with Slab'. Such pit latrines are sometimes ventilated by a pipe extending above the latrine roof and referred to as Ventilated Improved Pit latrine... Without slab/open pit: A pit latrine without a squatting slab or platform or seat.",
+      "question": "The Census 2011 manual distinguishes several sub-types of pit latrine under Column 23 (type of latrine facility). What primarily distinguishes a 'Pit latrine with Slab' (including its Ventilated Improved Pit, or VIP, variant) from a 'pit latrine without slab / open pit'?",
+      "options": [
+        "Whether the pit latrine is located within or outside the house's premises",
+        "Whether the pit latrine has a squatting slab or platform covering the pit, and, in the VIP variant, a ventilation pipe extending above the roof",
+        "Whether the household pays a fee to use the pit latrine",
+        "Whether the pit latrine is connected to a piped sewer system"
+      ],
+      "answer_index": 1,
+      "explanation": "A 'Pit latrine with Slab' has a squatting slab or platform covering the pit, which is more hygienic than a bare hole in the ground, and its Ventilated Improved Pit (VIP) variant additionally has a vent pipe extending above the latrine roof to reduce odour and flies. A pit latrine 'without slab' or 'open pit', by contrast, is simply a rudimentary hole in the ground where night soil collects with no covering slab. This distinction is about the pit's physical construction and hygiene features, not its location relative to the premises (a separate column), any usage fee, or sewer connectivity (which is a distinguishing feature of flush/pour-flush latrines, a different latrine-type category entirely)."
+    },
+    {
+      "item_id": "ai_os_data_collection_012",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Filling up of the Schedule, Col. 24, para on Waste water outlet connected to",
+      "source_excerpt": "Col.24 : Waste water outlet connected to : Closed drainage-1/Open drainage-2/No drainage-3. ...waste water may consist of kitchen and bathroom waste water as well as water from latrines. If the Census house has water outlet connected to some form of drainage system... connected to closed drainage or open drainage.",
+      "question": "Column 24 of the Census 2011 Houselisting schedule records whether a census house's waste water outlet is connected to closed drainage, open drainage, or no drainage at all. What kinds of waste water does this column consider together when making that assessment?",
+      "options": [
+        "Only rainwater runoff from the roof of the house",
+        "Only water used for drinking and cooking purposes",
+        "Waste water from the kitchen, from bathrooms, and from latrines, considered together as the outlet the household relies on",
+        "Only industrial effluent from any home-based business operating in the house"
+      ],
+      "answer_index": 2,
+      "explanation": "The manual clarifies that 'waste water' for this column includes water discharged from the kitchen and bathroom as well as water from latrines, and the enumerator records whether this combined waste water stream is carried away through a closed (covered) drainage system, an open (uncovered) drainage channel, or has no organized drainage connection at all. It is not restricted to rainwater runoff, drinking/cooking water use, or industrial effluent, none of which the column is designed to capture."
+    },
+    {
+      "item_id": "ai_os_data_collection_013",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Filling up of the Schedule, Col. 26 (Availability of Kitchen)",
+      "source_excerpt": "Col.26: Availability of Kitchen: ...kitchen available as a separate room within the house... household outside the house in a kitchen...",
+      "question": "Column 26 of the Houselisting schedule records the 'availability of kitchen' for a household. Which of the following distinctions does this column draw?",
+      "options": [
+        "Whether the household has a kitchen as a separate room within the house, has cooking arrangements outside the house but within the premises, or has no kitchen at all",
+        "Whether the kitchen is made of pucca or kutcha materials",
+        "Whether the kitchen uses gas or electric cooking equipment",
+        "Whether more than one household shares the same kitchen"
+      ],
+      "answer_index": 0,
+      "explanation": "Column 26 distinguishes households that have a dedicated kitchen as a separate room within the house from those that cook in the open or in a separate structure outside the main house but within the premises, and from those with no cooking arrangement at all (who might cook in a room used for multiple purposes, or have no fixed cooking space). This is an amenity-availability question, not a construction-material question (which is separately captured for floor/wall/roof in columns 4-6), a fuel-type question (a separate column entirely, Column 27), or a household-sharing question (addressed conceptually when defining what constitutes a household in the first place, via the common-kitchen criterion)."
+    },
+    {
+      "item_id": "ai_os_data_collection_014",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Filling up of the Schedule, Col. 27, para 4.117 area (Fuel used for cooking)",
+      "source_excerpt": "Col.27: Fuel used for cooking... firewood (Code '1') includes woods... code '6' i.e. 'LPG/PNG', LPG refers to...",
+      "question": "Column 27 of the Census 2011 Houselisting schedule records the main fuel a household uses for cooking, with firewood coded as '1' and LPG/PNG coded as '6' among the listed options. What does this column's structure (a numbered list from traditional to modern fuels) allow analysts to study?",
+      "options": [
+        "Only the average monthly cooking-fuel expenditure of a household",
+        "The transition of households across a spectrum from traditional biomass fuels like firewood towards cleaner, modern fuels like LPG/PNG, as an indicator of energy access and development",
+        "Whether the household owns its cooking stove or rents it",
+        "Whether the household is registered under a government cooking-gas subsidy scheme"
+      ],
+      "answer_index": 1,
+      "explanation": "By recording, at national scale, which specific fuel each household predominantly uses for cooking, from firewood, crop residue, cow dung cake, coal/lignite and kerosene through to LPG/PNG, electricity and biogas, the Census enables analysts and policymakers to track how the population is distributed across this fuel spectrum and how much of that distribution shifts towards cleaner fuels over successive Census rounds -- a widely used indicator of energy access, indoor air quality risk, and socio-economic development. The column records fuel type, not cost, stove ownership, or subsidy-scheme registration, none of which are captured here."
+    },
+    {
+      "item_id": "ai_os_data_collection_015",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Filling up of the Schedule, Cols. 28-34 (Assets possessed by the household)",
+      "source_excerpt": "Assets possessed by the household -- Col. 28: Radio/Transistor, Col. 29: Television, Col. 30: Computer/Laptop, Col. 31: Telephone/Mobile phone, Col. 32: Bicycle, Col. 33: Scooter/Motor Cycle/Moped, Col. 34: Car/Jeep/Van.",
+      "question": "Which of the following is NOT one of the seven household 'assets possessed' items recorded in Columns 28 to 34 of the Census 2011 Houselisting schedule?",
+      "options": [
+        "Television",
+        "Computer/Laptop",
+        "Refrigerator",
+        "Bicycle"
+      ],
+      "answer_index": 2,
+      "explanation": "The seven asset items recorded in the 2011 Houselisting schedule (Columns 28 through 34) are Radio/Transistor, Television, Computer/Laptop, Telephone/Mobile phone, Bicycle, Scooter/Motor Cycle/Moped, and Car/Jeep/Van. Refrigerator ownership is not one of the assets captured in this particular schedule's fixed list, even though it is a commonly tracked household durable in other surveys (such as NSSO consumption surveys); the Census Houselisting instrument's asset list is limited to these seven specific items."
+    },
+    {
+      "item_id": "ai_os_data_collection_016",
+      "doc_id": "census2011_houselisting",
+      "competency_id": "os_data_collection",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Filling up of the Schedule, Col. 35 (Availing Banking Services)",
+      "source_excerpt": "Col. 35 : Availing Banking Services -- the schedule records whether any member of the household avails of banking services.",
+      "question": "Column 35, the final column of the Census 2011 Houselisting schedule, records whether the household is 'availing banking services'. What is the most direct use of this data point for policymakers?",
+      "options": [
+        "It measures how much money each household has deposited in bank accounts",
+        "It gives a headcount-level indicator of financial inclusion -- the extent to which households across the country have access to and use formal banking services -- down to the local area",
+        "It records which specific bank each household uses",
+        "It is used to determine eligibility for a home loan"
+      ],
+      "answer_index": 1,
+      "explanation": "Column 35 simply records whether the household avails banking services in some form, without asking for account balances, the specific bank used, or loan eligibility criteria. Because Houselisting covers every household in the country, this single yes/no data point produces a very granular, geographically disaggregated indicator of financial inclusion (down to villages and urban blocks) that planning agencies and the banking sector can use to target unbanked or under-banked areas -- something a smaller sample survey could not do at that level of local detail."
+    },
+    {
+      "item_id": "ai_os_sampling_design_001",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_sampling_design",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PLFS 2017-18 Annual Report, survey objectives and design overview",
+      "source_excerpt": "PLFS was designed with the well-known dual objective of producing quarterly labour force indicators for urban areas alone, while also producing annual estimates of labour force indicators for both rural and urban areas, in both Usual Status and Current Weekly Status.",
+      "question": "The Periodic Labour Force Survey (PLFS) 2017-18 was designed with a dual reporting objective. What was it?",
+      "options": [
+        "To produce quarterly labour force indicators for urban areas only, and annual labour force indicators for both rural and urban areas",
+        "To produce monthly labour force indicators for the entire country, both rural and urban",
+        "To produce a single one-time snapshot of the labour force with no periodic updates at all",
+        "To produce annual indicators for urban areas only, since rural labour markets were assumed to be stable"
+      ],
+      "answer_index": 0,
+      "explanation": "PLFS was introduced specifically because India lacked a survey that could give frequent, timely labour market estimates. Its design objective was twofold: quarterly (three-monthly) estimates of key urban labour force indicators, to track short-term change in cities and towns where informal and casual employment can shift quickly, and annual estimates covering both rural and urban India, comparable in scope to the earlier quinquennial NSSO employment-unemployment surveys. It does not produce monthly all-India figures, is not a one-time survey, and explicitly does track rural areas as well as urban ones."
+    },
+    {
+      "item_id": "ai_os_sampling_design_002",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_sampling_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PLFS 2017-18 Annual Report, sample design chapter (First Stage Units and Ultimate Stage Units)",
+      "source_excerpt": "PLFS follows the well-established NSSO multi-stage stratified sampling design: villages serve as First Stage Units (FSUs) in rural areas and Urban Frame Survey (UFS) blocks serve as FSUs in urban areas, with households selected as the ultimate stage units within each selected FSU.",
+      "question": "In the PLFS 2017-18 sample design, what serves as the First Stage Unit (FSU) in rural areas versus in urban areas?",
+      "options": [
+        "Districts in rural areas and States in urban areas",
+        "Villages in rural areas and Urban Frame Survey (UFS) blocks in urban areas",
+        "Individual households in both rural and urban areas",
+        "Panchayats in rural areas and municipal wards in urban areas"
+      ],
+      "answer_index": 1,
+      "explanation": "Following the standard NSSO multi-stage stratified sampling framework that PLFS inherited, villages (as listed in the Census) are used as the First Stage Units in rural areas, while Urban Frame Survey (UFS) blocks -- smaller, more homogeneous units specially demarcated for survey sampling in towns and cities -- serve as the FSUs in urban areas. Households are then selected as the ultimate-stage sampling units within whichever FSUs are drawn. Districts, states, panchayats, and municipal wards are administrative or geographic units used for stratification purposes at a higher level, not the FSUs themselves."
+    },
+    {
+      "item_id": "ai_os_sampling_design_003",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_sampling_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PLFS 2017-18 Annual Report, rotational panel sample scheme in urban areas",
+      "source_excerpt": "A distinctive, well-documented feature of PLFS is its rotational panel sampling scheme for urban areas: each selected urban household is visited four times, once every quarter across a full year, allowing quarter-on-quarter change to be tracked for the same households.",
+      "question": "PLFS uses a 'rotational panel' sample design in urban areas. What does this mean in practice?",
+      "options": [
+        "A completely new, independent sample of urban households is drawn every quarter, with no household ever surveyed twice",
+        "Each selected urban household is visited multiple times (once every quarter across a year), so the same households are revisited to track change over time before rotating out",
+        "Urban households rotate their responsibility for reporting data to the government office in person",
+        "The survey randomly re-assigns enumerators to different cities every quarter to prevent bias"
+      ],
+      "answer_index": 1,
+      "explanation": "In a rotational panel design, a selected urban household is not surveyed just once; it is revisited across multiple quarters (in PLFS, four visits spread across a year), so that the same households contribute repeated observations before eventually rotating out of the sample and being replaced by newly selected households. This is precisely what allows PLFS to compute meaningful quarter-on-quarter change in urban labour indicators, since the same households' activity status can be compared visit to visit. It is not a fresh independent draw each quarter (that would prevent tracking change for the same units), and it has nothing to do with households self-reporting to an office or enumerator city-rotation."
+    },
+    {
+      "item_id": "ai_os_sampling_design_004",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_sampling_design",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "PLFS 2017-18 Annual Report, rural sample design (no rotation)",
+      "source_excerpt": "Unlike the urban rotational panel, PLFS's rural sample is visited only once during the survey year, since the well-documented objective for rural areas is annual estimation rather than quarter-to-quarter tracking of change.",
+      "question": "Why does PLFS apply a rotational panel scheme (multiple visits) in urban areas but visit each selected rural household only once during the survey year?",
+      "options": [
+        "Because rural households refuse repeat visits more often than urban households do",
+        "Because PLFS's stated objective for rural areas is only annual estimation, while quarterly urban estimation requires tracking the same urban households across the year to measure quarter-on-quarter change",
+        "Because rural areas do not have a functioning sampling frame, so repeat visits are not logistically possible",
+        "Because the Census does not provide village-level data, unlike urban block-level data"
+      ],
+      "answer_index": 1,
+      "explanation": "The survey's dual objective -- quarterly urban indicators and annual rural-plus-urban indicators -- directly drives the sample design: since only urban indicators need to be produced every quarter, only urban households need to be revisited across the year in a rotational panel to allow quarter-on-quarter comparison of the same units. Rural areas, needing only annual estimates, are visited a single time in the year, which is sufficient for that purpose and avoids the additional cost and respondent burden of repeat rural visits. This is a deliberate design choice driven by differing reporting objectives, not a matter of respondent refusal, frame unavailability, or missing village-level Census data (villages are, in fact, listed by the Census and used as rural FSUs)."
+    },
+    {
+      "item_id": "ai_os_sampling_design_005",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_sampling_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PLFS 2017-18 Annual Report, concepts and definitions chapter (Usual Status)",
+      "source_excerpt": "PLFS follows the NSSO's well-established Usual Status concept, comprising Usual Principal Status and Usual Principal plus Subsidiary Status, based on the activity status of a person over a reference period of one year.",
+      "question": "The 'Usual Status' approach to measuring employment in PLFS classifies a person's activity based on which reference period?",
+      "options": [
+        "The single day immediately preceding the interview",
+        "The seven days preceding the date of the interview",
+        "A long reference period of one year preceding the date of the survey",
+        "The calendar month preceding the interview"
+      ],
+      "answer_index": 2,
+      "explanation": "Usual Status (both the Usual Principal Status, based on the activity in which a person spent the majority of the preceding 365 days, and Usual Principal plus Subsidiary Status, which also counts subsidiary economic activity performed for a shorter period) uses a long, one-year reference period. This makes it well suited to capturing a person's predominant, longer-run activity pattern, in contrast to the much shorter reference periods used by Current Weekly Status (seven days) and Current Daily Status (each day within that week), which are designed to capture short-term fluctuations in activity instead."
+    },
+    {
+      "item_id": "ai_os_sampling_design_006",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_sampling_design",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PLFS 2017-18 Annual Report, concepts and definitions chapter (Current Weekly Status)",
+      "source_excerpt": "Current Weekly Status (CWS) classifies a person's activity status based on a reference period of the seven days preceding the date of survey, a shorter reference period than Usual Status.",
+      "question": "What reference period does the Current Weekly Status (CWS) concept in PLFS use to classify a person as employed, unemployed, or out of the labour force?",
+      "options": [
+        "One full calendar year preceding the survey",
+        "The seven days preceding the date of the survey",
+        "A single reference day only",
+        "The entire agricultural season in which the survey falls"
+      ],
+      "answer_index": 1,
+      "explanation": "Current Weekly Status uses a seven-day reference period ending on the day before the interview: a person is classified based on their activity status during that specific week. This is shorter than the one-year reference period used for Usual Status, allowing CWS to capture more of the short-term variability in employment, especially relevant for seasonal or intermittent work, while still smoothing out single-day fluctuations that the even shorter Current Daily Status is designed to capture."
+    },
+    {
+      "item_id": "ai_os_sampling_design_007",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_sampling_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "PLFS 2017-18 Annual Report, concepts and definitions chapter (Current Daily Status)",
+      "source_excerpt": "Current Daily Status (CDS) records the activity status of a person for each of the seven days of the reference week separately, treating each day as a time-disposition unit, giving a finer-grained measure of underemployment than CWS.",
+      "question": "How does the Current Daily Status (CDS) concept differ from the Current Weekly Status (CWS) concept in how it measures a person's employment status?",
+      "options": [
+        "CDS uses a much longer reference period (one year) while CWS uses a shorter one (one week)",
+        "CDS assigns a single activity status to the whole week, while CWS assigns a separate activity status to each day of that week",
+        "CDS records a person's activity status separately for each of the seven days in the reference week as a time-disposition unit, giving a more granular measure of the extent of employment/underemployment within the week than the single weekly classification CWS provides",
+        "CDS is only used for rural respondents, while CWS is only used for urban respondents"
+      ],
+      "answer_index": 2,
+      "explanation": "CDS goes a step finer than CWS: instead of giving each person just one activity classification for the entire reference week (as CWS does, based on the majority of time-disposition during the week), CDS records the activity status for every single day of that week separately, using half-day or full-day units of time disposition. This lets analysts measure the extent of employment within the week -- for example, someone who worked only 3 of 7 days can be identified as underemployed in a way that a single weekly classification would obscure. Option A reverses the CDS/Usual Status relationship; option B reverses which concept is the day-level one; option D is false, since both CDS and CWS are applied to both rural and urban respondents."
+    },
+    {
+      "item_id": "ai_os_sampling_design_008",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_sampling_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "PLFS 2017-18 Annual Report, sample allocation across sub-rounds",
+      "source_excerpt": "PLFS's well-documented fieldwork calendar spreads the sample of First Stage Units across four sub-rounds within the survey year, so that each of the four quarters of urban fieldwork is based on a comparable, representative sub-sample rather than fieldwork being concentrated in one season.",
+      "question": "Why does PLFS deliberately spread its sample of First Stage Units evenly across four sub-rounds (quarters) of the survey year, rather than completing all fieldwork for a state in one continuous block?",
+      "options": [
+        "To reduce the total number of enumerators the survey needs to employ",
+        "To ensure that each quarter's fieldwork is based on a representative cross-section of the state, so that seasonal factors affecting employment (such as agricultural cycles or festival-season hiring) do not bias any single quarter's -- or the annual -- estimate",
+        "Because the Ministry's budget for fieldwork is released in four separate installments each tied to a specific sub-round",
+        "To allow the same enumerator to survey every district in the country over the course of the year"
+      ],
+      "answer_index": 1,
+      "explanation": "Spreading FSUs evenly across the four sub-rounds ensures that fieldwork for a given quarter is not concentrated in any particular season or region, so that seasonal effects on employment (such as peak agricultural labour demand, festival-season retail hiring, or monsoon-related activity slowdowns) are represented proportionately within each quarter's data rather than distorting one quarter's estimate more than another's. This design choice is about statistical representativeness across time, not about minimizing enumerator headcount, following a budget-release schedule, or assigning single enumerators nationwide (an operational impossibility given the survey's scale)."
+    },
+    {
+      "item_id": "ai_os_sampling_design_009",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: simple random sampling",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers simple random sampling without replacement (SRSWOR) and the unbiasedness of the sample mean as an estimator of the population mean; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "Under Simple Random Sampling Without Replacement (SRSWOR), the sample mean is used to estimate the population mean. What key property does the sample mean have as an estimator in this design?",
+      "options": [
+        "It is a biased estimator of the population mean, and the bias grows as sample size increases",
+        "It is an unbiased estimator of the population mean; its expected value over all possible SRSWOR samples equals the population mean exactly",
+        "It is unbiased only when the population size is infinite",
+        "It equals the population mean exactly for any single sample drawn"
+      ],
+      "answer_index": 1,
+      "explanation": "Under SRSWOR, every possible sample of size n from a population of size N has an equal chance of selection, and it is a standard, provable result that the sample mean's expectation, taken over all such possible samples, equals the population mean exactly -- making it an unbiased estimator. This unbiasedness holds for any finite population size N, not just in the limit of an infinite population, which rules out option C. Unbiasedness is a property of the estimator's behaviour across repeated sampling, not a guarantee that any single realized sample's mean will equal the population mean exactly, which rules out option D; and option A simply contradicts the well-established unbiasedness result."
+    },
+    {
+      "item_id": "ai_os_sampling_design_010",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: systematic sampling",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers systematic sampling as an alternative to simple random sampling; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "In linear systematic sampling, a sample of size n is drawn from a population of size N (with N = nk) by selecting a random starting point among the first k units and then every k-th unit thereafter. Under what condition does systematic sampling tend to be MORE precise than simple random sampling of the same size?",
+      "options": [
+        "When the population units are arranged in a purely random order with respect to the variable being studied",
+        "When the population exhibits a linear trend or the units within each systematic 'block' are heterogeneous, since this makes each systematic sample behave like a well-spread, representative mini-cross-section of the population",
+        "When the population has a strong periodic (cyclical) pattern that coincides with the sampling interval k",
+        "Systematic sampling is always less precise than simple random sampling, regardless of the population's structure"
+      ],
+      "answer_index": 1,
+      "explanation": "Systematic sampling tends to outperform SRS when the population, when linearly ordered, has a trend or the units are heterogeneous within the interval spanned by each systematic sample, because spreading the sample evenly across the entire list captures that heterogeneity better than a purely random draw might by chance. It performs about as well as SRS when the population is in random order, and it performs considerably worse than SRS if the population has a periodicity that matches the sampling interval k (for example, sampling every 7th day of data when there is a strong weekly cycle), because then every selected unit could fall on the same phase of the cycle and misrepresent the population. Option D is an overgeneralization; systematic sampling's precision depends entirely on the population's structure relative to the chosen interval."
+    },
+    {
+      "item_id": "ai_os_sampling_design_011",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: cluster sampling versus stratified sampling",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers cluster sampling and stratified sampling as contrasting probability sampling designs; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "Both stratified sampling and cluster sampling divide the population into groups before sampling, but they work best under opposite conditions of within-group homogeneity. What is this key contrast?",
+      "options": [
+        "Stratified sampling works best when strata are internally homogeneous (units within a stratum are similar) and different from each other, while cluster sampling works best when clusters are each internally heterogeneous (a small-scale mirror of the whole population)",
+        "Stratified sampling and cluster sampling both require the groups to be as heterogeneous as possible internally, with no difference between the two designs in this respect",
+        "Cluster sampling requires every unit in the population to be sampled, while stratified sampling only samples a subset",
+        "Stratified sampling always uses a larger overall sample size than cluster sampling for the same population"
+      ],
+      "answer_index": 0,
+      "explanation": "In stratified sampling, the population is divided into strata that are internally as homogeneous as possible (and as different from each other as possible), which lets a proportionate or optimum allocation across strata reduce overall sampling variance relative to unstratified sampling of the same total size. Cluster sampling, by contrast, works best when each cluster is a small-scale mirror of the whole population's diversity (internally heterogeneous), because then sampling a few whole clusters and measuring every unit within them (or a further sub-sample) still captures the full range of population variation, whereas homogeneous clusters would waste sampling effort on repetitive information. Option C misdescribes cluster sampling as a census; option D makes an unfounded general claim about sample sizes that does not follow from either design's definition."
+    },
+    {
+      "item_id": "ai_os_sampling_design_012",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: probability proportional to size sampling and Lahiri's method",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers probability proportional to size (PPS) sampling and Lahiri's method of selecting units with probability proportional to a size measure; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "Lahiri's method is a practical technique for selecting a unit with probability proportional to size (PPS) without needing to compute and list cumulative totals of the size measure in advance. How does it achieve this?",
+      "options": [
+        "It selects the unit with the single largest size measure in the population every time, guaranteeing proportionality automatically",
+        "It draws a random pair -- a unit number (from 1 to N) and a random integer between 1 and the maximum size measure (M) -- and accepts the selected unit only if its size measure is greater than or equal to the drawn random integer, repeating the draw otherwise",
+        "It assigns every unit an equal probability of selection and then re-weights the resulting estimator after the fact to correct for size differences",
+        "It requires the sizes of all units to be exactly equal, which trivially guarantees proportional selection"
+      ],
+      "answer_index": 1,
+      "explanation": "Lahiri's method avoids the tedious step of cumulating size measures and constructing cumulative-total intervals (as the direct/cumulative-total method of PPS selection does). Instead, it randomly draws a unit index i (from 1 to N) and, independently, a random integer r between 1 and M (the largest size measure among all N units), then accepts unit i as selected only if its size measure X_i is greater than or equal to r; if not, the pair is discarded and redrawn. Because larger units satisfy the acceptance condition for a wider range of r values, they end up selected proportionally more often, exactly reproducing PPS selection probabilities without ever needing a cumulative list. Option A describes deterministic largest-unit selection, not a probabilistic PPS method; option C describes an equal-probability design with post-hoc weighting (a different, valid technique, but not Lahiri's method); option D is a degenerate, non-general case."
+    },
+    {
+      "item_id": "ai_os_sampling_design_013",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: double (two-phase) sampling",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers double sampling (two-phase sampling) as a design used when auxiliary information must itself be collected from a sample; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "Double sampling (also called two-phase sampling) is used in survey design under which typical circumstance?",
+      "options": [
+        "When the population is so small that a complete census is always cheaper than any sample",
+        "When an auxiliary variable correlated with the variable of interest is cheap to measure on a large first-phase sample, but the variable of interest itself is expensive to measure, so it is measured only on a smaller second-phase subsample drawn from the first",
+        "When exactly two strata exist in the population and each must be sampled with a different design",
+        "When the same sample must be surveyed exactly twice using two completely different questionnaires, unrelated in content"
+      ],
+      "answer_index": 1,
+      "explanation": "Double sampling is used when a cheap-to-measure auxiliary variable (correlated with the costly variable of real interest) can be observed on a large first-phase sample, and then a smaller, second-phase subsample is drawn from that first sample specifically to measure the expensive variable of interest; the auxiliary information from the first phase is then used (via ratio or regression-type estimators) to improve the precision of the final estimate. This is a cost-efficiency technique distinct from simply having two strata (option C) or asking two unrelated questionnaires (option D), and it is unrelated to whether a complete census would be cheaper (option A, which describes a completely different scenario)."
+    },
+    {
+      "item_id": "ai_os_sampling_design_014",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: non-response in sample surveys",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers non-response in sample surveys, including the Hansen-Hurwitz technique for adjusting estimates using a sub-sample of non-respondents; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "The Hansen-Hurwitz technique addresses non-response in sample surveys by which specific mechanism?",
+      "options": [
+        "It simply discards non-respondents and rescales the weights of the remaining respondents, assuming non-respondents are just like respondents",
+        "It draws a further, more intensive sub-sample from among the original non-respondents (using extra effort, such as repeated call-backs, to eventually secure their responses) and combines this sub-sample's results with the initial respondents' results using appropriate weights, to produce an estimator that accounts for the possibility that non-respondents differ systematically from respondents",
+        "It replaces every non-respondent with a randomly chosen respondent's answer",
+        "It excludes non-response entirely from consideration by defining the population as only those who are willing to respond"
+      ],
+      "answer_index": 1,
+      "explanation": "The Hansen-Hurwitz technique treats the non-respondents in the first-phase sample as a distinct sub-population that may differ systematically from respondents (a common concern, since willingness to respond can itself be correlated with the variable under study). It draws a further sub-sample specifically from the non-respondents and expends the extra effort needed to obtain their responses, then combines the two groups' data using an unbiased, weighted combination that reflects each group's true proportion in the original sample. This directly targets non-response bias, unlike simply discarding non-respondents (option A) or imputing their values by borrowing from respondents (option C), both of which assume away exactly the systematic difference the technique is designed to detect and correct for."
+    },
+    {
+      "item_id": "ai_os_sampling_design_015",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: sampling and non-sampling errors",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers the distinction between sampling error and non-sampling error as two different sources of inaccuracy in survey estimates; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "What is the key distinction between 'sampling error' and 'non-sampling error' in a survey, and how does each behave as sample size increases?",
+      "options": [
+        "Sampling error arises only from arithmetic mistakes in tabulation, while non-sampling error arises only from bad luck in the random draw; both decrease as sample size grows",
+        "Sampling error arises because only a part (not the whole) of the population is observed, and it tends to decrease as sample size increases; non-sampling error arises from sources like non-response, measurement mistakes, and interviewer bias, and does not necessarily decrease -- and can even increase -- as sample size grows",
+        "Sampling error and non-sampling error are two names for exactly the same source of inaccuracy",
+        "Non-sampling error only occurs in a complete census, never in a sample survey"
+      ],
+      "answer_index": 1,
+      "explanation": "Sampling error is the error that arises purely from observing a sample rather than the whole population, and it is a mathematically quantifiable quantity (via the standard error) that generally shrinks as the sample size grows, all else equal. Non-sampling error, by contrast, covers errors from non-response, faulty measurement instruments, data entry mistakes, interviewer or respondent bias, and coverage errors in the sampling frame; because a larger sample often means more fieldwork, more enumerators, and more opportunities for such errors to creep in, non-sampling error does not automatically shrink with sample size and can, in practice, grow. This is precisely why a well-designed smaller sample with tight quality control can sometimes be more accurate overall than a poorly controlled larger one, and why non-sampling error is very much a concern in a full census too (contradicting option D), not only in sample surveys."
+    },
+    {
+      "item_id": "ai_os_sampling_design_016",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: standard error and relative efficiency",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers the standard error of an estimator and the concept of relative efficiency for comparing sampling designs; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "The 'relative efficiency' of one sampling design compared to another, for estimating the same population parameter with the same sample size, is generally defined using which ratio?",
+      "options": [
+        "The ratio of the two designs' sample sizes",
+        "The ratio of the variance of the estimator under the first (comparison) design to the variance of the estimator under the second (reference) design -- a ratio less than 1 means the first design is more efficient",
+        "The ratio of the two designs' total survey costs, regardless of the resulting precision",
+        "The ratio of the number of strata used in each design"
+      ],
+      "answer_index": 1,
+      "explanation": "Relative efficiency compares the precision, not the cost or sample size, of two designs estimating the same parameter: it is typically expressed as the ratio of the variance of the estimator under one design to the variance under a reference design (often SRS) of the same size, so that a ratio below 1 indicates the design being evaluated produces a more precise (lower-variance) estimator than the reference. Comparing sample sizes, survey costs, or number of strata directly does not by itself capture how precise the resulting estimates are, which is the whole point of an efficiency comparison."
+    },
+    {
+      "item_id": "ai_os_sampling_design_017",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: finite population correction",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers the finite population correction (fpc) factor used when sampling without replacement from a finite population; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "The finite population correction (fpc) factor, (1 - n/N), is applied when computing the variance of the sample mean under which sampling scheme, and why?",
+      "options": [
+        "Under sampling with replacement from an infinite population, because the correction accounts for the possibility of selecting the same unit twice",
+        "Under simple random sampling without replacement (SRSWOR) from a finite population, because once a substantial fraction (n/N) of the finite population has already been sampled, there is proportionately less remaining uncertainty about the population, so the usual with-replacement variance formula must be scaled down",
+        "Only when the population is infinite, since finite populations never need any correction",
+        "Under stratified sampling only, and never under simple random sampling"
+      ],
+      "answer_index": 1,
+      "explanation": "The finite population correction factor (1 - n/N), often called the sampling fraction correction, reduces the variance formula that would otherwise apply under with-replacement (or infinite-population) sampling, to reflect the fact that sampling without replacement from a finite population of size N removes each selected unit from further selection, so as the sampling fraction n/N grows, less uncertainty about the population remains (when n = N, a full census, the correction factor becomes 0, correctly implying no sampling variance at all). This correction is specifically relevant to SRSWOR from a finite population, not to with-replacement or infinite-population sampling (where n/N is treated as effectively 0), and it is not restricted only to stratified designs -- it enters variance formulas for SRSWOR directly, and stratified formulas build on top of it stratum by stratum."
+    },
+    {
+      "item_id": "ai_os_sampling_design_018",
+      "doc_id": "upsc_csm26_statistics_p1",
+      "competency_id": "os_sampling_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: ratio and regression estimators",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers ratio and regression estimation using an auxiliary variable correlated with the variable of interest; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "Both the ratio estimator and the regression estimator use an auxiliary variable correlated with the variable of interest to improve precision. Under what condition is the ratio estimator generally preferred over the regression estimator?",
+      "options": [
+        "When the relationship between the study variable and the auxiliary variable is approximately linear and passes (or nearly passes) through the origin, with variance roughly proportional to the auxiliary variable",
+        "When the study variable and the auxiliary variable are completely uncorrelated with each other",
+        "When no auxiliary variable is available at all for any unit in the sample",
+        "When the population size N is unknown"
+      ],
+      "answer_index": 0,
+      "explanation": "The ratio estimator assumes a proportional relationship between the study variable Y and the auxiliary variable X -- essentially a straight line through the origin, with the variance of Y around that line roughly proportional to X -- and works best (achieving lower mean squared error than even the regression estimator, or at least performing comparably with less computational complexity) exactly when that assumption approximately holds. The regression estimator is more general because it allows the line relating Y and X to have a nonzero intercept and does not require the strict proportionality assumption, so it is generally preferred when the relationship is linear but does not pass through the origin. If X and Y are uncorrelated, neither estimator improves on the simple sample mean, and both estimators require an auxiliary variable and a known population total or size for X, which rules out options B, C, and D."
+    },
+    {
+      "item_id": "ai_os_data_quality_001",
+      "doc_id": "cpi_imputation",
+      "competency_id": "os_data_quality",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "CPI Technical Note on Imputation, Section A (Context), paras 2-5",
+      "source_excerpt": "In view of the preventive measures and announcement of nation-wide lockdown by the Government to contain spread of COVID-19 pandemic... it was not feasible for the field enumerators to visit the specified retail outlets to collect data/price quotations... price data on all the commodities were not available.",
+      "question": "Per MoSPI's CPI Technical Note on Imputation, what real-world event during 2020 forced the National Statistical Office (NSO) to impute a large share of CPI sub-group indices rather than compile them from directly observed prices?",
+      "options": [
+        "A permanent redesign of the CPI item basket that made many old items obsolete",
+        "The nation-wide COVID-19 lockdown, which prevented field enumerators from visiting retail outlets and left many commodities without collected price quotations",
+        "A budget cut that permanently ended field price collection nationwide",
+        "A boycott by retail outlets refusing to share price information with the government"
+      ],
+      "answer_index": 1,
+      "explanation": "The Technical Note explains that the nation-wide COVID-19 lockdown and associated travel restrictions made it infeasible for NSO's field enumerators to physically visit designated retail outlets to collect price quotations, and market transactions themselves were also limited during April-May 2020, so price data for many commodities simply could not be collected in the usual way. This was an emergency, temporary business-continuity situation, not a permanent basket redesign, a budget cut, or a retailer boycott, and the Note frames the large-scale imputation exercise explicitly as a response to this specific disruption."
+    },
+    {
+      "item_id": "ai_os_data_quality_002",
+      "doc_id": "cpi_imputation",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "CPI Technical Note on Imputation, Annex I(a), elementary-level imputation formula",
+      "source_excerpt": "a) Treatment of temporarily missing prices: The temporarily missing prices are imputed by using following formula: Imputed Price = Last Month's Price x Average of Ratio (Current Month to Last Month's price, Based on Quotations having prices in both months) i.e. (Imputed Price)t = (Price)t-1 x Avg. of (Price t/ Price t-1)",
+      "question": "In MoSPI's standard CPI methodology, when a price quotation is temporarily missing for a particular item in a particular month, how is the missing price imputed at the elementary (micro) level?",
+      "options": [
+        "By carrying forward last month's price unchanged, with no adjustment at all",
+        "By multiplying last month's price for that item by the average price-relative (current-month-to-last-month ratio) computed from other quotations of the same item that do have prices in both months",
+        "By taking the simple average of the prices of every other item in the same sub-group",
+        "By setting the missing price to zero and excluding it from all further calculations"
+      ],
+      "answer_index": 1,
+      "explanation": "The standard micro-level imputation formula multiplies the item's last observed price by the average of the price ratios (current month divided by last month) computed from those quotations of the same item where both months' prices were actually observed. This lets the imputed price move in line with how that item's price actually changed elsewhere, rather than staying frozen (option A, which would understate any real price movement) or being replaced by unrelated items' prices (option C) or dropped from the index outright at the micro level (option D, which is closer to how a permanently obsolete item might eventually be handled, not a temporarily missing quotation)."
+    },
+    {
+      "item_id": "ai_os_data_quality_003",
+      "doc_id": "cpi_imputation",
+      "competency_id": "os_data_quality",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "CPI Technical Note on Imputation, Section C, para 6, Formula I and II",
+      "source_excerpt": "Imputed Sub-group Index (Food Group) = (Last Observed Index of Sub-group) x (Food Index of Current Month/Food Index of last Observed Month). Imputed Sub-group Index (Non-Food Group) = (Last Observed Index of Sub-group) x (General CPI of Current Month/General CPI of last Observed Month).",
+      "question": "When an entire CPI sub-group's index is missing (not just one item's price), MoSPI's higher-level (macro) imputation formula scales the sub-group's last observed index by a ratio computed from a broader aggregate. Which broader aggregate is used, depending on whether the missing sub-group belongs to Food or Non-Food?",
+      "options": [
+        "The Wholesale Price Index (WPI) is used for both Food and Non-Food sub-groups",
+        "For a Food sub-group, the ratio of the current-to-last-observed 'Food & Beverages' Group Index is used; for a Non-Food sub-group, the ratio of the current-to-last-observed General CPI (based on the sub-groups where data was available) is used",
+        "The previous year's annual average inflation rate is used for both Food and Non-Food sub-groups",
+        "The state-level minimum wage index is used for both Food and Non-Food sub-groups"
+      ],
+      "answer_index": 1,
+      "explanation": "The Technical Note's two formulas differ by group: a missing Food sub-group's index is imputed by scaling its last observed index by the ratio of the current month's 'Food & Beverages' Group Index (itself compiled from the Food sub-groups where data was available) to that Group Index in the last observed month. A missing Non-Food sub-group, by contrast, is scaled using the ratio of the current-to-last-observed General CPI (built from whichever sub-groups across all groups did have data). This distinction reflects the recommendation from the Inter-Secretariat Working Group on Price Statistics to use 'the next level up in aggregation' as the basis for imputation, applied separately for Food and Non-Food. WPI, past annual inflation, and minimum-wage indices play no role in this specific imputation methodology."
+    },
+    {
+      "item_id": "ai_os_data_quality_004",
+      "doc_id": "cpi_imputation",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "CPI Technical Note on Imputation, Section B, para 3, ISWG-PS recommendation",
+      "source_excerpt": "If an entire index is missing, it is recommended to use the next level up in aggregation as the basis for making the imputation. For example, if all prices for oranges are missing, the index for citrus fruits can be used as the basis for making the imputation. If all citrus fruits are missing, the index for fruits is used...",
+      "question": "The Inter-Secretariat Working Group on Price Statistics (ISWG-PS) -- a joint forum of ILO, Eurostat, OECD, UNECE, World Bank and IMF -- issued Business Continuity Guidelines during the COVID-19 pandemic recommending a general principle for imputing an entirely missing price index. What was that principle?",
+      "options": [
+        "Always substitute the missing index with the corresponding index from a comparable neighbouring country",
+        "When an entire index is missing, use the next level up in the aggregation hierarchy (e.g., oranges to citrus fruits, citrus fruits to fruits, fruits to fruits-and-vegetables) as the basis for the imputation",
+        "Suspend publication of the CPI entirely until full price data becomes available again",
+        "Always use the previous year's index for the same month, ignoring any within-year price movement"
+      ],
+      "answer_index": 1,
+      "explanation": "The ISWG-PS guidance recommended a hierarchical 'roll-up' approach: when a specific item's index is entirely missing, use the next broader aggregation level's index movement as the basis for imputing it, moving progressively up the classification hierarchy (item to sub-group to group) if even that broader level lacks data. This lets the imputed series still reflect real, currently observed price movement at whatever level of aggregation actually has data, rather than freezing the series (option D), abandoning publication altogether (option C), or borrowing an unrelated country's index (option A), none of which the guidance recommended."
+    },
+    {
+      "item_id": "ai_os_data_quality_005",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Expert Group Report on CPI, Chapter 4, sampling frame recommendations (HCES 2022-23)",
+      "source_excerpt": "the sampling frame adopted for HCES has also been [updated]... based on Census 2001. As per the sampling frame of the Consumption Expenditure... EG recommended to draw a fresh sample of villages from the latest rural sampling frame used in HCES.",
+      "question": "The Expert Group Report on Comprehensive Updation of the CPI identified a data-quality problem with the existing CPI's rural sampling frame. What was the problem, and what did the Expert Group recommend?",
+      "options": [
+        "The rural sampling frame was based on an outdated Census (2001) despite rapid urbanization since then, so the Expert Group recommended drawing a fresh sample of villages from the more current rural sampling frame used in the 2022-23 Household Consumption Expenditure Survey (HCES)",
+        "The rural sampling frame covered too many villages, so the Expert Group recommended cutting the number of villages sampled by half",
+        "There was no rural sampling frame at all prior to this Expert Group's recommendations",
+        "The Expert Group recommended abandoning rural CPI compilation altogether due to frame problems"
+      ],
+      "answer_index": 0,
+      "explanation": "The report notes that the CPI's existing rural sampling frame relied on the 2001 Census, which had grown outdated given rapid urbanization and demographic change in the intervening two decades, risking a frame that no longer represented the current distribution of villages and their populations well. The Expert Group therefore recommended drawing a fresh sample of villages using the more current rural sampling frame that had been developed for the 2022-23 Household Consumption Expenditure Survey. It did not recommend halving the village count, and a rural frame did already exist (just an outdated one) -- and abandoning rural compilation was never proposed."
+    },
+    {
+      "item_id": "ai_os_data_quality_006",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_data_quality",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Expert Group Report on CPI, index-formula recommendations (Jevons index properties)",
+      "source_excerpt": "7. Preserved Jevons Properties: Retains geometric mean benefits, limits outlier... In view of the above advantages, EG recommended to adopt the Jevons short (chain-linked) index.",
+      "question": "The Expert Group Report on CPI recommended adopting the Jevons index formula (a geometric-mean-based elementary aggregate formula) partly because of its favourable behaviour with respect to outlier price quotations. Why does a geometric-mean-based formula like Jevons tend to be less sensitive to outliers than a simple arithmetic mean of price relatives?",
+      "options": [
+        "Because the geometric mean discards the largest and smallest price relatives before averaging, exactly like a trimmed mean",
+        "Because the geometric mean multiplies price relatives together and takes an n-th root, which dampens the influence of an extreme price relative compared to an arithmetic mean, which adds price relatives directly and lets one extreme value pull the whole average proportionally",
+        "Because the geometric mean can only be computed when all price relatives are exactly equal to each other",
+        "Because the geometric mean is mathematically identical to the arithmetic mean for any set of numbers"
+      ],
+      "answer_index": 1,
+      "explanation": "The geometric mean of a set of price relatives is the n-th root of their product, which compresses the effect of any single very large or very small relative far more than an arithmetic mean does, since the arithmetic mean is a simple additive average where one outlier's magnitude directly shifts the sum (and hence the average) in proportion to its size. This outlier-dampening property, along with other desirable index-number properties the geometric mean satisfies, is exactly why the Expert Group favoured the Jevons formula for elementary aggregation. It does not work by discarding extreme values like a trimmed mean (option A), it does not require equal price relatives (option C), and geometric and arithmetic means are mathematically distinct except in the trivial case where all values are identical (ruling out option D)."
+    },
+    {
+      "item_id": "ai_os_data_quality_007",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Expert Group Report on CPI, weighting diagram recommendations",
+      "source_excerpt": "it was recommended that the expenditure on ganja be re-distributed among other items of the... series, no longer holds. Accordingly, it was recommended that all weighted items (358)...",
+      "question": "The Expert Group Report on CPI recommended redistributing the expenditure weight of an item like 'ganja' (which is illegal to sell and hence cannot be legally price-quoted) to other items in the basket. What data-quality principle does this kind of weight redistribution address?",
+      "options": [
+        "It ensures that the total weighting diagram still sums to 100% even when a specific item can no longer be legitimately priced or tracked, by spreading its share proportionately across related, trackable items",
+        "It is done purely to reduce the total number of items in the basket, with no bearing on weight totals",
+        "It increases the overall inflation rate reported by the CPI series",
+        "It has no effect on the internal consistency of the weighting diagram"
+      ],
+      "answer_index": 0,
+      "explanation": "A CPI weighting diagram's item weights must sum to 100% (or to the total expenditure share of the relevant group) for the index to be internally consistent. When an item cannot legitimately be priced or tracked -- as with an illegal item like ganja, for which no legal retail price quotation is possible -- its allocated expenditure weight has to be redistributed (typically pro-rata) among the remaining, trackable items in the same category, so that the overall weighting diagram remains complete and consistent rather than silently losing weight. This is a data-quality and index-integrity fix, not a mechanism to change the reported inflation rate directly (option C) or simply to shrink the item count (option B); the redistribution has everything to do with maintaining internal consistency, contrary to option D."
+    },
+    {
+      "item_id": "ai_os_data_quality_008",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_data_quality",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Expert Group Report on CPI, base year selection criteria",
+      "source_excerpt": "as 'Base Year'. Therefore, selection of normal and representative base year is of utmost... necessitates the base year closer to weight reference year, if not overlapping. Since, the base year to account for seasonal variations and price volatility in certain commodities...",
+      "question": "According to the Expert Group Report on CPI, what is one key criterion for selecting a good 'base year' for a CPI series?",
+      "options": [
+        "The base year should be as far in the past as possible, to maximize the length of the resulting time series",
+        "The base year should be as close as possible to (ideally overlapping with) the weight-reference year, and should be a normal, representative year without unusual seasonal or price volatility distorting it",
+        "The base year should always be a leap year, for ease of monthly calculations",
+        "The base year should be chosen randomly to avoid any selection bias by statisticians"
+      ],
+      "answer_index": 1,
+      "explanation": "The report reiterates the well-established CPI compilation principle that the base year -- the reference period against which subsequent index values are measured -- should be as close as possible to (ideally the same as) the year from which the expenditure weights (the weighting diagram) were derived, so that the base-period prices and the base-period weights refer to a consistent point in time. It should also be a 'normal' year, free from atypical price volatility, supply disruptions, or seasonal distortions that could bias the whole series measured relative to it. There is no requirement that it be a leap year, chosen at random, or as far in the past as possible; in fact, an outdated base year is exactly the kind of data-quality problem CPI updation exercises are meant to correct."
+    },
+    {
+      "item_id": "ai_os_data_quality_009",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_data_quality",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NQAF-CoCSSO presentation, Quality indicators slide",
+      "source_excerpt": "Quality indicators for a statistical product can describe a product in terms of relevance, accuracy and reliability, timeliness and punctuality, coherence and comparability, accessibility, clarity etc.",
+      "question": "Per MoSPI's NQAF-CoCSSO assessment presentation, which set of dimensions is used to describe the quality of a statistical output product?",
+      "options": [
+        "Cost, staffing, and office location",
+        "Relevance, accuracy and reliability, timeliness and punctuality, accessibility and clarity, and coherence and comparability",
+        "Political sensitivity, media coverage, and public opinion polling results",
+        "The number of employees involved in producing the statistic"
+      ],
+      "answer_index": 1,
+      "explanation": "The presentation lists the standard set of quality dimensions used to describe a statistical output: relevance (whether it meets user needs), accuracy and reliability (how closely it reflects the true value), timeliness and punctuality (how quickly and predictably it is released), accessibility and clarity (how easily users can obtain and understand it), and coherence and comparability (whether it is consistent internally, over time, and with other sources). These are the internationally recognized quality dimensions used across national quality assurance frameworks including the UN NQAF; production cost, staffing levels, political sensitivity, and headcount are operational or contextual factors, not the quality dimensions themselves."
+    },
+    {
+      "item_id": "ai_os_data_quality_010",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NQAF-CoCSSO presentation, Assessment methodology slide",
+      "source_excerpt": "Checklist to review lines of the NQAF: Checklist to assess the system/ product by marking 'yes', 'no', 'partially true' or 'not applicable'.",
+      "question": "How did MoSPI assess the Indian Statistical System against the UN's National Quality Assurance Framework (NQAF), in terms of the scoring method used?",
+      "options": [
+        "By assigning a single overall numerical score out of 100 to the entire statistical system with no element-level detail",
+        "By using a checklist that marks each individual quality element as 'Yes', 'No', 'Partially true', or 'Not applicable', and then aggregating these across the 19 quality statements and their underlying elements",
+        "By outsourcing the entire assessment to an international audit firm with no involvement of MoSPI staff",
+        "By surveying ordinary citizens about their trust in government statistics"
+      ],
+      "answer_index": 1,
+      "explanation": "The NQAF-CoCSSO checklist methodology works at a granular level: each of the many quality elements underlying the 19 NQAF quality statements is individually marked as 'Yes' (fully met), 'No' (not met), 'Partially true' (partially met), or 'Not applicable', and these element-level marks are then aggregated (with 'Partially true' counted as half weight, per the assessment's own scoring convention) into category-level and overall percentages. This granular checklist approach, not a single opaque overall score, a purely external audit, or a general public-opinion survey, is what let the assessment identify specific gaps (such as the absence of a legislative framework for the NSO) rather than just a headline number."
+    },
+    {
+      "item_id": "ai_os_data_quality_011",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_data_quality",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NQAF-CoCSSO presentation, Non-response errors slide",
+      "source_excerpt": "measuring enumerator bias using interpenetrating sub-sampling, followed in NSSO surveys is useful. However, re-interviewing is not done due to constraints.",
+      "question": "The NQAF-CoCSSO presentation describes 'interpenetrating sub-sampling', as followed in NSSO surveys, as a technique used for what specific purpose?",
+      "options": [
+        "To increase the total sample size of a survey without additional cost",
+        "To measure enumerator bias, by splitting the sample so that different enumerators independently cover comparable, interpenetrating sub-samples of the same target population, allowing systematic differences between enumerators' results to be detected",
+        "To replace face-to-face interviews entirely with telephone interviews",
+        "To determine the optimal number of strata for a stratified sample"
+      ],
+      "answer_index": 1,
+      "explanation": "Interpenetrating sub-sampling divides an overall sample into two or more sub-samples that are each independently representative of (interpenetrate) the same target population, and assigns different enumerators or teams to each sub-sample under otherwise identical conditions. Because each sub-sample should, in principle, yield similar estimates if there were no enumerator effects, any systematic difference in results between the sub-samples/enumerators reveals enumerator bias or variability -- a non-sampling error source that is otherwise very hard to detect and quantify. This is fundamentally a design for isolating and measuring interviewer effects, not a way to cheaply inflate sample size, a substitute for face-to-face interviewing, or a stratification-count optimization technique."
+    },
+    {
+      "item_id": "ai_os_data_quality_012",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NQAF-CoCSSO presentation, Data Quality and Statistical Disclosure Control slide",
+      "source_excerpt": "As per NQAF, access to microdata is allowed for research purposes, subject to specific rules and protocols on statistical confidentiality that are made known publicly and posted on the agency's website. ...Dissemination of unit level data by deleting / suppressing identification particulars of respondents to protect their privacy and confidentiality.",
+      "question": "Per the NQAF-CoCSSO presentation, how does the Indian Statistical System balance making microdata (unit-level data) available for research against protecting respondent confidentiality?",
+      "options": [
+        "Microdata is never released to any external researcher under any circumstances, to guarantee zero disclosure risk",
+        "Microdata is released for research purposes, but with identification particulars deleted or suppressed, and access is governed by confidentiality rules and protocols that are made public and posted on the agency's website",
+        "Microdata is released only to foreign governments and never to domestic researchers",
+        "Respondent names and addresses are always published alongside the data to ensure full transparency"
+      ],
+      "answer_index": 1,
+      "explanation": "The NQAF-aligned approach described allows access to unit-level microdata for legitimate research purposes, but only after direct identification particulars of respondents are deleted or suppressed, and subject to documented confidentiality rules and protocols that are made publicly known (e.g., posted on the agency's website), so that both researchers and the public understand the conditions under which such access is granted. The presentation also acknowledges that indirect identification of respondents may still be possible even after this de-identification, which is why restricted-data procedures and further transformation of data are sometimes needed. This is a middle path, not a blanket denial (option A), a foreign-only policy (option C), or the opposite extreme of publishing identifying details openly (option D)."
+    },
+    {
+      "item_id": "ai_os_data_quality_013",
+      "doc_id": "sif_guideline",
+      "competency_id": "os_data_quality",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "SIF Guideline v1.1, Objective, para 1",
+      "source_excerpt": "The objective of these guidelines is to facilitate and assist State Governments in the development of a State Level Monitoring Framework including institutional arrangements to track the progress on the SDGs by building on the existing National Indicator Framework.",
+      "question": "What is the stated objective of MoSPI's 'SIF Guideline, version 1.1' document?",
+      "options": [
+        "To directly compile and publish the State Indicator Framework on behalf of every State Government",
+        "To assist and guide State Governments in developing their own State-level SDG monitoring framework and institutional arrangements, building on the existing National Indicator Framework (NIF)",
+        "To replace the National Indicator Framework entirely with a single unified state-level framework",
+        "To rank all States and Union Territories by their overall economic performance"
+      ],
+      "answer_index": 1,
+      "explanation": "The SIF (State Indicator Framework) Guideline explicitly states its purpose is to facilitate and assist State Governments -- not to do the work for them -- in developing their own State Level Monitoring Framework for tracking SDG progress, including the institutional arrangements needed to sustain it, using the existing National Indicator Framework as the foundation to build upon. It is guidance for States to adapt and extend the NIF according to their own local priorities and data realities, not a replacement of the NIF, a MoSPI-authored compilation done on the states' behalf, or a general economic-performance ranking exercise (which is closer to what NITI Aayog's separate SDG Index does)."
+    },
+    {
+      "item_id": "ai_os_data_quality_014",
+      "doc_id": "sif_guideline",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "SIF Guideline v1.1, para 16, Guiding Principle: participatory development",
+      "source_excerpt": "16. SIF is to be prepared in a participatory manner: The development of the State Indicator Framework is expected to follow a process with the involvement / consultation of all stake holders and ownership with the State. Bypassing the consultative process or a non-involved outsourcing of its development to a consultant will reduce the likelihood of its successful implementation.",
+      "question": "The SIF Guideline warns against one particular approach to developing a State Indicator Framework, saying it 'will reduce the likelihood of its successful implementation'. What is that approach?",
+      "options": [
+        "Involving too many government departments in the consultation process",
+        "Bypassing the consultative process with stakeholders, or fully outsourcing the framework's development to an external consultant without State involvement",
+        "Using digital tools and dashboards to visualize the indicators",
+        "Aligning the State framework too closely with the National Indicator Framework"
+      ],
+      "answer_index": 1,
+      "explanation": "The Guideline's first stated principle is that the SIF must be developed participatorily, with genuine consultation of stakeholders and ownership retained by the State government itself; it explicitly warns that either bypassing this consultative process, or handing off the framework's development to an external consultant without the State's own involvement, undermines the likelihood that the resulting framework will actually be implemented successfully, since local buy-in and institutional ownership are treated as essential to sustained use of the framework. Over-involving departments, using digital dashboards, or aligning closely with the NIF are not identified as risks in the Guideline -- indeed, alignment with the NIF is separately encouraged as a different guiding principle."
+    },
+    {
+      "item_id": "ai_os_data_quality_015",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_data_quality",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: operating characteristic curve in acceptance sampling",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers statistical quality control, including the Operating Characteristic (OC) curve of a single sampling plan; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "In acceptance sampling for quality control, the Operating Characteristic (OC) curve of a sampling plan plots which relationship?",
+      "options": [
+        "The cost of inspection against the sample size used",
+        "The probability of accepting a lot against the lot's true (actual) fraction defective, showing how well the plan discriminates between good and bad lots across the full range of possible quality levels",
+        "The number of defective units found against the time taken to inspect the lot",
+        "The producer's profit against the consumer's satisfaction rating"
+      ],
+      "answer_index": 1,
+      "explanation": "The OC curve is the defining performance summary of a single (or multiple) sampling plan: for every possible true fraction defective p that an incoming lot might actually have, it plots the probability that the plan would accept that lot, Pa(p). A steeply falling OC curve (dropping quickly from near-1 acceptance probability at low p to near-0 acceptance probability at high p) indicates a plan that discriminates sharply between good and bad lots, while a shallow curve indicates poor discrimination. This is exactly the tool used to read off the producer's risk (probability of rejecting a genuinely good lot at the AQL) and the consumer's risk (probability of accepting a genuinely bad lot at the LTPD) that a given (n, c) sampling plan delivers. It has nothing to do with inspection cost versus sample size, defect counts versus time, or profit versus satisfaction."
+    },
+    {
+      "item_id": "ai_os_data_quality_016",
+      "doc_id": "upsc_csm26_statistics_p2",
+      "competency_id": "os_data_quality",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "General concept area of this UPSC Statistics paper's syllabus: control charts and process control",
+      "source_excerpt": "This UPSC Statistics (Main) paper's syllabus covers statistical process control, including the distinction between chance (common) causes and assignable (special) causes of variation on a control chart; grounded in that well-established syllabus area rather than a specific transcribed question.",
+      "question": "In statistical process control, a process is said to be 'in a state of statistical control' when the variation observed on its control chart is attributable to which type of cause?",
+      "options": [
+        "Only assignable (special) causes, such as a specific machine malfunction or a change of raw material batch",
+        "Only chance (common) causes -- the many small, inherent sources of random variation always present in a stable process -- with no identifiable assignable causes producing points outside the control limits or non-random patterns",
+        "A process is 'in control' only when there is exactly zero variation in the measured quality characteristic",
+        "A process is 'in control' whenever the sample size used for each subgroup exceeds 30"
+      ],
+      "answer_index": 1,
+      "explanation": "A process is considered to be in a state of statistical control when the only variation present is due to chance (common) causes -- the numerous small, inherent, and individually unidentifiable sources of variability that are always present in any process, producing points that stay within the control limits and show no systematic non-random pattern. The presence of an assignable (special) cause, such as a tool breaking, a new operator, or a raw-material change, typically produces an out-of-control signal (a point beyond the control limits, or a non-random run or trend), which is precisely what a control chart is designed to detect and flag for investigation. Zero variation is neither expected nor required for a process to be 'in control' (option C is wrong), and being in control has nothing to do with a fixed subgroup sample size threshold like 30 (option D)."
+    },
+    {
+      "item_id": "ai_os_official_statistics_001",
+      "doc_id": "cpi_manual_2010",
+      "competency_id": "os_official_statistics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Manual on Consumer Price Index 2010, Chapter III, para 3.42, Selection of Base Year",
+      "source_excerpt": "3.42 The well known criteria for the selection of base year are:- (i) a normal year i.e. a year in which there is no...",
+      "question": "Per MoSPI/CSO's Manual on Consumer Price Index 2010, what is one of the well-known criteria the manual lists for selecting the base year of a Consumer Price Index series?",
+      "options": [
+        "The base year should be a 'normal' year -- one without abnormal fluctuations, shortages, or other unusual conditions that would distort prices",
+        "The base year must always be exactly 50 years before the current year",
+        "The base year should always fall on a leap year",
+        "The base year should be the year in which the CPI series is first published, regardless of price conditions that year"
+      ],
+      "answer_index": 0,
+      "explanation": "The Manual sets out standard, internationally recognized criteria for base-year selection, foremost among them that the base year should be a 'normal' year, meaning one free of abnormal conditions such as unusual shortages, extreme price shocks, natural disasters, or other atypical events that would make prices in that year unrepresentative of typical conditions. Using such a distorted year as the reference point would bias every subsequent index value computed relative to it. There is no such requirement that the base year be exactly 50 years in the past, a leap year, or the same year the series happens to be first published (in practice, revisions typically use expenditure survey years as the source of the weighting diagram, and the base year is chosen to align closely with that)."
+    },
+    {
+      "item_id": "ai_os_official_statistics_002",
+      "doc_id": "cpi_manual_2010",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Manual on Consumer Price Index 2010, Chapter III, para 3.12 area, Laspeyres' Formula",
+      "source_excerpt": "the index series, as is generally the case, the above formula is the well known Laspeyres' formula... 3.15 ...across the world, are based on the Laspeyres' formula mainly due to practical simplicity in its...",
+      "question": "Per the Manual on Consumer Price Index 2010, most Consumer Price Index series across the world, including India's, are compiled using which index formula, and why?",
+      "options": [
+        "The Fisher Ideal index, because it is the simplest formula to compute with limited data",
+        "The Laspeyres' formula, mainly because of its practical simplicity, since it uses fixed base-period quantities/weights so that only current prices need to be collected each period, not current quantities",
+        "The Paasche's formula, because it most accurately tracks real-time changes in consumption patterns",
+        "A simple unweighted arithmetic mean of all prices, with no use of expenditure weights at all"
+      ],
+      "answer_index": 1,
+      "explanation": "The Manual explains that CPI series worldwide predominantly use the Laspeyres' formula, which is a base-weighted average of price relatives: it fixes the quantities (or, equivalently, the expenditure weights) at their base-period values, so that compiling the index in any later period only requires collecting current prices, not current quantities, which would require a fresh expenditure survey every period. This practical simplicity is precisely why Laspeyres dominates in practice despite its known upward bias over time relative to a true cost-of-living index, whereas the Paasche formula requires current-period quantities and is therefore 'seldom used in practice' per the Manual, and the Fisher Ideal index (a geometric mean of Laspeyres and Paasche) requires both, making it even more data-intensive, not simpler."
+    },
+    {
+      "item_id": "ai_os_official_statistics_003",
+      "doc_id": "cpi_manual_2010",
+      "competency_id": "os_official_statistics",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Manual on Consumer Price Index 2010, Chapter III, paras 3.14-3.16",
+      "source_excerpt": "3.14 In normal economic situations, the Laspeyres' index shows an upward bias (in relation to the true cost of living index) with the passage of time while the Paasche's index shows a... ideal index as the geometric mean of the Laspeyres' and Paasche's indices...",
+      "question": "Per the CPI Manual 2010, the Laspeyres index tends to show an upward bias relative to a true cost-of-living index as time passes, while the Paasche index tends to show a downward bias. What underlying consumer behaviour explains this pair of biases?",
+      "options": [
+        "Consumers tend to substitute away from goods that have become relatively more expensive towards goods that have become relatively cheaper, a behaviour that Laspeyres (using old, base-period quantities) fails to capture, while Paasche (using current quantities that already reflect this substitution) tends to over-correct for it",
+        "Prices generally fall over time for all goods, so any fixed-weight index is automatically biased upward",
+        "Consumers buy exactly the same basket of goods every period with no substitution at all, making both formulas equally biased in the same direction",
+        "The bias exists purely due to rounding errors in the calculation, unrelated to any real economic behaviour"
+      ],
+      "answer_index": 0,
+      "explanation": "The Laspeyres/Paasche bias pattern is a textbook consequence of consumer substitution behaviour: as relative prices change, rational consumers substitute towards goods that have become relatively cheaper and away from those that have become relatively more expensive. Laspeyres, by holding quantities fixed at base-period levels, ignores this substitution and so overstates the true cost of maintaining the base-period standard of living (an upward, or 'substitution', bias). Paasche, by using current-period quantities that already reflect this substitution response, tends to understate the cost of maintaining the base standard of living relative to a true cost-of-living index (a downward bias). This is precisely why the geometric mean of the two (the Fisher Ideal index) is often treated as a closer approximation to the 'ideal' index. The bias is a real economic phenomenon tied to substitution, not a rounding artifact, and it does not require the false premise that all prices fall over time or that consumption baskets never change."
+    },
+    {
+      "item_id": "ai_os_official_statistics_004",
+      "doc_id": "cpi_manual_2010",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Manual on Consumer Price Index 2010, Chapter III, paras 3.16, 3.42 (weighting diagram revision interval)",
+      "source_excerpt": "revision of weighting diagrams of Consumer Price Index series 'at intervals not more than 10 years'... the weighting diagram is built up at the start of the series usually on the basis of a [Family Living/Consumer Expenditure] Survey...",
+      "question": "According to the Manual on Consumer Price Index 2010, the weighting diagram of a CPI series is built at the start of the series from a household expenditure survey, and is meant to be revised at what maximum interval?",
+      "options": [
+        "Every month, alongside the regular price collection",
+        "At intervals not more than 10 years",
+        "Only once, at the launch of the series, and never revised again for as long as the series continues",
+        "Every 50 years, in line with each decennial Census cycle rounded to the nearest half-century"
+      ],
+      "answer_index": 1,
+      "explanation": "The Manual specifies that the weighting diagram -- the set of expenditure-share weights derived from a household budget/consumer expenditure survey that determines how much influence each item has on the overall index -- should be revised at intervals not exceeding 10 years, so that the weights continue to reflect a reasonably current pattern of household consumption rather than becoming progressively outdated as spending habits shift. Monthly revision (option A) would defeat the purpose of having a fixed weighting diagram between revisions, never revising at all (option C) would let the weights become badly outdated exactly as the Expert Group Report later found had happened, and a 50-year interval (option D) is far longer than the Manual's stated maximum."
+    },
+    {
+      "item_id": "ai_os_official_statistics_005",
+      "doc_id": "cpi_manual_2010",
+      "competency_id": "os_official_statistics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Manual on Consumer Price Index 2010, Chapter III, para 3.16",
+      "source_excerpt": "3.16 There are two essential constituents of a CPI namely, (i) the weighting diagram and (ii) retail prices.",
+      "question": "Per the Manual on Consumer Price Index 2010, what are the two essential constituents needed to compile a Consumer Price Index?",
+      "options": [
+        "GDP growth data and interest rate data",
+        "The weighting diagram (expenditure weights for each item) and retail prices (collected regularly for those items)",
+        "Import and export trade statistics",
+        "Population Census totals and literacy rates"
+      ],
+      "answer_index": 1,
+      "explanation": "The Manual identifies the weighting diagram (the relative expenditure shares of different items/groups, established from a household consumption expenditure survey) and retail prices (the actual price quotations collected periodically for those same items from designated markets/outlets) as the two essential building blocks of any CPI. Without the weighting diagram, there would be no basis for combining individual item price movements into a single overall index number reflecting how households actually spend; without regularly collected retail prices, there would be nothing to plug into that weighting structure each period. GDP data, trade statistics, and Census literacy figures play no direct role in CPI compilation itself."
+    },
+    {
+      "item_id": "ai_os_official_statistics_006",
+      "doc_id": "nas_sources_methods",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Accounts Statistics: Sources and Methods 2012, Chapter 1, paras on periodic base-year revision",
+      "source_excerpt": "Over the years, the base years of NAS series have also undergone changes... the base year of national accounts series is changed [periodically]... as base year (hereafter referred to as...) primarily because in the base year...",
+      "question": "The National Accounts Statistics: Sources and Methods, 2012 document describes a long history of the CSO periodically revising the base year of India's National Accounts series (e.g., 1948-49, then successively later years). Why does a national accounts base year need periodic revision at all?",
+      "options": [
+        "Because the mathematical formula for computing GDP changes every time the base year changes",
+        "Because as the structure of the economy evolves over time -- new industries emerge, consumption and production patterns shift, and new data sources become available -- an outdated base year and its associated weighting/classification structure no longer reflect the current economy well, so periodic rebasing keeps the accounts representative",
+        "Because the Constitution of India requires a base-year change with every new Five-Year Plan",
+        "Because the base year must always coincide with a national election year"
+      ],
+      "answer_index": 1,
+      "explanation": "The document's own account of the successive base-year revisions (1948-49 through to 2011-12 and beyond) is a direct response to structural change in the Indian economy: as new economic activities emerge, old ones shrink in relative importance, survey methodologies improve, and new administrative/survey data sources become available, a base year and its associated commodity/industry classification and weighting structure that was current when adopted gradually becomes outdated and less representative of the present-day economy. Periodic rebasing exercises incorporate updated data sources, revised classifications, and current weighting patterns to keep the national accounts estimates methodologically sound and representative. There is no constitutional mandate tying base-year changes to Five-Year Plans or elections, and the core GDP estimation formulas (production, income, expenditure approaches) do not themselves change with each rebasing, only the underlying data and weights do."
+    },
+    {
+      "item_id": "ai_os_official_statistics_007",
+      "doc_id": "nas_sources_methods",
+      "competency_id": "os_official_statistics",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "National Accounts Statistics: Sources and Methods 2012, Chapter 1, GVA per worker (GVAPW) methodology",
+      "source_excerpt": "GVA per worker from... round (2005-06). The GVA per worker from... arrive at the GVA per worker estimate for... expenditure incurred on cultivation of... GVA estimates have been compiled by... a product of GVAPW of 63rd round of NSSO",
+      "question": "For segments of the economy where direct enterprise-level output data is scarce (such as parts of the unorganised sector), the National Accounts Statistics: Sources and Methods, 2012 describes estimating Gross Value Added (GVA) as the product of which two quantities?",
+      "options": [
+        "The average GVA per worker (GVAPW), typically derived from an NSSO survey round, multiplied by an estimate of the total workforce engaged in that segment",
+        "The number of registered companies multiplied by their average paid-up capital",
+        "The total government budget allocation for that sector multiplied by an inflation adjustment factor",
+        "The population of the state multiplied by its literacy rate"
+      ],
+      "answer_index": 0,
+      "explanation": "Where comprehensive enterprise-level output or income data is not directly available -- typically for unorganised-sector and some private-sector activities -- the National Accounts methodology estimates GVA indirectly as the product of an average GVA-per-worker (GVAPW) figure, usually benchmarked from a specific NSSO employment-unemployment or enterprise survey round (such as the 63rd round referenced in the document), and a workforce estimate for that segment (how many workers are engaged in the activity, from Census or NSSO employment data). This 'workforce approach' substitutes for direct output measurement precisely because unorganised-sector units are too numerous and informal to survey comprehensively every year. Budget allocations, paid-up capital of registered companies, and population/literacy figures are not the inputs to this specific GVAPW-based estimation method."
+    },
+    {
+      "item_id": "ai_os_official_statistics_008",
+      "doc_id": "nas_sources_methods",
+      "competency_id": "os_official_statistics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Accounts Statistics: Sources and Methods 2012, Chapter 1, base year 2004-05 release",
+      "source_excerpt": "the base years of national accounts statistics... released with base year 2004-05 on 29th [date]...",
+      "question": "Per the National Accounts Statistics: Sources and Methods, 2012 document, one of the successive revisions of India's national accounts base year moved the series to which base year, as described in the document's historical account?",
+      "options": [
+        "1948-49, the very first base year the CSO ever used",
+        "2004-05, one of the later base-year revisions the document traces in its historical account",
+        "2050-51, a future-dated base year",
+        "1776, the year of a foreign country's political founding, used only for international comparability"
+      ],
+      "answer_index": 1,
+      "explanation": "The document traces the successive base-year revisions of India's National Accounts Statistics from the CSO's original 1948-49 base year through several later revisions, one of which moved the series to a 2004-05 base year, as part of the periodic rebasing exercise the document describes. A base year of 1948-49 was the historically first base year, not the one this later revision moved to; a future-dated year (2050-51) makes no sense for a base year describing historical estimates; and 1776 is an unrelated foreign historical date irrelevant to India's national accounts."
+    },
+    {
+      "item_id": "ai_os_official_statistics_009",
+      "doc_id": "nas_sources_methods",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Accounts Statistics: Sources and Methods 2012, standard GDP estimation framework",
+      "source_excerpt": "GVA of former is measured through the commodity flow... expenditure approach. The broad... or less same as the one used in 1999-00...",
+      "question": "National accounts practice, as reflected in the CSO's National Accounts Statistics: Sources and Methods, recognizes three standard, conceptually equivalent approaches to estimating a country's aggregate economic output (GDP/GVA). What are these three approaches?",
+      "options": [
+        "The production (output) approach, the income approach, and the expenditure approach",
+        "The urban approach, the rural approach, and the combined approach",
+        "The import approach, the export approach, and the trade-balance approach",
+        "The public-sector approach, the private-sector approach, and the household approach"
+      ],
+      "answer_index": 0,
+      "explanation": "National accounting recognizes that a country's aggregate output can, in principle, be measured three equivalent ways: the production (or output) approach, which sums the value added by each industry/sector after netting out intermediate consumption from gross output; the income approach, which sums all factor incomes generated in production (compensation of employees, operating surplus, mixed income, taxes less subsidies on production); and the expenditure approach, which sums final expenditures on goods and services (consumption, investment, government spending, and net exports). In practice, national accounts compilers, including India's CSO, use a combination of these approaches depending on which is best supported by available data for each sector, exactly as the Sources and Methods document details sector by sector. The other listed pairings (urban/rural/combined, import/export/trade-balance, public/private/household) are not the standard three GDP estimation approaches."
+    },
+    {
+      "item_id": "ai_os_official_statistics_010",
+      "doc_id": "nas_sources_methods",
+      "competency_id": "os_official_statistics",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "National Accounts Statistics: Sources and Methods 2012, Chapter 1, public sector GVA estimation",
+      "source_excerpt": "1.42 Public Sector: The estimates of NVA consists 1.43 of compensation of employees as obtained compensation of employees for the new series for this part have been prepared...",
+      "question": "For the public sector, the National Accounts Statistics: Sources and Methods, 2012 describes estimating Net Value Added (NVA) primarily using data drawn from which source?",
+      "options": [
+        "Anonymous online surveys of public-sector employees about their perceived productivity",
+        "Government budget documents and accounts, from which figures like compensation of employees and operating surplus of public sector enterprises are obtained directly",
+        "International Monetary Fund press releases on India's fiscal deficit",
+        "Newspaper reports on government spending announcements"
+      ],
+      "answer_index": 1,
+      "explanation": "Because public-sector entities (government departments and public sector enterprises) maintain formal, audited accounts and budget documents, the National Accounts methodology can draw directly on this administrative data -- such as compensation of employees, and the analysis of government budgets and accounts of public sector enterprises -- to estimate public-sector value added with a precision that is not achievable for the unorganised private sector (which instead relies on GVAPW-based indirect estimation, as described elsewhere in the same document). This administrative-data-based approach is far more reliable than informal surveys of employee perception, third-party press releases, or newspaper announcements, none of which the Sources and Methods document describes as an input to public-sector GVA estimation."
+    },
+    {
+      "item_id": "ai_os_official_statistics_011",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NQAF-CoCSSO presentation, NQAF Statement 2 ('Managing relationships with data users and data providers')",
+      "source_excerpt": "NQAF2 Managing relationships with data users and data providers... A Managing the statistical system.",
+      "question": "In the UN NQAF template's Category A ('Managing the statistical system'), NQAF Statement 2 concerns 'managing relationships with data users and data providers'. Why does a national quality assurance framework treat this relationship management as a system-level quality concern, rather than leaving it purely to individual survey teams?",
+      "options": [
+        "Because data providers (respondents) and data users (policymakers, researchers, the public) are external to any single statistical product, and sustained trust and cooperation with both groups underpins the whole statistical system's ability to collect accurate data and produce statistics that are actually used and trusted -- a systemic condition, not a single survey's concern",
+        "Because it only affects the marketing budget of the statistical agency",
+        "Because data providers and data users are legally required to be the same set of people under Indian law",
+        "Because it has no real bearing on statistical quality and is included only for completeness"
+      ],
+      "answer_index": 0,
+      "explanation": "The NQAF places 'managing relationships with data users and data providers' at the system level (Category A) because respondent cooperation (data providers' willingness to give accurate, timely information) and user confidence (data users' trust that the statistics reflect reality and are relevant to their needs) are foundational conditions that affect every statistical product the system produces, not something that can be fixed survey-by-survey. Poor relationship management with providers can degrade response rates and data accuracy across many surveys; poor relationship management with users can mean even accurate statistics go unused or are misunderstood. This is a genuine and central quality concern within the framework, not a marketing afterthought, and there is no legal requirement conflating data providers with data users."
+    },
+    {
+      "item_id": "ai_os_official_statistics_012",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_official_statistics",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NQAF-CoCSSO presentation, Overall Assessment slide",
+      "source_excerpt": "Overall Assessment: 108 18 123 1 / Overall Assessment in %: 43.4 7.2 49.4 -",
+      "question": "Per the NQAF-CoCSSO presentation's overall assessment of the Indian Statistical System against the UN NQAF checklist, roughly what share of quality elements were found to be either fully ('Yes') or partially ('Partially True') met, combined?",
+      "options": [
+        "Roughly 7%, since almost none of the elements were met at all",
+        "Roughly 43%, counting only the elements marked fully 'Yes'",
+        "Roughly 92-93%, combining the approximately 43% marked fully 'Yes' with the approximately 49% marked 'Partially True'",
+        "Exactly 100%, since the assessment found no gaps whatsoever"
+      ],
+      "answer_index": 2,
+      "explanation": "The overall assessment reports approximately 43.4% of quality elements marked fully 'Yes', 7.2% marked 'No', and 49.4% marked 'Partially True' (with a negligible remainder 'Not applicable'). Adding the 'Yes' and 'Partially True' shares together gives roughly 92-93% of elements showing at least some degree of compliance, though it is worth noting the assessment's own weighted overall percentage (which counts 'Partially True' at half weight) reports a lower combined figure -- either way, the headline finding is that a large majority of elements show at least partial compliance, but a meaningful share are only partially met, which is exactly why the presentation goes on to list specific structural gaps such as the absence of a legislative framework for the NSO. Options A and B pick out only one component of the breakdown, and option D contradicts the presentation's own explicit finding of gaps."
+    },
+    {
+      "item_id": "ai_os_official_statistics_013",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NQAF-CoCSSO presentation, 'Details on the gap' slide",
+      "source_excerpt": "Details on the gap in comparison with the NQAF: legislative framework for establishment of NSO; conducting training courses for users on interpreting statistics; involvement of users and data providers in the process for originating, developing and approving statistical standards...",
+      "question": "The NQAF-CoCSSO presentation lists several specific gaps found when assessing the Indian Statistical System against the NQAF. Which of the following is explicitly listed as one of these gaps?",
+      "options": [
+        "The absence of a legislative framework for the establishment of the National Statistical Office (NSO)",
+        "A complete absence of any officially released Consumer Price Index",
+        "A complete absence of any Census of India since independence",
+        "A ban on publishing any government statistics to the public"
+      ],
+      "answer_index": 0,
+      "explanation": "Among the specific gaps the presentation lists relative to the NQAF's expectations are the absence of a dedicated legislative framework establishing the NSO itself, insufficient training courses for users on interpreting statistics, limited involvement of users and data providers in developing statistical standards, incomplete documentation for each production stage, and a lack of identified quality indicators for evaluating production. None of the other options describe real gaps identified in the presentation -- India does have a long-running CPI series and an unbroken Census tradition since 1872 (as the Census manual itself documents), and government statistics are actively published, not banned."
+    },
+    {
+      "item_id": "ai_os_official_statistics_014",
+      "doc_id": "nqaf_cocsso",
+      "competency_id": "os_official_statistics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NQAF-CoCSSO presentation, Supporting documents to the NQAF template slide",
+      "source_excerpt": "Supporting documents to the NQAF template: Checklist to review lines of the NQAF... UN guidelines for the template... Glossary of terms as in checklist/ guidelines following SDMX's Metadata Common Vocabulary... Mapping of NQAF with other frameworks like European Statistics Code of Practice (CoP), International Monetary Fund's Data Quality Assessment Framework (DQAF)...",
+      "question": "Besides the 19 quality statements themselves, what supporting documents does the UN NQAF template come with, per the NQAF-CoCSSO presentation?",
+      "options": [
+        "A checklist for self-assessment, UN implementation guidelines, a glossary of terms based on SDMX's Metadata Common Vocabulary, and a mapping of the NQAF against other frameworks like the European Statistics Code of Practice and the IMF's Data Quality Assessment Framework",
+        "Only a single-page summary poster and nothing else",
+        "A mandatory annual budget allocation formula for every national statistical office",
+        "A list of approved software vendors for statistical agencies"
+      ],
+      "answer_index": 0,
+      "explanation": "The presentation lists the NQAF template's supporting materials as: a checklist to review and self-assess against the NQAF's lines (marking Yes/No/Partially true/Not applicable), UN guidelines explaining how to interpret and apply each of the 19 quality statements, a glossary of terms aligned with SDMX's Metadata Common Vocabulary (for terminological consistency with other statistical metadata standards), and a mapping showing how the NQAF's statements correspond to other established quality frameworks such as the European Statistics Code of Practice, the IMF's Data Quality Assessment Framework, and others. There is no budget-allocation formula or approved-vendor list among these supporting documents, and the materials are considerably more substantial than a single-page poster."
+    },
+    {
+      "item_id": "ai_os_official_statistics_015",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_official_statistics",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar 2021-22, About NSSTA, Overview",
+      "source_excerpt": "National Statistical Systems Training Academy (NSSTA) formerly known as National Academy of Statistical Administration (NASA), established in February, 2009 is a premier institute fostering human resource development in Official Statistics at National and International level.",
+      "question": "Per the NSSTA Training Calendar 2021-22, what was the National Statistical Systems Training Academy (NSSTA) previously known as, and when was it established?",
+      "options": [
+        "It was previously called the 'National Academy of Statistical Administration (NASA)', established in February 2009",
+        "It was previously called the 'Indian Statistical Institute (ISI)', established in 1931",
+        "It has always been called NSSTA since India's independence in 1947",
+        "It was previously called the 'Central Statistical Office Training Wing', established in 2015"
+      ],
+      "answer_index": 0,
+      "explanation": "The Training Calendar's overview states that NSSTA was formerly known as the National Academy of Statistical Administration (NASA), and that it was established in February 2009 as a premier institute for human resource development in Official Statistics at both the national and international level. This is a distinct institution from the much older Indian Statistical Institute (ISI, founded 1931 as a research and teaching institute), and it did not exist under the name NSSTA since 1947 nor was it established in 2015 as a CSO training wing -- both of those are incorrect names/dates not found in the document."
+    },
+    {
+      "item_id": "ai_os_official_statistics_016",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NSSTA Training Calendar 2021-22, Section 2.1, Mid-Career Training Programme (MCTP) phases",
+      "source_excerpt": "a. First Phase of MCTP: This phase is for ISS officers of 8-10 years of service... b. Second Phase of MCTP: This phase is for ISS officers of 15-17 years of service... c. Third Phase of MCTP: The third phase of MCTP is for ISS officers of 23-28 years of service.",
+      "question": "The NSSTA Training Calendar 2021-22 describes the mandatory Mid-Career Training Programme (MCTP) for in-service Indian Statistical Service (ISS) officers as being organized into three phases, tied to years of service. What determines which phase an officer takes?",
+      "options": [
+        "The officer's academic degree (Bachelor's vs Master's) determines the phase, regardless of years of service",
+        "The officer's years of service: roughly 8-10 years for the First Phase, 15-17 years for the Second Phase, and 23-28 years for the Third Phase",
+        "The officer's home state determines which phase they are assigned to, regardless of seniority",
+        "All ISS officers take all three phases in their very first year of service, back to back"
+      ],
+      "answer_index": 1,
+      "explanation": "The MCTP is explicitly staged by seniority/years of service: the First Phase targets ISS officers with roughly 8-10 years of service (and includes a Cohort Based Training Programme covering machine learning, big data, and management foundations), the Second Phase targets officers with 15-17 years of service (covering four one-week modules including project management and advanced management), and the Third Phase targets officers with 23-28 years of service (covering leadership, ICT project management, and current economic issues, calibrated for officers nearing the most senior levels of the cadre). This career-stage design ensures training content matches the seniority and likely role of the officer at each point, rather than being tied to academic background, home state, or compressed into a single early-career burst."
+    },
+    {
+      "item_id": "ai_os_official_statistics_017",
+      "doc_id": "nssta_calendar",
+      "competency_id": "os_official_statistics",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NSSTA Training Calendar 2021-22, Section 1, ISS Probationer training, Course 1",
+      "source_excerpt": "Course1 -Proficiency in Official Statistics: Module 1.1 - Official statistics, Module 1.2 - Economics and Financial Statistics, Module 1.3 - Survey Methodology, Module 1.4 - Multivariate Analysis, Module 1.5 - Monitoring and Evaluation",
+      "question": "In the two-year probationary training for Indian Statistical Service (ISS) officers described in the NSSTA Training Calendar 2021-22, 'Course 1: Proficiency in Official Statistics' is broken into five modules. Which of the following is one of those five modules?",
+      "options": [
+        "Module on Foreign Language Translation",
+        "Module 1.3: Survey Methodology",
+        "Module on Automobile Engineering",
+        "Module on Retail Marketing Strategy"
+      ],
+      "answer_index": 1,
+      "explanation": "Course 1 of the ISS probationer curriculum, 'Proficiency in Official Statistics', is divided into five modules: 1.1 Official statistics, 1.2 Economics and Financial Statistics, 1.3 Survey Methodology, 1.4 Multivariate Analysis, and 1.5 Monitoring and Evaluation. Survey Methodology (Module 1.3) is explicitly one of these five, reflecting how central survey design and execution is to an ISS officer's core professional competence. Foreign language translation, automobile engineering, and retail marketing are not part of this course's module structure, which is focused squarely on the statistical and analytical skills the ISS cadre needs."
+    }
+  ]
+}

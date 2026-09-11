@@ -1,0 +1,1933 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-11",
+  "note": "Batch A of AI-authored, source-grounded MCQs for the dsa-fundamentals curriculum's arrays, linked_lists, stacks_queues, binary_search, recursion, and trees competencies, citing the GATE 2026/2024 CS1/CS2 and GATE 2025/2026 DA question papers' general Data Structures & Algorithms syllabus coverage.",
+  "questions": [
+    {
+      "item_id": "ai_arrays_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "arrays",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (array fundamentals)",
+      "source_excerpt": "General concept area: array storage and constant-time indexed access -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "An array stores its elements in contiguous memory locations. What is the time complexity of accessing the element at a given valid index?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Because array elements are contiguous, the address of index i is computed directly as base_address + i * element_size, so access takes constant time regardless of array size. O(log n) is the binary-search bound, O(n) is a linear scan, and O(n log n) is comparison-sort territory -- none of which are needed to read one indexed element."
+    },
+    {
+      "item_id": "ai_arrays_002",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "arrays",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1, general Data Structures syllabus area (searching)",
+      "source_excerpt": "General concept area: linear search over an unsorted array -- part of GATE CS1's Data Structures/Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "In the worst case, how many comparisons does a linear search make to determine that a target value is absent from an unsorted array of n elements?",
+      "options": [
+        "n",
+        "log2(n)",
+        "n/2",
+        "n-1"
+      ],
+      "answer_index": 0,
+      "explanation": "If the target is absent, linear search must examine every one of the n elements before concluding it is not present, so the worst case is exactly n comparisons. log2(n) is the binary-search bound (which needs a sorted array), n/2 is only the average case for a present element, and n-1 undercounts by one."
+    },
+    {
+      "item_id": "ai_arrays_003",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "arrays",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (array operations)",
+      "source_excerpt": "General concept area: deleting the last element of a size-tracked array -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "An array-backed list keeps a separate `size` counter. What is the time complexity of removing the last logical element (the one at index size-1)?",
+      "options": [
+        "O(1)",
+        "O(n)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "Removing the last element only requires decrementing the size counter; no other elements need to move, so this is O(1). Removing from the front or the middle would be O(n) because every later element must shift left to close the resulting gap."
+    },
+    {
+      "item_id": "ai_arrays_004",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "arrays",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (array operations)",
+      "source_excerpt": "General concept area: inserting an element at the front of an array -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "To insert a new element at index 0 of an array holding n elements (assuming spare capacity already exists), every existing element must first shift one position to the right. What is the time complexity of this insertion?",
+      "options": [
+        "O(n)",
+        "O(1)",
+        "O(log n)",
+        "O(n log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Shifting all n existing elements one slot to the right before placing the new element at index 0 takes time proportional to n, so the operation is O(n) in the worst case. Only insertion at the end, with spare capacity already available, is O(1)."
+    },
+    {
+      "item_id": "ai_arrays_005",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "arrays",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS1, general Data Structures syllabus area (2D array addressing)",
+      "source_excerpt": "General concept area: row-major address computation for a 2D array -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A 2D array A[0..4][0..5] of 4-byte integers is stored in row-major order starting at base address 1000. What is the address of A[2][3]?",
+      "options": [
+        "1060",
+        "1015",
+        "1068",
+        "1084"
+      ],
+      "answer_index": 0,
+      "explanation": "Row-major address = base + (row * num_columns + column) * element_size = 1000 + (2*6 + 3)*4 = 1000 + 15*4 = 1000 + 60 = 1060. 1015 forgets to multiply the offset by the element size, 1068 comes from applying the column-major formula (col*num_rows + row) instead, and 1084 comes from an off-by-one row index."
+    },
+    {
+      "item_id": "ai_arrays_006",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "arrays",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (array operations)",
+      "source_excerpt": "General concept area: reversing an array in place -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "An array of n elements is reversed in place using the two-pointer technique (swap elements at the low and high ends, then move both pointers inward). What are the time and extra-space complexities?",
+      "options": [
+        "O(n) time, O(1) extra space",
+        "O(n) time, O(n) extra space",
+        "O(n log n) time, O(1) extra space",
+        "O(1) time, O(1) extra space"
+      ],
+      "answer_index": 0,
+      "explanation": "The two-pointer swap performs about n/2 swaps, each O(1), so the total time is O(n); since it swaps within the same array using only two index variables, the extra space beyond the input is O(1). Copying into a new reversed array would also be O(n) time but O(n) extra space, which this technique avoids."
+    },
+    {
+      "item_id": "ai_arrays_007",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "arrays",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (array traversal, min/max)",
+      "source_excerpt": "General concept area: finding both the minimum and maximum of an array in a single pass -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Using the optimal pairwise-comparison technique (compare elements in pairs, then compare the smaller to the running minimum and the larger to the running maximum), what is the minimum number of comparisons needed to find both the maximum and minimum of an array of n=10 elements?",
+      "options": [
+        "13",
+        "18",
+        "9",
+        "10"
+      ],
+      "answer_index": 0,
+      "explanation": "The optimal simultaneous min/max algorithm needs ceil(3n/2) - 2 comparisons. For n=10, that is ceil(15) - 2 = 13. The naive approach of comparing every element separately to both the running max and running min takes 2n-2=18 comparisons; n-1=9 only finds one of the two extremes; n=10 is not a comparison count derived from any correct method here."
+    },
+    {
+      "item_id": "ai_arrays_008",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "arrays",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (array rotation)",
+      "source_excerpt": "General concept area: rotating an array by k positions -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "An array of n elements is rotated left by k positions using the reversal trick: reverse the whole array, then reverse the first n-k elements, then reverse the last k elements. What are the resulting time and extra-space complexities?",
+      "options": [
+        "O(n) time, O(1) extra space",
+        "O(n) time, O(n) extra space",
+        "O(nk) time, O(1) extra space",
+        "O(n) time, O(k) extra space"
+      ],
+      "answer_index": 0,
+      "explanation": "Each of the three reversal passes touches every element at most once, so the total work is still linear, O(n); because each reversal is done in place with only index variables, no auxiliary array is needed, so extra space is O(1). This is more space-efficient than copying rotated elements into a new array of size n."
+    },
+    {
+      "item_id": "ai_arrays_009",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "arrays",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS1, general Data Structures syllabus area (prefix sums)",
+      "source_excerpt": "General concept area: prefix-sum arrays for range-sum queries -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A prefix-sum array is built once for an array of n elements in O(n) time. After that, what is the time complexity of answering a single range-sum query (sum of elements between two given indices)?",
+      "options": [
+        "O(1)",
+        "O(n)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "Once prefix[i] holds the sum of the first i elements, the sum of any range [l, r] is prefix[r] - prefix[l-1], a single subtraction -- O(1). Without precomputation, each range query would need O(n) work to sum the range directly."
+    },
+    {
+      "item_id": "ai_arrays_010",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "arrays",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (dynamic arrays)",
+      "source_excerpt": "General concept area: amortized cost of appending to a dynamic (resizable) array -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A dynamic array doubles its capacity (allocating a new array and copying all existing elements) whenever it becomes full. What is the amortized time complexity of a single append operation over a long sequence of n appends?",
+      "options": [
+        "O(1) amortized",
+        "O(n) amortized",
+        "O(log n) amortized",
+        "O(n^2) amortized"
+      ],
+      "answer_index": 0,
+      "explanation": "Although any individual resize costs O(n) to copy existing elements, doubling means resizes become exponentially rarer; summing the copy costs across all n appends totals O(n), so the amortized cost per append is O(1). This is why languages' dynamic array types (e.g. Python lists, Java ArrayList) treat append as effectively constant time."
+    },
+    {
+      "item_id": "ai_arrays_011",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "arrays",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (memory layout)",
+      "source_excerpt": "General concept area: memory locality of arrays versus pointer-based structures -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Why do sequential scans over an array typically run faster in practice than sequential traversals of a linked list holding the same number of elements, even though both are O(n)?",
+      "options": [
+        "Array elements are contiguous in memory, giving better CPU cache locality",
+        "Arrays use less total memory than linked lists in every case",
+        "Linked lists require sorting before traversal",
+        "Array traversal has a smaller asymptotic complexity than linked-list traversal"
+      ],
+      "answer_index": 0,
+      "explanation": "Both operations are Theta(n), so the difference is constant-factor, not asymptotic: contiguous array storage lets the CPU prefetch and cache nearby elements efficiently, while linked-list nodes may be scattered across memory, causing more cache misses. Memory usage and sorting are unrelated to this specific speed difference."
+    },
+    {
+      "item_id": "ai_arrays_012",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "arrays",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1, general Data Structures syllabus area (static arrays)",
+      "source_excerpt": "General concept area: the fixed-capacity limitation of a plain (non-resizable) array -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A statically-sized array of capacity n is completely full. What must happen to store one more element?",
+      "options": [
+        "A new, larger array must be allocated and the existing elements copied over",
+        "The array automatically grows in place with no extra cost",
+        "The extra element is silently dropped with no error",
+        "The array's element size doubles to fit more data"
+      ],
+      "answer_index": 0,
+      "explanation": "A plain array occupies a fixed, contiguous memory block whose size cannot change after allocation, so growing it requires allocating a new (typically larger) block and copying every existing element into it -- an O(n) operation. This is exactly the resize step that a dynamic array wraps for the caller."
+    },
+    {
+      "item_id": "ai_arrays_013",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "arrays",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (merging sorted arrays)",
+      "source_excerpt": "General concept area: merging two already-sorted arrays into one sorted array -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Two sorted arrays of sizes m and n are merged into a single sorted array using the standard two-pointer merge (as in merge sort's merge step). What is the time complexity?",
+      "options": [
+        "O(m + n)",
+        "O(m * n)",
+        "O((m + n) log(m + n))",
+        "O(min(m, n))"
+      ],
+      "answer_index": 0,
+      "explanation": "The two-pointer merge advances through both arrays exactly once, comparing their current fronts and appending the smaller each time, so total work is proportional to the combined size, O(m + n). O(m*n) or O((m+n)log(m+n)) would apply to less efficient approaches (e.g. inserting one array into the other one element at a time, or re-sorting the concatenation)."
+    },
+    {
+      "item_id": "ai_arrays_014",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "arrays",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (minimum replacements for sortedness)",
+      "source_excerpt": "General concept area: the minimum number of elements that must be replaced to make an array non-decreasing, related to the longest non-decreasing subsequence -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "For the array [3, 1, 2, 5, 4, 7], what is the minimum number of elements that must be replaced so the array becomes sorted in non-decreasing order (keeping the rest in their original positions)?",
+      "options": [
+        "2",
+        "1",
+        "3",
+        "4"
+      ],
+      "answer_index": 0,
+      "explanation": "The elements that never need replacing form the longest non-decreasing subsequence; here that is [1, 2, 5, 7] or [1, 2, 4, 7], both of length 4. The remaining 6 - 4 = 2 elements must be replaced. Any answer other than 2 either overstates the subsequence needed or undercounts the array's length."
+    },
+    {
+      "item_id": "ai_arrays_015",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "arrays",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (longest subarray with limited distinct values)",
+      "source_excerpt": "General concept area: the longest subarray containing at most two distinct values, solvable with a sliding window that tracks two run-length counters -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A sliding-window algorithm finds the longest subarray of an n-element array that contains at most two distinct values, advancing one pointer and updating two run-length counters per step, resetting them only when a third distinct value appears. What is the time complexity of this algorithm?",
+      "options": [
+        "O(n)",
+        "O(n log n)",
+        "O(n^2)",
+        "O(2^n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Each element is examined once as the window's right edge advances, and updating the two counters is O(1) work per element, so the total time is O(n). This sliding-window approach avoids the O(n^2) cost of checking every possible subarray explicitly."
+    },
+    {
+      "item_id": "ai_arrays_016",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "arrays",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS1, general Data Structures syllabus area (single-pass sortedness check)",
+      "source_excerpt": "General concept area: checking whether an array is sorted using a single pass that compares only adjacent elements -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "An algorithm checks whether an array of size N is sorted (ascending or descending) by making one pass and comparing each element only to its immediate neighbour. Not counting the input array itself, what is the algorithm's extra space complexity?",
+      "options": [
+        "O(1)",
+        "O(N)",
+        "O(log N)",
+        "O(N^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "The algorithm only needs a constant number of extra variables -- a loop index and a flag or two tracking the detected direction (ascending/descending) -- regardless of N, so its extra space is O(1). It never allocates a second array or any structure that grows with N."
+    },
+    {
+      "item_id": "ai_arrays_017",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "arrays",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (lower bound on comparisons)",
+      "source_excerpt": "General concept area: the minimum number of pairwise comparisons required to find the single largest element of an array -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What is the minimum number of pairwise comparisons required, in the worst case, to determine the single maximum element among n distinct elements?",
+      "options": [
+        "n - 1",
+        "n",
+        "log2(n)",
+        "n log2(n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Each comparison can eliminate at most one candidate from being the maximum (the loser of the comparison), and all n-1 non-maximum elements must be eliminated by some comparison, so at least n-1 comparisons are necessary -- and a single left-to-right scan achieves exactly that many. log2(n) is the search bound for a sorted structure, not a linear scan for the max of unordered data."
+    },
+    {
+      "item_id": "ai_linked_lists_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (linked list structure)",
+      "source_excerpt": "General concept area: the node structure of a singly linked list -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What does each node of a singly linked list store?",
+      "options": [
+        "A data value and a pointer/reference to the next node",
+        "A data value and pointers to both the next and previous nodes",
+        "Only a data value, with position implied by array index",
+        "A data value and pointers to every other node in the list"
+      ],
+      "answer_index": 0,
+      "explanation": "A singly linked list node holds its own data plus a single 'next' pointer/reference to the following node (or null at the end). Storing a 'previous' pointer as well describes a doubly linked list, not a singly linked one; array index-based positioning and all-node pointers are not how linked lists work at all."
+    },
+    {
+      "item_id": "ai_linked_lists_002",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (traversal)",
+      "source_excerpt": "General concept area: computing the length of a singly linked list by traversal -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What is the time complexity of computing the length of a singly linked list of n nodes that does not maintain a separate size counter?",
+      "options": [
+        "O(n)",
+        "O(1)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "Without a cached size, the only way to count nodes is to walk the list from head to the null tail, visiting each of the n nodes exactly once -- O(n). A cached counter, updated on every insert/delete, is what would make length lookup O(1)."
+    },
+    {
+      "item_id": "ai_linked_lists_003",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (random access)",
+      "source_excerpt": "General concept area: accessing the k-th element of a singly linked list versus an array -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Unlike an array, a singly linked list has no random access. What is the time complexity of retrieving the k-th element (from the head) of a linked list of n nodes?",
+      "options": [
+        "O(k)",
+        "O(1)",
+        "O(log k)",
+        "O(n - k)"
+      ],
+      "answer_index": 0,
+      "explanation": "Reaching the k-th node requires following 'next' pointers starting from the head, one hop at a time, so it costs O(k) -- in the worst case (k close to n) this is O(n), unlike an array's O(1) indexed access. There is no way to jump directly to a position without traversing the intervening nodes."
+    },
+    {
+      "item_id": "ai_linked_lists_004",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (insertion)",
+      "source_excerpt": "General concept area: inserting a new node at the head of a singly linked list -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What is the time complexity of inserting a new node at the head of a singly linked list, given a pointer to the current head?",
+      "options": [
+        "O(1)",
+        "O(n)",
+        "O(log n)",
+        "O(n log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Inserting at the head only requires setting the new node's next pointer to the current head and then updating the head reference to the new node -- two constant-time pointer operations, O(1), regardless of list length."
+    },
+    {
+      "item_id": "ai_linked_lists_005",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (insertion)",
+      "source_excerpt": "General concept area: inserting a new node at the tail of a singly linked list that only maintains a head pointer -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A singly linked list maintains only a `head` pointer (no `tail` pointer). What is the time complexity of inserting a new node at the end of the list?",
+      "options": [
+        "O(n)",
+        "O(1)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "Without a tail pointer, the only way to find the last node is to traverse from head until reaching a node whose next pointer is null, which takes O(n) for an n-node list, before the new node can be attached."
+    },
+    {
+      "item_id": "ai_linked_lists_006",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (insertion)",
+      "source_excerpt": "General concept area: inserting a new node at the tail of a singly linked list that maintains both head and tail pointers -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "If a singly linked list maintains both a `head` and a `tail` pointer, what is the time complexity of inserting a new node at the end?",
+      "options": [
+        "O(1)",
+        "O(n)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "With a maintained tail pointer, the last node is already known, so the new node can be attached and the tail pointer updated in constant time, O(1) -- no traversal is needed, unlike a head-only implementation."
+    },
+    {
+      "item_id": "ai_linked_lists_007",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (deletion)",
+      "source_excerpt": "General concept area: deleting a node given only a pointer to that node (not to its predecessor) in a singly linked list -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "You are given a pointer directly to a node in the middle of a singly linked list (not the head, and not a pointer to its predecessor). Using the classic trick of copying the next node's data into this node and then bypassing/deleting the next node, which statement is correct?",
+      "options": [
+        "The node can be deleted in O(1) time, but this trick fails if the given node is the last node in the list",
+        "The node can always be deleted in O(1) time, including when it is the last node",
+        "This trick only works on a doubly linked list, not a singly linked one",
+        "The trick still requires O(n) time because the whole list must be traversed first"
+      ],
+      "answer_index": 0,
+      "explanation": "Copying the next node's value into the given node and then relinking around the (now-duplicate) next node removes the given node's identity in O(1), without needing the predecessor -- but it depends on a next node existing to copy from, so it cannot be used when the given node is the last one in the list, which then genuinely requires an O(n) traversal from the head to find its predecessor."
+    },
+    {
+      "item_id": "ai_linked_lists_008",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (reversal)",
+      "source_excerpt": "General concept area: reversing a singly linked list iteratively using three pointers (previous, current, next) -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A singly linked list of n nodes is reversed iteratively by walking once through the list and re-pointing each node's `next` to the previous node. What are the time and extra-space complexities?",
+      "options": [
+        "O(n) time, O(1) extra space",
+        "O(n) time, O(n) extra space",
+        "O(n^2) time, O(1) extra space",
+        "O(1) time, O(1) extra space"
+      ],
+      "answer_index": 0,
+      "explanation": "The iterative reversal visits each node exactly once, doing O(1) pointer re-linking work per node, for O(n) total time; it only needs a fixed number of pointer variables (previous, current, next), so extra space is O(1) -- unlike a recursive reversal, which uses O(n) call-stack space."
+    },
+    {
+      "item_id": "ai_linked_lists_009",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (cycle detection)",
+      "source_excerpt": "General concept area: detecting a cycle in a singly linked list using Floyd's tortoise-and-hare technique -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Floyd's cycle-detection algorithm uses two pointers, a 'slow' pointer that advances one node at a time and a 'fast' pointer that advances two nodes at a time. What are its time and extra-space complexities for a list of n nodes?",
+      "options": [
+        "O(n) time, O(1) extra space",
+        "O(n) time, O(n) extra space",
+        "O(n^2) time, O(1) extra space",
+        "O(log n) time, O(1) extra space"
+      ],
+      "answer_index": 0,
+      "explanation": "If a cycle exists, the fast pointer laps the slow pointer within a number of steps bounded by the cycle length (at most O(n)), so detection takes O(n) time; it only needs the two pointer variables, so extra space is O(1) -- in contrast to a hash-set-based approach, which detects cycles in O(n) time but needs O(n) extra space to record visited nodes."
+    },
+    {
+      "item_id": "ai_linked_lists_010",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (middle-node finding)",
+      "source_excerpt": "General concept area: finding the middle node of a singly linked list in one pass using slow/fast pointers -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Using a slow pointer (advances one node per step) and a fast pointer (advances two nodes per step) started together at the head, when the fast pointer reaches the end, what does the slow pointer point to, and in how many passes over the list is this achieved?",
+      "options": [
+        "The middle node, in a single pass",
+        "The middle node, but only after two full passes",
+        "The last node, in a single pass",
+        "The first node, since slow never actually moves"
+      ],
+      "answer_index": 0,
+      "explanation": "Because the fast pointer covers ground twice as quickly, it reaches the end after traversing roughly n/2 steps, at which point the slow pointer -- having moved half as far -- sits at the middle node. This is done in a single combined pass, avoiding the two passes (one to count length, one to walk to the midpoint) a naive approach would need."
+    },
+    {
+      "item_id": "ai_linked_lists_011",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (doubly linked lists)",
+      "source_excerpt": "General concept area: how a doubly linked list's extra 'previous' pointer changes deletion complexity -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "In a doubly linked list (each node stores both `next` and `prev` pointers), you are given a pointer directly to the node to delete. What is the time complexity of the deletion?",
+      "options": [
+        "O(1)",
+        "O(n)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "Because the node already knows its predecessor via `prev`, deletion just re-links prev.next and next.prev directly, in O(1) -- no traversal from the head is needed, which is precisely the advantage a doubly linked list has over a singly linked one for this operation."
+    },
+    {
+      "item_id": "ai_linked_lists_012",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (circular linked lists)",
+      "source_excerpt": "General concept area: the structural difference between a linear and a circular singly linked list -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What distinguishes a circular singly linked list from a standard (linear) singly linked list?",
+      "options": [
+        "The last node's `next` pointer points back to the head instead of being null",
+        "Each node stores a pointer to every other node",
+        "It supports O(1) random access like an array",
+        "It cannot be traversed using a `next` pointer at all"
+      ],
+      "answer_index": 0,
+      "explanation": "A circular linked list is structurally identical to a linear one except that the final node's `next` points back to the head rather than to null, which is useful for round-robin style repeated traversal. It still uses ordinary next-pointer traversal and still lacks array-style O(1) random access."
+    },
+    {
+      "item_id": "ai_linked_lists_013",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (merging sorted lists)",
+      "source_excerpt": "General concept area: merging two sorted singly linked lists into one sorted list by re-linking nodes -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Two sorted singly linked lists of lengths m and n are merged into one sorted list by repeatedly comparing the current front nodes of each list and re-linking the smaller one in. What is the time complexity?",
+      "options": [
+        "O(m + n)",
+        "O(m * n)",
+        "O((m + n) log(m + n))",
+        "O(min(m, n))"
+      ],
+      "answer_index": 0,
+      "explanation": "Each node from both lists is visited and re-linked exactly once during the merge, so the total work is proportional to the combined length, O(m + n) -- the same bound as merging two sorted arrays, achieved here purely through pointer re-linking with no extra array allocation."
+    },
+    {
+      "item_id": "ai_linked_lists_014",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (memory overhead)",
+      "source_excerpt": "General concept area: per-element memory overhead of a linked list compared to an array -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Compared to storing n integers in a plain array, why does a singly linked list holding the same n integers use more total memory?",
+      "options": [
+        "Each linked-list node needs extra space for a `next` pointer alongside its data",
+        "Linked lists always store each value twice for redundancy",
+        "Arrays compress integers, while linked lists cannot",
+        "Linked lists must allocate space for n^2 pointers"
+      ],
+      "answer_index": 0,
+      "explanation": "Every linked-list node carries a pointer (or reference) to the next node in addition to its data payload, so the list uses roughly n extra pointer-sized memory units compared to a tightly packed array of the same n values. There is no value duplication or quadratic pointer requirement involved."
+    },
+    {
+      "item_id": "ai_linked_lists_015",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (search on linked structures)",
+      "source_excerpt": "General concept area: why binary search cannot be applied efficiently to a sorted singly linked list -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Even if a singly linked list's values are kept sorted, why can't binary search be applied to it with the usual O(log n) efficiency?",
+      "options": [
+        "Jumping to the 'middle' node still requires an O(n)-in-the-worst-case traversal from the head, since there is no random access",
+        "Sorted linked lists are not allowed to contain duplicate values",
+        "Linked lists cannot represent sorted data at all",
+        "Binary search only works on data structures with fewer than log n elements"
+      ],
+      "answer_index": 0,
+      "explanation": "Binary search's speed depends on jumping directly to a middle index in O(1); a linked list only supports sequential traversal, so finding the 'middle' node of a sublist still costs time proportional to its length, which erases the logarithmic advantage and leaves the overall approach no better than O(n) in the worst case."
+    },
+    {
+      "item_id": "ai_linked_lists_016",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (recursive list operations)",
+      "source_excerpt": "General concept area: comparing a recursive node-counting function to an iterative one -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A function counts the nodes in a singly linked list of n nodes recursively (base case: an empty list returns 0; otherwise, return 1 plus the recursive count of the rest of the list). Compared to the equivalent iterative loop, how do their complexities compare?",
+      "options": [
+        "Both are O(n) time, but the recursive version uses O(n) call-stack space versus the iterative version's O(1) extra space",
+        "The recursive version is O(log n) time due to halving the list each call",
+        "Both use O(1) extra space, since recursion does not use any stack memory",
+        "The iterative version is asymptotically slower because loops cannot match recursion's efficiency"
+      ],
+      "answer_index": 0,
+      "explanation": "Both approaches still visit every node exactly once, so both take O(n) time; however, each recursive call adds a new stack frame that is not popped until the base case returns, so the recursive version needs O(n) stack space, whereas the iterative loop only needs a constant number of variables, O(1). Recursion does not halve the list here -- it strips off one node per call."
+    },
+    {
+      "item_id": "ai_linked_lists_017",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (recursion depth risk)",
+      "source_excerpt": "General concept area: the practical risk of implementing linked-list operations recursively for very large lists -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A programmer implements linked-list length-counting recursively rather than iteratively. What practical risk does this introduce for a list with, say, several million nodes?",
+      "options": [
+        "A stack overflow, because the recursion depth grows linearly with the list length",
+        "No risk at all, since recursive and iterative versions behave identically at runtime",
+        "A silent infinite loop that never terminates",
+        "Reduced correctness, since recursive counting produces a different (wrong) answer"
+      ],
+      "answer_index": 0,
+      "explanation": "Because each recursive call remains on the call stack until the base case is reached, the stack depth grows with the list's length; for a sufficiently long list this can exceed the runtime's stack size limit and crash with a stack overflow, even though the algorithm is logically correct and would terminate given enough stack space. The iterative version has no such limit because it uses O(1) stack space."
+    },
+    {
+      "item_id": "ai_linked_lists_018",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (sorted insertion)",
+      "source_excerpt": "General concept area: inserting a new value into an already-sorted singly linked list while keeping it sorted -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A singly linked list of n nodes is kept sorted at all times. What is the time complexity of inserting one new value while preserving the sorted order?",
+      "options": [
+        "O(n)",
+        "O(1)",
+        "O(log n)",
+        "O(n log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Finding the correct insertion point requires walking from the head until the right position is found (there is no way to binary-search a linked list efficiently, as there is no random access), which takes O(n) in the worst case; the actual pointer re-linking once the spot is found is O(1)."
+    },
+    {
+      "item_id": "ai_linked_lists_019",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "linked_lists",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (duplicate removal)",
+      "source_excerpt": "General concept area: removing duplicate values from an unsorted singly linked list without using any auxiliary data structure -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "To remove duplicates from an unsorted singly linked list of n nodes without using any extra data structure, a common approach has each node scan all nodes after it and unlink any matching value. What are the resulting time and extra-space complexities?",
+      "options": [
+        "O(n^2) time, O(1) extra space",
+        "O(n) time, O(1) extra space",
+        "O(n) time, O(n) extra space",
+        "O(n log n) time, O(1) extra space"
+      ],
+      "answer_index": 0,
+      "explanation": "For each of the n nodes, the inner scan may check up to the remaining n nodes after it, giving O(n^2) total comparisons in the worst case; since it only needs a couple of pointer variables for the two nested traversals, it uses O(1) extra space. Using a hash set of seen values instead would bring this down to O(n) time at the cost of O(n) extra space."
+    },
+    {
+      "item_id": "ai_stacks_queues_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "stacks_queues",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (stack fundamentals)",
+      "source_excerpt": "General concept area: the Last-In-First-Out discipline of a stack -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A stack supports push and pop operations. Which element does a pop operation remove?",
+      "options": [
+        "The most recently pushed element still in the stack",
+        "The least recently pushed element still in the stack",
+        "A uniformly random element from the stack",
+        "The smallest-valued element in the stack"
+      ],
+      "answer_index": 0,
+      "explanation": "A stack is Last-In-First-Out (LIFO): pop always removes whichever element was pushed most recently and is still present. Removing the least-recent element describes a queue's dequeue instead, and random or smallest-value removal describe neither structure."
+    },
+    {
+      "item_id": "ai_stacks_queues_002",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS2, general Data Structures syllabus area (queue fundamentals)",
+      "source_excerpt": "General concept area: the First-In-First-Out discipline of a queue -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A queue supports enqueue and dequeue operations. Which element does a dequeue operation remove?",
+      "options": [
+        "The element that has been waiting in the queue the longest",
+        "The element most recently enqueued",
+        "The element with the largest value",
+        "A random element currently in the queue"
+      ],
+      "answer_index": 0,
+      "explanation": "A queue is First-In-First-Out (FIFO): dequeue always removes the element that was enqueued earliest among those still present. Removing the most recently added element describes a stack's pop instead."
+    },
+    {
+      "item_id": "ai_stacks_queues_003",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (stack applications)",
+      "source_excerpt": "General concept area: using a stack to check balanced parentheses in an expression -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A classic use of a stack is checking whether an expression's brackets are balanced. Which strategy correctly implements this?",
+      "options": [
+        "Push each opening bracket; on each closing bracket, pop and check it matches the corresponding opening type",
+        "Push every character of the expression regardless of type, then check if the stack is a palindrome",
+        "Use a queue instead of a stack, since order of brackets does not matter",
+        "Count opening and closing brackets separately and only compare the totals at the end"
+      ],
+      "answer_index": 0,
+      "explanation": "Balanced-bracket checking relies on the LIFO order matching how brackets must nest: each closing bracket must match the most recently opened, unmatched bracket, which a stack's pop naturally gives you. Just comparing total counts (the last option) would wrongly accept nonsensical orderings like ')(' as balanced."
+    },
+    {
+      "item_id": "ai_stacks_queues_004",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "stacks_queues",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (array-backed stacks)",
+      "source_excerpt": "General concept area: the fixed-capacity limitation of an array-backed stack implementation -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A stack is implemented using a fixed-size array of capacity n. What happens when push is called while the stack already holds n elements?",
+      "options": [
+        "A stack overflow condition occurs and the push must be rejected or the array resized",
+        "The oldest element is automatically discarded to make room",
+        "The push silently succeeds by wrapping around to overwrite index 0",
+        "The stack automatically converts itself into a linked-list-backed stack"
+      ],
+      "answer_index": 0,
+      "explanation": "An array-backed stack has a hard capacity limit; once full, there is no more room, so a push attempt is a stack overflow that must be handled explicitly (rejected, or the backing array resized, similar to a dynamic array). Silently discarding the oldest element or wrapping around would violate the stack's LIFO contract."
+    },
+    {
+      "item_id": "ai_stacks_queues_005",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2, general Data Structures syllabus area (postfix evaluation)",
+      "source_excerpt": "General concept area: evaluating a postfix (Reverse Polish Notation) expression using a stack -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Using the standard stack-based algorithm (push operands; on an operator, pop the required number of operands, apply it, and push the result), what is the result of evaluating the postfix expression \"3 4 + 2 *\"?",
+      "options": [
+        "14",
+        "10",
+        "11",
+        "20"
+      ],
+      "answer_index": 0,
+      "explanation": "Push 3, push 4; on '+', pop 4 and 3 and push 3+4=7; push 2; on '*', pop 2 and 7 and push 7*2=14. The final (and only) value on the stack, 14, is the result. Misreading the operator order (e.g. computing 3+(4*2)=11) or the arithmetic incorrectly produces the other distractors."
+    },
+    {
+      "item_id": "ai_stacks_queues_006",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (infix-to-postfix conversion)",
+      "source_excerpt": "General concept area: converting an infix expression to postfix using an operator stack and precedence rules -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Using the standard shunting-yard-style stack algorithm (pop and output operators of greater-or-equal precedence before pushing the current operator; output operands immediately), what is the postfix form of the infix expression \"A + B * C\"?",
+      "options": [
+        "A B C * +",
+        "A B + C *",
+        "A B * C +",
+        "+ A * B C"
+      ],
+      "answer_index": 0,
+      "explanation": "Because '*' has higher precedence than '+', 'B * C' must be fully converted (\"B C *\") before the '+' is applied, giving \"A B C * +\". \"A B + C *\" would result if precedence were ignored and operators applied strictly left to right; the other options do not correspond to any correct application of the algorithm."
+    },
+    {
+      "item_id": "ai_stacks_queues_007",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "stacks_queues",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (queue via two stacks)",
+      "source_excerpt": "General concept area: implementing a FIFO queue using two LIFO stacks (an 'in' stack and an 'out' stack) -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A queue is implemented with two stacks: enqueue always pushes onto stack `in`; dequeue pops from stack `out`, refilling `out` by popping everything from `in` and pushing it onto `out` only when `out` is empty. What is the amortized time complexity per operation?",
+      "options": [
+        "O(1) amortized",
+        "O(n) amortized, where n is the number of elements ever enqueued",
+        "O(log n) amortized",
+        "O(n^2) amortized"
+      ],
+      "answer_index": 0,
+      "explanation": "Although a single dequeue can cost O(n) when it triggers a full transfer from `in` to `out`, each element is moved from `in` to `out` at most once over its lifetime, so the total transfer work across any sequence of operations is bounded by the number of enqueues -- giving O(1) amortized cost per operation overall."
+    },
+    {
+      "item_id": "ai_stacks_queues_008",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2, general Data Structures syllabus area (stack via two queues)",
+      "source_excerpt": "General concept area: implementing a LIFO stack using two FIFO queues -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A stack is implemented using two queues, where push enqueues the new element into an initially-empty helper queue and then re-enqueues all previously stored elements behind it (so the newest element ends up at the front), leaving pop as a simple O(1) dequeue from the main queue. What is the time complexity of push?",
+      "options": [
+        "O(n), where n is the current number of elements",
+        "O(1)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "To make the newest element dequeue first (mimicking LIFO order), push must rotate all n existing elements behind it every time, which costs O(n). This design trades an O(n) push for an O(1) pop; the mirror-image design (O(1) push, O(n) pop by rotating during pop instead) is equally valid, but at least one of the two operations must be O(n) with only two queues available."
+    },
+    {
+      "item_id": "ai_stacks_queues_009",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (circular queues)",
+      "source_excerpt": "General concept area: implementing a queue as a circular buffer over a fixed-size array to avoid wasting slots freed by earlier dequeues -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A queue is implemented over a fixed-size array using `front` and `rear` indices that wrap around (modulo the array size) as elements are enqueued and dequeued. Why is a circular implementation preferred over a naive one where `front` and `rear` only ever increase?",
+      "options": [
+        "It reuses array slots freed by earlier dequeues instead of leaving them permanently unusable",
+        "It changes the queue's asymptotic time complexity from O(1) to O(log n) for a good reason",
+        "It removes the fixed capacity limit entirely, letting the queue grow forever",
+        "It changes the queue's discipline from FIFO to LIFO"
+      ],
+      "answer_index": 0,
+      "explanation": "In the naive scheme, once `front` and `rear` only increase, the slots before `front` are wasted forever even though those elements have already been dequeued; wrapping the indices around the array's bounds lets the queue reuse that freed space, keeping enqueue/dequeue O(1) without needing an ever-growing array. It does not change complexity class, remove the fixed capacity, or alter FIFO ordering."
+    },
+    {
+      "item_id": "ai_stacks_queues_010",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "stacks_queues",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (queue applications)",
+      "source_excerpt": "General concept area: why breadth-first traversal algorithms use a queue rather than a stack -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Breadth-first search (BFS) visits nodes level by level, always exploring the earliest-discovered unvisited node next. Which data structure does BFS use to manage the frontier of discovered-but-unvisited nodes, and why?",
+      "options": [
+        "A queue, because FIFO order ensures nodes are explored in the order they were discovered, giving level-by-level traversal",
+        "A stack, because LIFO order naturally produces level-by-level traversal",
+        "A priority queue ordered by node value, since BFS always visits the smallest value next",
+        "No auxiliary structure is needed; BFS relies purely on recursion"
+      ],
+      "answer_index": 0,
+      "explanation": "BFS needs to process nodes in the exact order they were discovered so that it finishes an entire level before moving to the next; a queue's FIFO discipline delivers exactly that. Using a stack (LIFO) instead produces depth-first order, not breadth-first, which is why DFS -- not BFS -- pairs naturally with a stack (or the recursion call stack)."
+    },
+    {
+      "item_id": "ai_stacks_queues_011",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2, general Data Structures syllabus area (stack applications)",
+      "source_excerpt": "General concept area: how the call stack underlying recursive function calls relates to depth-first traversal -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A recursive depth-first search (DFS) implicitly relies on the language runtime's call stack to remember which nodes to backtrack to. If DFS is instead written iteratively with an explicit data structure standing in for the call stack, which structure should be used?",
+      "options": [
+        "An explicit stack, since it must replicate the LIFO backtracking order of the call stack",
+        "A FIFO queue, since traversal order does not matter for DFS",
+        "A min-priority queue ordered by node depth",
+        "A doubly linked list traversed from both ends simultaneously"
+      ],
+      "answer_index": 0,
+      "explanation": "The call stack that makes recursive DFS work is itself a LIFO structure: the most recently entered (and not yet finished) call is the next one resumed on backtracking. An iterative DFS must therefore use an explicit stack to reproduce that same last-in-first-out backtracking order; a queue would instead produce breadth-first order."
+    },
+    {
+      "item_id": "ai_stacks_queues_012",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (deques)",
+      "source_excerpt": "General concept area: the double-ended queue (deque) and how it differs from a plain queue -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "How does a double-ended queue (deque) differ from a standard queue?",
+      "options": [
+        "It supports O(1) insertion and removal at both the front and the rear, not just one end each",
+        "It only allows insertion at the front and removal at the rear, exactly like a standard queue",
+        "It sorts its elements automatically on every insertion",
+        "It can only ever hold a single element at a time"
+      ],
+      "answer_index": 0,
+      "explanation": "A deque generalizes both the stack and the queue by allowing efficient (O(1)) insertion and removal at both ends, so it can be used as either a LIFO stack or a FIFO queue (or neither) depending on which ends are used. A standard queue restricts insertion to one end and removal to the other only."
+    },
+    {
+      "item_id": "ai_stacks_queues_013",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "stacks_queues",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (priority queues)",
+      "source_excerpt": "General concept area: how a priority queue's dequeue order differs from a plain FIFO queue's -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "How does a priority queue's removal order differ from a plain FIFO queue's?",
+      "options": [
+        "It always removes the element with the highest (or lowest) priority next, regardless of arrival order",
+        "It always removes elements in the exact order they arrived, identically to a plain queue",
+        "It removes elements in a uniformly random order",
+        "It only supports insertion, never removal"
+      ],
+      "answer_index": 0,
+      "explanation": "A priority queue is ordered by an assigned priority rather than by arrival time: whichever element currently has the highest (or, depending on convention, lowest) priority is served next, even if other elements arrived earlier. A plain FIFO queue ignores priority entirely and only respects arrival order."
+    },
+    {
+      "item_id": "ai_stacks_queues_014",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2, general Data Structures syllabus area (monotonic stack technique)",
+      "source_excerpt": "General concept area: solving 'next greater element' style problems in linear time using a monotonic stack -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "The 'next greater element' problem (for each element, find the first element to its right that is strictly larger) can be solved with a monotonic stack: scan left to right, popping stack elements smaller than the current element and recording the current element as their answer, then pushing the current element. Over an array of n elements, what is the overall time complexity?",
+      "options": [
+        "O(n)",
+        "O(n^2)",
+        "O(n log n)",
+        "O(2^n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Although the algorithm may pop several elements at once for a given index, every element is pushed onto the stack exactly once and popped at most once across the entire run, so the total number of push/pop operations is bounded by 2n -- giving O(n) overall, versus the O(n^2) cost of the naive approach that checks every pair."
+    },
+    {
+      "item_id": "ai_stacks_queues_015",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (circular queue full/empty ambiguity)",
+      "source_excerpt": "General concept area: the classic ambiguity between 'full' and 'empty' states in a circular array-backed queue when only `front` and `rear` indices are tracked -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "In a circular array-backed queue tracked only by `front` and `rear` indices, both the empty state and the full state can produce `front == rear`. Which of the following is a standard fix for this ambiguity?",
+      "options": [
+        "Maintain a separate element count (or size) variable, or deliberately leave one array slot always unused",
+        "Always keep `front` fixed at index 0 so the ambiguity cannot occur",
+        "Switch the queue's discipline from FIFO to LIFO to sidestep the issue",
+        "Disallow dequeue operations entirely once the queue has been filled once"
+      ],
+      "answer_index": 0,
+      "explanation": "Because both an empty and a completely full circular queue can leave `front` equal to `rear`, implementations resolve the ambiguity either by tracking a count of stored elements directly, or by capping usable capacity at (array size - 1) so that a genuinely full queue never lets `rear` catch up to `front`. Fixing `front` at 0 or changing discipline would break the circular queue's normal operation."
+    },
+    {
+      "item_id": "ai_stacks_queues_016",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "stacks_queues",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (recursion and the call stack)",
+      "source_excerpt": "General concept area: how the runtime's call stack relates to recursion depth and stack overflow -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Every function call, including a recursive call, pushes a new frame onto the program's call stack, which is popped when that call returns. What practical consequence does this have for a recursive function with very deep recursion (e.g. processing a million nested calls)?",
+      "options": [
+        "It risks a stack overflow, since the call stack has a limited, finite size",
+        "It has no consequence at all, since the call stack can grow without any bound",
+        "It automatically converts the recursion into iteration to save memory",
+        "It causes the function's return values to be computed in the wrong order"
+      ],
+      "answer_index": 0,
+      "explanation": "Because each nested call keeps its stack frame alive until it returns, sufficiently deep recursion accumulates frames faster than the runtime's fixed-size call stack can hold, leading to a stack overflow. Iterative loops do not have this issue because they do not add a new frame per iteration."
+    },
+    {
+      "item_id": "ai_stacks_queues_017",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2, general Data Structures syllabus area (min-stack design)",
+      "source_excerpt": "General concept area: augmenting a stack with an auxiliary stack so that the current minimum element can be retrieved in O(1) -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A 'min-stack' supports push, pop, and getMin, all in O(1). It is built by maintaining an auxiliary stack alongside the main one, where each push also pushes the smaller of (new value, current auxiliary-stack top) onto the auxiliary stack, and each pop also pops the auxiliary stack. Why does this design keep getMin O(1)?",
+      "options": [
+        "The auxiliary stack's top always holds the minimum of exactly the elements currently in the main stack",
+        "The auxiliary stack is kept fully sorted at all times, so its top is trivially the minimum",
+        "getMin instead scans the entire main stack once per call, which happens to be fast in practice",
+        "The main stack is stored in sorted order, so its own top is always the minimum"
+      ],
+      "answer_index": 0,
+      "explanation": "Because every push records the running minimum 'as of that push' on the auxiliary stack, and every pop removes the corresponding auxiliary entry in lockstep, the auxiliary stack's top always reflects the minimum over exactly the elements still present in the main stack -- giving O(1) getMin without ever sorting or scanning either stack."
+    },
+    {
+      "item_id": "ai_stacks_queues_018",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "stacks_queues",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2024 CS2, general Data Structures syllabus area (stack operations)",
+      "source_excerpt": "General concept area: the time complexity of checking whether a stack is currently empty -- part of GATE CS2's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "In a typical array-backed or linked-list-backed stack implementation, what is the time complexity of the `isEmpty` check?",
+      "options": [
+        "O(1)",
+        "O(n)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "`isEmpty` only needs to inspect a single piece of state -- an array-backed stack's size counter, or a linked-list-backed stack's head pointer being null -- so it is a constant-time check, O(1), independent of how many elements the stack actually holds."
+    },
+    {
+      "item_id": "ai_binary_search_001",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2025 DA, general Algorithms syllabus area (binary search precondition)",
+      "source_excerpt": "General concept area: the precondition that the input must be sorted for binary search to work correctly -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "What precondition must hold on an array for standard binary search to correctly determine whether a target value is present?",
+      "options": [
+        "The array must already be sorted",
+        "The array must contain only distinct values",
+        "The array must have an even number of elements",
+        "The array must be stored in a linked list"
+      ],
+      "answer_index": 0,
+      "explanation": "Binary search relies on comparing the target to a middle element and eliminating half the remaining range based on that comparison; this elimination logic is only valid if the array is sorted. Distinctness of values, an even element count, and the underlying storage structure are unrelated to correctness (though a linked list would remove the efficiency benefit -- a separate issue from correctness)."
+    },
+    {
+      "item_id": "ai_binary_search_002",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 DA, general Algorithms syllabus area (binary search mechanics)",
+      "source_excerpt": "General concept area: the basic divide-and-check mechanics of binary search -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "At each step of binary search over a sorted array, the target is compared to the middle element of the current search range. What happens if the target is greater than the middle element?",
+      "options": [
+        "The search continues only in the right half of the current range",
+        "The search continues only in the left half of the current range",
+        "The search terminates immediately, reporting the target as absent",
+        "The entire array is re-scanned linearly from the start"
+      ],
+      "answer_index": 0,
+      "explanation": "Because the array is sorted, if the target is greater than the middle element, it cannot lie anywhere in the left half (all of which is less than or equal to the middle), so the search safely discards the left half and continues only in the right half."
+    },
+    {
+      "item_id": "ai_binary_search_003",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2025 DA, general Algorithms syllabus area (time complexity)",
+      "source_excerpt": "General concept area: the asymptotic time complexity of binary search on a sorted array -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "What is the worst-case time complexity of binary search on a sorted array of n elements?",
+      "options": [
+        "O(log n)",
+        "O(n)",
+        "O(n log n)",
+        "O(1)"
+      ],
+      "answer_index": 0,
+      "explanation": "Each comparison discards half of the remaining search range, so after k comparisons at most n/2^k elements remain; the search ends once this shrinks to a single element, after about log2(n) comparisons, giving O(log n) overall -- far better than a linear scan's O(n)."
+    },
+    {
+      "item_id": "ai_binary_search_004",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 DA, general Algorithms syllabus area (space complexity)",
+      "source_excerpt": "General concept area: comparing the extra-space usage of iterative versus recursive binary search implementations -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "How does the extra-space complexity of a recursive implementation of binary search compare to an iterative implementation, for a sorted array of n elements?",
+      "options": [
+        "Recursive uses O(log n) extra space (call stack), iterative uses O(1)",
+        "Both use O(1) extra space",
+        "Recursive uses O(1) extra space, iterative uses O(log n)",
+        "Both use O(n) extra space"
+      ],
+      "answer_index": 0,
+      "explanation": "Recursive binary search adds a new call-stack frame at each halving step, and there are O(log n) such steps in the worst case, so it uses O(log n) extra space; the iterative version just updates `low`/`high` variables in a loop, needing only O(1) extra space regardless of n."
+    },
+    {
+      "item_id": "ai_binary_search_005",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2025 DA, general Algorithms syllabus area (worst-case comparison count)",
+      "source_excerpt": "General concept area: the formula floor(log2(n)) + 1 for the worst-case number of comparisons binary search performs on a sorted array of n elements -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Using the standard result that binary search needs at most floor(log2(n)) + 1 comparisons in the worst case, what is this worst-case comparison count for a sorted array of n = 17 elements?",
+      "options": [
+        "5",
+        "4",
+        "17",
+        "9"
+      ],
+      "answer_index": 0,
+      "explanation": "floor(log2(17)) = 4 (since 2^4 = 16 <= 17 < 32 = 2^5), so the worst-case comparison count is 4 + 1 = 5. 4 omits the final comparison, 17 confuses the array size with the comparison count, and 9 does not correspond to this formula for n = 17."
+    },
+    {
+      "item_id": "ai_binary_search_006",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 DA, general Algorithms syllabus area (worst-case comparison count)",
+      "source_excerpt": "General concept area: applying the floor(log2(n)) + 1 worst-case comparison-count formula to a different array size -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Applying the standard worst-case comparison-count formula floor(log2(n)) + 1 for binary search, what is the worst-case number of comparisons for a sorted array of n = 50 elements?",
+      "options": [
+        "6",
+        "5",
+        "50",
+        "25"
+      ],
+      "answer_index": 0,
+      "explanation": "floor(log2(50)) = 5 (since 2^5 = 32 <= 50 < 64 = 2^6), so the worst-case comparison count is 5 + 1 = 6. 5 omits the final comparison, and 50 and 25 do not correspond to this logarithmic formula."
+    },
+    {
+      "item_id": "ai_binary_search_007",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2025 DA, general Algorithms syllabus area (loop invariant)",
+      "source_excerpt": "General concept area: the loop invariant that binary search maintains between `low` and `high` -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Binary search maintains a loop invariant across its iterations to guarantee correctness. Which statement best describes that invariant?",
+      "options": [
+        "If the target is present in the array, it must lie within the current [low, high] range",
+        "The element at index `low` is always equal to the target",
+        "The subarray between `low` and `high` is always exactly half the size of the original array",
+        "The value at index `high` is always the array's maximum element"
+      ],
+      "answer_index": 0,
+      "explanation": "Binary search only ever shrinks the search range by discarding a half that has been proven (via the sortedness comparison) not to contain the target, so as long as the target was in the array to begin with, it remains within [low, high] at every step -- this invariant is what justifies concluding 'absent' once low exceeds high."
+    },
+    {
+      "item_id": "ai_binary_search_008",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 DA, general Algorithms syllabus area (midpoint computation)",
+      "source_excerpt": "General concept area: computing the midpoint index in binary search in a way that avoids integer overflow for very large index ranges -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "When `low` and `high` are both very large integers close to a fixed-width integer type's maximum value, which formula for the midpoint avoids potential overflow that a naive formula would risk?",
+      "options": [
+        "mid = low + (high - low) / 2",
+        "mid = (low + high) / 2",
+        "mid = (low + high) * 2",
+        "mid = low + high / 2"
+      ],
+      "answer_index": 0,
+      "explanation": "Computing (low + high) first can overflow if both are close to the maximum representable integer, even though the true midpoint is in range; low + (high - low) / 2 reaches the same midpoint value without ever summing the two large endpoints directly, avoiding the overflow. The other two options either double-count or apply operator precedence incorrectly (low + high/2 adds only half of high to low, which is a different, wrong value)."
+    },
+    {
+      "item_id": "ai_binary_search_009",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2025 DA, general Algorithms syllabus area (rotated sorted array search)",
+      "source_excerpt": "General concept area: adapting binary search to a rotated sorted array (a sorted array that has been circularly shifted) -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A sorted array has been rotated at an unknown pivot (e.g. [4,5,6,7,0,1,2]). Which modification lets binary search still find a target in O(log n)?",
+      "options": [
+        "At each step, determine which half of the current range is properly sorted, then check whether the target lies within that half's value range to decide where to recurse",
+        "Sort the array again before searching, then run standard binary search",
+        "Switch to a linear scan, since rotation makes binary search inapplicable",
+        "Binary search cannot be adapted; only hashing can locate the target in a rotated array"
+      ],
+      "answer_index": 0,
+      "explanation": "Even after rotation, at least one half of any subrange [low, high] is guaranteed to be normally sorted; checking which half that is and whether the target's value falls within its range lets the search safely discard the other half each time, preserving O(log n) time without needing to re-sort (which would cost at least O(n log n)) or fall back to a linear scan."
+    },
+    {
+      "item_id": "ai_binary_search_010",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 DA, general Algorithms syllabus area (first occurrence with duplicates)",
+      "source_excerpt": "General concept area: finding the first (leftmost) occurrence of a target value in a sorted array that contains duplicates -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A sorted array may contain duplicate copies of the target value. Which modification to binary search finds the first (leftmost) occurrence while keeping O(log n) time?",
+      "options": [
+        "On finding a match, record its index but keep searching the left half for an earlier occurrence",
+        "On finding a match, stop immediately and return that index",
+        "Switch to a linear scan starting from index 0 once any match is found",
+        "Run standard binary search once for each possible duplicate, giving O(n log n) total"
+      ],
+      "answer_index": 0,
+      "explanation": "Stopping at the first match found does not guarantee it is the leftmost one, since binary search's matched index depends on the exact sequence of comparisons; instead, after recording a match, the search must continue narrowing into the left half (as if still looking for something smaller) to find any earlier occurrence, while still halving the range each step -- preserving O(log n)."
+    },
+    {
+      "item_id": "ai_binary_search_011",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2025 DA, general Algorithms syllabus area (last occurrence with duplicates)",
+      "source_excerpt": "General concept area: finding the last (rightmost) occurrence of a target value in a sorted array that contains duplicates -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Symmetric to finding the first occurrence, which modification to binary search finds the last (rightmost) occurrence of a duplicated target while keeping O(log n) time?",
+      "options": [
+        "On finding a match, record its index but keep searching the right half for a later occurrence",
+        "On finding a match, stop immediately and return that index",
+        "Reverse the array first, then run standard binary search for the first occurrence",
+        "It is impossible to find the last occurrence in better than O(n) time"
+      ],
+      "answer_index": 0,
+      "explanation": "Just as with the first-occurrence variant, continuing to search -- here, into the right half -- after each match, while still halving the range, finds the rightmost occurrence without sacrificing the O(log n) bound. Reversing the array would cost O(n) just for the reversal step, and stopping at the first match found gives no guarantee it is the last one."
+    },
+    {
+      "item_id": "ai_binary_search_012",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 DA, general Algorithms syllabus area (binary search on linked structures)",
+      "source_excerpt": "General concept area: why binary search cannot achieve its usual efficiency on a sorted singly linked list -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Even if a singly linked list's values are kept sorted, why does applying binary search to it fail to achieve the usual O(log n) time?",
+      "options": [
+        "Reaching the 'middle' node still requires sequential traversal from the head, costing time proportional to the list's length rather than O(1)",
+        "Linked lists cannot represent sorted data",
+        "Binary search requires the target to be an integer, but linked lists can only store other data types",
+        "Sorted linked lists always contain a cycle, making termination impossible"
+      ],
+      "answer_index": 0,
+      "explanation": "Binary search's efficiency depends on jumping to an arbitrary index in O(1); a linked list only supports sequential traversal, so locating the 'middle' element of any sub-range still costs time proportional to how far it is from a known reference point, erasing the logarithmic benefit even though the values themselves are sorted."
+    },
+    {
+      "item_id": "ai_binary_search_013",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2025 DA, general Algorithms syllabus area (search space shrinkage)",
+      "source_excerpt": "General concept area: how the size of binary search's remaining search space shrinks with each comparison -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Binary search starts with a sorted array of n candidate elements. After k comparisons (each discarding roughly half the remaining range), approximately how many candidate elements remain?",
+      "options": [
+        "n / 2^k",
+        "n - k",
+        "n / k",
+        "n * 2^k"
+      ],
+      "answer_index": 0,
+      "explanation": "Each comparison halves the remaining candidate range, so after k comparisons the remaining size is about n divided by 2 raised to the k-th power, n / 2^k. This geometric (not linear) shrinkage is exactly why only about log2(n) comparisons are needed to reduce the range to a single element."
+    },
+    {
+      "item_id": "ai_binary_search_014",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 DA, general Algorithms syllabus area (binary search over a value range)",
+      "source_excerpt": "General concept area: 'binary search on the answer' -- applying binary search over a range of candidate numeric answers rather than over array indices, e.g. to approximate a square root -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "To approximate the square root of a positive number x to within a small tolerance epsilon, binary search can be run not over array indices but directly over a range of candidate real-number answers, narrowing the range based on whether the midpoint's square is too small or too large. What governs how many iterations this takes?",
+      "options": [
+        "The number of iterations depends on the width of the initial search range and the required precision epsilon, not on any array size",
+        "It always takes exactly log2(x) iterations regardless of the required precision",
+        "It cannot work unless x is first converted into a sorted array of candidate answers",
+        "It is impossible to apply binary search when there is no explicit array to search over"
+      ],
+      "answer_index": 0,
+      "explanation": "Binary search only needs a monotonic predicate ('is this candidate too small or too large') to halve a search range at each step; it can operate over a continuous or fine-grained numeric range just as well as over array indices, and the number of iterations needed depends on how many halvings are required to shrink the initial range down to within epsilon -- there is no array involved at all."
+    },
+    {
+      "item_id": "ai_binary_search_015",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "GATE 2025 DA, general Algorithms syllabus area (ternary vs binary search)",
+      "source_excerpt": "General concept area: comparing ternary search (used for finding an extremum of a unimodal function) to binary search in terms of asymptotic complexity and comparison count -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Ternary search locates the maximum of a unimodal function by splitting the search interval into three parts (using two comparisons per step, each shrinking the interval to 2/3 of its size). How does its asymptotic time complexity compare to binary search's, when both are applicable?",
+      "options": [
+        "Both are O(log n), but ternary search uses more comparisons per unit of interval reduction than binary search",
+        "Ternary search is asymptotically faster, at O(log3(n)) versus binary search's O(log2(n))",
+        "Ternary search is asymptotically slower, at O(sqrt(n))",
+        "They are not comparable, because ternary search cannot be expressed using Big-O notation"
+      ],
+      "answer_index": 0,
+      "explanation": "Although ternary search shrinks the interval to 2/3 each round versus binary search's 1/2, it needs 2 comparisons per round instead of 1; working out the total comparisons for a given precision shows both remain O(log n) asymptotically, with ternary search's extra per-round comparison making it no better (and often practically worse) than binary search-based approaches for this kind of problem."
+    },
+    {
+      "item_id": "ai_binary_search_016",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 DA, general Algorithms syllabus area (precondition failure)",
+      "source_excerpt": "General concept area: the consequence of running binary search on data that is not actually sorted -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "What happens if standard binary search is run on an array that is not actually sorted?",
+      "options": [
+        "It may give an incorrect result (falsely report the target absent, or find the wrong element), since its halving logic assumes sortedness",
+        "It automatically detects the array is unsorted and falls back to a linear scan",
+        "It still always works correctly, just more slowly, at O(n) instead of O(log n)",
+        "It throws a compile-time error before the program can run"
+      ],
+      "answer_index": 0,
+      "explanation": "Binary search's decision to discard a half of the range relies entirely on the array being sorted; on unsorted data that assumption is violated, so the algorithm can silently produce a wrong answer (missing a target that is actually present, or vice versa) rather than merely running slower or failing safely."
+    },
+    {
+      "item_id": "ai_binary_search_017",
+      "doc_id": "gate2025_da",
+      "competency_id": "binary_search",
+      "difficulty": "easy",
+      "bloom_level": "analyze",
+      "locator": "GATE 2025 DA, general Algorithms syllabus area (best-case complexity)",
+      "source_excerpt": "General concept area: the best-case time complexity of binary search, as distinct from its worst case -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "What is the best-case time complexity of binary search on a sorted array, considering the case where the target happens to be exactly the first middle element examined?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "It has no best case; every run costs the same"
+      ],
+      "answer_index": 0,
+      "explanation": "If the very first middle element checked equals the target, binary search terminates immediately after a single comparison, independent of the array's size -- this best case is O(1). The O(log n) figure describes the worst case (target near either end, or absent), not the best case."
+    },
+    {
+      "item_id": "ai_binary_search_018",
+      "doc_id": "gate2026_da",
+      "competency_id": "binary_search",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 DA, general Algorithms syllabus area (unbounded/exponential search)",
+      "source_excerpt": "General concept area: exponential (galloping) search, used to locate a target's approximate range before binary searching, when the array's size is unknown or effectively unbounded -- part of GATE DA's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "For a sorted array whose exact size is unknown (or unbounded, such as a sorted data stream), exponential search first probes indices 1, 2, 4, 8, 16, ... (doubling each time) until it finds a range known to contain the target, then binary searches within that range. If the target is at position p, what is the overall time complexity?",
+      "options": [
+        "O(log p)",
+        "O(p)",
+        "O(log n), where n is the array's total (possibly unknown) size",
+        "O(p^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "The doubling phase takes O(log p) probes to bracket a range containing position p, and the subsequent binary search within that O(p)-sized range also takes O(log p); combining both phases (which are of the same order) gives an overall O(log p), which is useful precisely because it does not require knowing the total array size n upfront."
+    },
+    {
+      "item_id": "ai_recursion_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "recursion",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1, general Algorithms syllabus area (recursion fundamentals)",
+      "source_excerpt": "General concept area: why every correct recursive function needs a base case -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Why must every correct recursive function include at least one base case?",
+      "options": [
+        "Without a base case, the recursive calls never stop, causing infinite recursion",
+        "A base case is only needed to make the code compile, not to make it correct",
+        "Base cases are optional and only affect performance, not correctness",
+        "A base case is required only when the function returns a value"
+      ],
+      "answer_index": 0,
+      "explanation": "The base case is what allows the chain of recursive calls to stop and start returning values back up; without one, each call would keep invoking itself indefinitely, leading to infinite recursion (and eventually a stack overflow) rather than merely a performance issue or a compilation concern."
+    },
+    {
+      "item_id": "ai_recursion_002",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "recursion",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1, general Algorithms syllabus area (recursive structure)",
+      "source_excerpt": "General concept area: the structure of the classic recursive factorial function -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A recursive factorial function is defined as: fact(n) = 1 if n <= 1, else n * fact(n-1). What is fact(5)?",
+      "options": [
+        "120",
+        "24",
+        "60",
+        "15"
+      ],
+      "answer_index": 0,
+      "explanation": "fact(5) = 5*fact(4) = 5*4*fact(3) = 5*4*3*fact(2) = 5*4*3*2*fact(1) = 5*4*3*2*1 = 120. 24 is fact(4), 60 and 15 do not correspond to unwinding this recursive definition correctly."
+    },
+    {
+      "item_id": "ai_recursion_003",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "recursion",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2, general Algorithms syllabus area (call stack)",
+      "source_excerpt": "General concept area: how the call stack tracks pending recursive calls -- part of GATE CS2's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Each time a recursive function calls itself, what happens on the program's call stack?",
+      "options": [
+        "A new stack frame is pushed, holding that call's local variables and where to resume afterward",
+        "The existing stack frame is simply reused for the new call, with no growth",
+        "The call stack shrinks by one frame",
+        "Recursive calls do not use the call stack at all, only iterative loops do"
+      ],
+      "answer_index": 0,
+      "explanation": "Every function call, recursive or not, pushes a new stack frame recording its own local variables and return address; this is why recursion depth directly translates into call-stack usage, and why very deep recursion risks a stack overflow."
+    },
+    {
+      "item_id": "ai_recursion_004",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "recursion",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Algorithms syllabus area (recursion vs iteration)",
+      "source_excerpt": "General concept area: comparing the extra-space usage of a recursive solution to an equivalent iterative one -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A problem is solved both recursively (with recursion depth proportional to n) and iteratively (with a simple loop). How do their extra-space complexities typically compare?",
+      "options": [
+        "The recursive version uses O(n) call-stack space, while the iterative version can use O(1) extra space",
+        "Both always use exactly the same amount of extra space",
+        "The iterative version always uses more space than the recursive version",
+        "Recursion never uses any extra memory beyond the input"
+      ],
+      "answer_index": 0,
+      "explanation": "Each of the n recursive calls remains on the call stack until it returns, so recursion depth n translates into O(n) stack space; an equivalent loop, by contrast, can often update a fixed set of variables in place, needing only O(1) extra space -- this is a common trade-off between recursive elegance and space efficiency."
+    },
+    {
+      "item_id": "ai_recursion_005",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "recursion",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1, general Algorithms syllabus area (tail recursion)",
+      "source_excerpt": "General concept area: tail recursion and tail-call optimization -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A recursive call is called 'tail recursive' when it is the very last operation performed before the function returns (with no pending work afterward). Why does this property matter for optimization?",
+      "options": [
+        "A compiler or runtime supporting tail-call optimization can reuse the current stack frame instead of pushing a new one, effectively turning the recursion into a loop",
+        "Tail recursion always runs asymptotically faster in terms of time complexity",
+        "Tail-recursive functions cannot have a base case",
+        "Tail recursion eliminates the need for the function to return a value"
+      ],
+      "answer_index": 0,
+      "explanation": "Because nothing remains to be done in the current frame after a tail call returns, an optimizing compiler/runtime can discard the current frame and reuse its space for the next call, avoiding call-stack growth altogether -- effectively compiling the recursion into iteration. This is a space optimization, not a change in time complexity, and it does not remove the need for a base case or a return value."
+    },
+    {
+      "item_id": "ai_recursion_006",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "recursion",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2, general Algorithms syllabus area (naive recursive Fibonacci)",
+      "source_excerpt": "General concept area: the exponential blow-up of naive recursive Fibonacci, following the recurrence T(n) = T(n-1) + T(n-2) + O(1) -- part of GATE CS2's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "The naive recursive Fibonacci function fib(n) = fib(n-1) + fib(n-2) (with base cases fib(0)=0, fib(1)=1) satisfies the recurrence T(n) = T(n-1) + T(n-2) + O(1). What is its time complexity?",
+      "options": [
+        "O(2^n) (exponential)",
+        "O(n) (linear)",
+        "O(n log n)",
+        "O(log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Because each call spawns two further calls with only a slight decrease in n, the same subproblems get recomputed enormous numbers of times, and the recurrence T(n) = T(n-1) + T(n-2) + O(1) grows exponentially, O(2^n) -- exactly the kind of blow-up that memoization or an iterative/dynamic-programming rewrite (achieving O(n)) is meant to fix."
+    },
+    {
+      "item_id": "ai_recursion_007",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "recursion",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS1, general Algorithms syllabus area (divide-and-conquer recurrence)",
+      "source_excerpt": "General concept area: applying the master theorem to the merge-sort-style recurrence T(n) = 2T(n/2) + O(n) -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A recursive algorithm splits its input of size n into two halves, recurses on each, and does O(n) additional work to combine the results, giving the recurrence T(n) = 2T(n/2) + O(n) (as in merge sort). What is its time complexity?",
+      "options": [
+        "Theta(n log n)",
+        "Theta(n)",
+        "Theta(n^2)",
+        "Theta(log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "By the master theorem, with a=2, b=2, and f(n)=Theta(n) exactly matching n^(log_b a) = n^1, this falls into the case where the recursion tree does the same Theta(n) work at every one of its Theta(log n) levels, giving Theta(n log n) overall -- the well-known complexity of merge sort."
+    },
+    {
+      "item_id": "ai_recursion_008",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "recursion",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Algorithms syllabus area (divide-and-conquer recurrence)",
+      "source_excerpt": "General concept area: applying the master theorem to the halving recurrence T(n) = T(n/2) + O(1), as in binary search -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A recursive algorithm reduces its problem to a single subproblem of half the size, doing only O(1) extra work per call, giving the recurrence T(n) = T(n/2) + O(1) (as in recursive binary search). What is its time complexity?",
+      "options": [
+        "Theta(log n)",
+        "Theta(n)",
+        "Theta(n log n)",
+        "Theta(sqrt(n))"
+      ],
+      "answer_index": 0,
+      "explanation": "Halving the problem size with only constant work per call means the recursion depth is about log2(n), and since only O(1) work happens at each of those levels, the total is Theta(log n) -- matching the well-known logarithmic running time of binary search."
+    },
+    {
+      "item_id": "ai_recursion_009",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "recursion",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2, general Algorithms syllabus area (divide-and-conquer recurrence)",
+      "source_excerpt": "General concept area: applying the master theorem to the recurrence T(n) = 2T(n/2) + O(1) -- part of GATE CS2's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A recursive algorithm makes two recursive calls on half-sized subproblems but does only O(1) additional work to combine them, giving the recurrence T(n) = 2T(n/2) + O(1). What is its time complexity?",
+      "options": [
+        "Theta(n)",
+        "Theta(log n)",
+        "Theta(n log n)",
+        "Theta(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "By the master theorem with a=2, b=2, f(n)=O(1): since n^(log_b a) = n^1 grows strictly faster than the constant combining work f(n), the recursion is dominated by the sheer number of base-case calls (there are Theta(n) leaves in the recursion tree), giving Theta(n) overall -- more work than the T(n) = T(n/2) + O(1) case, because here the problem branches into two calls at every level instead of one."
+    },
+    {
+      "item_id": "ai_recursion_010",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "recursion",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1, general Algorithms syllabus area (mutual recursion)",
+      "source_excerpt": "General concept area: mutual recursion, where two functions call each other rather than calling themselves directly -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Functions isEven(n) and isOdd(n) are defined so that isEven(n) calls isOdd(n-1) and isOdd(n) calls isEven(n-1), with base cases isEven(0)=true and isOdd(0)=false. What is this pattern called?",
+      "options": [
+        "Mutual recursion",
+        "Tail recursion",
+        "Direct recursion",
+        "Iterative recursion (a contradiction in terms)"
+      ],
+      "answer_index": 0,
+      "explanation": "This is mutual recursion: two distinct functions call each other rather than a single function calling itself. Direct recursion refers to a function calling itself directly, and tail recursion refers to the recursive call being the final operation in a function -- a different, orthogonal property."
+    },
+    {
+      "item_id": "ai_recursion_011",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "recursion",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Algorithms syllabus area (structural recursion on trees)",
+      "source_excerpt": "General concept area: computing the height of a binary tree using structural recursion -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "The height of a binary tree (counting edges) is computed recursively as height(node) = 1 + max(height(node.left), height(node.right)), with height(null) = -1. For a tree with n nodes, what is the time complexity of this recursive computation?",
+      "options": [
+        "O(n), since each node's height() call does O(1) work besides its two recursive calls",
+        "O(log n), since the recursion always halves the tree",
+        "O(n^2), since every node is compared to every other node",
+        "O(1), since height is computed directly from n without visiting nodes"
+      ],
+      "answer_index": 0,
+      "explanation": "height() is called exactly once per node (each call does O(1) work plus two recursive calls, one per child), so the total work across the whole tree is proportional to the number of nodes, O(n) -- the recursion does not necessarily halve the problem (a skewed tree does not), and it certainly does visit nodes rather than computing height in O(1)."
+    },
+    {
+      "item_id": "ai_recursion_012",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "recursion",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2, general Algorithms syllabus area (fast exponentiation)",
+      "source_excerpt": "General concept area: computing x^n recursively via repeated squaring rather than repeated multiplication -- part of GATE CS2's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Fast exponentiation computes x^n recursively using power(x, n) = power(x, n/2)^2 (adjusted for odd n), instead of the naive power(x, n) = x * power(x, n-1). What is the recursion depth of the fast version, compared to the naive one, for computing x^n?",
+      "options": [
+        "O(log n) for the fast version, versus O(n) for the naive version",
+        "Both have the same O(n) recursion depth",
+        "O(n) for the fast version, versus O(log n) for the naive version",
+        "Both have O(1) recursion depth"
+      ],
+      "answer_index": 0,
+      "explanation": "The fast version halves the exponent at each recursive call, so its depth is O(log n); the naive version decreases the exponent by only 1 each call, giving O(n) depth. This is the same halving-versus-decrementing distinction that separates binary search's O(log n) depth from a linear scan's O(n)."
+    },
+    {
+      "item_id": "ai_recursion_013",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "recursion",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2024 CS1, general Algorithms syllabus area (direct vs indirect recursion)",
+      "source_excerpt": "General concept area: the distinction between direct and indirect recursion -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Function A calls itself directly in its own body. Function B never calls itself directly, but calls function C, which in turn calls B again. What are these two patterns called, respectively?",
+      "options": [
+        "A is direct recursion; B and C together form indirect (mutual) recursion",
+        "Both are examples of direct recursion",
+        "A is indirect recursion; B and C form direct recursion",
+        "Neither is recursion, since B never calls itself by name"
+      ],
+      "answer_index": 0,
+      "explanation": "A function that invokes itself by name within its own body is direct recursion. When a cycle of calls returns to the original function only through one or more intermediaries (here, B calling C, which calls B), that is indirect (or mutual) recursion -- B is still recursive even though it never appears in its own body."
+    },
+    {
+      "item_id": "ai_recursion_014",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "recursion",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "GATE 2026 CS1, general Algorithms syllabus area (converting recursion to iteration)",
+      "source_excerpt": "General concept area: converting a recursive function into an equivalent iterative one using an explicit stack -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "Any recursive function can, in principle, be rewritten iteratively by manually managing an explicit data structure instead of relying on the language's call stack. Which structure is the natural choice for this conversion, and why?",
+      "options": [
+        "An explicit stack, because it must reproduce the same LIFO order in which the implicit call stack resumes pending calls",
+        "A FIFO queue, because recursive calls should resume in the order they were first made",
+        "A min-heap, ordered by how deep each call is nested",
+        "No structure is needed; a single loop variable is always sufficient regardless of the recursion's structure"
+      ],
+      "answer_index": 0,
+      "explanation": "The call stack that recursion relies on is inherently LIFO: the most recently made, not-yet-finished call is the next to resume. Manually simulating recursion with an explicit stack preserves this same order; a queue would instead resume calls in the order they were made (FIFO), which does not match how recursion actually unwinds."
+    },
+    {
+      "item_id": "ai_recursion_015",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "recursion",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2, general Algorithms syllabus area (extreme recursive growth)",
+      "source_excerpt": "General concept area: the Ackermann function as an example of recursion whose growth rate vastly exceeds any simple polynomial or exponential recurrence -- part of GATE CS2's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "The Ackermann function is a well-known recursively defined function whose value grows so explosively (even for small inputs) that it is used to illustrate the limits of simple recurrence-based complexity analysis. What makes it notable in this context?",
+      "options": [
+        "Its growth rate is not bounded by any fixed-degree polynomial or even simple exponential function, unlike recurrences such as T(n)=2T(n/2)+O(n)",
+        "It is the fastest-growing function that can still be computed in O(log n) time",
+        "It cannot be defined recursively at all, only iteratively",
+        "It always terminates in exactly one recursive call regardless of input"
+      ],
+      "answer_index": 0,
+      "explanation": "The Ackermann function is deliberately constructed so that its recursive structure (nested recursion on both of its arguments) produces growth far beyond polynomial or even simple exponential recurrences like T(n)=2T(n)+O(1) -- it is a standard example used to show that not every recursive definition fits neatly into master-theorem-style analysis."
+    },
+    {
+      "item_id": "ai_recursion_016",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "recursion",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS1, general Algorithms syllabus area (recursive linked-list reversal)",
+      "source_excerpt": "General concept area: comparing recursive and iterative reversal of a singly linked list in terms of extra space -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A singly linked list of n nodes can be reversed either iteratively (using three pointer variables in a loop) or recursively (recursing to the end of the list, then re-linking pointers as the recursion unwinds). How do their extra-space complexities compare?",
+      "options": [
+        "The recursive version uses O(n) call-stack space, while the iterative version uses O(1) extra space",
+        "Both use O(1) extra space",
+        "The recursive version uses O(1) extra space, while the iterative version uses O(n)",
+        "Both use O(n) extra space, since reversal always needs a second list"
+      ],
+      "answer_index": 0,
+      "explanation": "The recursive reversal makes one call per node before any re-linking happens, so all n calls sit on the stack simultaneously at the deepest point, costing O(n) space; the iterative version only ever needs a fixed number of pointer variables (previous, current, next), so it uses O(1) extra space. Neither approach needs to allocate an entirely separate list."
+    },
+    {
+      "item_id": "ai_recursion_017",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "recursion",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Algorithms syllabus area (missing base case)",
+      "source_excerpt": "General concept area: the runtime consequence of a recursive function with a missing or unreachable base case -- part of GATE CS1's Algorithms topic list rather than a transcription of one specific numbered question.",
+      "question": "A recursive function is written with a base case that, due to a logic error, is never actually reached for a given input (e.g. it checks for n == 0 but n only ever takes negative values). What is the typical runtime consequence?",
+      "options": [
+        "The program crashes with a stack overflow once the call stack's limit is exceeded",
+        "The compiler detects the unreachable base case and refuses to compile the program",
+        "The function silently returns 0 without any error",
+        "The recursion automatically falls back to an equivalent loop"
+      ],
+      "answer_index": 0,
+      "explanation": "An unreachable base case means the recursive calls never stop; each one still pushes a new stack frame, and once the call stack's finite capacity is exhausted, the program crashes with a stack overflow at runtime -- this is a runtime failure, not something compilers generally catch at compile time, and there is no automatic fallback to iteration."
+    },
+    {
+      "item_id": "ai_trees_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (tree terminology)",
+      "source_excerpt": "General concept area: basic tree terminology (root, leaf, parent, child) -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "In a rooted tree, what is a 'leaf' node?",
+      "options": [
+        "A node with no children",
+        "The topmost node of the tree, with no parent",
+        "Any node that has exactly one child",
+        "A node that appears at the deepest possible level of every tree"
+      ],
+      "answer_index": 0,
+      "explanation": "A leaf is defined purely by having no children, regardless of its depth. The topmost, parentless node is the root, not a leaf; a node with exactly one child is neither a leaf nor necessarily anything special; and leaves can occur at varying depths in an unbalanced tree, not only at the single deepest level."
+    },
+    {
+      "item_id": "ai_trees_002",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (binary tree definition)",
+      "source_excerpt": "General concept area: the defining property of a binary tree -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What defines a binary tree, as distinct from a general tree?",
+      "options": [
+        "Every node has at most two children, conventionally distinguished as left and right",
+        "Every node must have exactly two children",
+        "All leaves must be at the same depth",
+        "Every node's value must be less than its parent's value"
+      ],
+      "answer_index": 0,
+      "explanation": "A binary tree only requires each node to have at most two children (left and/or right); it does not require every node to actually have two children (that would be a 'full' binary tree specifically), nor does it require equal leaf depths (that describes balance/perfection) or any ordering property (that describes a binary search tree)."
+    },
+    {
+      "item_id": "ai_trees_003",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (full binary tree node counting)",
+      "source_excerpt": "General concept area: the relationship between the number of leaf nodes and internal nodes in a full binary tree (every node has 0 or 2 children) -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "In a full binary tree (every node has either 0 or 2 children), the number of leaf nodes L and the number of internal (2-child) nodes I always satisfy L = I + 1. If such a tree has 10 internal nodes, how many leaf nodes does it have?",
+      "options": [
+        "11",
+        "10",
+        "20",
+        "9"
+      ],
+      "answer_index": 0,
+      "explanation": "Using L = I + 1 with I = 10 gives L = 11. This identity holds because starting from a single root leaf (I=0, L=1) and always converting one leaf into an internal node with two new leaf children increases I by 1 and L by 1 net (removes 1 leaf, adds 2), preserving L = I + 1 at every step."
+    },
+    {
+      "item_id": "ai_trees_004",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (complete binary trees)",
+      "source_excerpt": "General concept area: the definition of a complete binary tree and its use in array-based heap representations -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What defines a 'complete' binary tree?",
+      "options": [
+        "All levels are fully filled except possibly the last, which is filled from left to right with no gaps",
+        "Every internal node has exactly two children and all leaves are at the same depth",
+        "Every node has at most one child",
+        "It is a binary tree that also satisfies the binary-search-tree ordering property"
+      ],
+      "answer_index": 0,
+      "explanation": "Completeness only requires every level but possibly the last to be full, with the last level's nodes packed left-to-right without gaps -- this is exactly the property that lets a complete binary tree be stored compactly in an array (as used for heaps). A tree where every internal node has exactly two children and all leaves share one depth describes a 'perfect' binary tree, a stricter condition."
+    },
+    {
+      "item_id": "ai_trees_005",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (perfect binary tree node counting)",
+      "source_excerpt": "General concept area: the node-count formula 2^(h+1) - 1 for a perfect binary tree of height h -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A perfect binary tree (every internal node has exactly two children, and all leaves are at the same depth) has height h = 3 (height measured as the number of edges on the root-to-leaf path). How many total nodes does it have?",
+      "options": [
+        "15",
+        "8",
+        "16",
+        "7"
+      ],
+      "answer_index": 0,
+      "explanation": "A perfect binary tree of height h has 2^(h+1) - 1 nodes. For h = 3, that is 2^4 - 1 = 16 - 1 = 15. 8 is only the number of leaf nodes (2^h), 16 forgets to subtract 1, and 7 corresponds instead to height h = 2."
+    },
+    {
+      "item_id": "ai_trees_006",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (nodes per level)",
+      "source_excerpt": "General concept area: the maximum number of nodes possible at a given level of a binary tree -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Using the convention that the root is at level 0, what is the maximum possible number of nodes at level k of a binary tree?",
+      "options": [
+        "2^k",
+        "k^2",
+        "2k",
+        "k + 1"
+      ],
+      "answer_index": 0,
+      "explanation": "Each level can have at most twice as many nodes as the level above it (since each node has at most two children), so level 0 has at most 1 = 2^0 node, level 1 at most 2 = 2^1, and in general level k has at most 2^k nodes."
+    },
+    {
+      "item_id": "ai_trees_007",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (traversal orders)",
+      "source_excerpt": "General concept area: the visiting order of an inorder traversal of a binary tree -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What is the visiting order of an inorder traversal of a binary tree?",
+      "options": [
+        "Left subtree, then the node itself, then right subtree",
+        "The node itself, then left subtree, then right subtree",
+        "Left subtree, then right subtree, then the node itself",
+        "Right subtree, then the node itself, then left subtree"
+      ],
+      "answer_index": 0,
+      "explanation": "Inorder traversal visits the left subtree first, then the current node, then the right subtree -- this is precisely why running inorder traversal on a binary search tree yields values in sorted order. Node-first is preorder, and node-last is postorder."
+    },
+    {
+      "item_id": "ai_trees_008",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (traversal orders)",
+      "source_excerpt": "General concept area: the visiting order of a preorder traversal of a binary tree -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What is the visiting order of a preorder traversal of a binary tree?",
+      "options": [
+        "The node itself, then left subtree, then right subtree",
+        "Left subtree, then the node itself, then right subtree",
+        "Left subtree, then right subtree, then the node itself",
+        "Right subtree, then left subtree, then the node itself"
+      ],
+      "answer_index": 0,
+      "explanation": "Preorder visits the current node first, before recursing into its left and then right subtrees -- useful, for example, for producing a copy of the tree's structure or a prefix expression from an expression tree. Visiting the node last is postorder, and visiting it between the subtrees is inorder."
+    },
+    {
+      "item_id": "ai_trees_009",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (traversal orders)",
+      "source_excerpt": "General concept area: the visiting order of a postorder traversal of a binary tree -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What is the visiting order of a postorder traversal of a binary tree?",
+      "options": [
+        "Left subtree, then right subtree, then the node itself",
+        "The node itself, then left subtree, then right subtree",
+        "Left subtree, then the node itself, then right subtree",
+        "Right subtree, then the node itself, then left subtree"
+      ],
+      "answer_index": 0,
+      "explanation": "Postorder visits both subtrees before the current node, which is why it is the natural order for tasks like safely deleting a tree bottom-up or evaluating a postfix expression tree. Visiting the node first is preorder, and visiting it between subtrees is inorder."
+    },
+    {
+      "item_id": "ai_trees_010",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (level-order traversal)",
+      "source_excerpt": "General concept area: implementing level-order (breadth-first) traversal of a binary tree using a queue -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Level-order traversal visits a binary tree's nodes level by level, left to right within each level. Which auxiliary data structure is standardly used to implement it, and why?",
+      "options": [
+        "A queue, because its FIFO order naturally processes nodes in the order their level was discovered",
+        "A stack, because its LIFO order naturally produces level-by-level order",
+        "No auxiliary structure is needed; plain recursion alone always produces level order",
+        "A max-heap ordered by node depth"
+      ],
+      "answer_index": 0,
+      "explanation": "Enqueue the root, then repeatedly dequeue a node, visit it, and enqueue its children; because a queue preserves FIFO order, all of one level's nodes are dequeued (and their children enqueued) before any node from the next level, producing exactly the level-by-level visiting order. Plain unmodified recursion naturally produces depth-first orders (pre/in/postorder), not level order."
+    },
+    {
+      "item_id": "ai_trees_011",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (recursive height computation)",
+      "source_excerpt": "General concept area: the base-case convention needed for a recursive height function that measures height in edges -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Height is defined as the number of edges on the longest root-to-leaf path, so a single-node tree has height 0. A recursive function computes height(node) = 1 + max(height(node.left), height(node.right)) for any non-null node. What must height(null) return so that a single-leaf-node tree correctly evaluates to height 0?",
+      "options": [
+        "-1",
+        "0",
+        "1",
+        "It is undefined; null nodes cannot be handled by this formula"
+      ],
+      "answer_index": 0,
+      "explanation": "For a leaf node, both children are null, so height(leaf) = 1 + max(height(null), height(null)); for this to equal 0 as required, height(null) must be -1, since 1 + max(-1, -1) = 1 + (-1) = 0. Returning 0 for null would incorrectly make a leaf's height 1 instead of 0."
+    },
+    {
+      "item_id": "ai_trees_012",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (edges vs nodes)",
+      "source_excerpt": "General concept area: the relationship between the number of nodes and the number of edges in a tree -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A tree (in the graph-theoretic sense: connected and acyclic) has n nodes. How many edges does it have?",
+      "options": [
+        "n - 1",
+        "n",
+        "n + 1",
+        "2n"
+      ],
+      "answer_index": 0,
+      "explanation": "A tree is by definition connected with no cycles, and any connected acyclic graph on n nodes has exactly n - 1 edges -- one fewer edge than the number of nodes, since every node except the root is connected to the rest of the tree by exactly one edge to its parent."
+    },
+    {
+      "item_id": "ai_trees_013",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (balanced trees)",
+      "source_excerpt": "General concept area: the height-balance condition used to define a balanced binary tree (as in AVL trees) -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A binary tree is 'height-balanced' (in the AVL sense) if, for every node, which condition holds?",
+      "options": [
+        "The heights of its left and right subtrees differ by at most 1",
+        "Its left and right subtrees have exactly the same number of nodes",
+        "It has no leaf nodes below the root's immediate children",
+        "Every node's value is greater than both of its children's values"
+      ],
+      "answer_index": 0,
+      "explanation": "AVL-style height-balance requires that at every node, the height difference between the left and right subtrees never exceeds 1; this is a balance-factor condition on heights, not a requirement of equal node counts, restricted leaf placement, or any value ordering (which would instead describe a max-heap property)."
+    },
+    {
+      "item_id": "ai_trees_014",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (traversal complexity)",
+      "source_excerpt": "General concept area: the time complexity of a full inorder, preorder, or postorder traversal of a binary tree -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "What is the time complexity of a complete inorder (or preorder, or postorder) traversal of a binary tree with n nodes, assuming O(1) work is done at each node visit?",
+      "options": [
+        "O(n)",
+        "O(log n)",
+        "O(n log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "Any of the three standard depth-first traversals visits every node exactly once and performs O(1) work per visit (besides the recursive calls themselves), so the total time is proportional to the number of nodes, O(n), regardless of the tree's shape or balance."
+    },
+    {
+      "item_id": "ai_trees_015",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (skewed trees)",
+      "source_excerpt": "General concept area: the height of a maximally skewed binary tree (every node has only one child) -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A binary tree with n nodes is completely skewed (every node has at most one child, forming a single chain from root to the deepest leaf). What is its height, measured in edges?",
+      "options": [
+        "n - 1",
+        "log2(n)",
+        "n / 2",
+        "0"
+      ],
+      "answer_index": 0,
+      "explanation": "A fully skewed tree is just a linear chain of n nodes, so the path from the root to the single leaf traverses n - 1 edges -- this is the worst-case shape for any operation whose cost depends on tree height, since log2(n) is only achieved by a balanced tree."
+    },
+    {
+      "item_id": "ai_trees_016",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (tree reconstruction from traversals)",
+      "source_excerpt": "General concept area: which pairs of traversal sequences are sufficient to uniquely reconstruct a general binary tree -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "Given the traversal sequences of an arbitrary binary tree (with all distinct node values), which pair is generally NOT sufficient on its own to uniquely reconstruct the tree's exact shape?",
+      "options": [
+        "Preorder and postorder alone (without inorder)",
+        "Inorder and preorder",
+        "Inorder and postorder",
+        "Any traversal pair that includes inorder"
+      ],
+      "answer_index": 0,
+      "explanation": "Inorder combined with either preorder or postorder pins down which nodes are in the left versus right subtree at each step (via the position of the subtree's root in the inorder sequence), uniquely determining the tree. Preorder and postorder alone, without inorder, generally cannot distinguish between different shapes for a general binary tree (this ambiguity only disappears for full binary trees where every node has 0 or 2 children)."
+    },
+    {
+      "item_id": "ai_trees_017",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (recursive traversal space complexity)",
+      "source_excerpt": "General concept area: the call-stack space used by a recursive tree traversal, as a function of tree height -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "A recursive inorder traversal of a binary tree with height h uses call-stack space proportional to what?",
+      "options": [
+        "O(h), so O(n) in the worst case (a skewed tree) but O(log n) for a balanced tree of n nodes",
+        "O(n) always, regardless of the tree's shape",
+        "O(1), since traversal never needs more than a constant number of stack frames",
+        "O(n^2), since each node's recursive call also revisits every other node"
+      ],
+      "answer_index": 0,
+      "explanation": "At any point during a recursive traversal, the stack holds one frame per ancestor on the current root-to-node path, so the maximum stack depth equals the tree's height h; this is O(n) in the worst case of a fully skewed tree (height n-1) but only O(log n) for a balanced tree, illustrating why tree balance matters for both time and space behaviour of recursive operations."
+    },
+    {
+      "item_id": "ai_trees_018",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "trees",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1, general Data Structures syllabus area (tree diameter)",
+      "source_excerpt": "General concept area: computing the diameter of a binary tree (the longest path between any two nodes, which may or may not pass through the root) efficiently -- part of GATE CS1's Data Structures topic list rather than a transcription of one specific numbered question.",
+      "question": "The diameter of a binary tree is the number of edges on the longest path between any two nodes (the path need not pass through the root). An efficient algorithm computes, for every node in a single bottom-up traversal, the height of its subtrees and updates a running best diameter using left-height + right-height at that node. What is the time complexity of this approach for a tree with n nodes?",
+      "options": [
+        "O(n)",
+        "O(n^2)",
+        "O(n log n)",
+        "O(h^2), where h is the tree's height"
+      ],
+      "answer_index": 0,
+      "explanation": "Because each node's height is computed once and reused (rather than being recomputed from scratch for every candidate node, which is what makes the naive approach O(n^2)), this single bottom-up pass visits every node exactly once doing O(1) work besides its recursive calls, giving O(n) overall."
+    }
+  ]
+}

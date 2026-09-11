@@ -1,22 +1,25 @@
 """Competency quiz routes -- serves real, source-cited questions grouped into
 five topics with genuinely available content, then grades a submission.
 
-Every question comes from services.hand_authored_questions (source-attributed,
-zero live-fetch dependency at request time -- see that module's own
-docstring for why some entries exist for text-extractable corpus documents
-too, not just the two scanned UPSC papers). This route deliberately does
-NOT call services.competency_docs.quiz_from_document() live: that path
-depends on a network fetch per request plus non-deterministic (Gemini) or
-per-call extractive generation, neither of which is acceptable for a quiz
-whose correct answers must be graded consistently against exactly what was
-served to the learner a few minutes earlier.
+Every question comes from services.hand_authored_questions and
+services.ai_authored_questions, merged by _questions_for_competency() below
+(source-attributed, zero live-fetch dependency at request time -- see each
+module's own docstring for what distinguishes them: hand-authored items are
+never model-generated, ai-authored items are model-written but still cite a
+real, hash-verified doc_id). This route deliberately does NOT call
+services.competency_docs.quiz_from_document() live: that path depends on a
+network fetch per request plus non-deterministic (Gemini) or per-call
+extractive generation, neither of which is acceptable for a quiz whose
+correct answers must be graded consistently against exactly what was served
+to the learner a few minutes earlier.
 
 Topics are a fixed, curated set -- not "every competency" -- because they
 only exist where draft question content actually does. Items remain visibly
 DRAFT/PROVISIONAL until an authorized subject-matter reviewer approves them;
 a corpus document id and locator are provenance, not approval.
-Growing this set means adding more entries to
-data/hand_authored_questions.json first, the same way these were added.
+Growing this set means adding more entries to data/hand_authored_questions.json
+(human-transcribed only) or data/ai_authored_questions.json (model-written,
+still doc_id-validated), the same way these were added.
 """
 from __future__ import annotations
 
@@ -36,7 +39,9 @@ from routes.learning_common import player_or_404
 from security.audit import record_audit_event
 from services.curricula import CURRICULA
 from services.game_logic import update_accuracy_history
-from services.hand_authored_questions import normalize_fill_in_blank_answer, questions_for_competency
+from services.ai_authored_questions import questions_for_competency as _ai_questions_for_competency
+from services.hand_authored_questions import normalize_fill_in_blank_answer
+from services.hand_authored_questions import questions_for_competency as _hand_authored_questions_for_competency
 from services.quiz_scoring import pace_label as _pace_label
 from services.quiz_scoring import time_factor as _time_factor
 
@@ -198,10 +203,16 @@ for _topic_id, _topic in TOPICS.items():
         _COMPETENCY_TO_TOPIC.setdefault(_competency_id, _topic_id)
 
 
+def _questions_for_competency(competency_id: str) -> list[dict]:
+    """Merges both question pools -- see the module docstring above for why
+    two separate source files exist rather than one."""
+    return _hand_authored_questions_for_competency(competency_id) + _ai_questions_for_competency(competency_id)
+
+
 def _questions_for_competency_ids(competency_ids: list[str]) -> list[dict]:
     items: list[dict] = []
     for competency_id in competency_ids:
-        items.extend(questions_for_competency(competency_id))
+        items.extend(_questions_for_competency(competency_id))
     return items
 
 
@@ -229,7 +240,7 @@ def _select_questions(competency_ids: list[str], count: int) -> list[dict]:
     """
 
     by_competency = {
-        competency_id: questions_for_competency(competency_id)
+        competency_id: _questions_for_competency(competency_id)
         for competency_id in competency_ids
     }
     selected: list[dict] = []

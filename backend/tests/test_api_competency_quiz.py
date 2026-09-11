@@ -13,7 +13,7 @@ from models.accuracy_history import AccuracyHistory
 from models.governance import AuditEvent, EvidenceRecord
 from models.player import Player
 from routes.competency_quiz import TOPICS
-from services.hand_authored_questions import questions_for_competency
+from routes.competency_quiz import _questions_for_competency as questions_for_competency
 
 client = TestClient(app)
 DIFFICULTY_ORDER = {"easy": 0, "medium": 1, "hard": 2}

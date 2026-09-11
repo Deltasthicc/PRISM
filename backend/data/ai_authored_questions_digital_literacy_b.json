@@ -1,0 +1,1753 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-11",
+  "note": "Batch B of AI-authored, source-grounded MCQs for the digital-literacy curriculum's AI literacy, responsible AI, data privacy, digital signatures, government cloud, and digital public infrastructure competencies, grounded in NITI Aayog's National AI Strategy and Responsible AI approach paper, the DPDP Act 2023, CCA's DSC interoperability/eSign/integration guidelines and the IT Act 2000, CERT-In's government-entity guidelines and the GI Cloud (Meghraj) roadmap, and PIB's 2026 backgrounder on India's Digital Public Infrastructure.",
+  "questions": [
+    {
+      "item_id": "ai_dl_ai_literacy_001",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Introduction, '#AIforAll: Technology Leadership for Inclusive Growth'",
+      "source_excerpt": "This strategy document is premised on the proposition that India... has the potential to position itself among leaders on the global AI map -- with a unique brand of #AIforAll... #AIforAll means technology leadership in AI for achieving the greater good.",
+      "question": "NITI Aayog's National Strategy for Artificial Intelligence proposes '#AIforAll' as India's distinct brand of AI leadership. What does the strategy say this brand is meant to signify?",
+      "options": [
+        "A plan to make every government form available only through AI chatbots",
+        "Technology leadership in AI aimed at inclusive growth and the greater good, not just commercial gain",
+        "A requirement that all AI research in India be conducted exclusively by public sector institutions",
+        "A ban on private companies developing AI products for the Indian market"
+      ],
+      "answer_index": 1,
+      "explanation": "The strategy explicitly frames #AIforAll as 'technology leadership in AI for achieving the greater good' -- inclusive, socially oriented leadership rather than a narrow commercial or purely public-sector agenda. It says nothing about banning private AI development or mandating chatbot-only services."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_002",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "'What is Artificial Intelligence? A technical primer'",
+      "source_excerpt": "AI is a constellation of technologies that enable machines to act with higher levels of intelligence and emulate the human capabilities of sense, comprehend and act.",
+      "question": "According to the strategy's technical primer, AI is best described as which of the following?",
+      "options": [
+        "A single algorithm that all machine learning systems run internally",
+        "A constellation of technologies that let machines sense, comprehend, and act with higher levels of intelligence",
+        "A government department responsible for regulating computer hardware imports",
+        "A programming language designed specifically for robotics"
+      ],
+      "answer_index": 1,
+      "explanation": "The document defines AI as a 'constellation of technologies' -- not one algorithm or product -- that together let machines emulate human capabilities of sensing, comprehending, and acting, and that improve over time by learning from experience."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_003",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Executive Summary, focus sectors list",
+      "source_excerpt": "NITI Aayog has decided to focus on five sectors that are envisioned to benefit the most from AI in solving societal needs: Healthcare, Agriculture, Education, Smart Cities and Infrastructure, and Smart Mobility and Transportation.",
+      "question": "The National Strategy for Artificial Intelligence names five focus sectors for AI intervention in India. Which of the following is one of them?",
+      "options": [
+        "Defence procurement",
+        "Agriculture",
+        "Stock market regulation",
+        "Foreign trade negotiations"
+      ],
+      "answer_index": 1,
+      "explanation": "The five named focus sectors are Healthcare, Agriculture, Education, Smart Cities and Infrastructure, and Smart Mobility and Transportation. Defence procurement, stock market regulation, and trade negotiations are not among the five sectors the strategy singles out."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_004",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Introduction, discussion of the agriculture sector example",
+      "source_excerpt": "For example, the agriculture sector in India... needs multi-layered technology infusion and coordination amongst several stakeholders. Efforts from private sector may neither be financially optimal nor efficient on a standalone basis, and hence sustained government intervention... is needed.",
+      "question": "The strategy uses agriculture as an example of why the government, not just the private sector, should lead certain AI implementation roadmaps. What is the stated reasoning?",
+      "options": [
+        "Private companies are legally barred from operating in the agriculture sector",
+        "Purely private-sector efforts may not be financially optimal or efficient on their own, given the sector's complexity and coordination needs",
+        "Farmers have historically refused to adopt any technology developed by private firms",
+        "Agricultural data is classified and cannot be shared with private companies under any circumstance"
+      ],
+      "answer_index": 1,
+      "explanation": "The document argues that sectors with large externalities and complex coordination needs, like agriculture, are not well served by private efforts alone, which may be neither financially optimal nor efficient standalone -- hence sustained government intervention. It does not claim a legal bar on private firms or a blanket data-sharing prohibition."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_005",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Executive Summary, barriers to AI adoption",
+      "source_excerpt": "the report identifies the following barriers: a) Lack of broad based expertise..., b) Absence of enabling data ecosystems..., c) High resource cost and low awareness for adoption of AI, d) Privacy and security... and e) Absence of collaborative approach to adoption and application of AI.",
+      "question": "Which of the following is explicitly listed by the strategy as a barrier to large-scale AI adoption in India?",
+      "options": [
+        "Excess of qualified AI researchers relative to available jobs",
+        "Absence of enabling data ecosystems, including access to usable, intelligent data",
+        "Too many existing formal regulations governing data anonymisation",
+        "Overly low computing hardware costs discouraging local manufacturing"
+      ],
+      "answer_index": 1,
+      "explanation": "The five barriers named are a lack of broad-based AI expertise, absence of enabling data ecosystems, high resource cost/low awareness, privacy and security gaps (including a lack of formal anonymisation regulation, not an excess), and an absent collaborative approach -- the opposite of what the other options claim."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_006",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Executive Summary, 'two-tiered structure' for research",
+      "source_excerpt": "a) Centre of Research Excellence (CORE) focused on developing better understanding of existing core research and pushing technology frontiers... b) International Centers of Transformational AI (ICTAI) with a mandate of developing and deploying application-based research. Private sector collaboration is envisioned to be a key aspect of ICTAIs.",
+      "question": "The strategy proposes a two-tiered AI research structure of CORE and ICTAI. What distinguishes an ICTAI from a CORE?",
+      "options": [
+        "ICTAIs focus on application-based, deployable research with significant private-sector collaboration, while COREs push fundamental research frontiers",
+        "ICTAIs are exclusively for foreign universities, while COREs are reserved for Indian government labs",
+        "ICTAIs only fund hardware procurement, while COREs only fund software licensing",
+        "ICTAIs replace COREs entirely once an ICTAI is established in a state"
+      ],
+      "answer_index": 0,
+      "explanation": "COREs are meant to deepen fundamental/core research and push technology frontiers, while ICTAIs have an application-based, deployment-oriented mandate with private-sector collaboration as a key feature -- the two are complementary tiers, not a replacement or nationality-based split, and neither is defined by hardware-versus-software funding."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_007",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Executive Summary, research recommendations",
+      "source_excerpt": "Pursuing 'moonshot research projects' through specialised teams, development of a dedicated supranational agency to channel research in solving big, audacious problems of AI -- 'CERN for AI', and developing common computing and other related infrastructure for AI are other key components research suggested.",
+      "question": "The strategy invokes the analogy of 'CERN for AI' when discussing India's research recommendations. What is this analogy meant to convey?",
+      "options": [
+        "A proposal for a dedicated supranational agency to pool international effort on ambitious, large-scale AI research problems",
+        "A recommendation that India physically host the European particle-physics laboratory",
+        "A call to replace all university AI departments with a single national laboratory",
+        "A suggestion that AI research should be regulated the same way nuclear research is regulated"
+      ],
+      "answer_index": 0,
+      "explanation": "CERN is invoked purely as an analogy for a supranational, collaborative body tackling 'big, audacious problems' through pooled international effort -- here applied to AI moonshot research, not a literal hosting arrangement, a university-department merger, or a nuclear-style regulatory regime."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_008",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Executive Summary, skilling discussion",
+      "source_excerpt": "This could be done via the adoption of decentralised teaching mechanisms working in collaboration with the private sector and educational institutions to prescribe certification with value... promotion of job creation in new areas, like data annotation needs to be identified and promoted.",
+      "question": "What approach does the strategy recommend for skilling and reskilling India's workforce for the AI age?",
+      "options": [
+        "Centralising all AI training exclusively within one national university",
+        "Decentralised teaching mechanisms with the private sector and institutions offering valuable certifications, alongside promoting new job categories like data annotation",
+        "Discouraging reskilling since AI is expected to create no new job categories",
+        "Requiring every existing government employee to obtain a PhD in computer science"
+      ],
+      "answer_index": 1,
+      "explanation": "The strategy favours decentralised, collaborative teaching and certification (not a single centralised university), and explicitly calls out promoting new job categories such as data annotation to absorb workers displaced by automation -- it does not claim AI creates no new job categories, nor does it demand PhDs of existing staff."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_009",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Executive Summary, marketplace model discussion",
+      "source_excerpt": "A three-pronged, formal marketplace could be created focusing on data collection and aggregation, data annotation and deployable models. There could be a common platform called the National AI Marketplace (NAIM).",
+      "question": "The strategy proposes a 'National AI Marketplace (NAIM)'. What three areas is this marketplace meant to focus on?",
+      "options": [
+        "Data collection and aggregation, data annotation, and deployable models",
+        "Cloud storage pricing, chip manufacturing, and telecom spectrum allocation",
+        "Stock trading algorithms, insurance underwriting, and credit scoring only",
+        "University admissions, faculty recruitment, and research grant disbursal"
+      ],
+      "answer_index": 0,
+      "explanation": "NAIM is described as a three-pronged marketplace spanning data collection and aggregation, data annotation, and deployable models -- not the unrelated domains of chip manufacturing, financial underwriting, or academic administration listed in the other options."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_010",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Executive Summary, rationale for a marketplace model",
+      "source_excerpt": "The barriers to AI development and deployment can effectively be addressed by adopting the marketplace model -- one that enables market discovery of not only the price but also of different approaches that are best suited to achieve the desired results.",
+      "question": "Why does the strategy favour a 'marketplace model' for addressing AI development barriers, rather than a single prescribed government solution?",
+      "options": [
+        "Because a marketplace enables discovery of both fair pricing and the best-suited technical approaches, rather than locking in one method in advance",
+        "Because marketplaces are cheaper to set up than any government department",
+        "Because a single prescribed solution is illegal under Indian competition law",
+        "Because the strategy assumes only foreign vendors are capable of building AI systems"
+      ],
+      "answer_index": 0,
+      "explanation": "The stated rationale is that a marketplace lets both price and the best-fit approach be discovered competitively, rather than the government betting on one predetermined method. The document does not argue this on cost-of-setup grounds, invoke competition law, or assume only foreign vendors are capable."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_011",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Executive Summary, ethics discussion",
+      "source_excerpt": "Most discussions on ethical considerations of AI are a derivation of the FAT framework (Fairness, Accountability and Transparency).",
+      "question": "The strategy references the 'FAT framework' when discussing the ethical considerations of AI. What does FAT stand for in this context?",
+      "options": [
+        "Fairness, Accountability and Transparency",
+        "Functionality, Automation and Trust",
+        "Feasibility, Affordability and Timeliness",
+        "Frameworks for Artificial Thinking"
+      ],
+      "answer_index": 0,
+      "explanation": "The document states that AI ethics discussions are largely a derivation of the FAT framework: Fairness, Accountability, and Transparency -- not any of the other expansions offered as distractors."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_012",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Executive Summary, ethics councils discussion",
+      "source_excerpt": "A consortium of Ethics Councils at each Centre of Research Excellence can be set up and it would be expected that all COREs adhere to standard practice while developing AI technology and products.",
+      "question": "What role does the strategy envision for Ethics Councils established at each Centre of Research Excellence (CORE)?",
+      "options": [
+        "Ensuring COREs adhere to standard ethical practice while developing AI technology and products",
+        "Approving the annual budget of the Ministry of Finance",
+        "Issuing Digital Signature Certificates to AI researchers",
+        "Replacing the Controller of Certifying Authorities as India's cybersecurity regulator"
+      ],
+      "answer_index": 0,
+      "explanation": "The Ethics Councils are meant to keep COREs adhering to standard ethical practice in AI development -- an internal research-governance function, unrelated to Finance Ministry budgeting, certificate issuance, or cybersecurity regulation, which fall under entirely different bodies."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_013",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Executive Summary, data challenges discussion",
+      "source_excerpt": "Challenges include data usage without consent, risk of identification of individuals through data, data selection bias and the resulting discrimination of AI models, and asymmetry in data aggregation.",
+      "question": "Among the data-related challenges the strategy raises for responsible AI adoption, which is explicitly named?",
+      "options": [
+        "Data selection bias leading to discrimination in AI model outcomes",
+        "Excessive government funding being available for data infrastructure",
+        "Too many citizens voluntarily consenting to data usage",
+        "A surplus of anonymisation regulations slowing down AI research"
+      ],
+      "answer_index": 0,
+      "explanation": "The strategy names data usage without consent, re-identification risk, selection bias leading to discriminatory model outcomes, and asymmetry in data aggregation as challenges -- it does not describe excess funding, excess voluntary consent, or a surplus of anonymisation rules as problems (in fact it notes a lack of formal anonymisation regulation elsewhere)."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_014",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Executive Summary, intellectual property discussion",
+      "source_excerpt": "challenges remain, especially in respect of applying stringent and narrowly focused patent laws to AI applications -- given the unique nature of AI solution development. The importance of data to development of useful models is one such example.",
+      "question": "What specific difficulty does the strategy identify with applying existing patent law frameworks to AI?",
+      "options": [
+        "Existing patent laws were written with narrow, stringent criteria that do not map well onto the unique, data-dependent nature of AI solution development",
+        "Patent laws currently grant AI developers unlimited monopoly rights with no expiry",
+        "AI-related patents are automatically rejected by Indian courts under a blanket ban",
+        "Patent law has no relevance to AI whatsoever and is never expected to apply"
+      ],
+      "answer_index": 0,
+      "explanation": "The strategy specifically flags that narrowly focused, stringent existing patent criteria sit awkwardly with AI's unique development process (heavily dependent on data), not that AI patents are banned outright, granted unlimited rights, or entirely irrelevant to IP law."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_015",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Introduction, technology strategy discussion",
+      "source_excerpt": "the strategy is to maximise the late-movers' advantage. Acknowledging that India is some distance away from consistently delivering home grown pioneering technology solutions in AI, adapting and innovating the technology for India's unique needs... would help it in leap frogging, while simultaneously building the foundational R&D capability.",
+      "question": "What does the strategy mean by pursuing a 'late-movers' advantage' in AI technology?",
+      "options": [
+        "Deliberately delaying all AI adoption in India until every other country has finished developing its own strategy",
+        "Adapting and innovating on existing AI technology for India's unique needs to leapfrog ahead, while still building long-term foundational R&D capability",
+        "Refusing to build any domestic R&D capability and relying permanently on imported technology",
+        "Waiting for private companies to fully commercialise AI before any government involvement begins"
+      ],
+      "answer_index": 1,
+      "explanation": "'Late-movers' advantage' here means adapting and innovating on AI advances already made elsewhere to leapfrog for India-specific needs, while simultaneously investing in foundational R&D for long-run competitiveness -- not indefinite delay, permanent import-dependence, or total non-involvement of government."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_016",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Executive Summary, government's role discussion",
+      "source_excerpt": "for accelerated adoption of a highly collaborative technology like AI, the government has to play the critical role of a catalyst in supporting partnerships, providing access to infrastructure, fostering innovation through research and creating the demand by seeking solutions for addressing various governmental needs.",
+      "question": "What role does the strategy assign to government in accelerating AI adoption across the economy?",
+      "options": [
+        "A catalyst role: enabling partnerships, providing infrastructure access, fostering research-driven innovation, and creating demand via its own use cases",
+        "A purely regulatory role limited to issuing fines for non-compliance",
+        "No active role at all, leaving adoption entirely to market forces",
+        "A monopoly provider role, where government becomes the sole builder of every AI application"
+      ],
+      "answer_index": 0,
+      "explanation": "The strategy describes government as a 'catalyst' -- supporting partnerships, infrastructure access, research-driven innovation, and demand creation through its own needs -- rather than a pure regulator/enforcer, a hands-off bystander, or a monopoly builder of all AI applications."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_017",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "medium",
+      "bloom_level": "evaluate",
+      "locator": "Introduction, 'Garage' framing for developing economies",
+      "source_excerpt": "The strategy should strive to leverage AI for economic growth, social development and inclusive growth, and finally as a 'Garage' for emerging and developing economies... India's scale and opportunity landscape provides the ideal test-bed to ensure sustainable and scalable solutions.",
+      "question": "The strategy describes India acting as a 'Garage' for other emerging and developing economies. What does this framing suggest?",
+      "options": [
+        "That India intends to manufacture and export AI-specific computer hardware exclusively",
+        "That India's scale and complexity make it a suitable test-bed for AI solutions that can then be adapted for other developing economies",
+        "That AI development in India will occur only in literal automobile garages as an informal, unregulated activity",
+        "That other developing countries are prohibited from developing their own AI strategies"
+      ],
+      "answer_index": 1,
+      "explanation": "The 'Garage' metaphor conveys India as a proving ground -- given its scale and complexity -- where AI solutions can be built and tested, then extended to other similarly placed developing economies. It is not about hardware exports, literal garages, or restricting other countries' own strategies."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_018",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Introduction, origin of the mandate",
+      "source_excerpt": "Hon'ble Finance Minister, in his budget speech for 2018-2019, mandated NITI Aayog to establish the National Program on AI, with a view to guiding the research and development in new and emerging technologies.",
+      "question": "What event directly led to NITI Aayog being tasked with establishing India's National Program on AI?",
+      "options": [
+        "A Supreme Court order directing NITI Aayog to regulate all emerging technologies",
+        "A mandate given in the Finance Minister's budget speech for 2018-2019",
+        "A United Nations resolution requiring all member states to appoint an AI regulator",
+        "A private-sector consortium petitioning the Prime Minister's Office directly"
+      ],
+      "answer_index": 1,
+      "explanation": "The strategy traces its origin to the Finance Minister's 2018-2019 budget speech, which mandated NITI Aayog to establish the National Program on AI -- not a court order, a UN resolution, or a private-sector petition."
+    },
+    {
+      "item_id": "ai_dl_ai_literacy_019",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_ai_literacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Executive Summary, framing of AI adoption strategy",
+      "source_excerpt": "large-scale adoption strategies, especially national strategies, need to strike a balance between narrow definitions of financial impact and the greater good... India's approach to implementation of AI has to be guided by optimisation of social goods, rather than maximisation of topline growth.",
+      "question": "How does the strategy frame the right objective for India's national approach to AI adoption?",
+      "options": [
+        "Purely maximising short-term topline revenue growth across all sectors",
+        "Balancing narrow financial impact against the greater good, guided by optimisation of social goods rather than pure topline growth",
+        "Adopting AI only in sectors that are already the most profitable for private industry",
+        "Avoiding any consideration of financial impact whatsoever when designing AI policy"
+      ],
+      "answer_index": 1,
+      "explanation": "The strategy explicitly calls for balancing narrow financial-impact thinking against broader social good, prioritising optimisation of social goods over pure topline growth maximisation -- neither a pure-profit objective nor a total disregard for financial impact."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_001",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Box 13: Creation of Principles, Principle 1",
+      "source_excerpt": "Principle of Safety and Reliability: AI should be deployed reliably as intended and sufficient safeguards must be placed to ensure the safety of relevant stakeholders... The AI system needs to be monitored through its lifecycle so it performs in an acceptable manner, reliably, according to the desired goals.",
+      "question": "NITI Aayog's Responsible AI approach paper lists a 'Principle of Safety and Reliability'. What does this principle require of an AI system across its lifecycle?",
+      "options": [
+        "That it be monitored throughout its lifecycle, deployed reliably as intended, with safeguards for stakeholder safety",
+        "That it be retrained from scratch every six months regardless of performance",
+        "That it only be deployed in sectors with no possible safety risk whatsoever",
+        "That its source code be published publicly on the internet within a fixed timeframe"
+      ],
+      "answer_index": 0,
+      "explanation": "The principle calls for lifecycle monitoring, reliable deployment as intended, and safeguards for stakeholder safety -- it sets no fixed retraining schedule, does not restrict AI to zero-risk sectors, and says nothing about mandatory public source-code release."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_002",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Box 13: Creation of Principles, Principle 2",
+      "source_excerpt": "Principle of Equality: AI systems must treat individuals under same circumstances relevant to the decision equally.",
+      "question": "The 'Principle of Equality' in the Responsible AI approach paper is defined around what requirement?",
+      "options": [
+        "That every individual, regardless of circumstance, must receive the exact same output from an AI system",
+        "That AI systems must treat individuals in the same relevant circumstances equally",
+        "That AI systems can only be trained on data collected from a single demographic group",
+        "That equality only applies to AI systems built by government agencies, not private firms"
+      ],
+      "answer_index": 1,
+      "explanation": "The principle specifically ties equal treatment to individuals under the 'same circumstances relevant to the decision' -- not an absolute requirement that everyone get an identical output irrespective of circumstance, nor is it limited to single-demographic training data or government-only application."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_003",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Box 13: Creation of Principles, Principle 3",
+      "source_excerpt": "Principle of Inclusivity and Non-discrimination: AI systems should not deny opportunity to a qualified person on the basis of their identity. It should not deepen the harmful historic and social divisions based on religion, race, caste, sex, descent, place of birth or residence.",
+      "question": "What specific harm does the 'Principle of Inclusivity and Non-discrimination' guard against, according to the approach paper?",
+      "options": [
+        "AI systems deepening harmful historic and social divisions (e.g. based on caste, religion, or sex) or denying opportunity to qualified persons on the basis of identity",
+        "AI systems being too slow to process large datasets",
+        "AI systems requiring too much electricity to run in rural areas",
+        "AI systems being unable to support multiple Indian languages"
+      ],
+      "answer_index": 0,
+      "explanation": "This principle targets denial of opportunity based on identity and the deepening of historic/social divisions along lines like religion, race, caste, sex, descent, or residence -- not technical concerns like processing speed, electricity consumption, or language support, which are separate issues."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_004",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Box 13: Creation of Principles, Principle 4",
+      "source_excerpt": "Principle of Privacy and Security: AI should maintain privacy and security of data of individuals or entities that is used for training the system. Access should be provided only to those authorized with sufficient safeguards.",
+      "question": "The 'Principle of Privacy and Security' for AI systems focuses on protecting what specifically?",
+      "options": [
+        "The physical office premises where AI developers work",
+        "The privacy and security of the data of individuals or entities used to train the AI system, restricting access to authorised parties",
+        "The stock price of companies that build AI products",
+        "The intellectual property rights of AI hardware manufacturers only"
+      ],
+      "answer_index": 1,
+      "explanation": "The principle is about safeguarding training data belonging to individuals or entities and limiting access to authorised parties with sufficient safeguards -- not about office security, stock prices, or hardware-manufacturer IP, which are unrelated concerns."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_005",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Box 13: Creation of Principles, Principle 5",
+      "source_excerpt": "Principle of Transparency: The design and functioning of the AI system should be recorded and made available for external scrutiny and audit to the extent possible to ensure the deployment is fair, honest, impartial and guarantees accountability.",
+      "question": "What does the 'Principle of Transparency' require regarding an AI system's design and functioning?",
+      "options": [
+        "That the AI system's source code be sold to the highest bidder",
+        "That the design and functioning be recorded and made available for external scrutiny and audit, to the extent possible",
+        "That transparency requirements apply only after a system has caused documented harm",
+        "That the AI vendor's internal staff salaries be disclosed publicly"
+      ],
+      "answer_index": 1,
+      "explanation": "Transparency here means recording the design and functioning of the system and making it available for external scrutiny and audit -- a proactive, ongoing expectation, not one triggered only after harm occurs, and unrelated to code sales or salary disclosure."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_006",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Box 13: Creation of Principles, Principle 6",
+      "source_excerpt": "Principle of Accountability: All stakeholders... must be responsible for their actions. Stakeholders should conduct risk and impact assessments to evaluate direct and indirect potential impact of AI systems on end-users, set up an auditing process... and create mechanisms for grievance redressal.",
+      "question": "A government department deploying an AI-based eligibility screening tool wants to comply with the 'Principle of Accountability'. Which combination of actions does the principle call for?",
+      "options": [
+        "Conducting risk/impact assessments on end-users, setting up internal (and if needed external) audits, and creating grievance redressal mechanisms",
+        "Publishing the department's entire IT budget on social media",
+        "Outsourcing all legal responsibility to the AI vendor with no departmental oversight",
+        "Skipping audits entirely as long as the system passed testing once at launch"
+      ],
+      "answer_index": 0,
+      "explanation": "Accountability under the principle requires risk/impact assessments on end-users, an internal (and if required external) auditing process, and grievance redressal mechanisms -- not budget publicity stunts, offloading all responsibility to a vendor, or a one-time launch test in place of ongoing oversight."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_007",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Box 13: Creation of Principles, Principle 7",
+      "source_excerpt": "Principle of protection and reinforcement of positive human values: AI should promote positive human values and not disturb in any way social harmony in community relationships.",
+      "question": "The seventh principle in NITI Aayog's Responsible AI framework concerns 'protection and reinforcement of positive human values'. What does it specifically require of AI systems?",
+      "options": [
+        "That AI promote positive human values and not disturb social harmony in community relationships",
+        "That AI systems be programmed to hold a specific religious viewpoint",
+        "That AI development be paused indefinitely until value alignment is mathematically proven",
+        "That every AI system include a physical on/off switch accessible to the public"
+      ],
+      "answer_index": 0,
+      "explanation": "This principle is about AI promoting positive human values and avoiding disruption of social harmony in community relationships -- it does not mandate a particular religious stance, an indefinite development pause, or a specific hardware feature like a public off-switch."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_008",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Section on constitutional grounding of the Principles",
+      "source_excerpt": "on the principle of Constitutional morality. The Supreme Court has stressed... faithful to other constitutional principles. The Paper studies the various considerations under the lens of the Constitution and identifies 'Principles for Responsible AI'... based on the underlying principle of ensuring AI systems are designed in a manner that enables fundamental rights.",
+      "question": "On what foundation does the Responsible AI approach paper ground its seven principles for AI governance?",
+      "options": [
+        "International AI vendor contracts and terms of service",
+        "The Constitution of India, constitutional morality, and the enablement of fundamental rights",
+        "A private-sector code of conduct with no reference to Indian law",
+        "United Nations Security Council resolutions on cyberweapons"
+      ],
+      "answer_index": 1,
+      "explanation": "The paper explicitly derives its principles from the Constitution and the concept of constitutional morality, framed around ensuring AI systems are designed to enable fundamental rights -- not from vendor contracts, a purely private code unconnected to Indian law, or UN Security Council cyberweapons resolutions."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_009",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Closing discussion after Box 13",
+      "source_excerpt": "It is important to ensure that these Principles are updated in the future to reflect the latest knowledge, innovation and technology advances. A mechanism for the same and a framework for the enforcement of these Principles will be explored in Part 2 of the paper.",
+      "question": "What does the approach paper say about the future status of its seven Responsible AI principles?",
+      "options": [
+        "They are final and will never be revised under any circumstances",
+        "They are expected to be updated over time to reflect new knowledge and technology, with an enforcement framework to be explored in a later part of the paper",
+        "They apply only to AI systems built before 2021 and not to any future systems",
+        "They will be replaced entirely by principles from a different country's AI strategy"
+      ],
+      "answer_index": 1,
+      "explanation": "The paper anticipates future updates to the principles as knowledge and technology evolve, and explicitly defers the enforcement mechanism to a later part ('Part 2') -- it does not claim the principles are frozen forever, date-limited to pre-2021 systems, or destined for wholesale replacement by another country's framework."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_010",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Appendix 1: Self-Assessment Guide for AI Usage",
+      "source_excerpt": "Stakeholders who design, develop, procure, deploy, operate, maintain AI systems may use this guide to assess the various considerations and potential mitigation approaches across the system's life cycle... intended to serve as a guide to help assess the AI governance readiness of stakeholders.",
+      "question": "What is the purpose of the 'Self-Assessment Guide for AI Usage' included as an appendix to the Responsible AI approach paper?",
+      "options": [
+        "To issue legally binding certificates of AI compliance to vendors",
+        "To help stakeholders across the AI system's lifecycle assess considerations and mitigation approaches, gauging their AI governance readiness",
+        "To calculate the exact monetary fine for any Responsible AI violation",
+        "To replace the need for any human review of an AI system before deployment"
+      ],
+      "answer_index": 1,
+      "explanation": "The guide is explicitly a self-assessment tool for stakeholders across the design-to-maintenance lifecycle to gauge governance readiness and consider mitigations -- it is not a binding certification scheme, a fine calculator, or a substitute for human review before deployment."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_011",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Executive Summary, ethics discussion",
+      "source_excerpt": "Most discussions on ethical considerations of AI are a derivation of the FAT framework (Fairness, Accountability and Transparency).",
+      "question": "Separately from NITI Aayog's later seven-principle Responsible AI paper, the earlier National Strategy for Artificial Intelligence names a shorter ethics framework it says most AI ethics discussions derive from. What is it?",
+      "options": [
+        "The FAT framework: Fairness, Accountability and Transparency",
+        "The CIA triad: Confidentiality, Integrity and Availability",
+        "The PDCA cycle: Plan, Do, Check, Act",
+        "The RACI matrix: Responsible, Accountable, Consulted, Informed"
+      ],
+      "answer_index": 0,
+      "explanation": "The National Strategy for AI names the FAT framework -- Fairness, Accountability, Transparency -- as the common basis for AI ethics discussions. The CIA triad, PDCA cycle, and RACI matrix are established frameworks from other domains (security, quality management, and project responsibility, respectively) and are not what the strategy names here."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_012",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Executive Summary, Ethics Councils discussion",
+      "source_excerpt": "A consortium of Ethics Councils at each Centre of Research Excellence can be set up and it would be expected that all COREs adhere to standard practice while developing AI technology and products.",
+      "question": "Why does the National Strategy for Artificial Intelligence propose setting up Ethics Councils at each Centre of Research Excellence (CORE)?",
+      "options": [
+        "So each CORE independently sets its own, unrelated ethical standards with no expectation of consistency",
+        "So that all COREs adhere to a standard ethical practice while developing AI technology and products",
+        "So Ethics Councils can take over the CORE's day-to-day research budget approvals",
+        "So Ethics Councils can license Digital Signature Certificates on behalf of the COREs"
+      ],
+      "answer_index": 1,
+      "explanation": "The stated purpose is consistency: ensuring all COREs adhere to standard ethical practice, rather than each setting arbitrary unrelated standards, taking over budget approvals, or performing an unrelated function like certificate licensing."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_013",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Box 13: Creation of Principles, Principles 2 and 3 compared",
+      "source_excerpt": "2. Principle of Equality: AI systems must treat individuals under same circumstances relevant to the decision equally. 3. Principle of Inclusivity and Non-discrimination: AI systems should not deny opportunity to a qualified person on the basis of their identity... should not deepen the harmful historic and social divisions.",
+      "question": "The Responsible AI approach paper lists both a 'Principle of Equality' and a separate 'Principle of Inclusivity and Non-discrimination'. What is the key difference between the two?",
+      "options": [
+        "They are worded differently but mean exactly the same thing, so listing both is redundant",
+        "Equality requires consistent treatment of individuals in the same relevant circumstances, while Inclusivity and Non-discrimination specifically targets denial of opportunity and the deepening of historic identity-based divisions",
+        "Equality applies only to private companies, while Inclusivity and Non-discrimination applies only to government agencies",
+        "Equality is about hardware access, while Inclusivity and Non-discrimination is about software licensing costs"
+      ],
+      "answer_index": 1,
+      "explanation": "Equality focuses on consistent treatment given the same relevant circumstances, while Inclusivity and Non-discrimination specifically addresses not denying opportunity based on identity and not deepening historic social divisions (religion, caste, sex, etc.) -- distinct emphases, not a redundant restatement, a sector-specific split, or a hardware/licensing distinction."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_014",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "evaluate",
+      "locator": "Box 13: Creation of Principles, Principles 1 and 3",
+      "source_excerpt": "appropriate grievance redressal, care and compensation structures should be in place, in case of any unintended or unexpected harm [Principle 1]... In case of an adverse decision, appropriate grievance redressal mechanism should be designed in a manner affordable and accessible to everyone [Principle 3].",
+      "question": "Grievance redressal is mentioned under both the Principle of Safety and Reliability and the Principle of Inclusivity and Non-discrimination. What common expectation does this reflect across the framework?",
+      "options": [
+        "That grievance redressal is only relevant to hardware failures, not decision-making harms",
+        "That affected individuals should have an accessible way to seek recourse whenever an AI system causes unintended harm or an adverse, potentially discriminatory decision",
+        "That grievance redressal mechanisms need only exist on paper and never actually be used",
+        "That only foreign nationals are entitled to file grievances against Indian government AI systems"
+      ],
+      "answer_index": 1,
+      "explanation": "Recurring grievance-redressal language across principles signals a cross-cutting expectation: affected individuals need real, accessible recourse whether the harm arises from a safety failure or a discriminatory/adverse decision -- not a hardware-only concern, a purely nominal requirement, or one restricted to foreign nationals."
+    },
+    {
+      "item_id": "ai_dl_responsible_ai_015",
+      "doc_id": "niti_responsible_ai",
+      "competency_id": "dl_responsible_ai",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Box 13: Creation of Principles, preamble",
+      "source_excerpt": "The considerations were identified following several expert interviews and multi-stakeholder workshops with experts from India and globally across public and private sectors, start-ups, academia and civil society. The Principles may be derived from the Constitution and all laws enacted thereunder.",
+      "question": "How were the seven Responsible AI principles arrived at, according to the approach paper?",
+      "options": [
+        "Through multi-stakeholder workshops and expert interviews across public/private sectors, start-ups, academia, and civil society, grounded in the Constitution and existing law",
+        "Through a closed-door decision made solely by a single government ministry with no outside input",
+        "By directly translating the AI ethics guidelines of one specific foreign country without adaptation",
+        "By a public opinion poll where the majority vote determined each principle"
+      ],
+      "answer_index": 0,
+      "explanation": "The paper describes a multi-stakeholder process -- expert interviews and workshops spanning public and private sectors, start-ups, academia, and civil society -- with the principles grounded in the Constitution and existing law, not a single-ministry decision, a foreign-guideline translation, or a majority-vote poll."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_001",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Section 2, definitions clauses (i) and (j)",
+      "source_excerpt": "'Data Fiduciary' means any person who alone or in conjunction with other persons determines the purpose and means of processing of personal data. 'Data Principal' means the individual to whom the personal data relates.",
+      "question": "Under the Digital Personal Data Protection Act, 2023, what is the key distinction between a 'Data Fiduciary' and a 'Data Principal'?",
+      "options": [
+        "The Data Fiduciary is the individual whose data is processed, while the Data Principal decides the purpose and means of processing",
+        "The Data Fiduciary determines the purpose and means of processing personal data, while the Data Principal is the individual to whom that data relates",
+        "Both terms refer to the same entity and are used interchangeably throughout the Act",
+        "The Data Fiduciary is always a foreign company, while the Data Principal is always an Indian citizen"
+      ],
+      "answer_index": 1,
+      "explanation": "The Act defines Data Fiduciary as the entity determining purpose and means of processing, and Data Principal as the individual the data is about -- the reverse of option A, not interchangeable terms, and not tied to nationality or company origin as option D suggests."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_002",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Section 2, definition clause (f)",
+      "source_excerpt": "'child' means an individual who has not completed the age of eighteen years.",
+      "question": "For the purposes of the DPDP Act 2023's special protections for children's personal data, at what age does an individual stop being classified as a 'child'?",
+      "options": [
+        "13 years",
+        "16 years",
+        "18 years",
+        "21 years"
+      ],
+      "answer_index": 2,
+      "explanation": "The Act defines a 'child' as anyone who has not completed eighteen years of age, so the special children's-data protections apply until that age -- not 13, 16, or 21 as used in some other jurisdictions' laws."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_003",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section 2, definition clause (g); Section 6(7)-(9)",
+      "source_excerpt": "'Consent Manager' means a person registered with the Board, who acts as a single point of contact to enable a Data Principal to give, manage, review and withdraw her consent... Every Consent Manager shall be registered with the Board.",
+      "question": "What function does a 'Consent Manager' serve under the DPDP Act 2023?",
+      "options": [
+        "It is a government department that fines Data Fiduciaries for privacy violations",
+        "It is a Board-registered entity acting as a single point of contact through which a Data Principal can give, manage, review, and withdraw consent",
+        "It is a technical standard for encrypting personal data at rest",
+        "It is the official title of the head of the Data Protection Board of India"
+      ],
+      "answer_index": 1,
+      "explanation": "A Consent Manager is a Board-registered intermediary giving the Data Principal one place to manage all consent actions -- it is not a fining authority, an encryption standard, or a leadership title within the Board itself."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_004",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section 6(1)",
+      "source_excerpt": "The consent given by the Data Principal shall be free, specific, informed, unconditional and unambiguous with a clear affirmative action.",
+      "question": "What qualities must consent have to be valid under Section 6 of the DPDP Act 2023?",
+      "options": [
+        "It must be free, specific, informed, unconditional, and unambiguous, involving a clear affirmative action",
+        "It only needs to be given once by anyone in the household, regardless of who the data is about",
+        "It can be implied automatically merely by a person visiting a government website",
+        "It must be given in writing on paper and physically mailed to the Data Fiduciary"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 6(1) requires consent to be free, specific, informed, unconditional, and unambiguous with clear affirmative action -- not household-wide by proxy, implied merely by website visits, or restricted to physical paper submission."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_005",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Section 5(1)",
+      "source_excerpt": "Every request made to a Data Principal under section 6 for consent shall be accompanied or preceded by a notice given by the Data Fiduciary to the Data Principal, [describing] the personal data and purpose... the manner in which the Data Principal may make a complaint to the Board.",
+      "question": "Before or alongside asking for a Data Principal's consent, what must a Data Fiduciary provide under Section 5 of the DPDP Act 2023?",
+      "options": [
+        "A notice describing the personal data and purpose of processing, and how to complain to the Data Protection Board",
+        "A notarised affidavit signed by a magistrate",
+        "Proof of the Data Fiduciary's annual revenue",
+        "A copy of the Data Fiduciary's internal HR policy manual"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 5 requires a notice covering what data is collected, for what purpose, and how to complain to the Board -- not a magistrate's affidavit, revenue disclosure, or an HR manual, none of which the Act requires as part of the consent notice."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_006",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section 6(4)-(6)",
+      "source_excerpt": "Where consent given by the Data Principal is the basis of processing of personal data, such Data Principal shall have the right to withdraw her consent at any time... such withdrawal shall not affect the legality of processing of the personal data based on consent before its withdrawal.",
+      "question": "If a Data Principal withdraws consent after previously consenting to processing, what is the legal effect on processing that already took place before the withdrawal?",
+      "options": [
+        "The withdrawal has no effect at all and the Data Fiduciary may keep processing data indefinitely",
+        "The withdrawal retroactively makes all prior processing illegal, exposing the Data Fiduciary to penalties for past compliant processing",
+        "Processing that occurred before withdrawal remains legal; the Data Fiduciary must cease further processing going forward within a reasonable time",
+        "Withdrawal is only valid if approved in writing by the Data Protection Board"
+      ],
+      "answer_index": 2,
+      "explanation": "Withdrawal is forward-looking: processing done before withdrawal, while consent was valid, stays legal, but the Data Fiduciary must stop further processing thereafter -- withdrawal is not retroactive, does not require Board pre-approval, and is not simply ineffective."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_007",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Section 7, certain legitimate uses",
+      "source_excerpt": "A Data Fiduciary may process personal data of a Data Principal for any of following legitimate uses... (f) for responding to a medical emergency involving a threat to the life or immediate threat to the health of the Data Principal or any other individual.",
+      "question": "Under Section 7 of the DPDP Act 2023, in which of these situations may a Data Fiduciary process personal data WITHOUT first obtaining consent?",
+      "options": [
+        "Whenever the Data Fiduciary decides consent would be inconvenient to obtain",
+        "Responding to a medical emergency involving a threat to life or immediate threat to health",
+        "Whenever a marketing team wants to run a targeted advertising campaign",
+        "Whenever a competitor requests the data for market research"
+      ],
+      "answer_index": 1,
+      "explanation": "Section 7 lists specific 'certain legitimate uses' without consent, including responding to a genuine medical emergency -- it does not create a general 'inconvenience' exception, and it does not cover marketing campaigns or sharing with competitors for research."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_008",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Section 2, definition clause (c)",
+      "source_excerpt": "'Board' means the Data Protection Board of India established by the Central Government under section 18.",
+      "question": "What is the 'Board' referred to throughout the DPDP Act 2023?",
+      "options": [
+        "The Data Protection Board of India, established by the Central Government to adjudicate under the Act",
+        "The board of directors of any private company that processes personal data",
+        "A state-level body that exists independently in each Indian state",
+        "An international body headquartered outside India"
+      ],
+      "answer_index": 0,
+      "explanation": "The Act defines 'Board' as the Data Protection Board of India, a Central Government body established under the Act -- not a private company's board, a state-specific body, or an international organisation."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_009",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section 8(5)",
+      "source_excerpt": "In order to prevent personal data breach, the Data Fiduciary shall protect personal data in its possession or under its control... by taking reasonable security safeguards.",
+      "question": "What general obligation does Section 8 of the DPDP Act 2023 impose on Data Fiduciaries to prevent personal data breaches?",
+      "options": [
+        "To take reasonable security safeguards to protect personal data in its possession or control",
+        "To store all personal data exclusively on paper records with no digital copies",
+        "To publicly disclose the entire dataset it processes on its website",
+        "To obtain a new consent from every Data Principal every single day"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 8(5) requires 'reasonable security safeguards' to prevent breaches -- it does not mandate paper-only storage, public disclosure of the whole dataset, or daily re-consent, all of which would be impractical and are not what the Act requires."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_010",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section 8(6)",
+      "source_excerpt": "The Data Fiduciary shall give the Board and each affected Data Principal notice of a personal data breach.",
+      "question": "When a personal data breach occurs, whom does Section 8 of the DPDP Act 2023 require the Data Fiduciary to notify?",
+      "options": [
+        "Only the media, so the public becomes aware immediately",
+        "Both the Data Protection Board and each affected Data Principal",
+        "Only its own internal management, with no external notification required",
+        "Only the Consent Manager, who then decides whether to inform anyone else"
+      ],
+      "answer_index": 1,
+      "explanation": "Section 8(6) requires notice to both the Board and each affected Data Principal -- not just the media, not purely internal notification, and not solely through a Consent Manager acting as gatekeeper."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_011",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Section 9(1) and (3)",
+      "source_excerpt": "the Data Fiduciary shall, before processing any personal data of a child... obtain verifiable consent of the parent... A Data Fiduciary shall not undertake tracking or behavioural monitoring of children or targeted advertising directed at children.",
+      "question": "Beyond requiring verifiable parental consent, what does Section 9 of the DPDP Act 2023 specifically prohibit a Data Fiduciary from doing with respect to children's data?",
+      "options": [
+        "Storing a child's data on servers located within India",
+        "Undertaking tracking or behavioural monitoring of children, or directing targeted advertising at them",
+        "Ever collecting a child's name for any purpose whatsoever",
+        "Allowing a parent to later withdraw consent given on the child's behalf"
+      ],
+      "answer_index": 1,
+      "explanation": "Section 9 specifically bars tracking/behavioural monitoring of children and targeted advertising directed at children, on top of the verifiable-consent requirement -- it does not restrict data localisation, ban name collection outright, or prevent parents from withdrawing consent later."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_012",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Section 10, additional obligations of Significant Data Fiduciary",
+      "source_excerpt": "The Central Government may notify any Data Fiduciary or class of Data Fiduciaries as Significant Data Fiduciary... (a) appoint a Data Protection Officer... (b) appoint an independent data auditor to carry out data audit, who shall evaluate... periodic Data Protection Impact Assessment... periodic audit.",
+      "question": "A company is notified by the Central Government as a 'Significant Data Fiduciary' under Section 10 of the DPDP Act 2023. What additional obligations does this trigger?",
+      "options": [
+        "It must appoint a Data Protection Officer and an independent data auditor, and undertake periodic Data Protection Impact Assessments and audits",
+        "It is exempted from all further obligations under the Act",
+        "It must transfer all its data processing operations to a government-run data centre",
+        "It must reduce its total number of Data Principals below one million"
+      ],
+      "answer_index": 0,
+      "explanation": "Significant Data Fiduciary status adds obligations: a Data Protection Officer, an independent data auditor, periodic Data Protection Impact Assessments, and periodic audits -- it is an additional compliance burden, not an exemption, a forced migration to government infrastructure, or a data-principal headcount cap."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_013",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Chapter IV, Section 16",
+      "source_excerpt": "The Central Government may, by notification, restrict the transfer of personal data by a Data Fiduciary for processing to such country or territory outside India as may be so notified.",
+      "question": "How does the DPDP Act 2023 approach cross-border transfer of personal data out of India?",
+      "options": [
+        "It bans all cross-border transfer of personal data under any circumstances",
+        "It allows transfer to any country by default, with the Central Government empowered to notify and restrict specific countries or territories",
+        "It requires a separate Act of Parliament to approve every individual data transfer",
+        "It permits transfer only to countries that are members of the Commonwealth"
+      ],
+      "answer_index": 1,
+      "explanation": "The Act takes a 'restricted list' approach: transfer is generally permitted, but the government can notify specific countries or territories to which transfer is restricted -- it is not a blanket ban, does not require Parliament to approve each transfer, and is not limited to Commonwealth members."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_014",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Section 11",
+      "source_excerpt": "The Data Principal shall have the right to obtain from the Data Fiduciary... information about the personal data being processed and the processing activities undertaken.",
+      "question": "Under Section 11 of the DPDP Act 2023, what right does a Data Principal have regarding their own personal data held by a Data Fiduciary?",
+      "options": [
+        "The right to obtain information about the personal data processed and the processing activities undertaken",
+        "The right to demand a copy of the Data Fiduciary's entire employee database",
+        "The right to force the Data Fiduciary to shut down its business operations",
+        "The right to appoint themselves as the Data Fiduciary's new Data Protection Officer"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 11 grants a right to obtain information about one's own personal data and the processing activities involving it -- not a right to unrelated internal records like the employee database, a shutdown power, or self-appointment to a governance role at the company."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_015",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Section 12",
+      "source_excerpt": "A Data Principal shall have the right to correction, completion, updating and erasure of her personal data for the processing of which she has previously given consent.",
+      "question": "What right does Section 12 of the DPDP Act 2023 give a Data Principal over consent-based personal data?",
+      "options": [
+        "The right to correction, completion, updating, and erasure of that personal data",
+        "The right to sell that personal data to a third party for profit",
+        "The right to demand the Data Fiduciary's trade secrets in exchange",
+        "The right to have the data permanently displayed on a public government portal"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 12 covers correction, completion, updating, and erasure of the Data Principal's own consent-based data -- it does not grant a right to sell the data for profit, extract unrelated trade secrets, or force public display of it."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_016",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Sections 13 and 14",
+      "source_excerpt": "13. (1) A Data Principal shall have the right to have readily available means of grievance redressal... 14. (1) A Data Principal shall have the right to nominate, in such manner as may be prescribed, any other individual, who shall... exercise the rights of the Data Principal.",
+      "question": "Besides access, correction, and erasure, what two further rights do Sections 13 and 14 of the DPDP Act 2023 give a Data Principal?",
+      "options": [
+        "The right to grievance redressal, and the right to nominate another individual to exercise their rights (e.g. in the event of death or incapacity)",
+        "The right to a government job, and the right to free legal representation in all matters",
+        "The right to unlimited free cloud storage, and the right to a tax rebate",
+        "The right to demand a public apology from the Data Fiduciary in every case"
+      ],
+      "answer_index": 0,
+      "explanation": "Sections 13 and 14 add a right to accessible grievance redressal and a right to nominate someone else to exercise the Data Principal's rights -- not employment guarantees, free legal aid, storage benefits, tax rebates, or a mandatory public-apology remedy."
+    },
+    {
+      "item_id": "ai_dl_data_privacy_017",
+      "doc_id": "dpdp_act_2023",
+      "competency_id": "dl_data_privacy",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "The Schedule (penalties), read with Section 33(1)",
+      "source_excerpt": "Breach in observing the obligation of Data Fiduciary to take reasonable security safeguards... May extend to two hundred and fifty crore rupees... Breach in observance of additional obligations in relation to children under section 9... May extend to two hundred crore rupees.",
+      "question": "Comparing the DPDP Act 2023's penalty Schedule, which type of breach carries the highest maximum monetary penalty?",
+      "options": [
+        "Failure to take reasonable security safeguards to prevent a personal data breach, at up to 250 crore rupees",
+        "Breach of any other minor, unspecified provision, at up to 250 crore rupees",
+        "Failure to observe the general duties of a Data Principal, at up to 250 crore rupees",
+        "A Consent Manager's failure to register with the Board, at up to 250 crore rupees"
+      ],
+      "answer_index": 0,
+      "explanation": "The Schedule sets the highest ceiling (up to 250 crore rupees) for a Data Fiduciary's failure to take reasonable security safeguards -- higher than the 200 crore ceiling for breaches involving children's data protections, and well above the lower ceilings (e.g. 50 crore for general/other provisions) that apply to the remaining, less severe categories."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_001",
+      "doc_id": "it_act_2000",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Chapter II, 'Authentication of Electronic Records', Section 3",
+      "source_excerpt": "digital signature' means authentication of any electronic record by a subscriber by means of an electronic method or procedure in accordance with the provisions of section 3.",
+      "question": "Under the Information Technology Act, 2000, what does 'authentication' of an electronic record by digital signature legally establish?",
+      "options": [
+        "That a subscriber has authenticated the electronic record by an electronic method or procedure recognised under Section 3",
+        "That the electronic record has been physically notarised in front of a magistrate",
+        "That the electronic record can never be modified again by anyone, including the subscriber",
+        "That the record automatically becomes classified as a government secret"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 3 defines digital signature as a subscriber's authentication of an electronic record through a recognised electronic method or procedure -- it is not a physical notarisation, does not make a record permanently unmodifiable by its own subscriber, and has nothing to do with government secrecy classification."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_002",
+      "doc_id": "it_act_2000",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Chapter VI, licensing of Certifying Authorities",
+      "source_excerpt": "'Certifying Authority' means a person who has been granted a licence to issue a Digital Signature Certificate.",
+      "question": "Under the IT Act 2000, who is authorised to issue a Digital Signature Certificate to a subscriber?",
+      "options": [
+        "Any private individual, with no licensing requirement whatsoever",
+        "A person or entity that has been granted a licence to act as a Certifying Authority",
+        "Only foreign governments recognised by a bilateral treaty",
+        "Only the subscriber themselves, through self-certification"
+      ],
+      "answer_index": 1,
+      "explanation": "The Act restricts Digital Signature Certificate issuance to licensed Certifying Authorities -- not any private individual without a licence, not exclusively foreign governments, and not self-certification by the subscriber."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_003",
+      "doc_id": "it_act_2000",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Chapter IX, Section 43",
+      "source_excerpt": "43. If any person without permission of the owner or any other person who is incharge of a computer, computer system or computer network... accesses or secures access to such computer... he shall be liable to pay damages by way of compensation not exceeding one crore rupees to the person so affected.",
+      "question": "Under Section 43 of the IT Act 2000, what is the civil consequence for a person who accesses a computer system without the owner's permission?",
+      "options": [
+        "Automatic revocation of the offender's voter registration",
+        "Liability to pay damages by way of compensation, not exceeding one crore rupees, to the affected person",
+        "A mandatory public apology published in a national newspaper",
+        "Immediate criminal imprisonment with no possibility of a civil remedy"
+      ],
+      "answer_index": 1,
+      "explanation": "Section 43 provides a civil compensation remedy of up to one crore rupees to the affected party for unauthorised computer access -- it does not touch voter registration, mandate a newspaper apology, or convert the matter into an automatic criminal imprisonment with no civil route."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_004",
+      "doc_id": "it_act_2000",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Chapter XI, Section 65",
+      "source_excerpt": "Whoever knowingly or intentionally conceals, destroys or alters or intentionally or knowingly causes another to conceal, destroy or alter any computer source code... shall be punishable with imprisonment up to three years, or with fine which may extend up to two lakh rupees, or with both.",
+      "question": "Section 65 of the IT Act 2000 criminalises what specific act relating to computer source code?",
+      "options": [
+        "Merely reading computer source code without authorisation",
+        "Knowingly or intentionally concealing, destroying, or altering computer source code required to be kept or maintained by law",
+        "Writing computer source code in a language other than English",
+        "Publishing computer source code as open-source software"
+      ],
+      "answer_index": 1,
+      "explanation": "Section 65 targets knowing/intentional concealment, destruction, or alteration of source code that is legally required to be maintained -- not mere unauthorised reading, the choice of programming language, or voluntary open-sourcing of code."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_005",
+      "doc_id": "it_act_2000",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Chapter X, Sections 57-62, Cyber Appellate Tribunal",
+      "source_excerpt": "Any person aggrieved by any decision or order of the Cyber Appellate Tribunal may file an appeal to the High Court within sixty days from the date of communication of the decision or order.",
+      "question": "Under the IT Act 2000, what recourse does a person have if they are aggrieved by a decision of the Cyber Appellate Tribunal?",
+      "options": [
+        "No further appeal is possible under any circumstances",
+        "They may appeal to the High Court within sixty days of the decision being communicated to them",
+        "They must file a fresh complaint with the same Tribunal and start the process over",
+        "They may only appeal directly to the Supreme Court within seven days"
+      ],
+      "answer_index": 1,
+      "explanation": "The Act provides a further appeal route to the High Court within sixty days of the Tribunal's order being communicated -- it is not a dead end, does not require restarting at the same Tribunal, and does not impose a seven-day Supreme-Court-only route."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_006",
+      "doc_id": "cca_esign_eauth",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Definitions, 'eSign' / 'eSign Service'",
+      "source_excerpt": "'eSign' or 'eSign Service' is an online Electronic Signature Service in which the key pair generation, application of Digital Signature Certificate and application of digital signature on the document are facilitated by the eSign online Electronic Signature Service provider instantaneously within a single online service based on successful authentication of individual using e-KYC services.",
+      "question": "What is distinctive about the eSign service as defined in CCA's e-authentication guidelines, compared to a conventional USB-token-based digital signature?",
+      "options": [
+        "eSign requires the subscriber to carry a physical hardware token to every signing event",
+        "eSign generates the key pair, issues the certificate, and applies the signature all within a single online session, based on successful e-KYC authentication",
+        "eSign can only be used once in a person's lifetime and never again",
+        "eSign is available only to foreign nationals residing outside India"
+      ],
+      "answer_index": 1,
+      "explanation": "eSign is built to complete key generation, certificate issuance, and signing instantaneously in one online session after e-KYC authentication -- unlike a hardware-token model, it needs no physical device, is reusable, and is designed for use by individuals in India via Aadhaar-linked e-KYC."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_007",
+      "doc_id": "cca_esign_eauth",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Section 2.0, eSign Service Providers / e-KYC Services Providers",
+      "source_excerpt": "The applicable e-KYC services provider for eSign are: 1. UIDAI (Online Aadhaar e-KYC Services) 2. eSign User Account with CA (based on Offline Aadhaar e-KYC...)",
+      "question": "Which identity verification services does CCA's e-authentication guideline recognise as valid e-KYC providers for eSign?",
+      "options": [
+        "UIDAI's Online Aadhaar e-KYC, and offline Aadhaar e-KYC based eSign user accounts with a Certifying Authority",
+        "Only a person's driving licence issued by any state transport department",
+        "Only a foreign passport verified by an overseas embassy",
+        "Only a bank-issued debit card PIN"
+      ],
+      "answer_index": 0,
+      "explanation": "The guideline names UIDAI's Online Aadhaar e-KYC and CA-hosted offline-Aadhaar-based eSign user accounts as the recognised e-KYC providers for eSign -- not driving licences, foreign passports, or bank debit-card PINs, none of which the guideline lists."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_008",
+      "doc_id": "cca_esign_eauth",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Definitions, 'response code'",
+      "source_excerpt": "'response code' is the identification number maintained by e-KYC provider to identify the response transaction for the successful authentication done for the eSign user.",
+      "question": "What purpose does a 'response code' serve in the eSign e-authentication process?",
+      "options": [
+        "It is the identification number the e-KYC provider maintains to identify the specific successful authentication transaction for that eSign user",
+        "It is a marketing promo code offered to first-time eSign users",
+        "It is the postal code of the eSign Service Provider's registered office",
+        "It is a random number generated purely for statistical usage tracking with no link to authentication"
+      ],
+      "answer_index": 0,
+      "explanation": "The response code specifically identifies the successful e-KYC authentication transaction tied to that user -- it is not a promotional code, a postal address detail, or a purely statistical, unrelated identifier."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_009",
+      "doc_id": "cca_dsc_interop",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Introduction, PKI hierarchy discussion",
+      "source_excerpt": "Public Key Infrastructure (PKI) model that has been set up in the country. The RCAI with its self-signed Root... The current India PKI organization structure consists of the Controller of Certifying Authority as the apex body and the [licensed CAs below it].",
+      "question": "How is India's Public Key Infrastructure (PKI) hierarchy for Digital Signature Certificates structured, according to CCA's interoperability guidelines?",
+      "options": [
+        "The Controller of Certifying Authorities sits at the apex, above the Root Certifying Authority of India (RCAI) with its self-signed root, with licensed Certifying Authorities below",
+        "Every Certifying Authority operates as a fully independent root with no common apex body",
+        "The hierarchy is managed entirely by private international companies with no Indian government role",
+        "Only a single Certifying Authority is permitted to exist in the entire country"
+      ],
+      "answer_index": 0,
+      "explanation": "The guidelines describe a hierarchy with the Controller of Certifying Authorities as the apex body, operating the RCAI's self-signed root, with licensed Certifying Authorities issuing certificates beneath it -- not a set of fully independent unconnected roots, a purely private international structure, or a single-CA monopoly."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_010",
+      "doc_id": "cca_dsc_interop",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Section on the interoperability model",
+      "source_excerpt": "The interoperability challenges facing the Indian PKI are two fold - first being standardization of certificate fields and... the majority of the interoperability problems in certificates are due to... issuance of various different classes of certificates by each of the [Certifying Authorities]... path development and path validation.",
+      "question": "What two-fold problem does the CCA's interoperability guideline identify as the root cause of Digital Signature Certificate interoperability issues in India?",
+      "options": [
+        "A lack of standardisation in certificate fields, and inconsistencies from different classes of certificates complicating certificate path development and validation across the PKI hierarchy",
+        "A shortage of Certifying Authorities licensed to operate in the country",
+        "The use of Hindi rather than English in certificate metadata",
+        "The absence of any Controller of Certifying Authorities to oversee the system"
+      ],
+      "answer_index": 0,
+      "explanation": "The guideline identifies non-standardised certificate fields and inconsistent certificate classes (complicating path development/validation across the hierarchy) as the two-fold cause -- not a shortage of licensed CAs, a language issue, or an absent Controller, which does in fact exist as the apex body."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_011",
+      "doc_id": "cca_esign_integration",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Revocation status checking section",
+      "source_excerpt": "Revocation status can be verified using CRLs or OCSP responses. CCA provides revocation... In the case of OCSP response for revocation status, CAs generally provide OCSP response with a validity time (8 hours for subCAs & CAs)...",
+      "question": "According to CCA's electronic signature integration guidelines, how can an application verify whether a Digital Signature Certificate has been revoked?",
+      "options": [
+        "By checking Certificate Revocation Lists (CRLs) or Online Certificate Status Protocol (OCSP) responses, where sub-CA/CA OCSP responses typically carry an 8-hour validity window",
+        "By calling the certificate holder on the phone and asking them directly",
+        "There is no way to check revocation status; certificates are assumed valid forever once issued",
+        "By checking only the certificate's expiry date, since expiry and revocation are the same thing"
+      ],
+      "answer_index": 0,
+      "explanation": "The guidelines describe CRL and OCSP-based revocation checking, with sub-CA/CA OCSP responses typically valid for 8 hours -- not a phone-call verification method, an assumption of permanent validity, or treating expiry and revocation as identical concepts."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_012",
+      "doc_id": "cca_esign_integration",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Timestamping section",
+      "source_excerpt": "Time Stamp responses should be LTV Enabled... it should include all the Root Certificate, along with revocation information (OCSP response / CRL data valid at the time of signature creation)... as per RFC 3161 specifications.",
+      "question": "What does making a timestamp 'LTV Enabled' (per CCA's integration guidelines and RFC 3161) accomplish for a digitally signed document?",
+      "options": [
+        "It deletes the signature after a fixed period to save storage space",
+        "It bundles the root certificate and revocation information (OCSP/CRL data valid at signing time) with the timestamp, so the signature can still be validated long after certificates involved may have expired or been revoked",
+        "It converts the digital signature into a handwritten signature image",
+        "It allows the signer to change the document content after signing without invalidating the signature"
+      ],
+      "answer_index": 1,
+      "explanation": "LTV (Long-Term Validation) enabling packages the root certificate and contemporaneous revocation data with the timestamp so the signature remains verifiable far into the future -- it does not delete the signature, convert it to an image, or allow post-signing edits without breaking validity."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_013",
+      "doc_id": "cca_esign_integration",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section on hashing/signature techniques",
+      "source_excerpt": "no proprietary techniques should be employed i.e double hashing, etc.",
+      "question": "What does CCA's electronic signature integration guideline recommend against when it comes to hashing techniques used to create a digital signature?",
+      "options": [
+        "Using any hashing algorithm at all, since hashing is unnecessary for signatures",
+        "Employing proprietary techniques such as double hashing, in favour of standard, interoperable methods",
+        "Ever changing the hashing algorithm even when a standards body deprecates the old one",
+        "Applying a hash function to PDF documents specifically, though it is fine for other formats"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline specifically discourages proprietary techniques like double hashing, favouring standard interoperable approaches -- it does not argue against hashing altogether, forbid updating algorithms when needed, or single out PDFs as an exception."
+    },
+    {
+      "item_id": "ai_dl_digital_signatures_014",
+      "doc_id": "cca_esign_integration",
+      "competency_id": "dl_digital_signatures",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Certificate fields discussion",
+      "source_excerpt": "included in the certificate like Name, address, PAN, mobile, email ID, Aadhaar Number (last 4 digits)...",
+      "question": "According to CCA's electronic signature application integration guidelines, which identity detail may appear (in partial, masked form) within a Digital Signature Certificate's fields?",
+      "options": [
+        "The subscriber's full, unmasked Aadhaar number",
+        "Only the last 4 digits of the subscriber's Aadhaar number, alongside details like name, address, PAN, mobile, and email",
+        "The subscriber's bank account balance",
+        "The subscriber's biometric fingerprint image in raw form"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline lists certificate fields that may include name, address, PAN, mobile, email ID, and only the last 4 digits of the Aadhaar number (masked, not the full number) -- it does not include bank balances or raw biometric images as certificate fields."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_001",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Introduction, origin of GI Cloud",
+      "source_excerpt": "the Department of Electronics and IT (DeitY) has embarked upon a National Cloud initiative termed as 'GI Cloud'.",
+      "question": "What is the official name of India's National Cloud initiative described in the GI Cloud roadmap document?",
+      "options": [
+        "GI Cloud, also known as Meghraj",
+        "Digital India Cloud Corporation",
+        "National Informatics Cloud Authority",
+        "Bharat Net Cloud Mission"
+      ],
+      "answer_index": 0,
+      "explanation": "The initiative launched by the Department of Electronics and IT is named 'GI Cloud', popularly also called Meghraj -- the other names are not used in the document to describe this initiative."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_002",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section 3.2, GI Cloud Environment",
+      "source_excerpt": "The GI Cloud environment is envisaged to be initially established... termed as 'National Clouds' and 'State Clouds' respectively... one of the National Cloud will be built utilising the infrastructure available under the NDCs... willing State Clouds built on state data centres can also become part of the GI Cloud environment.",
+      "question": "How is the GI Cloud environment architecturally organised, according to the roadmap?",
+      "options": [
+        "As a single, monolithic cloud with no distinction between national and state-level infrastructure",
+        "As a combination of National Clouds (built on National Data Centre infrastructure) and State Clouds (built on willing states' own data centres)",
+        "As a purely private-sector cloud with no government data centre involvement",
+        "As a cloud restricted only to union territories, excluding all states"
+      ],
+      "answer_index": 1,
+      "explanation": "The roadmap describes a layered environment of National Clouds (leveraging National Data Centre infrastructure) plus State Clouds (built on willing states' own data centres) that can join the GI Cloud environment -- not a single monolithic cloud, a purely private setup, or a union-territory-only scope."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_003",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Contents, 'eGov AppStore' annexure reference",
+      "source_excerpt": "Annexure III: Illustrative Evaluation Criteria for Hosting Applications on eGov AppStore.",
+      "question": "What is the 'eGov AppStore' referenced in the GI Cloud roadmap intended for?",
+      "options": [
+        "Selling consumer mobile games to the general public",
+        "Hosting and evaluating government applications against defined evaluation criteria within the GI Cloud ecosystem",
+        "Distributing pirated commercial software free of cost",
+        "Managing the personal social media accounts of government officials"
+      ],
+      "answer_index": 1,
+      "explanation": "The eGov AppStore is described in the context of hosting government applications, evaluated against illustrative criteria set out in the roadmap's annexure -- it is not a consumer game store, a piracy platform, or a social-media management tool."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_004",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Contents, Section 5, institutional set up",
+      "source_excerpt": "Section 5 captures the institutional set up of GI Cloud. It details out the functions of... 5.2 Department of Electronics and IT (DeitY)... 5.3 GI Cloud Expert Group.",
+      "question": "Which two entities does the GI Cloud roadmap describe as central to the initiative's institutional set-up?",
+      "options": [
+        "The Department of Electronics and IT (DeitY) and a GI Cloud Expert Group",
+        "The Reserve Bank of India and the Election Commission",
+        "The Ministry of Defence and the Indian Space Research Organisation",
+        "A private multinational consortium with no government body involved"
+      ],
+      "answer_index": 0,
+      "explanation": "The roadmap's institutional-setup section details the roles of DeitY and a GI Cloud Expert Group -- not the RBI, the Election Commission, Defence Ministry, ISRO, or a purely private consortium, none of which are named in that section."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_005",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Section 3.2, phased rollout discussion",
+      "source_excerpt": "Initially, one National Cloud will be set up and after assessing the demand, [additional National Clouds] be set up later. Services provided by National Clouds could include infrastructure... application development, migration, hosting etc.",
+      "question": "What phased approach does the GI Cloud roadmap describe for rolling out National Clouds?",
+      "options": [
+        "All National Clouds are deployed simultaneously on day one, with no phased approach",
+        "One National Cloud is set up initially, with additional National Clouds established later based on assessed demand",
+        "National Clouds are set up only after every single state has already built its own State Cloud",
+        "A National Cloud is dismantled and rebuilt from scratch every fiscal year"
+      ],
+      "answer_index": 1,
+      "explanation": "The roadmap describes a demand-driven, phased rollout: one National Cloud first, with more added later as demand is assessed -- not a simultaneous big-bang deployment, a strict precondition that every state finish its own cloud first, or an annual rebuild cycle."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_006",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Introduction, CERT-In's statutory mandate",
+      "source_excerpt": "national agency in respect of cyber incidents and cyber security incidents in terms of the provisions of section 70B of Information Technology (IT) Act, 2000... for all the Ministries, [departments and government entities].",
+      "question": "Under which section of the IT Act 2000 does CERT-In derive its mandate as India's national agency for cyber incidents?",
+      "options": [
+        "Section 43",
+        "Section 66",
+        "Section 70B",
+        "Section 79"
+      ],
+      "answer_index": 2,
+      "explanation": "CERT-In's role as the national cyber incident response agency for government entities is grounded in Section 70B of the IT Act 2000 -- Sections 43, 66, and 79 deal with unrelated matters (civil compensation for unauthorised access, hacking offences, and intermediary liability, respectively)."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_007",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Introduction, CERT-In's core functions",
+      "source_excerpt": "a) collection, analysis and dissemination of information on cyber incidents; b) forecast and alerts of cyber security incidents; c) emergency measures for handling cyber security incidents; d) coordination of cyber incidents response activities...",
+      "question": "Which of the following is one of CERT-In's core functions as described in the guidelines for government entities?",
+      "options": [
+        "Issuing driving licences to government vehicle fleets",
+        "Coordination of cyber incident response activities across affected entities",
+        "Approving the annual union budget for all ministries",
+        "Manufacturing government-issued laptops and servers"
+      ],
+      "answer_index": 1,
+      "explanation": "CERT-In's listed functions include collecting/analysing/disseminating cyber incident information, forecasting/alerting, emergency response measures, and coordinating incident response -- not driving licences, budget approval, or hardware manufacturing, which are unrelated to its mandate."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_008",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Section on incident reporting timelines",
+      "source_excerpt": "shall mandatorily report cyber incidents to CERT-In within 6 hours of noticing such [incidents].",
+      "question": "A government department's IT system experiences a suspected cyber security incident at 10:00 AM. According to CERT-In's guidelines for government entities, by what time must it be reported to CERT-In?",
+      "options": [
+        "By the end of the current calendar month",
+        "By 4:00 PM the same day -- within 6 hours of noticing the incident",
+        "There is no fixed deadline; reporting is entirely optional",
+        "Within 30 days, as long as an internal memo is filed first"
+      ],
+      "answer_index": 1,
+      "explanation": "CERT-In's guidelines mandate reporting within 6 hours of noticing a cyber incident, making the deadline 4:00 PM the same day for a 10:00 AM incident -- reporting is mandatory, not optional, and there is no month-end or 30-day grace period."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_009",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section 3.1, CISO nomination requirement",
+      "source_excerpt": "Nominate a Chief Information Security Officer (CISO) for IT Security and provide the details of this CISO... CISO should have a dedicated cybersecurity team, separate from IT operations and [with responsibilities including] conducting incident response.",
+      "question": "What does CERT-In's guideline require of a government entity's Chief Information Security Officer (CISO) function?",
+      "options": [
+        "The CISO must be nominated and supported by a dedicated cybersecurity team that is separate from the IT operations team",
+        "The CISO role can be left vacant indefinitely without consequence",
+        "The CISO must personally handle all IT operations tasks with no separate operations team",
+        "The CISO must be an official from a foreign government agency"
+      ],
+      "answer_index": 0,
+      "explanation": "The guideline requires a nominated CISO backed by a dedicated cybersecurity team separate from IT operations -- it does not permit leaving the role vacant, merge the CISO into general IT operations duties, or require a foreign official to fill the post."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_010",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Contents, 'Security auditing guidelines' and Cyber Crisis Management Plan",
+      "source_excerpt": "15. Security auditing guidelines... [and] incidents such as comprehensive Cyber Crisis Management Plan (CCMP) document.",
+      "question": "Alongside CISO nomination and incident reporting, what other preparedness measure does CERT-In's guideline for government entities call for?",
+      "options": [
+        "A comprehensive Cyber Crisis Management Plan (CCMP) and periodic security auditing",
+        "A ban on all government employees using email",
+        "A requirement that every department build its own private satellite network",
+        "Mandatory annual relocation of all government data centres"
+      ],
+      "answer_index": 0,
+      "explanation": "The guideline calls for a Cyber Crisis Management Plan and periodic security auditing as preparedness measures -- not banning email use, mandating private satellites, or forcing annual data-centre relocation, none of which appear in the document."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_011",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Introduction, document scope",
+      "source_excerpt": "baseline document for administration and audit teams (internal, external/ Third-party auditors)... Network Security, Application Security, Data Security, Auditing, Third Party Outsourcing.",
+      "question": "What areas does CERT-In's baseline guideline document for government entities cover?",
+      "options": [
+        "Network security, application security, data security, auditing, and third-party outsourcing",
+        "Only physical building security for government offices",
+        "Only the design of government letterheads and official seals",
+        "Only foreign exchange management for import of IT hardware"
+      ],
+      "answer_index": 0,
+      "explanation": "The document explicitly scopes itself around network security, application security, data security, auditing, and third-party outsourcing -- not physical building security, letterhead design, or foreign-exchange hardware-import management."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_012",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Introduction, purpose of the roadmap document",
+      "source_excerpt": "districts and municipalities to accelerate their ICT-enabled service improvements... A task force has been set up along with the 'GI Cloud - Strategic Direction paper', which addresses the strategy...",
+      "question": "What is the underlying policy goal that motivates the GI Cloud (Meghraj) initiative, according to the roadmap's introduction?",
+      "options": [
+        "To accelerate ICT-enabled service improvements across government levels, including districts and municipalities, through shared cloud infrastructure",
+        "To eliminate all physical government offices within five years",
+        "To privatise every government IT function with no public ownership retained",
+        "To restrict internet access for government employees during working hours"
+      ],
+      "answer_index": 0,
+      "explanation": "The roadmap frames GI Cloud as a way to accelerate ICT-enabled service delivery improvements down to districts and municipalities via shared cloud infrastructure -- not to eliminate physical offices, fully privatise government IT, or restrict employee internet access."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_013",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Contents, Section 4, eco-system of GI Cloud",
+      "source_excerpt": "Section 4 describes the eco-system of the GI Cloud environment and the role of each [stakeholder].",
+      "question": "What does Section 4 of the GI Cloud roadmap describe?",
+      "options": [
+        "The eco-system of the GI Cloud environment and the respective roles of different stakeholders within it",
+        "The exact hardware specifications for every server in every state data centre",
+        "A list of banned software applications for government use",
+        "The salary structure of GI Cloud technical staff"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 4 is explicitly about the GI Cloud eco-system and stakeholder roles -- not a hardware specification sheet, a banned-software list, or a salary structure document."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_014",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "Annexure 1, Guidelines for Central Government CISOs and Employees",
+      "source_excerpt": "Annexure 1: Guidelines for Central Government CISOs and Employees.",
+      "question": "Who does Annexure 1 of CERT-In's guideline document specifically address?",
+      "options": [
+        "State transport department vehicle inspectors",
+        "Central Government CISOs and general government employees",
+        "Private citizens applying for a driving licence online",
+        "Foreign diplomatic missions stationed in India"
+      ],
+      "answer_index": 1,
+      "explanation": "Annexure 1 is titled 'Guidelines for Central Government CISOs and Employees', addressing that specific audience -- not vehicle inspectors, private citizens applying for licences, or foreign diplomatic missions."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_015",
+      "doc_id": "gi_cloud_roadmap",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Contents, Section 7, business model",
+      "source_excerpt": "Section 7 is focussed on the business model of GI Cloud and it discusses the need [for a sustainable funding/operating approach].",
+      "question": "What topic does Section 7 of the GI Cloud roadmap focus on?",
+      "options": [
+        "The business model of GI Cloud",
+        "The biography of the Minister who inaugurated the initiative",
+        "A comparison of smartphone brands used by government employees",
+        "The history of the printing press in India"
+      ],
+      "answer_index": 0,
+      "explanation": "Section 7 is explicitly focused on GI Cloud's business model -- unrelated to a minister's biography, smartphone brand comparisons, or the history of printing, none of which the roadmap covers."
+    },
+    {
+      "item_id": "ai_dl_government_cloud_016",
+      "doc_id": "certin_govt_entities",
+      "competency_id": "dl_government_cloud",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "Section 3.1, CISO team separation rationale",
+      "source_excerpt": "CISO should have a dedicated cybersecurity team, separate from IT operations and [dedicated to] conducting incident response.",
+      "question": "Why does CERT-In's guideline insist that a government entity's cybersecurity team be kept separate from its IT operations team, rather than merged into one?",
+      "options": [
+        "Merging them would reduce headcount costs, which the guideline actively encourages",
+        "Keeping security oversight independent of the team running day-to-day IT operations helps ensure objective monitoring and incident response, rather than security being subordinated to operational convenience",
+        "The two teams are legally required to be located in different cities",
+        "IT operations staff are statutorily barred from ever discussing cybersecurity"
+      ],
+      "answer_index": 1,
+      "explanation": "Separating the dedicated cybersecurity team from IT operations supports independent, objective security oversight and incident response rather than letting security concerns be deprioritised for operational convenience -- the guideline does not push cost-cutting through merging teams, does not impose a geographic-separation rule, and does not bar IT staff from discussing security."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_001",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Section on the foundations of India's DPI ecosystem",
+      "source_excerpt": "This convergence took shape as the JAM trinity. Jan Dhan bank accounts, Aadhaar enrolment and widespread mobile phone penetration created the base layer for India's digital public infrastructure ecosystem.",
+      "question": "What is the 'JAM trinity' described as the foundational base layer of India's Digital Public Infrastructure?",
+      "options": [
+        "Jan Dhan bank accounts, Aadhaar enrolment, and Mobile phone penetration",
+        "Judiciary, Administration, and Media reforms",
+        "Jobs, Agriculture, and Manufacturing policy",
+        "Justice, Accountability, and Monitoring frameworks"
+      ],
+      "answer_index": 0,
+      "explanation": "The PIB backgrounder names the JAM trinity as Jan Dhan bank accounts, Aadhaar enrolment, and mobile phone penetration -- the convergence of these three formed DPI's base layer, not the unrelated institutional or sectoral groupings in the other options."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_002",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Section on Aadhaar",
+      "source_excerpt": "Aadhaar introduced a biometric based digital identity platform for residents... As of March 2026, more than 144 crore Aadhaar numbers had been generated.",
+      "question": "What kind of identity platform does Aadhaar provide, as described in PIB's 2026 backgrounder on India's DPI?",
+      "options": [
+        "A biometric-based digital identity platform for residents, with over 144 crore numbers generated as of March 2026",
+        "A purely paper-based identity card system with no biometric component",
+        "An identity system available exclusively to government employees",
+        "A blockchain-based cryptocurrency wallet identity"
+      ],
+      "answer_index": 0,
+      "explanation": "The backgrounder describes Aadhaar as a biometric-based digital identity platform for residents, citing over 144 crore numbers generated as of March 2026 -- not a paper-only system, an employees-only scheme, or a cryptocurrency wallet."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_003",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section on UPI",
+      "source_excerpt": "Unified Payments Interface (UPI): UPI has transformed retail payments into a seamless digital experience... A total of 691 banks are live on the UPI platform... the International Monetary Fund, in its June 2025 report on growing retail digital payments, recognised UPI as the world's largest retail fast payment system by transaction volume.",
+      "question": "How did the International Monetary Fund characterise UPI in its June 2025 report, per PIB's DPI backgrounder?",
+      "options": [
+        "As a failed experiment that most Indian banks have since abandoned",
+        "As the world's largest retail fast payment system by transaction volume",
+        "As a system usable only by government employees for salary disbursal",
+        "As a payment system limited exclusively to cross-border remittances"
+      ],
+      "answer_index": 1,
+      "explanation": "The IMF's June 2025 report recognised UPI as the world's largest retail fast payment system by transaction volume -- the backgrounder reports strong bank adoption (691 banks live), not abandonment, a government-employee-only scope, or a cross-border-remittance-only design."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_004",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section on UPI, domestic adoption statistics",
+      "source_excerpt": "In India, 81 percent by volume of total retail payment transactions are processed on UPI rails, making it the preferred mode for person to person as well as person to merchant [payments].",
+      "question": "What share of India's total retail payment transactions (by volume) does the PIB backgrounder attribute to UPI?",
+      "options": [
+        "About 25 percent",
+        "About 50 percent",
+        "About 81 percent",
+        "About 99 percent"
+      ],
+      "answer_index": 2,
+      "explanation": "The backgrounder states that 81 percent of total retail payment transactions by volume in India are processed on UPI rails -- not 25, 50, or 99 percent as offered in the distractor options."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_005",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section on UPI's cross-border expansion",
+      "source_excerpt": "Cross Border Expansion of UPI: India's payment infrastructure has crossed national boundaries. UPI is now [live in several countries, including] Brazil, Lesotho, Maldives, Mongolia, Malaysia.",
+      "question": "According to the PIB backgrounder, what recent trend has UPI shown beyond its domestic success?",
+      "options": [
+        "It has been withdrawn from operation entirely due to security concerns",
+        "It has expanded across national boundaries, going live in a growing list of countries",
+        "It has been merged into a single global cryptocurrency network",
+        "It has been restricted to use only within Indian embassies abroad"
+      ],
+      "answer_index": 1,
+      "explanation": "The backgrounder describes UPI's cross-border expansion into multiple countries as a real trend -- there is no mention of withdrawal for security reasons, merger into a cryptocurrency network, or restriction to embassy-only use."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_006",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Section on DigiLocker",
+      "source_excerpt": "DigiLocker: Launched in 2015, DigiLocker introduced a secure digital document wallet for citizens to retrieve critical lifelong records anytime and from anywhere. As of 5 March 2026, DigiLocker had 67.63 crore users.",
+      "question": "What is DigiLocker, as described in PIB's 2026 backgrounder on India's DPI?",
+      "options": [
+        "A secure digital document wallet, launched in 2015, letting citizens retrieve lifelong records anytime and from anywhere",
+        "A physical locker system installed only at post offices",
+        "A cryptocurrency exchange platform regulated by the RBI",
+        "A subscription-based cloud storage service run by a private foreign company"
+      ],
+      "answer_index": 0,
+      "explanation": "DigiLocker is described as a secure digital document wallet launched in 2015, giving citizens access to lifelong records from anywhere -- not a physical post-office locker, a cryptocurrency exchange, or a foreign private subscription service."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_007",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section on DigiLocker, scale statistics",
+      "source_excerpt": "By March 2026, over 950 crore documents had been issued [through DigiLocker].",
+      "question": "What scale of document issuance does the PIB backgrounder attribute to DigiLocker by March 2026?",
+      "options": [
+        "Fewer than 1 lakh documents issued in total",
+        "Over 950 crore documents issued",
+        "Exactly 100 documents issued per registered user, with no more allowed",
+        "DigiLocker does not issue documents; it only stores documents users already have"
+      ],
+      "answer_index": 1,
+      "explanation": "The backgrounder cites over 950 crore documents issued through DigiLocker by March 2026 -- not a negligible count, a fixed 100-per-user cap, or a claim that DigiLocker never issues documents (it explicitly does, alongside storage)."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_008",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section on UMANG",
+      "source_excerpt": "citizens can use UMANG to access services such as EPFO balance and claims, PAN and Aadhaar services, DigiLocker access, utility bill payments, pension services, scholarship applications...",
+      "question": "What role does the UMANG app play within India's Digital Public Infrastructure, per the PIB backgrounder?",
+      "options": [
+        "It functions as a unified access point letting citizens reach services like EPFO, PAN/Aadhaar, DigiLocker, utility payments, pensions, and scholarships from one app",
+        "It is a standalone banking app with no connection to any other government service",
+        "It exists solely to renew passports and nothing else",
+        "It is restricted to use by government employees applying for internal transfers"
+      ],
+      "answer_index": 0,
+      "explanation": "UMANG is described as a unified access point spanning EPFO, PAN/Aadhaar services, DigiLocker, utility bill payments, pension services, and scholarship applications -- not a single-purpose banking or passport app, nor an employees-only internal tool."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_009",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section on ONDC",
+      "source_excerpt": "Open Network for Digital Commerce (ONDC): Launched in 2022, ONDC is an open network designed to democratise digital commerce... As of December 2025, there are a total of 1.16 lakh+ retail sellers live on ONDC from over 630+ cities and towns across India.",
+      "question": "What is the stated goal of the Open Network for Digital Commerce (ONDC), and what is its reported scale as of December 2025?",
+      "options": [
+        "To democratise digital commerce, with over 1.16 lakh retail sellers live across 630+ cities and towns",
+        "To create a single monopoly e-commerce platform that eventually replaces all others",
+        "To restrict online commerce to only five major metropolitan cities",
+        "To operate exclusively as a business-to-government procurement channel with no retail sellers"
+      ],
+      "answer_index": 0,
+      "explanation": "ONDC's stated goal is to democratise digital commerce via an open network, reporting 1.16 lakh+ retail sellers across 630+ cities and towns as of December 2025 -- it is an open network rather than a monopoly platform, is not restricted to five metros, and is a retail-facing initiative distinct from government procurement platforms."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_010",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section on Government eMarketplace",
+      "source_excerpt": "Government eMarketplace: The Government eMarketplace has digitised public procurement and widened participation in government contracting. It provides an online platform for transparent and efficient procurement... [with] orders worth over Rs 7.35 lakh crore.",
+      "question": "What is the Government eMarketplace (GeM), according to the PIB backgrounder?",
+      "options": [
+        "An online platform digitising public procurement, widening participation in government contracting, with orders worth over Rs 7.35 lakh crore",
+        "A private online retail store selling only to foreign buyers",
+        "A recruitment portal exclusively for hiring central government schoolteachers",
+        "A stock exchange for trading shares of public sector undertakings"
+      ],
+      "answer_index": 0,
+      "explanation": "GeM is described as digitising public procurement and widening participation in government contracting transparently and efficiently, with cumulative orders worth over Rs 7.35 lakh crore -- not a foreign-only private retailer, a teacher recruitment portal, or a PSU stock exchange."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_011",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "Section on the India Stack concept",
+      "source_excerpt": "open APIs (Application Programming Interface) and public digital goods. Known as India Stack, it unlocks the core building blocks of identity, data and payments at population scale.",
+      "question": "What does the term 'India Stack' refer to in the PIB backgrounder on Digital Public Infrastructure?",
+      "options": [
+        "A stack of physical government office buildings constructed in New Delhi",
+        "A set of open APIs and public digital goods unlocking core building blocks of identity, data, and payments at population scale",
+        "A pile of paper files awaiting digitisation in government archives",
+        "A private cloud storage product sold exclusively to foreign governments"
+      ],
+      "answer_index": 1,
+      "explanation": "India Stack is described as open APIs and public digital goods that unlock identity, data, and payments building blocks at population scale -- a conceptual/technical framework, not a literal building stack, a paper-archive backlog, or a product sold only to foreign governments."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_012",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Section on international cooperation on India Stack",
+      "source_excerpt": "India has signed Memoranda of Understanding (MoU) and agreements with 24 countries for cooperation on India Stack and Digital Public Infrastructure... To facilitate structured cooperation, India Stack Global was established.",
+      "question": "How is India sharing its Digital Public Infrastructure model internationally, according to the PIB backgrounder?",
+      "options": [
+        "By signing MoUs and agreements with 24 countries on India Stack/DPI cooperation, structured through the establishment of India Stack Global",
+        "By requiring every partner country to physically relocate its government servers to India",
+        "By selling exclusive licensing rights to a single foreign private company",
+        "India has made no international agreements regarding its DPI model"
+      ],
+      "answer_index": 0,
+      "explanation": "The backgrounder describes MoUs/agreements with 24 countries and the creation of 'India Stack Global' to structure this cooperation -- not a server-relocation requirement, an exclusive private licensing deal, or an absence of international agreements."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_013",
+      "doc_id": "cca_esign_integration",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "Certificate fields discussion",
+      "source_excerpt": "included in the certificate like Name, address, PAN, mobile, email ID, Aadhaar Number (last 4 digits)...",
+      "question": "How does the linkage between Aadhaar and Digital Signature Certificates (as described in CCA's eSign integration guidelines) connect digital signatures to India's Digital Public Infrastructure identity layer?",
+      "options": [
+        "It has no connection at all -- Digital Signature Certificates never reference Aadhaar in any way",
+        "Certificate fields may carry the last 4 digits of a subscriber's Aadhaar number, tying signature-based authentication to Aadhaar as the underlying identity layer",
+        "Every Digital Signature Certificate must display a person's full unmasked Aadhaar number to the public",
+        "Aadhaar numbers replace the need for a Certifying Authority entirely"
+      ],
+      "answer_index": 1,
+      "explanation": "The guideline allows certificate fields to include the masked (last-4-digit) Aadhaar number alongside identity details, linking signature-based authentication to Aadhaar as a DPI identity building block -- it is not a full unmasked Aadhaar disclosure, nor does it eliminate the need for a licensed Certifying Authority."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_014",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Section on Digital Economic Infrastructure heading",
+      "source_excerpt": "across key sectors: Digital Economic Infrastructure Unified Payments Interface (UPI)...",
+      "question": "Under which broad category does the PIB backgrounder classify UPI within India's Digital Public Infrastructure?",
+      "options": [
+        "Digital Economic Infrastructure",
+        "Judicial Infrastructure",
+        "Defence Infrastructure",
+        "Agricultural Infrastructure"
+      ],
+      "answer_index": 0,
+      "explanation": "The backgrounder groups UPI under the heading 'Digital Economic Infrastructure', alongside other payment and commerce rails -- not judicial, defence, or agricultural infrastructure categories, which cover different DPI components."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_015",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Section on Citizen Service Delivery Platforms heading",
+      "source_excerpt": "Citizen Service Delivery Platforms DigiLocker: Launched in 2015, DigiLocker introduced a secure digital document wallet for citizens...",
+      "question": "Under which broad category does the PIB backgrounder place DigiLocker within India's DPI landscape?",
+      "options": [
+        "Citizen Service Delivery Platforms",
+        "Cross-Border Trade Tariff Systems",
+        "Military Logistics Infrastructure",
+        "Judicial Case Management Infrastructure"
+      ],
+      "answer_index": 0,
+      "explanation": "DigiLocker is placed under 'Citizen Service Delivery Platforms' in the backgrounder -- distinct from trade tariff systems, military logistics, or judicial case management, which are unrelated DPI (or non-DPI) categories."
+    },
+    {
+      "item_id": "ai_dl_digital_public_infrastructure_016",
+      "doc_id": "pib_dpi_2026",
+      "competency_id": "dl_digital_public_infrastructure",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "Synthesis across JAM trinity, UPI, DigiLocker, and ONDC sections",
+      "source_excerpt": "Jan Dhan bank accounts, Aadhaar enrolment and widespread mobile phone penetration created the base layer... Known as India Stack, it unlocks the core building blocks of identity, data and payments at population scale.",
+      "question": "Drawing together the JAM trinity, UPI, DigiLocker, and ONDC as described in the PIB backgrounder, what common design pattern do India's DPI components share?",
+      "options": [
+        "Each is a closed, proprietary system with no interoperability across the others",
+        "Each builds on a shared, population-scale foundation (identity via Aadhaar, payments via UPI rails, or open protocols) that other services and private players can build on top of",
+        "Each was built and is operated exclusively by a single foreign technology company",
+        "Each is limited to use only by central government employees, excluding ordinary citizens"
+      ],
+      "answer_index": 1,
+      "explanation": "Across the JAM trinity, UPI, DigiLocker, and ONDC, the backgrounder emphasises shared, population-scale foundations (identity, payments, open protocols) that other applications and private players can build upon -- not closed proprietary silos, single-foreign-company ownership, or a scope limited to government employees."
+    }
+  ]
+}

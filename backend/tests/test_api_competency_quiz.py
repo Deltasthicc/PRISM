@@ -93,8 +93,23 @@ def test_questions_are_bounded_balanced_ordered_and_do_not_leak_answers():
             "difficulty", "doc_id", "locator", "item_status",
         }
         assert question["item_status"] == "DRAFT"
-        assert question["question_type"] == "mcq"
-        assert len(question["options"]) == 4
+        assert question["question_type"] in ("mcq", "fill_in_blank")
+        if question["question_type"] == "mcq":
+            assert len(question["options"]) == 4
+        else:
+            # fill_in_blank never exposes options or the accepted answer --
+            # confirmed above that the full key set never includes
+            # "accepted_answers", so there is nothing here to leak.
+            assert question["options"] is None
+
+
+def test_repeated_practice_sees_a_different_mix_of_questions():
+    """Confirms real per-call randomization, not the same fixed items in the
+    same order every time -- the pool here (statistical_foundations) is large
+    enough that getting the identical ordered item_id sequence twice by
+    chance is negligible."""
+    orderings = {tuple(q["item_id"] for q in issue("statistical_foundations", 5)["questions"]) for _ in range(8)}
+    assert len(orderings) > 1
 
 
 @pytest.mark.parametrize("count", [0, -1, 11, 100_000])

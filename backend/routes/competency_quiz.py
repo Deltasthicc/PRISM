@@ -21,6 +21,7 @@ data/hand_authored_questions.json first, the same way these were added.
 from __future__ import annotations
 
 import json
+import random
 import time
 import uuid
 
@@ -161,8 +162,6 @@ TOPICS: dict[str, dict] = {
     },
 }
 
-_DIFFICULTY_ORDER = {"easy": 0, "medium": 1, "hard": 2}
-
 # Reference time-to-answer per difficulty, in seconds -- a rough, openly
 # approximate baseline (not derived from any measured population of test
 # takers), used only to turn a client-reported elapsed time into a small,
@@ -214,7 +213,7 @@ def _topic_questions(topic_id: str) -> list[dict]:
 
 
 def _select_questions(competency_ids: list[str], count: int) -> list[dict]:
-    """Select a stable, difficulty-progressive and competency-balanced set.
+    """Select a randomized, difficulty-progressive and competency-balanced set.
 
     Difficulty labels are curated prototype metadata, not a psychometrically
     calibrated item-response scale. Within that honest boundary, learners see
@@ -223,13 +222,14 @@ def _select_questions(competency_ids: list[str], count: int) -> list[dict]:
     items happen to appear first in the JSON file. `competency_ids` is either
     a whole topic's list (topic_id practice) or a single competency (a
     Prerequisite Pathways room practicing just that one competency).
+
+    Which specific items fill each difficulty tier is randomized per call --
+    with a large enough bank per competency, repeated practice attempts see a
+    different mix each time instead of the same fixed items in the same order.
     """
 
     by_competency = {
-        competency_id: sorted(
-            questions_for_competency(competency_id),
-            key=lambda item: (_DIFFICULTY_ORDER[item["difficulty"]], item["item_id"]),
-        )
+        competency_id: questions_for_competency(competency_id)
         for competency_id in competency_ids
     }
     selected: list[dict] = []
@@ -242,6 +242,8 @@ def _select_questions(competency_ids: list[str], count: int) -> list[dict]:
             ]
             for competency_id in competency_ids
         }
+        for queue in queues.values():
+            random.shuffle(queue)
         while len(selected) < count and any(queues.values()):
             for competency_id in competency_ids:
                 if queues[competency_id] and len(selected) < count:

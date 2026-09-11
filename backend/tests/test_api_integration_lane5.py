@@ -244,7 +244,11 @@ def test_simulated_igot_never_claims_live_capability():
 
     assert result.status == "SIMULATED"
     assert result.data == {"capabilities": []}
-    assert adapter.request_enrolment("course-1", idempotency_key="request-1").data["accepted"] is False
+    # Accepting an enrolment (unlike the old hardcoded rejection -- see
+    # test_simulated_igot_accepts_enrolment_so_the_lifecycle_is_demoable
+    # below) still must never claim to BE a live provider.
+    enrolment = adapter.request_enrolment("course-1", idempotency_key="request-1")
+    assert enrolment.status == "SIMULATED"
 
 
 def test_simulated_igot_catalogue_is_deterministic_and_explicitly_empty():
@@ -273,7 +277,29 @@ def test_simulated_igot_preserves_idempotency_key_on_repeated_enrolment_requests
 
     assert first == second
     assert first.idempotency_key == "request-1"
-    assert first.data == {"accepted": False, "reason": "simulation-only"}
+    assert first.data == {"accepted": True, "provider_record_id": "course-1", "status": "enrolled"}
+
+
+def test_simulated_igot_accepts_enrolment_so_the_lifecycle_is_demoable():
+    # The previous hardcoded accepted=False made it impossible to ever
+    # demonstrate enroll -> complete -> competency-update end-to-end, which
+    # is the entire point of having this adapter (routes/course_enrollment.py
+    # is the real caller now, not just tests).
+    adapter = SimulatedIGOTAdapter()
+
+    result = adapter.request_enrolment("igot::os_sampling_design", idempotency_key="req-1")
+
+    assert result.data["accepted"] is True
+    assert result.data["provider_record_id"] == "igot::os_sampling_design"
+
+
+def test_simulated_igot_reports_completion_on_request():
+    adapter = SimulatedIGOTAdapter()
+
+    result = adapter.report_completion("igot::os_sampling_design")
+
+    assert result.status == "SIMULATED"
+    assert result.data == {"provider_record_id": "igot::os_sampling_design", "completed": True}
 
 
 @pytest.mark.parametrize(

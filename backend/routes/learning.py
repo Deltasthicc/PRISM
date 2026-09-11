@@ -17,6 +17,7 @@ from routes.learning_profile import get_profile, router as profile_router, upser
 from routes.competency_quiz import router as competency_quiz_router
 from routes.dsa_sandbox import router as dsa_sandbox_router
 from routes.sampling_lab import router as sampling_lab_router
+from routes.course_enrollment import router as course_enrollment_router
 
 router = APIRouter()
 router.include_router(profile_router)
@@ -27,6 +28,7 @@ router.include_router(analytics_router)
 router.include_router(competency_quiz_router)
 router.include_router(dsa_sandbox_router)
 router.include_router(sampling_lab_router)
+router.include_router(course_enrollment_router)
 
 __all__ = [
     "admin_overview",

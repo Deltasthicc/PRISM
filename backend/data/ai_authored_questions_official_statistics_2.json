@@ -1,0 +1,1465 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-11",
+  "note": "Batch 2 of AI-authored, source-grounded MCQs for the official-statistics curriculum, covering os_visualization, os_gis, os_big_data, os_ml and os_survey_design, grounded in NDAP's Vision Document, the National Geospatial Policy 2022, NITI Aayog's National Strategy for Artificial Intelligence, and the CPI Expert Group Report / PLFS 2017-18 Annual Report.",
+  "questions": [
+    {
+      "item_id": "ai_os_visualization_001",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.4 (Vision & Mission)",
+      "source_excerpt": "Vision: Democratize access to public Government data through a world-class user experience.",
+      "question": "According to NITI Aayog's National Data and Analytics Platform (NDAP) Vision Document, what is stated as the platform's core Vision?",
+      "options": [
+        "Democratize access to public Government data through a world-class user experience",
+        "Monetize government datasets through a subscription-based analytics service",
+        "Centralize all state government IT infrastructure under one ministry",
+        "Replace the Census of India with real-time administrative data"
+      ],
+      "answer_index": 0,
+      "explanation": "NDAP's own Vision statement is framed around democratizing (broadening) access to public government data with a world-class user experience -- not monetization, IT centralization, or replacing the Census."
+    },
+    {
+      "item_id": "ai_os_visualization_002",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.4 (Objectives)",
+      "source_excerpt": "Coherent: Multiple data sets are presented using a standardized schema, by using common geographical and temporal identifiers.",
+      "question": "Per the NDAP Vision Document, NDAP's 'Coherent' objective is achieved by presenting multiple datasets using a standardized schema built on which shared elements?",
+      "options": [
+        "Common geographical and temporal identifiers",
+        "A single national data-visualization color palette",
+        "One shared file format (CSV) for every dataset",
+        "A common natural-language description of every indicator"
+      ],
+      "answer_index": 0,
+      "explanation": "The Coherent objective's mechanism is a standardized schema anchored in shared geographical (region) and temporal (time-period) identifiers, so datasets from different sources can be compared and combined -- not a shared color scheme, file type, or free-text description."
+    },
+    {
+      "item_id": "ai_os_visualization_003",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.4 (Objectives)",
+      "source_excerpt": "Objectives: User-centric, Coherent, Up-to-date.",
+      "question": "The NDAP Vision Document lists three Objectives for the platform. Which of the following is NOT one of them?",
+      "options": [
+        "Up-to-date",
+        "Coherent",
+        "Revenue-generating",
+        "User-centric"
+      ],
+      "answer_index": 2,
+      "explanation": "NDAP's three stated Objectives are User-centric, Coherent, and Up-to-date. Revenue generation is never listed as an objective -- the platform's stated purpose is broadening free access to public data, not generating income."
+    },
+    {
+      "item_id": "ai_os_visualization_004",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.5 (Challenges)",
+      "source_excerpt": "Data ecosystem is incoherent due to different standards. Ministries and Departments do not use a shared standard for common indicators. Attributes like region and time period defined differently. This makes it difficult for datasets to speak to each other and present a coherent picture.",
+      "question": "Beyond datasets being published in hard-to-analyse formats, what second major challenge does the NDAP Vision Document identify with India's government data ecosystem?",
+      "options": [
+        "Ministries lack the legal authority to publish any data at all",
+        "Ministries and Departments define common attributes like region and time period differently, making datasets incoherent with each other",
+        "Most datasets are more than a decade old",
+        "Citizens are not permitted to access government data without a fee"
+      ],
+      "answer_index": 1,
+      "explanation": "The second challenge the document names is an incoherent ecosystem: without shared standards for common attributes (e.g. region, time period), datasets from different sources cannot be combined or compared into one coherent picture -- distinct from the separate formats-based challenge (PDF/image-only publishing)."
+    },
+    {
+      "item_id": "ai_os_visualization_005",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.5-6 (Approach)",
+      "source_excerpt": "We intend to draw inspiration from the best platforms around the world... platforms such as 'datausa.io' and 'data.gov.sg'... provide a seamless, interactive experience in accessing data across multiple socio-economic indicators in one place.",
+      "question": "The NDAP Vision Document names international platforms it draws inspiration from for delivering a seamless, interactive data experience. Which pair does it cite?",
+      "options": [
+        "datausa.io and data.gov.sg",
+        "data.gov (US) and Eurostat",
+        "OECD.Stat and World Bank Open Data",
+        "UK's ONS website and Statistics Canada"
+      ],
+      "answer_index": 0,
+      "explanation": "The document specifically names datausa.io and data.gov.sg as platforms whose seamless, interactive, machine-readable approach to public data NDAP intends to emulate."
+    },
+    {
+      "item_id": "ai_os_visualization_006",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.6 (Approach)",
+      "source_excerpt": "data.gov.in provides ready access to data from 165 departments.",
+      "question": "Per the NDAP Vision Document, the existing data.gov.in portal -- one of the domestic platforms NDAP intends to build on -- provides ready access to data from how many departments?",
+      "options": [
+        "50 departments",
+        "100 departments",
+        "165 departments",
+        "250 departments"
+      ],
+      "answer_index": 2,
+      "explanation": "The document credits data.gov.in specifically with providing ready access to data from 165 departments, distinguishing it from the 'over 50 Ministries' figure used for NDAP's own planned Central Government data sources."
+    },
+    {
+      "item_id": "ai_os_visualization_007",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.6 (Approach)",
+      "source_excerpt": "DISHA, by the Ministry of Rural Development, provides access to data from 42 schemes across 20 ministries.",
+      "question": "The NDAP Vision Document cites DISHA, an existing Indian data platform run by a specific ministry, as inspiration. Which ministry runs it, and what does the document say it covers?",
+      "options": [
+        "Ministry of Rural Development; data from 42 schemes across 20 ministries",
+        "Ministry of Statistics and Programme Implementation; data from every Union Budget scheme",
+        "Ministry of Electronics and IT; data from all e-governance portals",
+        "NITI Aayog; data limited to the Aspirational Districts Programme"
+      ],
+      "answer_index": 0,
+      "explanation": "DISHA is run by the Ministry of Rural Development and, per the Vision Document, provides access to data from 42 schemes across 20 ministries -- one of the existing domestic platforms NDAP cites as inspiration alongside data.gov.in."
+    },
+    {
+      "item_id": "ai_os_visualization_008",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.7-8 (Features)",
+      "source_excerpt": "Data export in machine readable format [facilitates] analysis in R, Tableau, SAS.",
+      "question": "Per the NDAP Vision Document's Features table, exporting data in machine-readable format is meant to facilitate analysis using which tools, as explicitly named?",
+      "options": [
+        "R, Tableau, and SAS",
+        "Microsoft Excel and Google Sheets only",
+        "Power BI and Qlik only",
+        "MATLAB and SPSS only"
+      ],
+      "answer_index": 0,
+      "explanation": "The Features table explicitly names R, Tableau, and SAS as the analysis tools that machine-readable export is meant to enable -- reflecting NDAP's goal of serving researchers, data scientists, and analysts working in standard statistical/analytics software."
+    },
+    {
+      "item_id": "ai_os_visualization_009",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.7-8 (Features)",
+      "source_excerpt": "Common schema across sectors... Enable cross sectoral Analysis.",
+      "question": "What benefit does the NDAP Vision Document attribute to using a common schema across sectors?",
+      "options": [
+        "It enables cross-sectoral analysis",
+        "It reduces the platform's hosting costs",
+        "It removes the need for any metadata",
+        "It allows datasets to be deleted automatically after use"
+      ],
+      "answer_index": 0,
+      "explanation": "The Features table links the 'common schema across sectors' feature directly to the benefit of enabling cross-sectoral analysis -- e.g. comparing health and education indicators for the same district using shared identifiers."
+    },
+    {
+      "item_id": "ai_os_visualization_010",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.7-8 (Features)",
+      "source_excerpt": "Database of innovation with public data... Showcase innovative uses and top research articles for every search result.",
+      "question": "What is the purpose of NDAP's 'Database of Innovation' feature, per the Vision Document?",
+      "options": [
+        "To showcase innovative uses and top research articles related to every search result",
+        "To rank ministries by how much data they publish",
+        "To store the source code for the NDAP platform itself",
+        "To list vacancies for data science roles in government"
+      ],
+      "answer_index": 0,
+      "explanation": "The Database of Innovation feature is meant to surface innovative applications and leading research articles alongside a user's search results -- helping users see how similar data has already been used, not to rank ministries or list jobs."
+    },
+    {
+      "item_id": "ai_os_visualization_011",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.7-8 (Features)",
+      "source_excerpt": "Social Media share... Encourage discussion on social media.",
+      "question": "What is the stated purpose of the 'Social Media Share' feature listed among NDAP's planned Features?",
+      "options": [
+        "To encourage discussion on social media",
+        "To automatically post ministry press releases",
+        "To verify a user's identity via a social media login",
+        "To restrict data access to verified social media accounts"
+      ],
+      "answer_index": 0,
+      "explanation": "The Features table lists social media sharing purely as a way to encourage public discussion of the data -- not identity verification, access control, or press-release automation."
+    },
+    {
+      "item_id": "ai_os_visualization_012",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.7-8 (Features)",
+      "source_excerpt": "User friendly search engine... Enable easy access to data from different sectors.",
+      "question": "According to the Features table, what benefit does NDAP's user-friendly search engine provide?",
+      "options": [
+        "Easy access to data from different sectors",
+        "Automatic translation of all datasets into every Indian language",
+        "Real-time fraud detection in government spending",
+        "Direct integration with private banking systems"
+      ],
+      "answer_index": 0,
+      "explanation": "The search engine's listed benefit is enabling easy access to data across different sectors from a single entry point -- consistent with NDAP's broader goal of a seamless, search-driven user experience."
+    },
+    {
+      "item_id": "ai_os_visualization_013",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "NDAP Vision Document, p.6 (Approach)",
+      "source_excerpt": "Dynamic visualisations will be generated based on user search terms.",
+      "question": "A policymaker searches NDAP for 'district-wise literacy rate'. Based on the Vision Document's stated design approach, what should happen to the visualisation shown?",
+      "options": [
+        "A chart is dynamically generated based on that specific search term, rather than pulled from a fixed pre-built library of charts",
+        "The policymaker is shown a static image chosen quarterly by NITI Aayog staff",
+        "No visualisation is shown; only a downloadable spreadsheet is provided",
+        "The platform redirects the user to the source ministry's own website to view any chart"
+      ],
+      "answer_index": 0,
+      "explanation": "NDAP's design principle is to generate visualisations dynamically from what a user searches for, not to serve fixed, pre-built, or externally-hosted charts -- so a search for district-wise literacy rate should produce a chart built specifically for that query."
+    },
+    {
+      "item_id": "ai_os_visualization_014",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.4 (sector diagram)",
+      "source_excerpt": "NDAP will provide access to data from multiple sectors in one place... Finance, Health, Education, Agriculture -- NDAP: Data, Analytics, Visualization.",
+      "question": "The NDAP Vision Document illustrates the platform bringing together sectors such as Finance, Health, Education, and Agriculture into what kind of single output?",
+      "options": [
+        "A single platform offering data, analytics, and visualization across all these sectors together",
+        "Four separate sector-specific portals with no shared search",
+        "A single PDF report published annually",
+        "A single sector chosen at random each year"
+      ],
+      "answer_index": 0,
+      "explanation": "The document's own sector diagram places Finance, Health, Education, and Agriculture as inputs feeding a single unified NDAP layer of Data, Analytics, and Visualization -- illustrating cross-sector integration in one interactive platform rather than siloed portals."
+    },
+    {
+      "item_id": "ai_os_visualization_015",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.5 (Overview)",
+      "source_excerpt": "Government departments have digitised various processes and reporting requirements, which in turn are feeding into management information systems and interactive dashboards. This data is being used to track and visualise progress and make iterative improvements on the ground.",
+      "question": "Per the NDAP Vision Document's Overview, what is government data -- already flowing into management information systems -- currently being used for at the department level?",
+      "options": [
+        "Tracking and visualising progress to make iterative improvements on the ground",
+        "Exclusively for annual parliamentary audits",
+        "Training private-sector AI models under commercial licence",
+        "Archival purposes only, with no operational use"
+      ],
+      "answer_index": 0,
+      "explanation": "The Overview describes an existing (if fragmented) practice: digitised departmental data already feeds MIS and dashboards used to track progress and drive iterative, on-the-ground improvements -- the gap NDAP aims to scale up and unify, not create from scratch."
+    },
+    {
+      "item_id": "ai_os_visualization_016",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NDAP Vision Document, p.6 (Approach)",
+      "source_excerpt": "The platform will be designed and optimised to the needs of policymakers, bureaucrats, researchers, innovators, data scientists, journalists, and citizens.",
+      "question": "The NDAP Vision Document lists the specific user groups NDAP's visualisation and search experience is optimised for. Which of the following is NOT among them?",
+      "options": [
+        "Journalists",
+        "Foreign government agencies",
+        "Researchers",
+        "Bureaucrats"
+      ],
+      "answer_index": 1,
+      "explanation": "The document's named user groups are policymakers, bureaucrats, researchers, innovators, data scientists, journalists, and citizens -- a domestic public-data-access audience. Foreign government agencies are never named as a target user group."
+    },
+    {
+      "item_id": "ai_os_visualization_017",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.6 (Approach)",
+      "source_excerpt": "This will be presented using a common schema, with clear definitions and narratives to help the user navigate the differences between similar data from different sources.",
+      "question": "Beyond a common schema, what additional design element does the NDAP Vision Document say will help users make sense of similar-looking data drawn from different government sources?",
+      "options": [
+        "Clear definitions and narratives explaining the differences between similar datasets",
+        "A mandatory training certificate before accessing any dataset",
+        "A single ministry designated as the sole owner of all published data",
+        "Automatic deletion of older, potentially conflicting datasets"
+      ],
+      "answer_index": 0,
+      "explanation": "The document pairs the common schema with clear definitions and explanatory narratives specifically so users can understand why two similar-looking indicators from different departments might differ -- a communication/documentation layer, not a training requirement or single-owner model."
+    },
+    {
+      "item_id": "ai_os_visualization_018",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_visualization",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.6 (Approach)",
+      "source_excerpt": "Various states also have a 'Chief Minister's Dashboard'. Initiatives like these provide a rich source of data for NDAP.",
+      "question": "Besides data.gov.in and DISHA, what other type of existing Indian initiative does the NDAP Vision Document cite as a rich data source it can build on?",
+      "options": [
+        "Various states' 'Chief Minister's Dashboards'",
+        "Private telecom companies' customer databases",
+        "International NGO survey repositories",
+        "Corporate CSR expenditure reports"
+      ],
+      "answer_index": 0,
+      "explanation": "The document specifically names state-level 'Chief Minister's Dashboards' -- alongside data.gov.in and DISHA -- as existing domestic initiatives providing a rich source of data that NDAP intends to draw upon, reflecting its aim to consolidate rather than duplicate existing state and central data efforts."
+    },
+    {
+      "item_id": "ai_os_gis_001",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 2.1.2",
+      "source_excerpt": "To develop a coherent national framework in the country and leverage it to move towards digital economy and improve services to citizens.",
+      "question": "Which of the following is one of the four Vision/Goal statements in India's National Geospatial Policy, 2022?",
+      "options": [
+        "To develop a coherent national framework and leverage it to move towards a digital economy and improve services to citizens",
+        "To transfer all geospatial data ownership to the Ministry of Defence",
+        "To ban foreign satellite imagery providers from operating in India",
+        "To make Survey of India the sole legal owner of all Indian map data"
+      ],
+      "answer_index": 0,
+      "explanation": "Goal 2.1.2 focuses on a coherent national geospatial framework supporting the digital economy and citizen services -- consistent with the Policy's broader liberalization and digital-integration thrust, not ownership consolidation or import bans."
+    },
+    {
+      "item_id": "ai_os_gis_002",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 2.1.4",
+      "source_excerpt": "To have a thriving Geospatial industry in the country involving private enterprise.",
+      "question": "Per the National Geospatial Policy, 2022, one of its four Vision/Goal statements is to have a thriving Geospatial industry in the country involving whom?",
+      "options": [
+        "Private enterprise",
+        "Only public sector undertakings",
+        "Only foreign multinational companies",
+        "Only the Survey of India"
+      ],
+      "answer_index": 0,
+      "explanation": "Goal 2.1.4 explicitly envisions a thriving domestic Geospatial industry with private enterprise participation -- consistent with the Policy's broader strategy of liberalizing the sector rather than restricting it to government or foreign players."
+    },
+    {
+      "item_id": "ai_os_gis_003",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 2.2.1 (Year 2025 milestones)",
+      "source_excerpt": "Put in place an enabling policy and legal framework that supports liberalization of Geospatial sector and democratization of data for enhanced commercialization with Value Added Services.",
+      "question": "Among the Policy's Year-2025 milestones, what does it commit to establishing to support liberalization and 'democratization of data for enhanced commercialization'?",
+      "options": [
+        "An enabling policy and legal framework for the Geospatial sector",
+        "A dedicated Geospatial taxation regime",
+        "A ban on foreign investment in mapping companies",
+        "A national referendum on geospatial data ownership"
+      ],
+      "answer_index": 0,
+      "explanation": "The first 2025 milestone commits to putting in place a policy and legal framework enabling sector liberalization and data democratization for value-added commercial services -- the legal groundwork the rest of the Policy's technical milestones depend on."
+    },
+    {
+      "item_id": "ai_os_gis_004",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 2.2.7 (Year 2030 milestones)",
+      "source_excerpt": "High resolution topographical survey & mapping (5-10 cm for urban & rural areas and 50 cm-100 cm for forests & wastelands).",
+      "question": "Per the Policy's Year-2030 milestones, what target resolution does it set for high-resolution topographical survey and mapping of urban and rural areas?",
+      "options": [
+        "5-10 cm",
+        "50 cm-100 cm",
+        "1-3 metres",
+        "25 cm uniformly for all land types"
+      ],
+      "answer_index": 0,
+      "explanation": "The 2030 milestone sets a finer 5-10 cm resolution target for urban and rural areas, while forests and wastelands -- lower priority for such fine detail -- get a coarser 50 cm-100 cm target, a resolution target tiered by land-use priority."
+    },
+    {
+      "item_id": "ai_os_gis_005",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 2.2.8 (Year 2030 milestones)",
+      "source_excerpt": "High accuracy Digital Elevation Model (DEM) for entire country (25 cm for plain, 1-3 metre for hilly and mountainous areas).",
+      "question": "What accuracy targets does the Policy's Year-2030 milestone for a nationwide high-accuracy Digital Elevation Model (DEM) set for plains versus hilly/mountainous terrain?",
+      "options": [
+        "25 cm for plains; 1-3 metres for hilly and mountainous areas",
+        "1 metre for plains; 25 cm for hilly and mountainous areas",
+        "A uniform 1 metre for all terrain types",
+        "25 cm for plains only; hilly areas are excluded entirely"
+      ],
+      "answer_index": 0,
+      "explanation": "The DEM milestone sets a finer 25 cm accuracy target for plains, where higher precision is more feasible, and a coarser 1-3 metre target for hilly/mountainous terrain, reflecting the greater surveying difficulty in complex terrain -- not an exclusion of hilly areas."
+    },
+    {
+      "item_id": "ai_os_gis_006",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 2.2.13 (Year 2035 milestones)",
+      "source_excerpt": "National Digital Twin of major cities and towns.",
+      "question": "Which of the following is listed as a Year-2035 milestone in India's National Geospatial Policy, 2022?",
+      "options": [
+        "National Digital Twin of major cities and towns",
+        "Abolition of the Survey of India",
+        "A single global satellite constellation owned by India",
+        "Mandatory geo-tagging of every citizen's mobile phone"
+      ],
+      "answer_index": 0,
+      "explanation": "The 2035 milestones include creating a National Digital Twin -- a virtual, continuously updated replica -- of major cities and towns, part of the Policy's longer-term technology roadmap alongside bathymetric data and sub-surface infrastructure mapping."
+    },
+    {
+      "item_id": "ai_os_gis_007",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 2.2.11 (Year 2035 milestones)",
+      "source_excerpt": "High resolution/accuracy Bathymetric Geospatial Data of inland waters and sea surface topography of shallow/deep seas - to support Blue Economy.",
+      "question": "What economic goal does the Policy's Year-2035 milestone on high-resolution Bathymetric Geospatial Data explicitly support?",
+      "options": [
+        "India's Blue Economy",
+        "The domestic automobile manufacturing sector",
+        "The Digital India e-governance programme",
+        "The National Highways Authority's road-building targets"
+      ],
+      "answer_index": 0,
+      "explanation": "The bathymetric-data milestone -- covering inland waters and shallow/deep sea surface topography -- is explicitly framed as supporting the Blue Economy, i.e. the sustainable economic use of ocean and inland water resources like fisheries and offshore resources."
+    },
+    {
+      "item_id": "ai_os_gis_008",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Geospatial Policy, 2022, Section 3.2 (Strategy and Approach)",
+      "source_excerpt": "Atmanirbhar Bharat: ...enable them to make India self-reliant in producing and using their own Geospatial data/information as also compete with foreign companies in the global space.",
+      "question": "Under the 'Atmanirbhar Bharat' pillar of the Policy's Strategy and Approach, what dual goal is set for Indian Geospatial companies?",
+      "options": [
+        "Making India self-reliant in producing and using its own Geospatial data, while also being able to compete with foreign companies globally",
+        "Producing Geospatial data exclusively for domestic use, with no export activity permitted",
+        "Merging all Indian Geospatial companies into a single state-owned enterprise",
+        "Importing all high-resolution Geospatial data from foreign vendors to reduce local costs"
+      ],
+      "answer_index": 0,
+      "explanation": "The Atmanirbhar Bharat pillar pursues self-reliance (reducing dependence on foreign geospatial data/technology) alongside global competitiveness for Indian companies -- not a closed domestic-only model or a single state monopoly."
+    },
+    {
+      "item_id": "ai_os_gis_009",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "National Geospatial Policy, 2022, Section 3.9 (Strategy and Approach)",
+      "source_excerpt": "Democratization of Data: The Survey of India (SoI) topographic data and other Geospatial Data produced using public funds would be treated as common good and be made easily available.",
+      "question": "Under the Policy's 'Democratization of Data' strategy pillar, how are Survey of India topographic data and other publicly-funded Geospatial data to be treated?",
+      "options": [
+        "As a common good, to be made easily available",
+        "As classified defence assets accessible only to the Ministry of Defence",
+        "As Survey of India's exclusive commercial property, licensed at market rates",
+        "As data to be destroyed once a newer survey supersedes it"
+      ],
+      "answer_index": 0,
+      "explanation": "The Democratization of Data pillar treats SoI topographic data and other publicly funded Geospatial data as a common good to be made easily available -- reinforcing the Policy's broader theme of opening up publicly funded geospatial data rather than restricting or monetizing it exclusively."
+    },
+    {
+      "item_id": "ai_os_gis_010",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 4.1 (Institutional Framework)",
+      "source_excerpt": "GDPDC would replace and subsume the functions and powers of National Spatial Data Committee (NSDC) constituted through GoI Resolution dated 13.06.2006 and Geospatial Data Promotion and Development Committee constituted vide DST Office Memorandum dated 04.03.2021.",
+      "question": "Per the Policy's Institutional Framework, which two earlier bodies does the newly constituted GDPDC replace and subsume?",
+      "options": [
+        "The National Spatial Data Committee (NSDC, 2006) and the earlier DST-constituted GDPDC (2021)",
+        "The Survey of India and the Geological Survey of India",
+        "The Ministry of Defence's Military Survey wing and BISAG-N",
+        "The National Remote Sensing Centre and the Forest Survey of India"
+      ],
+      "answer_index": 0,
+      "explanation": "The Policy's new GDPDC does not replace operational survey agencies -- it replaces two earlier coordinating/policy bodies: the National Spatial Data Committee (constituted 2006) and the previous, narrower GDPDC constituted by DST office memorandum in 2021."
+    },
+    {
+      "item_id": "ai_os_gis_011",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 5.1.2",
+      "source_excerpt": "National Geospatial Data Registry (NGDR) which will be a commonly accessible set of registers/ catalogue of data sets and services.",
+      "question": "What is the National Geospatial Data Registry (NGDR), as defined in the Policy?",
+      "options": [
+        "A commonly accessible set of registers/catalogue of Geospatial data sets and services",
+        "A private company licensed to sell satellite imagery",
+        "A court that adjudicates Geospatial data disputes",
+        "A single physical archive of paper maps in New Delhi"
+      ],
+      "answer_index": 0,
+      "explanation": "NGDR is defined as a catalogue/registry -- a commonly accessible index of available Geospatial datasets and services -- not a company, court, or physical paper archive."
+    },
+    {
+      "item_id": "ai_os_gis_012",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Geospatial Policy, 2022, Section 5.1.3",
+      "source_excerpt": "Unified Geospatial Interface (UGI), an electronic data querying and processing service, will be operationalized for provision of consumer-oriented products, applications, services and solutions using the Geospatial data and metadata contained in the NGDR.",
+      "question": "How does the Policy describe the function of the Unified Geospatial Interface (UGI) in relation to the NGDR?",
+      "options": [
+        "UGI is an electronic data querying and processing service that delivers consumer-oriented products and services using data and metadata held in the NGDR",
+        "UGI is a physical office where citizens submit paper applications for map copies",
+        "UGI replaces the NGDR entirely, making it redundant",
+        "UGI is a private mobile app unrelated to any government registry"
+      ],
+      "answer_index": 0,
+      "explanation": "UGI and NGDR are complementary: NGDR is the catalogue/registry of data and services, while UGI is the electronic querying/processing layer that turns that cataloged data into consumer-facing products and applications -- not a replacement for the registry or an unrelated private app."
+    },
+    {
+      "item_id": "ai_os_gis_013",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 5.1.1",
+      "source_excerpt": "UN-GGIM recognizes 14 Global Fundamental Geospatial Data Themes considered fundamental to development of a country's Integrated Geospatial Information Infrastructure... GDPDC will adopt and develop these Data Themes as National Fundamental Geospatial Data Themes.",
+      "question": "The Policy's Geospatial Data Infrastructure strategy adopts a set of 'National Fundamental Geospatial Data Themes' based on an international reference. How many such themes does UN-GGIM recognise, and which body is tasked with adapting them nationally?",
+      "options": [
+        "14 themes, adapted nationally by GDPDC",
+        "7 themes, adapted nationally by Survey of India alone",
+        "25 themes, adapted nationally by NITI Aayog",
+        "14 themes, adapted nationally by the Ministry of Defence"
+      ],
+      "answer_index": 0,
+      "explanation": "The Policy explicitly adopts UN-GGIM's internationally recognised set of 14 Global Fundamental Geospatial Data Themes, tasking GDPDC (not Survey of India alone, NITI Aayog, or Defence) with developing them into India's own National Fundamental Geospatial Data Themes."
+    },
+    {
+      "item_id": "ai_os_gis_014",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "National Geospatial Policy, 2022, Section 5.2.2.2",
+      "source_excerpt": "Amongst the 14 National Fundamental Geospatial Data Themes, Geodetic Reference Frame, Orthoimagery and Elevation are most pivotal because together they provide the Geodetic and Digital Spatial Framework that act as common reference (X,Y,Z) for the assembly and maintenance of data pertaining to all other Fundamental and Sectoral Data Themes.",
+      "question": "Why does the Policy single out Geodetic Reference Frame, Orthoimagery, and Elevation as the most pivotal of the 14 National Fundamental Geospatial Data Themes?",
+      "options": [
+        "Together they provide the common (X, Y, Z) reference framework that all other Fundamental and Sectoral Data Themes are built and maintained against",
+        "They are the only three themes with any private-sector involvement",
+        "They are the only themes maintained exclusively by the Ministry of Defence",
+        "They are the cheapest of the 14 themes to collect data for"
+      ],
+      "answer_index": 0,
+      "explanation": "These three themes jointly define the geodetic and digital spatial (X, Y, Z) reference framework underlying every other Fundamental and Sectoral Data Theme -- you cannot correctly locate or overlay a health or agriculture dataset without a shared positional and elevation reference -- which is why the Policy treats them as foundational, not for cost or ownership reasons."
+    },
+    {
+      "item_id": "ai_os_gis_015",
+      "doc_id": "national_geospatial_policy",
+      "competency_id": "os_gis",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Geospatial Policy, 2022, Section 5.2.1",
+      "source_excerpt": "Towards this objective, this Policy shall replace the National Map Policy, 2005. Rules and regulations for operating aircrafts and drones for the purposes of surveying would be further simplified.",
+      "question": "What earlier policy does the National Geospatial Policy, 2022 explicitly replace with respect to mapping infrastructure?",
+      "options": [
+        "The National Map Policy, 2005",
+        "The National Data Sharing and Accessibility Policy, 2012",
+        "The Right to Information Act, 2005",
+        "The Survey of India Act, 1956"
+      ],
+      "answer_index": 0,
+      "explanation": "The Policy explicitly supersedes the National Map Policy, 2005 as part of overhauling India's mapping infrastructure framework, and simultaneously commits to further simplifying drone/aircraft survey regulations -- distinct from RTI or NDSAP, which govern different aspects of data/information access."
+    },
+    {
+      "item_id": "ai_os_big_data_001",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.4 (Data Sources)",
+      "source_excerpt": "Websites of all Departments and Ministries of the State Government, not exceeding 250.",
+      "question": "Besides over 50 central Ministries/Departments and data.gov.in, what other tier of government data source does the NDAP Vision Document name, and what is its stated scale?",
+      "options": [
+        "State Government Departments and Ministries, not exceeding 250 websites",
+        "District Collectorates, not exceeding 700 websites",
+        "Municipal Corporations, not exceeding 100 websites",
+        "Public Sector Undertakings, not exceeding 50 websites"
+      ],
+      "answer_index": 0,
+      "explanation": "Alongside 50+ central Ministries/Departments and data.gov.in, the document names websites of all State Government Departments and Ministries, capped at 250, as a second tier of data sources NDAP must ingest and standardize -- relevant to the platform's data-pipeline design at scale."
+    },
+    {
+      "item_id": "ai_os_big_data_002",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.4 (Data Sources, footnote)",
+      "source_excerpt": "(Detailed list of data sources can be found in the RFP titled 'Selection of Consultant for Development and Operation of National Data and Analytics Portal' released on 18.07.2019).",
+      "question": "Where does the NDAP Vision Document say a detailed list of its planned data sources can be found?",
+      "options": [
+        "In the RFP 'Selection of Consultant for Development and Operation of National Data and Analytics Portal', released 18.07.2019",
+        "In an annexure to the Union Budget speech",
+        "In the Economic Survey of India",
+        "On the data.gov.in FAQ page"
+      ],
+      "answer_index": 0,
+      "explanation": "The Vision Document points readers to a specific procurement RFP -- for selecting NDAP's development/operations consultant, released 18 July 2019 -- as the place where the full detailed source list lives, since the vision document itself only summarizes source categories."
+    },
+    {
+      "item_id": "ai_os_big_data_003",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.7 (Approach)",
+      "source_excerpt": "Standard Operating Procedures (SOPs) will be developed to keep data updated. There will be regular tracking of compliance to these SOPs.",
+      "question": "How does the NDAP Vision Document propose to ensure the platform's data stays reliably up-to-date over time?",
+      "options": [
+        "By developing Standard Operating Procedures (SOPs) for data updates, with regular compliance tracking",
+        "By requiring citizens to manually flag outdated datasets",
+        "By deleting any dataset not updated within 30 days",
+        "By relying solely on annual ministry self-certification with no tracking"
+      ],
+      "answer_index": 0,
+      "explanation": "The document's mechanism for data freshness is procedural and monitored: SOPs govern how and when source ministries update data, and NDAP tracks compliance with those SOPs -- a governance control appropriate to a platform ingesting data from 50+ heterogeneous sources."
+    },
+    {
+      "item_id": "ai_os_big_data_004",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.7 (Approach)",
+      "source_excerpt": "Further, APIs, web-crawling and other methods will be used to keep the data fully up-to-date.",
+      "question": "Beyond SOPs and compliance tracking, what technical mechanisms does the NDAP Vision Document name for keeping platform data current?",
+      "options": [
+        "APIs, web-crawling, and other automated methods",
+        "Manual monthly data entry by NITI Aayog staff only",
+        "Blockchain-based data verification",
+        "Crowdsourced citizen data correction only"
+      ],
+      "answer_index": 0,
+      "explanation": "The document explicitly names APIs and web-crawling (plus unspecified 'other methods') as the technical means of automated data refresh -- consistent with a platform architecture designed to pull from many live government sources at scale rather than depend on manual re-entry."
+    },
+    {
+      "item_id": "ai_os_big_data_005",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.7 (Approach)",
+      "source_excerpt": "Inputs will be needed from data producers in the government to identify data sources and develop data processing techniques for the datasets to be coherent.",
+      "question": "Per the NDAP Vision Document, why does the platform's success depend on collaboration with data-producing government departments, beyond simply hosting their data?",
+      "options": [
+        "Because their input is needed both to identify data sources and to develop the data-processing techniques that make disparate datasets coherent with each other",
+        "Because departments must approve every individual chart before publication",
+        "Because only departments are legally permitted to view their own data",
+        "Because departments fund NDAP's server infrastructure directly"
+      ],
+      "answer_index": 0,
+      "explanation": "The document frames data producers' involvement as functionally necessary, not just a courtesy: they help identify what sources exist and help design the processing/standardization techniques needed to make cross-source data coherent -- core data-pipeline work, not chart approval or funding."
+    },
+    {
+      "item_id": "ai_os_big_data_006",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.8 (Governance Structure)",
+      "source_excerpt": "A high powered inter-ministerial steering committee under the chairmanship of Vice Chairman, NITI Aayog will be set up to provide direction, oversee progress, guide on data sources, and address various inter-ministerial issues on collating data.",
+      "question": "Who chairs the High Powered Steering Committee that the NDAP Vision Document proposes to oversee the platform and resolve inter-ministerial data issues?",
+      "options": [
+        "The Vice Chairman, NITI Aayog",
+        "The Cabinet Secretary",
+        "The Chief Statistician of India",
+        "The Minister of Electronics and IT"
+      ],
+      "answer_index": 0,
+      "explanation": "The governance structure names an inter-ministerial steering committee chaired specifically by the Vice Chairman of NITI Aayog, tasked with direction-setting and resolving cross-ministry data-collation issues -- the top tier of NDAP's proposed governance."
+    },
+    {
+      "item_id": "ai_os_big_data_007",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.8 (Governance Structure)",
+      "source_excerpt": "Technical Advisory Group... consisting of sector and technology experts... will provide guidance on the development of the platform, management of data, and aligning the platform for user-needs.",
+      "question": "What role does the Technical Advisory Group (TAG) play in the NDAP Vision Document's governance structure?",
+      "options": [
+        "Providing expert guidance -- from both sector and technology experts -- on platform development, data management, and user-needs alignment",
+        "Approving the platform's annual budget",
+        "Directly operating the platform's servers",
+        "Auditing ministries for data protection compliance"
+      ],
+      "answer_index": 0,
+      "explanation": "TAG is an advisory body of sector and technology experts guiding platform development, data management practices, and user-centric design -- distinct from the steering committee's direction-setting role or the vendor's operational role."
+    },
+    {
+      "item_id": "ai_os_big_data_008",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.8 (Governance Structure)",
+      "source_excerpt": "Project Management Unit... Established at NITI Aayog to coordinate with different stakeholders and manage various facets of NDAP.",
+      "question": "Where is NDAP's Project Management Unit (PMU) established, per the Vision Document's governance structure?",
+      "options": [
+        "At NITI Aayog",
+        "At the Ministry of Statistics and Programme Implementation",
+        "At the Cabinet Secretariat",
+        "At each participating state's IT department"
+      ],
+      "answer_index": 0,
+      "explanation": "The PMU, tasked with coordinating stakeholders and managing NDAP's day-to-day facets, is established at NITI Aayog -- the same body that owns the overall initiative and chairs its steering committee."
+    },
+    {
+      "item_id": "ai_os_big_data_009",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.8 (Governance Structure)",
+      "source_excerpt": "Technology Vendor... A technology vendor will be engaged for development and operation of NDAP.",
+      "question": "Per the NDAP Vision Document, who is responsible for the actual technical development and day-to-day operation of the platform?",
+      "options": [
+        "An engaged technology vendor",
+        "NITI Aayog's in-house IT cell exclusively",
+        "Each contributing ministry's own IT department, on rotation",
+        "A consortium of state governments"
+      ],
+      "answer_index": 0,
+      "explanation": "While NITI Aayog provides strategic direction and coordination (via the steering committee and PMU), actual platform development and operations are delegated to an engaged technology vendor -- a standard build-operate model for a large public data platform."
+    },
+    {
+      "item_id": "ai_os_big_data_010",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.9 (Technical Advisory Group)",
+      "source_excerpt": "Omidyar Network India has selected IDInsight to provide support to NITI Aayog for this initiative.",
+      "question": "Per the NDAP Vision Document, which organisation did Omidyar Network India select to provide support to NITI Aayog on the NDAP initiative?",
+      "options": [
+        "IDInsight",
+        "McKinsey & Company",
+        "The World Bank",
+        "NASSCOM"
+      ],
+      "answer_index": 0,
+      "explanation": "The document names IDInsight as the organisation selected by Omidyar Network India to support NITI Aayog's NDAP effort -- part of the initiative's broader network of external technical/advisory support beyond government structures."
+    },
+    {
+      "item_id": "ai_os_big_data_011",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "NDAP Vision Document, p.10 (Way Forward)",
+      "source_excerpt": "The first version of National Data and Analytics Platform is proposed to be released in 2021.",
+      "question": "Per the NDAP Vision Document's 'Way Forward' section, what year was the first version of the platform proposed to be released?",
+      "options": [
+        "2021",
+        "2020",
+        "2023",
+        "2025"
+      ],
+      "answer_index": 0,
+      "explanation": "The document's Way Forward section sets 2021 as the proposed release target for NDAP's first version, contingent on the extensive stakeholder cooperation the same section calls for."
+    },
+    {
+      "item_id": "ai_os_big_data_012",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.10 (Way Forward)",
+      "source_excerpt": "NDAP is a pan-India initiative by NITI Aayog. Its success requires extensive support and cooperation of various stakeholders such as Central Ministries, State Governments and guidance from experts to realise the vision and meet the timelines.",
+      "question": "Why does the NDAP Vision Document describe achieving its 2021 release timeline as dependent on more than just NITI Aayog's own effort?",
+      "options": [
+        "Because NDAP is a pan-India initiative whose success requires active cooperation from Central Ministries, State Governments, and outside experts",
+        "Because the release date is set by a Parliamentary statute",
+        "Because each state must pass its own enabling legislation first",
+        "Because NITI Aayog lacks legal authority to publish any data itself"
+      ],
+      "answer_index": 0,
+      "explanation": "The document frames NDAP explicitly as a pan-India, multi-stakeholder undertaking -- meeting its vision and timeline needs Central Ministries and State Governments to supply and standardize data, plus expert guidance, not just internal NITI Aayog execution."
+    },
+    {
+      "item_id": "ai_os_big_data_013",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.5 (Overview)",
+      "source_excerpt": "All public government data should be easily accessible to all stakeholders in a user-friendly manner. Further, data across sectors should be coherent to support analysis and dissemination. In addition, there should be easy access to the most recent data, published reliably.",
+      "question": "The NDAP Vision Document's Overview names three qualities India's public-data landscape should have. Which of these is NOT one of them?",
+      "options": [
+        "Easily accessible to all stakeholders",
+        "Coherent across sectors",
+        "Published only in aggregate, never at micro-level",
+        "Access to the most recent data, published reliably"
+      ],
+      "answer_index": 2,
+      "explanation": "The Overview's three named qualities are accessibility, cross-sector coherence, and reliable access to up-to-date data. A blanket rule against micro-level data is never stated -- NDAP's stated aim is broader access, not a restriction on data granularity."
+    },
+    {
+      "item_id": "ai_os_big_data_014",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "NDAP Vision Document, p.4 (Vision & Mission)",
+      "source_excerpt": "Mission: Standardize data across multiple Government sources, provide flexible analytics and make it easily accessible in formats conducive for research, innovation, policy making and public consumption.",
+      "question": "Per NDAP's Mission statement, standardized and analytics-ready data is meant to be made accessible in formats conducive to which set of purposes?",
+      "options": [
+        "Research, innovation, policy making, and public consumption",
+        "Only internal government auditing",
+        "Only commercial resale by data brokers",
+        "Only academic publication in peer-reviewed journals"
+      ],
+      "answer_index": 0,
+      "explanation": "The Mission statement explicitly ties standardized, analytics-ready data to four purposes -- research, innovation, policy making, and public consumption -- a deliberately broad, non-commercial framing consistent with the platform's public-good orientation."
+    },
+    {
+      "item_id": "ai_os_big_data_015",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "NDAP Vision Document, p.4-5 (Data Sources, Overview)",
+      "source_excerpt": "Websites of over 50 Ministries and Departments of the Central Government and data.gov.in... Websites of all Departments and Ministries of the State Government, not exceeding 250... Ministries and Departments do not use a shared standard for common indicators.",
+      "question": "Given that NDAP must ingest data from over 50 central Ministries/Departments plus up to 250 state-level sources, each using its own standards for common indicators, what kind of technical work does the platform's design centrally require?",
+      "options": [
+        "Large-scale data standardization and schema-mapping across heterogeneous sources, not just storage of raw files",
+        "A single manual data-entry team retyping every source dataset",
+        "A one-time bulk data migration with no ongoing pipeline",
+        "Encryption of every dataset before ingestion, as the primary technical task"
+      ],
+      "answer_index": 0,
+      "explanation": "With 300+ heterogeneous source websites each defining common attributes (region, time period, etc.) differently, NDAP's core technical challenge is building an ongoing standardization/schema-mapping pipeline at scale -- a genuine big-data-integration problem, not a one-off migration, pure storage task, or encryption exercise."
+    },
+    {
+      "item_id": "ai_os_big_data_016",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "NDAP Vision Document, p.6 (Approach)",
+      "source_excerpt": "NDAP will provide access to data from multiple sectors in one place. Data will be sourced from different Central and State Ministries and Departments. This will be presented using a common schema.",
+      "question": "A district has education data published by the Ministry of Education using the field name 'District', and health data published by the Ministry of Health using 'District_Name'. Under NDAP's stated approach, how would this be resolved before the two datasets can be shown together?",
+      "options": [
+        "Both fields are mapped to a common schema with a shared identifier for district, so the datasets can be joined and compared",
+        "One ministry's dataset is discarded to avoid the conflict",
+        "Users are shown both raw datasets side by side with no mapping",
+        "The mismatch is resolved by asking citizens to vote on which field name to keep"
+      ],
+      "answer_index": 0,
+      "explanation": "This is exactly the standardization problem NDAP's common-schema approach exists to solve: source data using different field names/conventions for the same concept (e.g. district) must be mapped onto shared identifiers before cross-sector joins and comparisons are possible -- consistent with the document's emphasis on common geographical/temporal identifiers."
+    },
+    {
+      "item_id": "ai_os_big_data_017",
+      "doc_id": "ndap_vision",
+      "competency_id": "os_big_data",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "NDAP Vision Document, p.8 (Governance Structure)",
+      "source_excerpt": "Technical Advisory Group consisting of sector and technology experts will be established to provide expert consultation.",
+      "question": "Why does the NDAP Vision Document specify that the Technical Advisory Group should include both sector experts and technology experts, rather than technologists alone?",
+      "options": [
+        "Because building a coherent, standardized platform from health, education, agriculture and other sectoral data requires both domain knowledge of what the data means and technical expertise in managing it at scale",
+        "Because sector experts are only needed to approve the platform's visual design",
+        "Because technology experts are barred by law from advising on public data platforms",
+        "Because sector experts are required only to satisfy a headcount quota"
+      ],
+      "answer_index": 0,
+      "explanation": "A platform standardizing and integrating data across many sectors needs sector experts to interpret what indicators actually mean domain-by-domain, alongside technology experts who can architect the data pipeline, schema, and platform itself -- neither alone is sufficient for NDAP's stated goals."
+    },
+    {
+      "item_id": "ai_os_ml_001",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.7 (Executive Summary)",
+      "source_excerpt": "a) Centre of Research Excellence (CORE) focused on developing better understanding of existing core research and pushing technology frontiers through creation of new knowledge.",
+      "question": "In NITI Aayog's proposed two-tiered AI research structure, what is the primary focus of the Centre of Research Excellence (CORE)?",
+      "options": [
+        "Developing better understanding of existing core research and pushing technology frontiers through new knowledge creation",
+        "Selling AI products directly to consumers",
+        "Certifying private companies' AI products for market entry",
+        "Auditing government departments' IT security"
+      ],
+      "answer_index": 0,
+      "explanation": "CORE is the fundamental-research tier of NITI Aayog's proposed structure -- oriented toward deepening core AI research and advancing the technology frontier -- complemented by ICTAI's applied, deployment-focused mandate."
+    },
+    {
+      "item_id": "ai_os_ml_002",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Strategy for Artificial Intelligence, p.7 (Executive Summary)",
+      "source_excerpt": "a two-tiered structure... a) Centre of Research Excellence (CORE)... b) International Centers of Transformational AI (ICTAI) with a mandate of developing and deploying application-based research. Private sector collaboration is envisioned to be a key aspect of ICTAIs.",
+      "question": "Why does NITI Aayog propose splitting AI research into two distinct tiers -- CORE and ICTAI -- rather than a single national AI research body?",
+      "options": [
+        "Because fundamental research (CORE) and application-based, private-sector-collaborative deployment (ICTAI) require different mandates and partners",
+        "Because Indian law prohibits a single body from doing both types of research",
+        "Because CORE and ICTAI are meant to compete with each other for the same government funding",
+        "Because ICTAI performs only administrative, non-technical functions"
+      ],
+      "answer_index": 0,
+      "explanation": "The two-tier design separates the deep, foundational research mandate (CORE) from the applied, deployment-oriented mandate that leans on private-sector collaboration (ICTAI) -- these are genuinely different kinds of work requiring different institutional structures, not a legal restriction or an intentionally competitive setup."
+    },
+    {
+      "item_id": "ai_os_ml_003",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.8 (Executive Summary)",
+      "source_excerpt": "development of a dedicated supranational agency to channel research in solving big, audacious problems of AI - 'CERN for AI'.",
+      "question": "The National Strategy for Artificial Intelligence proposes a dedicated international body to tackle 'big, audacious' AI research problems, drawing an analogy to which existing organisation?",
+      "options": [
+        "CERN (the European Organization for Nuclear Research)",
+        "the World Trade Organization",
+        "the International Monetary Fund",
+        "UNESCO"
+      ],
+      "answer_index": 0,
+      "explanation": "The document explicitly proposes a supranational research agency modelled on CERN -- i.e. a 'CERN for AI' -- to pool international resources and effort on the most ambitious, foundational AI research problems, alongside 'moonshot research projects' pursued by specialised teams."
+    },
+    {
+      "item_id": "ai_os_ml_004",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.8 (Executive Summary)",
+      "source_excerpt": "developing common computing and other related infrastructure for AI are other key components research suggested.",
+      "question": "Alongside CORE, ICTAI, and a 'CERN for AI', what other kind of shared resource does the strategy recommend developing to support India's AI research ecosystem?",
+      "options": [
+        "Common computing and other related infrastructure for AI",
+        "A single national AI regulator with veto power over all AI research",
+        "A dedicated AI-only university with no other academic programmes",
+        "A private venture-capital fund run exclusively by NITI Aayog"
+      ],
+      "answer_index": 0,
+      "explanation": "The strategy recommends building shared computing (and related) infrastructure as a key enabler for AI research -- recognising compute access as a common bottleneck for researchers and startups alike, alongside the institutional structures (CORE, ICTAI, CERN-for-AI) it proposes."
+    },
+    {
+      "item_id": "ai_os_ml_005",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Strategy for Artificial Intelligence, p.8 (Executive Summary)",
+      "source_excerpt": "there is an emergent need for reskilling the existing workforce... Furthermore, promotion of job creation in new areas, like data annotation needs to be identified and promoted, as these would have the potential of absorbing a large portion of the workforce that may find itself redundant due to increasing automation.",
+      "question": "Why does the strategy specifically call out promoting jobs in 'data annotation' as part of its skilling approach to AI?",
+      "options": [
+        "Because such new job categories can absorb workers whose existing roles become redundant due to AI-driven automation",
+        "Because data annotation is expected to fully replace all existing government jobs",
+        "Because data annotation requires no training at all, unlike other AI-related roles",
+        "Because it is the only job category the strategy considers relevant to AI"
+      ],
+      "answer_index": 0,
+      "explanation": "The strategy frames data annotation as a deliberately chosen new job category precisely because it can help absorb workers displaced by automation elsewhere in the economy -- part of a broader reskilling and workforce-transition approach, not a claim that annotation replaces all jobs or needs no training."
+    },
+    {
+      "item_id": "ai_os_ml_006",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.8 (Executive Summary)",
+      "source_excerpt": "A three-pronged, formal marketplace could be created focusing on data collection and aggregation, data annotation and deployable models. There could be a common platform called the National AI Marketplace (NAIM).",
+      "question": "What three areas does the strategy's proposed National AI Marketplace (NAIM) focus on?",
+      "options": [
+        "Data collection and aggregation, data annotation, and deployable models",
+        "Cloud storage pricing, chip manufacturing, and telecom bandwidth",
+        "AI patents, AI textbooks, and AI conference sponsorships",
+        "Government tenders, import duties, and export licensing"
+      ],
+      "answer_index": 0,
+      "explanation": "NAIM is proposed as a formal marketplace spanning the AI supply chain's three core components identified by the strategy: data collection/aggregation, data annotation, and deployable trained models -- creating market-based discovery of both price and technical approach."
+    },
+    {
+      "item_id": "ai_os_ml_007",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "National Strategy for Artificial Intelligence, p.8 (Executive Summary)",
+      "source_excerpt": "The barriers to AI development and deployment can effectively be addressed by adopting the marketplace model - one that enables market discovery of not only the price but also of different approaches that are best suited to achieve the desired results.",
+      "question": "According to the strategy, what does a marketplace model (like NAIM) enable beyond simple price discovery?",
+      "options": [
+        "Discovery of which different technical approaches are best suited to achieve the desired AI results",
+        "Automatic government approval of every listed AI vendor",
+        "Elimination of the need for any data annotation",
+        "Guaranteed equal market share for every participating vendor"
+      ],
+      "answer_index": 0,
+      "explanation": "The strategy's stated rationale for a marketplace model is dual: it discovers not just fair prices but also which competing technical approaches actually work best for a given problem -- letting the market surface effective solutions rather than mandating one approach top-down."
+    },
+    {
+      "item_id": "ai_os_ml_008",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.8 (Executive Summary)",
+      "source_excerpt": "Most discussions on ethical considerations of AI are a derivation of the FAT framework (Fairness, Accountability and Transparency).",
+      "question": "The strategy identifies the 'FAT' framework as the basis for most ethical discussions around AI. What does FAT stand for?",
+      "options": [
+        "Fairness, Accountability, and Transparency",
+        "Feasibility, Automation, and Trust",
+        "Fairness, Automation, and Testing",
+        "Functionality, Accuracy, and Trust"
+      ],
+      "answer_index": 0,
+      "explanation": "FAT stands for Fairness, Accountability, and Transparency -- the framework the strategy cites as underlying most ethical discourse on AI, which it then operationalises through proposed Ethics Councils at each CORE."
+    },
+    {
+      "item_id": "ai_os_ml_009",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.8 (Executive Summary)",
+      "source_excerpt": "A consortium of Ethics Councils at each Centre of Research Excellence can be set up and it would be expected that all COREs adhere to standard practice while developing AI technology and products.",
+      "question": "How does the strategy propose to operationalise ethical oversight (the FAT framework) across India's AI research institutions?",
+      "options": [
+        "By setting up a consortium of Ethics Councils at each Centre of Research Excellence (CORE), with all COREs expected to adhere to standard ethical practice",
+        "By requiring a single national ethics ministry to pre-approve every AI research paper",
+        "By banning private-sector involvement in any AI ethics discussion",
+        "By leaving ethical oversight entirely to individual researchers' discretion"
+      ],
+      "answer_index": 0,
+      "explanation": "Rather than a single centralized ethics ministry or leaving oversight purely informal, the strategy proposes a consortium of Ethics Councils embedded at each CORE, with a shared expectation of standard ethical practice across all of them."
+    },
+    {
+      "item_id": "ai_os_ml_010",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "National Strategy for Artificial Intelligence, p.8 (Executive Summary)",
+      "source_excerpt": "Challenges include data usage without consent, risk of identification of individuals through data, data selection bias and the resulting discrimination of AI models, and asymmetry in data aggregation.",
+      "question": "The strategy lists several data-related challenges for responsible AI development. Which of the following is NOT one of the challenges it names?",
+      "options": [
+        "Data usage without consent",
+        "Risk of re-identification of individuals through data",
+        "Asymmetry in data aggregation",
+        "Excessive redundancy of identical datasets across ministries"
+      ],
+      "answer_index": 3,
+      "explanation": "The strategy's named data challenges are: usage without consent, re-identification risk, data selection bias (and resulting model discrimination), and asymmetry in data aggregation. Redundant ministry datasets is not among the challenges this section identifies -- that is a data-governance/deduplication concern raised elsewhere, not part of this AI-ethics list."
+    },
+    {
+      "item_id": "ai_os_ml_011",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.13 (Box 1: Machine Learning and Deep Learning)",
+      "source_excerpt": "Machine Learning, a term coined by Artur [Arthur] Samuel in 1959, meant 'the ability to learn without being explicitly programmed.'",
+      "question": "Per the strategy document's technical primer, who coined the term 'Machine Learning' in 1959, and what did it originally mean?",
+      "options": [
+        "Arthur Samuel; 'the ability to learn without being explicitly programmed'",
+        "Alan Turing; 'a machine that can imitate any human conversation'",
+        "John McCarthy; 'a system that reasons using formal logic'",
+        "Andrew Ng; 'a model trained exclusively on labelled data'"
+      ],
+      "answer_index": 0,
+      "explanation": "The document credits Arthur Samuel with coining 'Machine Learning' in 1959, defined as the ability to learn without being explicitly programmed -- distinguishing it from Alan Turing's and John McCarthy's separate, earlier contributions to AI more broadly."
+    },
+    {
+      "item_id": "ai_os_ml_012",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Strategy for Artificial Intelligence, p.13 (Box 1)",
+      "source_excerpt": "Deep Learning is a technique for implementing Machine Learning... In ANNs, there are 'neurons' which have discrete layers and connections to other 'neurons'... It's this layering that gives deep learning its name, depth is created by using multiple layers as opposed to a single layer.",
+      "question": "Per the strategy's technical primer, what specifically gives 'Deep Learning' its name?",
+      "options": [
+        "The use of multiple layers of interconnected neurons (depth), as opposed to a single layer",
+        "The very large physical size of the servers used to train it",
+        "The fact that it was developed deep inside a classified government lab",
+        "Its use of exclusively unstructured text data, unlike other ML techniques"
+      ],
+      "answer_index": 0,
+      "explanation": "The document explains that Deep Learning's name comes from architectural depth -- stacking multiple layers of artificial neurons, each learning a specific feature -- rather than server size, secrecy, or a restriction to a particular data type."
+    },
+    {
+      "item_id": "ai_os_ml_013",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "National Strategy for Artificial Intelligence, p.14 (What is Artificial Intelligence?)",
+      "source_excerpt": "Weak AI describes 'simulated' thinking. That is, a system which appears to behave intelligently, but doesn't have any kind of consciousness about what it's doing... Strong AI describes 'actual' thinking... with a conscious, subjective mind.",
+      "question": "Per the strategy's technical primer, what is the key distinction between 'Weak AI' and 'Strong AI'?",
+      "options": [
+        "Weak AI simulates intelligent behaviour without consciousness of what it is doing, while Strong AI would involve actual, conscious thinking",
+        "Weak AI is illegal to deploy commercially, while Strong AI is not",
+        "Weak AI only runs on mobile devices, while Strong AI only runs on supercomputers",
+        "Weak AI was developed in India, while Strong AI was developed abroad"
+      ],
+      "answer_index": 0,
+      "explanation": "The Weak/Strong AI distinction is about consciousness, not legality, hardware, or geography: a chatbot (Weak AI) can appear to converse intelligently without any self-awareness of what it's doing, whereas Strong AI would involve genuine, conscious thought akin to a human mind -- a capability the document notes does not yet exist."
+    },
+    {
+      "item_id": "ai_os_ml_014",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "National Strategy for Artificial Intelligence, p.14 (What is Artificial Intelligence?)",
+      "source_excerpt": "Narrow AI describes an AI that is limited to a single task or a set number of tasks. For example, the capabilities of IBM's Deep Blue... were limited to playing chess... General AI describes an AI which can be used to complete a wide range of tasks in a wide range of environments.",
+      "question": "The strategy uses IBM's Deep Blue -- which beat world chess champion Garry Kasparov in 1997 -- as an example of which AI category, and why?",
+      "options": [
+        "Narrow AI, because its capabilities were limited to a single task (playing chess) and it could not, for example, play tic-tac-toe",
+        "General AI, because chess requires reasoning about a very wide range of situations",
+        "Strong AI, because it demonstrated conscious strategic thinking",
+        "Weak AI, because chess is considered a trivial game requiring no intelligence"
+      ],
+      "answer_index": 0,
+      "explanation": "Deep Blue is the document's textbook example of Narrow AI -- extremely capable at one specific task (chess) but unable to perform even a much simpler different task like tic-tac-toe -- illustrating that task-specific mastery does not imply the broad, flexible competence that would define General AI."
+    },
+    {
+      "item_id": "ai_os_ml_015",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "National Strategy for Artificial Intelligence, p.13 (What is Artificial Intelligence?)",
+      "source_excerpt": "Google, in May 2017, announced that its Tensor Processing Unit (TPU) delivered 30-80 times higher performance-per-watt than contemporary CPUs and GPUs.",
+      "question": "Per the strategy document, what performance claim did Google make in May 2017 about its Tensor Processing Unit (TPU)?",
+      "options": [
+        "It delivered 30-80 times higher performance-per-watt than contemporary CPUs and GPUs",
+        "It reduced AI training costs to zero",
+        "It could run entirely without electricity using solar power",
+        "It was 30-80 times cheaper to manufacture than a CPU"
+      ],
+      "answer_index": 0,
+      "explanation": "The document cites Google's May 2017 TPU announcement specifically as a performance-per-watt claim (30-80x better than contemporary CPUs/GPUs) -- illustrating the hardware advances the strategy credits as part of AI's current computational 'Spring', not a cost or power-source claim."
+    },
+    {
+      "item_id": "ai_os_ml_016",
+      "doc_id": "niti_ai_strategy",
+      "competency_id": "os_ml",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "National Strategy for Artificial Intelligence, p.12-13 (What is Artificial Intelligence?)",
+      "source_excerpt": "a) Unlimited access to computing power... b) Huge fall in cost of storing data... c) Explosion in data that is digitised: As per IDC forecasts, by 2025, the global data sphere will grow to 163 zettabytes... or ten times the 16.1ZB of data generated in 2016.",
+      "question": "The strategy attributes the current 'AI Spring' to a convergence of which three enabling trends?",
+      "options": [
+        "Growing access to computing power, falling data-storage costs, and an explosion in digitised data volume",
+        "Rising internet costs, shrinking computing power, and declining data volumes",
+        "New AI-specific legislation, falling smartphone prices, and rising literacy rates",
+        "Increased AI research funding alone, with no role for infrastructure or data trends"
+      ],
+      "answer_index": 0,
+      "explanation": "The document credits the 'AI Spring' to three converging infrastructure/data trends -- growing (and cheaper) access to computing power, plummeting storage costs, and an exploding volume of digitised data (forecast to reach 163 zettabytes by 2025, ten times the 2016 level) -- not legislation, smartphone prices, or funding in isolation."
+    },
+    {
+      "item_id": "ai_os_survey_design_001",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "PLFS 2017-18 Annual Report, Explanatory Note, Annex, para 1(a), p.1",
+      "source_excerpt": "In the PLFS information in the Schedule (Schedule 10.4) was collected from all members of the sample households using Computer-assisted Personal Interviewing (CAPI) method with inbuilt validation rules through Tablet.",
+      "question": "How did PLFS 2017-18 collect its household schedule data (Schedule 10.4), and what advantage did this method have over NSSO's earlier paper-schedule surveys?",
+      "options": [
+        "Via Computer-assisted Personal Interviewing (CAPI) on tablets with inbuilt validation rules, so data was mostly validated at the time of canvassing rather than afterward",
+        "Via postal mail-back paper questionnaires, validated centrally months later",
+        "Via an unsupervised online self-response web form",
+        "Via telephonic interviews only, with no field visit"
+      ],
+      "answer_index": 0,
+      "explanation": "PLFS replaced NSSO's traditional paper-schedule approach with tablet-based CAPI, whose inbuilt validation rules let most data get checked and corrected during the actual interview -- unlike paper schedules, where validation happened only after separate data entry."
+    },
+    {
+      "item_id": "ai_os_survey_design_002",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "PLFS 2017-18 Annual Report, Explanatory Note, Annex, para 2(a), p.2",
+      "source_excerpt": "Frame for PLFS (2017-18): The list of latest available Urban Frame Survey (UFS) blocks was the sampling frame for urban areas. For nearly one-half of the towns, UFS frame 2012-17 was used and for another half of the towns, UFS frame 2007-12 was used.",
+      "question": "What sampling frame did PLFS 2017-18 use for its urban First Stage Units, and how current was it?",
+      "options": [
+        "The latest available Urban Frame Survey (UFS) blocks -- roughly half from the 2012-17 UFS frame and half from the older 2007-12 UFS frame",
+        "A single UFS frame updated in real time for every town",
+        "The 2001 Population Census town list only",
+        "No fixed frame; urban FSUs were chosen purposively by field staff"
+      ],
+      "answer_index": 0,
+      "explanation": "PLFS's urban frame was a mix of vintages -- about half the towns used the more recent 2012-17 UFS frame and the rest used the older 2007-12 frame -- reflecting that not all UFS blocks had been updated at the same time, a practical constraint in maintaining a nationwide urban sampling frame."
+    },
+    {
+      "item_id": "ai_os_survey_design_003",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PLFS 2017-18 Annual Report, Explanatory Note, Annex, para 3(a), p.2",
+      "source_excerpt": "In urban areas strata were formed within each NSS region on the basis of size class of towns... stratum 1: all towns with population less than 50,000; stratum 2: 50,000 or more but less than 3 lakhs; stratum 3: 3 lakhs or more but less than 15 lakhs; stratum 4,5,6...: each city with population 15 lakhs or more.",
+      "question": "How did PLFS stratify urban First Stage Units within each NSS region?",
+      "options": [
+        "By town population size class -- three size-based strata below 15 lakh population, plus a separate stratum for each individual city of 15 lakh or more",
+        "By the town's literacy rate only",
+        "By alphabetical order of town name",
+        "By the number of Scheduled Castes and Scheduled Tribes households in the town"
+      ],
+      "answer_index": 0,
+      "explanation": "PLFS's urban stratification is purely population-size based within each NSS region, with three graduated size bands below 15 lakh and every million-plus-class city (15 lakh+) getting its own dedicated stratum -- ensuring large cities are represented individually rather than lumped together."
+    },
+    {
+      "item_id": "ai_os_survey_design_004",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "PLFS 2017-18 Annual Report, Explanatory Note, Annex, para 3(c)(ii), p.2-3",
+      "source_excerpt": "Rural: 'r/8' sub-strata were formed in each rural stratum, if 'r' was the annual sample size allocated for a rural stratum... [versus NSS 68th round, where] 'r/4' sub-strata were formed.",
+      "question": "For rural sub-stratification, PLFS formed 'r/8' sub-strata in each rural stratum (where r is the annual sample size). What was the NSS 68th round's corresponding rural sub-stratification rule?",
+      "options": [
+        "'r/4' sub-strata per rural stratum -- coarser (fewer, larger) sub-strata than PLFS's 'r/8'",
+        "'r/16' sub-strata -- finer sub-strata than PLFS",
+        "An identical 'r/8' rule, unchanged from PLFS",
+        "No rural sub-stratification at all in the 68th round"
+      ],
+      "answer_index": 0,
+      "explanation": "NSS 68th round used 'r/4' rural sub-strata, coarser than PLFS's 'r/8' -- meaning PLFS split rural strata into twice as many, smaller, more homogeneous population-ordered sub-strata than the earlier round, a refinement in sample precision."
+    },
+    {
+      "item_id": "ai_os_survey_design_005",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "PLFS 2017-18 Annual Report, Explanatory Note, Annex, para 3(c)(i), p.2",
+      "source_excerpt": "Urban: In urban areas there was no sub-stratification.",
+      "question": "How does PLFS's urban sub-stratification approach compare to the NSS 68th round's, per the Annual Report's Explanatory Note?",
+      "options": [
+        "PLFS applied no urban sub-stratification at all, whereas the NSS 68th round formed 'u/4' urban sub-strata based on UFS household counts",
+        "PLFS and the NSS 68th round used identical urban sub-stratification schemes",
+        "PLFS applied finer urban sub-stratification than the 68th round",
+        "Neither PLFS nor the 68th round applied any urban sub-stratification"
+      ],
+      "answer_index": 0,
+      "explanation": "PLFS simplified urban sampling by dropping sub-stratification entirely for urban areas, unlike the 68th round, which formed 'u/4' sub-strata (grouped by UFS household counts) within each urban stratum -- one of several deliberate design changes distinguishing PLFS from the older quinquennial rounds."
+    },
+    {
+      "item_id": "ai_os_survey_design_006",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "hard",
+      "bloom_level": "remember",
+      "locator": "PLFS 2017-18 Annual Report, Explanatory Note, Annex, para 4(a), p.3",
+      "source_excerpt": "Sample size for PLFS: A total number of 12,800 FSUs (7,024 villages and 5,776 UFS blocks) was allotted for the survey at the all-India level during July 2017-June 2018.",
+      "question": "What was the total all-India First Stage Unit (FSU) sample size allotted for PLFS 2017-18, and how was it split between rural and urban?",
+      "options": [
+        "12,800 FSUs total -- 7,024 villages (rural) and 5,776 UFS blocks (urban)",
+        "25,000 FSUs total, split evenly between rural and urban",
+        "12,800 FSUs, entirely rural villages with no urban sample",
+        "1,280 FSUs total, reflecting a 1-in-10 subsample of the NSS 68th round's frame"
+      ],
+      "answer_index": 0,
+      "explanation": "The Annual Report states an all-India PLFS 2017-18 FSU allocation of 12,800, made up of 7,024 rural villages and 5,776 urban UFS blocks -- a scale close to the NSS 68th round's 12,784 FSUs, reflecting PLFS's continuity with the earlier quinquennial survey design at similar overall scale."
+    },
+    {
+      "item_id": "ai_os_survey_design_007",
+      "doc_id": "plfs_2017_18",
+      "competency_id": "os_survey_design",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "PLFS 2017-18 Annual Report, Explanatory Note, Annex, para 5(e)-(f), p.4",
+      "source_excerpt": "composition of SSS (rural/urban)... number of members in the household having level of general education as secondary (10th standard) or above.",
+      "question": "Within a selected FSU, what characteristic did PLFS use to form Second Stage Strata (SSS) for sub-sampling households, in both rural and urban areas?",
+      "options": [
+        "The number of household members with general education at secondary (10th standard) level or above",
+        "The household's total monthly consumption expenditure (MPCE) decile",
+        "The caste category of the household head",
+        "Whether the household owned agricultural land"
+      ],
+      "answer_index": 0,
+      "explanation": "PLFS's second-stage stratification (SSS), for both rural and urban FSUs, is based on the number of household members educated to secondary level or above -- a different criterion from the NSS 68th round, which instead used relative affluence/occupation (rural) or MPCE deciles (urban) to form its second-stage strata."
+    },
+    {
+      "item_id": "ai_os_survey_design_008",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_survey_design",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "Expert Group Report on CPI, Section 4.3 'Sample Selection', p.31",
+      "source_excerpt": "The Census 2011 data was used by the National Statistics Office (NSO) for the selection of rural and urban households under the Household Consumption Expenditure Survey (HCES) 2022-23. Accordingly, the sampling frame adopted for HCES has also been utilized for the selection of villages and towns in CPI 2024.",
+      "question": "For the CPI 2024 base-revision exercise, what sampling frame did the Expert Group recommend using for selecting rural villages and urban towns for price collection?",
+      "options": [
+        "The same sampling frame (Census 2011-based) already used for the Household Consumption Expenditure Survey (HCES) 2022-23",
+        "A brand-new frame built from the 2021 Census once released",
+        "The frame used for the 2001 Population Census only",
+        "Municipal corporation electoral rolls"
+      ],
+      "answer_index": 0,
+      "explanation": "Rather than building an independent frame, the Expert Group reused the HCES 2022-23 sampling frame (itself based on Census 2011 and subsequent updates) for selecting CPI 2024's village and town samples -- tying CPI's price-collection geography to the same frame used for expenditure-weight estimation."
+    },
+    {
+      "item_id": "ai_os_survey_design_009",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_survey_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Expert Group Report on CPI, Section 4.3.1.3, p.32",
+      "source_excerpt": "EG recommended to modify the sample design using the criteria of allocation of number of sample villages according to NSS regions. Accordingly, two stages of sampling method were used... Stage 1... allocate sample villages across State/UTs using NSS region wise rural population share, while Stage 2 was allocating the State/UT wise number of sample villages across districts as per district wise rural population share within NSS region.",
+      "question": "How did the Expert Group's revised two-stage method allocate rural village samples across States/UTs and districts for CPI 2024?",
+      "options": [
+        "Stage 1 allocated villages across States/UTs by NSS-region-wise rural population share; Stage 2 allocated each State/UT's villages across its districts by district-wise rural population share within the NSS region",
+        "Villages were allocated equally to every State/UT regardless of population",
+        "Villages were allocated purely by each State's total geographic area",
+        "Villages were allocated by lottery among all willing districts"
+      ],
+      "answer_index": 0,
+      "explanation": "The revised method is explicitly population-share-based at both stages -- first across States/UTs by their NSS-region rural population share, then within each State/UT across its own districts by district-wise rural population share -- replacing the earlier simpler 'two villages per district' rule."
+    },
+    {
+      "item_id": "ai_os_survey_design_010",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_survey_design",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "Expert Group Report on CPI, Section 4.3.1.2, p.32",
+      "source_excerpt": "the number of allocated villages for certain States (Northeastern States) had increased manifold and had become much higher than the major states which had much higher rural population... due to the criteria of selection of two villages from each district. Several small States specifically in the northeastern region notified a large number of districts resulting in larger number of sample village allocation.",
+      "question": "Why did the Expert Group abandon the earlier 'select two villages from each district' rule for rural sampling?",
+      "options": [
+        "Because Northeastern States with many small districts ended up with disproportionately more sample villages than larger states with much bigger rural populations",
+        "Because the rule was found to be unconstitutional",
+        "Because it required more field staff than were available anywhere in the country",
+        "Because it excluded the Northeastern States from the sample entirely"
+      ],
+      "answer_index": 0,
+      "explanation": "A flat 'two villages per district' rule interacts badly with uneven district counts: States with many small districts (notably in the Northeast) accumulated a disproportionately large village allocation relative to their actual rural population, compared to larger states with fewer, bigger districts -- prompting the shift to a population-share-based allocation method instead."
+    },
+    {
+      "item_id": "ai_os_survey_design_011",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_survey_design",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "Expert Group Report on CPI, Section 4.3.1.4(iv), p.32",
+      "source_excerpt": "a minimum allocation norm was followed, with at least 5 villages allotted to each UTs and 8 villages to each State.",
+      "question": "What minimum allocation norm did the Expert Group apply when a State's or UT's proportionate village allocation fell too low?",
+      "options": [
+        "At least 5 villages for each Union Territory and 8 villages for each State",
+        "At least 50 villages for every State and UT alike",
+        "No minimum; allocation was strictly proportionate with no floor",
+        "At least 1 village for every State and UT alike"
+      ],
+      "answer_index": 0,
+      "explanation": "To prevent very small States/UTs from being under-represented by pure population-proportional allocation, the Expert Group set floors of 8 villages per State and 5 per UT, topping up allocations that fell below this threshold."
+    },
+    {
+      "item_id": "ai_os_survey_design_012",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_survey_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Expert Group Report on CPI, Section 4.3.1.5, p.33",
+      "source_excerpt": "In each district... the top 100 villages were selected based on descending order of population... divided into four segments, each containing 25 villages... If the number of villages to be selected from a district exceeds 4, the additional villages is chosen sequentially from segment 1, followed by segment 2, and so on.",
+      "question": "How did the Expert Group's village-selection procedure use population-based segments within a district?",
+      "options": [
+        "The top 100 most populous villages were divided into four 25-village segments, with each segment contributing villages before moving to the next, ensuring larger villages were preferentially represented",
+        "All villages in a district, regardless of population, were pooled into one segment for random selection",
+        "Only the single most populous village in each district was ever selected",
+        "Villages were segmented alphabetically by name, not by population"
+      ],
+      "answer_index": 0,
+      "explanation": "By ranking the top 100 villages by population and drawing from successive 25-village segments (largest first), the procedure ensures more populous villages -- which typically host more markets and price-relevant activity -- are represented before smaller ones, rather than treating all villages identically or picking arbitrarily."
+    },
+    {
+      "item_id": "ai_os_survey_design_013",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_survey_design",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "Expert Group Report on CPI, Section 4.3.2.3, Table 4.6, p.35",
+      "source_excerpt": "the towns were classified into 6 categories according to population criteria... Category 1: more than 75 lakh (3 towns); Category 2: 50-75 lakh (2 towns); Category 3: 25-50 lakh (7 towns); Category 4: 9-25 lakh (41 towns); Category 5: remaining State/UT capitals (17); Category 6: other towns (7,677).",
+      "question": "How did the Expert Group first classify India's urban-frame towns for CPI 2024's urban market selection?",
+      "options": [
+        "Into 6 categories by population size, from cities over 75 lakh down to remaining State/UT capitals and all other towns",
+        "Into 2 categories: metro and non-metro only",
+        "Into categories based solely on each town's literacy rate",
+        "Into categories based on which state the town belongs to, with no population criterion"
+      ],
+      "answer_index": 0,
+      "explanation": "The first-stage classification used six population-based categories (from mega-cities above 75 lakh down through progressively smaller size bands), plus a separate category for remaining State/UT capitals not already captured, with all remaining towns falling into a large residual Category 6 -- a purely population/administrative-status-driven scheme."
+    },
+    {
+      "item_id": "ai_os_survey_design_014",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_survey_design",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "Expert Group Report on CPI, Section 4.3.2.4, p.36",
+      "source_excerpt": "From each stratum, number of towns to be selected was decided using following formula. Let the number of towns to be selected be X; and the total population of ith stratum is Pi, then, X = Pi/9,00,000. X is rounded to the nearest integer, with a condition that minimum one town is selected from each stratum.",
+      "question": "For Category 6 towns (grouped into four population-based strata), the Expert Group determined how many towns to select from a stratum using the formula X = Pi / 9,00,000. If a stratum's total population (Pi) is 27,00,000, how many towns would this formula select from it (before applying the 'minimum one town' floor)?",
+      "options": [
+        "3 towns",
+        "9 towns",
+        "1 town",
+        "27 towns"
+      ],
+      "answer_index": 0,
+      "explanation": "27,00,000 divided by 9,00,000 equals exactly 3, so the formula selects 3 towns from that stratum, rounded to the nearest integer and already above the minimum-one-town floor so no adjustment is needed."
+    },
+    {
+      "item_id": "ai_os_survey_design_015",
+      "doc_id": "expert_group_cpi",
+      "competency_id": "os_survey_design",
+      "difficulty": "medium",
+      "bloom_level": "evaluate",
+      "locator": "Expert Group Report on CPI, Section 4.2.9-4.2.10, p.30-31",
+      "source_excerpt": "the Expert Group concluded that the rationale for applying a selection benchmark, such as the four-fold criteria used in the earlier CPI series, no longer holds. Accordingly, it was recommended that all weighted items (358) may be included in the CPI item basket without the application of any selection criteria or benchmark, provided that their base prices are available.",
+      "question": "Why did the Expert Group recommend dropping the four-fold selection criteria used in the CPI 2012 series to shortlist item-basket items, and instead including all 358 weighted items?",
+      "options": [
+        "Because robust, technology-enabled software can now efficiently process, validate, and compile price data across a much larger, comprehensive item basket, removing the earlier rationale for a selection benchmark",
+        "Because the four-fold criteria were found to be statistically invalid from the start",
+        "Because the number of weighted items had decreased since 2012, making selection unnecessary",
+        "Because retailers refused to report prices for a curated subset of items"
+      ],
+      "answer_index": 0,
+      "explanation": "The Expert Group's reasoning is technological, not a claim of past statistical invalidity or a shrinking item count: improved data-processing capacity removes the old practical need to pre-filter items via a selection benchmark, so all weighted items can now be included in the basket as long as base prices are available -- broadening basket coverage rather than narrowing it."
+    }
+  ]
+}

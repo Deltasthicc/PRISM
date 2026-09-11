@@ -1,0 +1,1501 @@
+{
+  "corpus_version": "prototype-v1",
+  "created_on": "2026-09-11",
+  "note": "AI-authored, source-grounded MCQs for the dsa-fundamentals curriculum's binary_search_tree, heaps, graphs, dynamic_programming, and sorting_algorithms competencies (batch B), citing the GATE 2026/2024 CS question papers already in document_corpus.json.",
+  "questions": [
+    {
+      "item_id": "ai_binary_search_tree_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "binary_search_tree",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (the BST ordering invariant) rather than a specific transcribed exam question.",
+      "question": "In a binary search tree (BST), for any node, which property must hold?",
+      "options": [
+        "All values in the left subtree are less than the node's value, and all values in the right subtree are greater than it",
+        "All values in the left subtree are greater than the node's value, and all values in the right subtree are less than it",
+        "The left and right subtrees must have the same height",
+        "Every node must have exactly two children"
+      ],
+      "answer_index": 0,
+      "explanation": "This is the core BST invariant, applied recursively at every node, and is exactly what makes an inorder traversal produce sorted output. Option B reverses the ordering, option C describes a balance condition (as in AVL trees, not a BST requirement in general), and option D describes a full/strict binary tree shape, which a BST need not have."
+    },
+    {
+      "item_id": "ai_binary_search_tree_002",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (BST search complexity) rather than a specific transcribed exam question.",
+      "question": "What is the average-case time complexity of searching for a key in a balanced binary search tree with n nodes?",
+      "options": [
+        "O(n)",
+        "O(log n)",
+        "O(n log n)",
+        "O(1)"
+      ],
+      "answer_index": 1,
+      "explanation": "In a balanced BST the height is Theta(log n), and search follows a single root-to-leaf path, doing at most one comparison per level, so it takes O(log n) comparisons in the average (and balanced worst) case."
+    },
+    {
+      "item_id": "ai_binary_search_tree_003",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "binary_search_tree",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (BST degeneration) rather than a specific transcribed exam question.",
+      "question": "A binary search tree is built by inserting the keys 1, 2, 3, 4, 5 in that increasing order with no rebalancing. What is the resulting worst-case time complexity of searching for the key 5?",
+      "options": [
+        "O(log n)",
+        "O(1)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "answer_index": 2,
+      "explanation": "Inserting already-sorted keys with no rebalancing produces a completely skewed tree (each node has only a right child), which degenerates into a linked list of height n, so a search can take O(n) comparisons."
+    },
+    {
+      "item_id": "ai_binary_search_tree_004",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS2 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (BST insertion) rather than a specific transcribed exam question.",
+      "question": "When inserting a new key into a BST, where does the new node end up?",
+      "options": [
+        "As a new leaf, at the position found by following the BST search path for that key until falling off the tree",
+        "Always as the new root of the tree",
+        "As a leaf found by choosing a random valid position",
+        "Replacing the node whose key is closest to the new key"
+      ],
+      "answer_index": 0,
+      "explanation": "Standard BST insertion walks down the tree comparing the new key at each node, following left or right exactly as a search would, and attaches the new node as a leaf at the first empty slot it reaches; it never restructures or overwrites existing nodes on its own."
+    },
+    {
+      "item_id": "ai_binary_search_tree_005",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "binary_search_tree",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (BST deletion with two children) rather than a specific transcribed exam question.",
+      "question": "When deleting a BST node that has two children, which value should replace it to preserve the BST property, after which the replaced value's original node is deleted from its own subtree?",
+      "options": [
+        "The node's inorder successor (the minimum value in its right subtree)",
+        "The node's parent's value",
+        "The node's left child's value directly",
+        "The maximum value in the entire tree"
+      ],
+      "answer_index": 0,
+      "explanation": "Copying the inorder successor's value into the node being deleted, then deleting the successor from its own position (where it has at most one child, since it is a leftmost node), preserves BST ordering: everything in the left subtree remains smaller, and everything left in the right subtree remains greater than or equal to the successor."
+    },
+    {
+      "item_id": "ai_binary_search_tree_006",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (BST deletion of a leaf) rather than a specific transcribed exam question.",
+      "question": "What is the simplest way to delete a leaf node from a BST?",
+      "options": [
+        "Remove the node directly and set the corresponding child pointer in its parent to null",
+        "Replace it with its inorder successor",
+        "Rotate the tree first, then remove the root",
+        "Copy the leaf's value into the root and stop"
+      ],
+      "answer_index": 0,
+      "explanation": "A leaf has no children, so simply clearing its parent's pointer to it removes it cleanly; no successor search, value copying, or rotation is needed because removing a leaf can never violate the BST property elsewhere in the tree."
+    },
+    {
+      "item_id": "ai_binary_search_tree_007",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "binary_search_tree",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (BST deletion with one child) rather than a specific transcribed exam question.",
+      "question": "How is a BST node deleted when it has exactly one child?",
+      "options": [
+        "Bypass the node by linking its parent directly to its single child",
+        "Replace it with the inorder successor found in the subtree it doesn't have",
+        "Delete both the node and its child",
+        "Convert the child into a sibling of the deleted node"
+      ],
+      "answer_index": 0,
+      "explanation": "Since the node has only one subtree, promoting that subtree to take the deleted node's exact place in the tree preserves the BST ordering with no need for a successor search."
+    },
+    {
+      "item_id": "ai_binary_search_tree_008",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS2 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (BST inorder traversal) rather than a specific transcribed exam question.",
+      "question": "If you perform an inorder traversal (left, node, right) of a valid BST, what order do the keys come out in?",
+      "options": [
+        "Strictly decreasing order",
+        "Sorted (non-decreasing) order",
+        "Level order (breadth-first) order",
+        "The same order the keys were inserted"
+      ],
+      "answer_index": 1,
+      "explanation": "Because every left subtree holds smaller keys and every right subtree holds larger keys, recursively visiting left-node-right always yields keys from smallest to largest."
+    },
+    {
+      "item_id": "ai_binary_search_tree_009",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "binary_search_tree",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (finding the BST minimum) rather than a specific transcribed exam question.",
+      "question": "How do you find the minimum key stored in a non-empty BST?",
+      "options": [
+        "Follow right child pointers from the root until there is no right child",
+        "Follow left child pointers from the root until there is no left child",
+        "Perform a full inorder traversal and take the last value",
+        "Search the tree using the smallest possible key value as the target"
+      ],
+      "answer_index": 1,
+      "explanation": "The BST property means every move to a left child leads to smaller keys, so the leftmost node reachable from the root holds the minimum; this takes only O(h) time without needing a full traversal."
+    },
+    {
+      "item_id": "ai_binary_search_tree_010",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (finding the BST maximum) rather than a specific transcribed exam question.",
+      "question": "In a BST rooted at 50, where 50's right child is 70, 70's right child is 90, and 90's right child is 95 (with no other nodes), what is the maximum key stored in the tree?",
+      "options": [
+        "50",
+        "70",
+        "90",
+        "95"
+      ],
+      "answer_index": 3,
+      "explanation": "The maximum key in a BST is found by following right-child pointers until none remain; here that chain of right children ends at 95."
+    },
+    {
+      "item_id": "ai_binary_search_tree_011",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "binary_search_tree",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (BST height bounds) rather than a specific transcribed exam question.",
+      "question": "For a BST with n nodes, what are the minimum and maximum possible heights (counting height as the number of edges on the longest root-to-leaf path)?",
+      "options": [
+        "Minimum floor(log2 n), maximum n-1",
+        "Minimum n-1, maximum floor(log2 n)",
+        "Minimum and maximum are both n-1",
+        "Minimum and maximum are both floor(log2 n)"
+      ],
+      "answer_index": 0,
+      "explanation": "A perfectly balanced BST achieves height Theta(log2 n), the smallest height possible for n nodes, whereas a completely skewed BST (every node with at most one child) has height n-1, the largest height possible; both extremes can occur for the same n depending purely on insertion order."
+    },
+    {
+      "item_id": "ai_binary_search_tree_012",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS2 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes self-balancing binary search trees (AVL trees) as a standard examinable topic; this item targets that general concept area (AVL rotations) rather than a specific transcribed exam question.",
+      "question": "In a self-balancing AVL tree, an insertion causes a node's balance factor to become +2, with the imbalance occurring in its right subtree's right subtree (a 'right-right' case). Which rotation restores balance?",
+      "options": [
+        "A single left rotation at the unbalanced node",
+        "A single right rotation at the unbalanced node",
+        "A right rotation followed by a left rotation",
+        "A left rotation followed by a right rotation"
+      ],
+      "answer_index": 0,
+      "explanation": "A right-right heavy imbalance is corrected with a single left rotation: the right child is pulled up to become the new subtree root, and the old root becomes that child's left child, rebalancing both subtrees in O(1) time."
+    },
+    {
+      "item_id": "ai_binary_search_tree_013",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "binary_search_tree",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes self-balancing binary search trees (AVL trees) as a standard examinable topic; this item targets that general concept area (AVL rotations) rather than a specific transcribed exam question.",
+      "question": "In an AVL tree, an insertion causes a node's balance factor to become -2, with the imbalance occurring in its left subtree's left subtree (a 'left-left' case). Which rotation restores balance?",
+      "options": [
+        "A single right rotation at the unbalanced node",
+        "A single left rotation at the unbalanced node",
+        "A left rotation followed by a right rotation",
+        "A right rotation followed by a left rotation"
+      ],
+      "answer_index": 0,
+      "explanation": "A left-left heavy imbalance is corrected with a single right rotation: the left child becomes the new subtree root, and the old root becomes that child's right child, restoring the AVL height-balance property in O(1) time."
+    },
+    {
+      "item_id": "ai_binary_search_tree_014",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "medium",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS2 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes self-balancing binary search trees (AVL trees) as a standard examinable topic; this item targets that general concept area (the AVL balance factor) rather than a specific transcribed exam question.",
+      "question": "In an AVL tree, how is a node's balance factor defined?",
+      "options": [
+        "height(left subtree) minus height(right subtree)",
+        "height(right subtree) minus height(left subtree), squared",
+        "Number of nodes in the left subtree minus number of nodes in the right subtree",
+        "The depth of the node measured from the root"
+      ],
+      "answer_index": 0,
+      "explanation": "The balance factor is conventionally height(left) minus height(right) (or its negative, depending on convention); AVL trees require this value to stay in {-1, 0, +1} at every node, triggering a rotation whenever an insertion or deletion pushes it to +2 or -2."
+    },
+    {
+      "item_id": "ai_binary_search_tree_015",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "binary_search_tree",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (BST validation) rather than a specific transcribed exam question.",
+      "question": "A recursive BST-validation routine checks each node against a (min, max) range inherited from its ancestors, rather than only comparing a node to its immediate children. Why is comparing only to immediate children insufficient?",
+      "options": [
+        "It can miss violations where a deeply nested descendant's key falls outside the range established by a higher ancestor, even though it satisfies its immediate parent",
+        "It always runs in exponential time",
+        "It cannot detect duplicate keys",
+        "It only works correctly for trees with an even number of nodes"
+      ],
+      "answer_index": 0,
+      "explanation": "A node can be locally consistent with its direct parent (for example, being smaller than a parent that is itself in a right subtree) yet still violate the requirement to be greater than an earlier ancestor; correct validation must thread down a shrinking permissible (min, max) range rather than comparing only parent-child pairs."
+    },
+    {
+      "item_id": "ai_binary_search_tree_016",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "binary_search_tree",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS2 -- general Algorithms & Data Structures syllabus area (Binary Search Trees)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary search trees as a standard examinable topic; this item targets that general concept area (building a balanced BST) rather than a specific transcribed exam question.",
+      "question": "Given a sorted array, what is the standard technique for building a height-balanced BST from it in O(n) time?",
+      "options": [
+        "Recursively make the middle element of each subarray the root of that subtree, then recurse on the left and right halves",
+        "Insert every element one at a time, in array order, into an initially empty BST",
+        "Insert elements in reverse array order into an initially empty BST",
+        "Randomly shuffle the array, then insert elements one at a time"
+      ],
+      "answer_index": 0,
+      "explanation": "Picking the middle element as each subtree's root and recursing on the two halves guarantees the two subtrees differ in size by at most one at every level, producing height Theta(log n); options B and C are guaranteed to produce a fully skewed, unbalanced tree since the array is already sorted."
+    },
+    {
+      "item_id": "ai_heaps_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary heaps as a standard examinable topic; this item targets that general concept area (the min-heap property) rather than a specific transcribed exam question.",
+      "question": "What property must every node in a min-heap satisfy?",
+      "options": [
+        "Its value is less than or equal to the values of its children",
+        "Its value is greater than or equal to the values of its children",
+        "Its value is less than its parent",
+        "Its left child's value is less than its right child's value"
+      ],
+      "answer_index": 0,
+      "explanation": "A min-heap enforces the heap-order property at every node: every parent is less than or equal to both its children, which guarantees the minimum of the whole structure always sits at the root. Unlike a BST, there is no ordering requirement between siblings or across separate subtrees."
+    },
+    {
+      "item_id": "ai_heaps_002",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes binary heaps as a standard examinable topic; this item targets that general concept area (the max-heap property) rather than a specific transcribed exam question.",
+      "question": "What property must every node in a max-heap satisfy?",
+      "options": [
+        "Its value is greater than or equal to the values of its children",
+        "Its value is less than the values of its children",
+        "Its left child must equal its right child",
+        "Its value equals the average of its children's values"
+      ],
+      "answer_index": 0,
+      "explanation": "A max-heap enforces the reverse ordering of a min-heap: every parent's value is greater than or equal to both children's values, which guarantees the maximum element is always found at the root."
+    },
+    {
+      "item_id": "ai_heaps_003",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes the array representation of binary heaps as a standard examinable topic; this item targets that general concept area (parent index formula) rather than a specific transcribed exam question.",
+      "question": "In the standard 0-indexed array representation of a binary heap, what is the index of the parent of the node stored at index i (for i > 0)?",
+      "options": [
+        "floor((i-1)/2)",
+        "2*i + 1",
+        "floor(i/2) + 1",
+        "i - 2"
+      ],
+      "answer_index": 0,
+      "explanation": "The 0-indexed array layout packs the heap level by level, so the parent of index i is floor((i-1)/2); this lets a complete binary tree be stored compactly without explicit pointers."
+    },
+    {
+      "item_id": "ai_heaps_004",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes the array representation of binary heaps as a standard examinable topic; this item targets that general concept area (child index formulas) rather than a specific transcribed exam question.",
+      "question": "In the standard 0-indexed array representation of a binary heap, what are the indices of the left and right children of the node at index i?",
+      "options": [
+        "2i+1 and 2i+2",
+        "2i and 2i+1",
+        "i/2 and i/2+1",
+        "i+1 and i+2"
+      ],
+      "answer_index": 0,
+      "explanation": "With 0-based indexing, the left child sits at 2i+1 and the right child at 2i+2 -- the direct inverse of the floor((i-1)/2) parent formula."
+    },
+    {
+      "item_id": "ai_heaps_005",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes heap insertion as a standard examinable topic; this item targets that general concept area (sift-up complexity) rather than a specific transcribed exam question.",
+      "question": "Inserting a new element into a binary heap of n elements appends it at the next free array slot and then 'sifts up' (bubbles up) by swapping with its parent while the heap property is violated. What is the worst-case time complexity of this insertion?",
+      "options": [
+        "O(log n)",
+        "O(1)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "In the worst case the new element rises from a leaf all the way to the root; since the heap is a complete binary tree its height is Theta(log n), so at most O(log n) swaps occur."
+    },
+    {
+      "item_id": "ai_heaps_006",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes heap extraction as a standard examinable topic; this item targets that general concept area (extract-min complexity) rather than a specific transcribed exam question.",
+      "question": "Extracting the minimum from a min-heap of n elements is done by removing the root, moving the last array element to the root, and 'sifting down' (heapifying) it into place. What is the time complexity of this operation?",
+      "options": [
+        "O(log n)",
+        "O(1)",
+        "O(n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "Moving the displaced last element down the tree takes at most one swap per level, and the tree's height is Theta(log n), giving O(log n) total for extract-min (or, symmetrically, extract-max on a max-heap)."
+    },
+    {
+      "item_id": "ai_heaps_007",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes heap construction as a standard examinable topic; this item targets that general concept area (build-heap complexity) rather than a specific transcribed exam question.",
+      "question": "Building a binary heap from an unsorted array of n elements, by calling sift-down (heapify) on every internal node from the last internal node up to the root, runs in what time complexity, and why is it not O(n log n)?",
+      "options": [
+        "O(n), because most nodes are near the bottom of the tree and only need to sift down a small number of levels; the sum of per-node work across all levels telescopes to a linear bound",
+        "O(n log n), because each of the n calls to sift-down costs O(log n) in the worst case",
+        "O(n^2), because every node may need to compare against every other node",
+        "O(log n), because heapify only ever touches the root"
+      ],
+      "answer_index": 0,
+      "explanation": "A naive per-node bound of O(log n) gives the looser O(n log n) estimate in option B, but a tighter accounting shows most nodes are leaves or near-leaves that sift down only 0 or 1 levels; summing (n / 2^(h+1)) * h over all heights h converges to O(n), the standard tight bound for bottom-up heap construction."
+    },
+    {
+      "item_id": "ai_heaps_008",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes heap operations as a standard examinable topic; this item targets that general concept area (peek complexity) rather than a specific transcribed exam question.",
+      "question": "What is the time complexity of finding, without removing, the minimum element in a min-heap?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "The heap property guarantees the minimum is always at the root (array index 0), so reading it requires no traversal or comparisons at all."
+    },
+    {
+      "item_id": "ai_heaps_009",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes heap sort as a standard examinable topic; this item targets that general concept area (heap sort complexity) rather than a specific transcribed exam question.",
+      "question": "Heap sort repeatedly extracts the maximum from a max-heap of the remaining elements and places it at the end of the array. What is heap sort's time complexity in the worst case?",
+      "options": [
+        "O(n log n)",
+        "O(n)",
+        "O(n^2)",
+        "O(log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Building the initial heap costs O(n), and each of the n extract-max calls costs O(log n) as the heap shrinks, giving O(n) + O(n log n) = O(n log n) overall, with no worse case (unlike quicksort's O(n^2) worst case)."
+    },
+    {
+      "item_id": "ai_heaps_010",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes heap sort as a standard examinable topic; this item targets that general concept area (heap sort stability) rather than a specific transcribed exam question.",
+      "question": "Is heap sort a stable sorting algorithm (does it preserve the relative order of equal-keyed elements)?",
+      "options": [
+        "No, because sifting can reorder equal keys relative to each other during swaps",
+        "Yes, because heaps always preserve insertion order",
+        "Yes, but only for max-heaps, not min-heaps",
+        "It is stable only when n is even"
+      ],
+      "answer_index": 0,
+      "explanation": "The swaps performed while building the heap and during repeated extraction can freely reorder elements that have equal keys relative to one another, so heap sort is classified as unstable, unlike merge sort or insertion sort."
+    },
+    {
+      "item_id": "ai_heaps_011",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes priority queues as a standard examinable topic; this item targets that general concept area (heap-backed priority queues) rather than a specific transcribed exam question.",
+      "question": "Which abstract data type is most commonly implemented using a binary heap?",
+      "options": [
+        "Priority queue",
+        "Stack",
+        "FIFO queue",
+        "Hash table"
+      ],
+      "answer_index": 0,
+      "explanation": "A binary heap gives O(log n) insert and O(log n) extract-min/max with O(1) peek, exactly matching the operations a priority queue needs in order to always serve the highest- (or lowest-) priority element next."
+    },
+    {
+      "item_id": "ai_heaps_012",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes heap-based priority queues used by graph algorithms as a standard examinable topic; this item targets that general concept area (decrease-key) rather than a specific transcribed exam question.",
+      "question": "Dijkstra's shortest-path algorithm and Prim's MST algorithm both use a heap-based priority queue with a 'decrease-key' operation. What does decrease-key do, and why is it needed?",
+      "options": [
+        "It lowers an existing element's key already in the heap and re-sifts it upward to maintain the heap property, needed when a shorter tentative distance or cheaper edge weight to a vertex is discovered",
+        "It permanently removes the smallest element from the heap",
+        "It doubles the capacity of the underlying array when the heap becomes full",
+        "It converts a min-heap into a max-heap in place"
+      ],
+      "answer_index": 0,
+      "explanation": "When relaxing an edge finds a better tentative distance (Dijkstra) or a cheaper connecting edge (Prim), the vertex's key already sitting in the priority queue must be reduced and the heap re-adjusted via sift-up, rather than removing and reinserting the vertex, so the structure keeps reflecting the true current minimum."
+    },
+    {
+      "item_id": "ai_heaps_013",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus contrasts heaps with binary search trees as a standard examinable topic; this item targets that general concept area (ordering guarantees) rather than a specific transcribed exam question.",
+      "question": "A binary heap is a 'complete' binary tree. How does its ordering guarantee differ from that of a binary search tree (BST)?",
+      "options": [
+        "A heap only guarantees each parent is ordered relative to its own children, with no relation between siblings or across subtrees, while a BST guarantees every node in a left subtree is smaller than every node in the right subtree",
+        "A heap and a BST provide exactly the same ordering guarantee",
+        "A BST only orders parent-child pairs, while a heap orders every node against every other node",
+        "A heap always has fewer nodes than an equivalent BST"
+      ],
+      "answer_index": 0,
+      "explanation": "The heap property is purely local (a parent versus its own children), which is why a heap cannot support ordered traversal or range queries the way a BST's global left/right ordering can; this weaker guarantee is exactly what lets heaps be built in O(n) versus a balanced BST's O(n log n)."
+    },
+    {
+      "item_id": "ai_heaps_014",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes the array representation of binary heaps as a standard examinable topic; this item targets that general concept area (leaf-index boundary) rather than a specific transcribed exam question.",
+      "question": "A min-heap stored in a 0-indexed array has exactly 127 elements. How many of those elements are leaves (nodes with no children)?",
+      "options": [
+        "64",
+        "63",
+        "32",
+        "127"
+      ],
+      "answer_index": 0,
+      "explanation": "In a 0-indexed array of n elements, the leaves are exactly the indices from floor(n/2) through n-1. For n=127, floor(127/2)=63, so leaves run from index 63 to 126 inclusive, which is 126-63+1 = 64 elements."
+    },
+    {
+      "item_id": "ai_heaps_015",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes heap construction as a standard examinable topic; this item targets that general concept area (merging two heaps) rather than a specific transcribed exam question.",
+      "question": "Two binary max-heaps of sizes m and n, stored as separate arrays with no shared structure, need to be combined into one valid max-heap containing all m+n elements. What is the time complexity of concatenating the two arrays and then running the O(n)-style bottom-up build-heap procedure on the combined array?",
+      "options": [
+        "O(m+n)",
+        "O((m+n) log(m+n))",
+        "O(mn)",
+        "O(log m + log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Bottom-up heap construction is linear in the number of elements regardless of their initial arrangement, so re-heapifying the concatenated array of size m+n costs O(m+n); this is the standard way to merge two arbitrary binary heaps when no special structure (such as a binomial heap) is available for faster merging."
+    },
+    {
+      "item_id": "ai_heaps_016",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "heaps",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes heap operations as a standard examinable topic; this item targets that general concept area (sift-down complexity) rather than a specific transcribed exam question.",
+      "question": "During extract-min, after moving the last element to the root, the sift-down step compares a node to its children and swaps with the smaller child if the node is larger. What is the time complexity of a single sift-down call starting at the root of an n-element heap?",
+      "options": [
+        "O(log n)",
+        "O(1)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "Each comparison-and-swap moves the element down exactly one level, and the heap's height is Theta(log n), so a single sift-down call starting from the root does at most O(log n) work."
+    },
+    {
+      "item_id": "ai_heaps_017",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "heaps",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Heaps)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus contrasts heaps with balanced BSTs for priority-queue use as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "If an application only ever needs to repeatedly insert elements and retrieve the current minimum, why is a binary heap generally preferred over a balanced BST for this task?",
+      "options": [
+        "A heap gives the same O(log n) insert and O(log n) remove-min as a balanced BST, but with lower constant-factor overhead, a simpler implementation, and no rebalancing bookkeeping",
+        "A heap gives O(1) insert and O(1) remove-min, strictly faster than any BST",
+        "A BST cannot store duplicate keys but a heap can",
+        "A heap uses less memory because it never stores more than log n elements"
+      ],
+      "answer_index": 0,
+      "explanation": "Both structures offer O(log n) insert and remove-min asymptotically, but a heap's array-backed complete-tree layout avoids pointer overhead and complex rotation logic, making it the simpler and typically faster practical choice when only min/max access is needed, not full ordered traversal or search."
+    },
+    {
+      "item_id": "ai_graphs_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "graphs",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes graph representations as a standard examinable topic; this item targets that general concept area (adjacency matrix space) rather than a specific transcribed exam question.",
+      "question": "What is the space complexity of representing a graph with V vertices and E edges using an adjacency matrix?",
+      "options": [
+        "O(V^2)",
+        "O(V+E)",
+        "O(E)",
+        "O(V log V)"
+      ],
+      "answer_index": 0,
+      "explanation": "An adjacency matrix allocates one cell for every ordered pair of vertices regardless of how many edges actually exist, so it always uses Theta(V^2) space, which becomes wasteful for sparse graphs."
+    },
+    {
+      "item_id": "ai_graphs_002",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "graphs",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS2 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes graph representations as a standard examinable topic; this item targets that general concept area (adjacency list space) rather than a specific transcribed exam question.",
+      "question": "What is the space complexity of representing a graph with V vertices and E edges using an adjacency list?",
+      "options": [
+        "O(V+E)",
+        "O(V^2)",
+        "O(E^2)",
+        "O(V*E)"
+      ],
+      "answer_index": 0,
+      "explanation": "An adjacency list stores one list header per vertex plus one entry per edge (doubled for an undirected graph, which does not change the asymptotic bound), giving O(V+E) total space -- efficient for sparse graphs where E is much smaller than V^2."
+    },
+    {
+      "item_id": "ai_graphs_003",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "graphs",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes BFS/DFS traversal as a standard examinable topic; this item targets that general concept area (BFS shortest paths) rather than a specific transcribed exam question.",
+      "question": "Why does breadth-first search (BFS), rather than depth-first search (DFS), compute shortest paths in an unweighted graph?",
+      "options": [
+        "BFS explores vertices in strictly increasing order of distance from the source, level by level, so a vertex is first reached via a shortest path",
+        "BFS always visits fewer vertices than DFS",
+        "BFS uses a stack instead of a queue, exploring closer vertices first",
+        "DFS cannot visit all vertices in a connected graph"
+      ],
+      "answer_index": 0,
+      "explanation": "BFS's queue-based frontier expansion guarantees that all vertices at distance d are dequeued before any vertex at distance d+1 is discovered, so the first time a vertex is reached is necessarily via a shortest (fewest-edges) path; DFS instead plunges depth-first and offers no such guarantee."
+    },
+    {
+      "item_id": "ai_graphs_004",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "graphs",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2024 CS2 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes BFS/DFS traversal as a standard examinable topic; this item targets that general concept area (DFS complexity) rather than a specific transcribed exam question.",
+      "question": "What is the time complexity of a depth-first search (DFS) traversal of a graph with V vertices and E edges, represented as an adjacency list?",
+      "options": [
+        "O(V+E)",
+        "O(V*E)",
+        "O(V^2)",
+        "O(E log V)"
+      ],
+      "answer_index": 0,
+      "explanation": "DFS visits every vertex once and scans every edge once (twice for an undirected graph, still a constant factor), giving O(V+E) with an adjacency-list representation."
+    },
+    {
+      "item_id": "ai_graphs_005",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "graphs",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes cycle detection as a standard examinable topic; this item targets that general concept area (undirected cycle detection) rather than a specific transcribed exam question.",
+      "question": "During a DFS of an undirected graph, how is a cycle detected?",
+      "options": [
+        "By finding an edge to an already-visited vertex that is not the immediate parent in the DFS tree",
+        "By finding any edge to an already-visited vertex, including the parent",
+        "By checking whether the number of edges exceeds V",
+        "By checking whether any vertex has degree greater than 2"
+      ],
+      "answer_index": 0,
+      "explanation": "In an undirected graph, every tree edge is naturally traversed back toward the parent, so that particular back-reference must be excluded; a cycle exists specifically when DFS reaches a vertex that has already been visited and is not the current vertex's immediate parent."
+    },
+    {
+      "item_id": "ai_graphs_006",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "graphs",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes cycle detection as a standard examinable topic; this item targets that general concept area (directed cycle detection) rather than a specific transcribed exam question.",
+      "question": "During a DFS of a directed graph, how is a cycle detected, and why doesn't the undirected-graph rule (any previously visited neighbor other than the parent) work directly here?",
+      "options": [
+        "A cycle exists if DFS finds an edge to a vertex that is currently on the active recursion stack (a 'back edge'); a directed edge to a vertex that was already fully finished and popped (a cross or forward edge) does not indicate a cycle",
+        "A cycle exists if DFS ever revisits any previously visited vertex, exactly as in the undirected case",
+        "A cycle exists only if the graph has more edges than vertices",
+        "Directed graphs can never contain cycles, so no such check is needed"
+      ],
+      "answer_index": 0,
+      "explanation": "In directed graphs, an edge to a vertex visited earlier but no longer on the current DFS path (already finished) is a legitimate cross or forward edge, not a cycle; only an edge back to an ancestor still on the recursion stack closes an actual cycle, which is why directed cycle detection tracks an explicit 'on-stack' set in addition to a 'visited' set."
+    },
+    {
+      "item_id": "ai_graphs_007",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "graphs",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes topological sorting as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "A topological sort -- a linear ordering of vertices such that every directed edge u->v places u before v -- can be computed for which class of graphs?",
+      "options": [
+        "Directed acyclic graphs (DAGs) only",
+        "Any directed graph, cyclic or not",
+        "Any undirected graph",
+        "Only trees"
+      ],
+      "answer_index": 0,
+      "explanation": "A cycle forces a contradictory ordering requirement, since some vertex on the cycle would need to precede itself through the chain of edges; a valid topological order exists if and only if the directed graph has no cycles -- that is, it is a DAG."
+    },
+    {
+      "item_id": "ai_graphs_008",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "graphs",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS2 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes shortest-path algorithms as a standard examinable topic; this item targets that general concept area (Dijkstra's algorithm) rather than a specific transcribed exam question.",
+      "question": "Dijkstra's algorithm, run with a binary-heap priority queue on a graph with V vertices and E edges, computes single-source shortest paths correctly only under what condition, and what is its time complexity?",
+      "options": [
+        "All edge weights must be non-negative; time complexity is O((V+E) log V)",
+        "Edge weights may be negative as long as there is no negative cycle; time complexity is O(VE)",
+        "All edge weights must be non-negative; time complexity is O(V^3)",
+        "It works for any edge weights; time complexity is O(V+E)"
+      ],
+      "answer_index": 0,
+      "explanation": "Dijkstra's greedy choice of finalizing the closest known vertex is only correct when no later relaxation could decrease an already-finalized distance, which requires non-negative weights; with a binary-heap priority queue, each of the E edge relaxations costs O(log V), giving O((V+E) log V) overall."
+    },
+    {
+      "item_id": "ai_graphs_009",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "graphs",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes shortest-path algorithms as a standard examinable topic; this item targets that general concept area (Bellman-Ford) rather than a specific transcribed exam question.",
+      "question": "Unlike Dijkstra's algorithm, the Bellman-Ford algorithm can handle graphs with negative edge weights. What is its time complexity, and what additional capability does it have that Dijkstra's does not?",
+      "options": [
+        "O(V*E) time; it can also detect the presence of a negative-weight cycle reachable from the source",
+        "O(V+E) time; it can also handle disconnected graphs, which Dijkstra's cannot",
+        "O(V log V) time; it works only on DAGs",
+        "O(E log V) time; it guarantees the same result as Dijkstra's but faster"
+      ],
+      "answer_index": 0,
+      "explanation": "Bellman-Ford relaxes all E edges over V-1 rounds (O(VE) total) to guarantee correct shortest paths even with negative weights, and a further V-th round in which any distance still improves reveals a negative-weight cycle -- a capability Dijkstra's algorithm has no mechanism for."
+    },
+    {
+      "item_id": "ai_graphs_010",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "graphs",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes minimum spanning trees as a standard examinable topic; this item targets that general concept area (Kruskal's algorithm) rather than a specific transcribed exam question.",
+      "question": "Kruskal's algorithm builds a minimum spanning tree (MST) by which general approach?",
+      "options": [
+        "Sort all edges by weight ascending, then repeatedly add the next-cheapest edge as long as it doesn't form a cycle, checked via a union-find (disjoint-set) structure",
+        "Start from an arbitrary vertex and always add the cheapest edge connecting the growing tree to a new vertex",
+        "Run DFS and keep only the tree edges discovered",
+        "Repeatedly remove the most expensive edge until the graph becomes a tree"
+      ],
+      "answer_index": 0,
+      "explanation": "Kruskal's algorithm is edge-centric: it greedily considers edges in increasing weight order and accepts an edge whenever its two endpoints lie in different components (using union-find for near-constant-time cycle checks), continuing until V-1 edges have been added."
+    },
+    {
+      "item_id": "ai_graphs_011",
+      "doc_id": "gate2024_cs1",
+      "competency_id": "graphs",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2024 CS1 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes minimum spanning trees as a standard examinable topic; this item targets that general concept area (Prim's algorithm) rather than a specific transcribed exam question.",
+      "question": "Prim's algorithm builds a minimum spanning tree (MST) by which general approach?",
+      "options": [
+        "Start from an arbitrary vertex and repeatedly grow the tree by adding the cheapest edge connecting an already-included vertex to one not yet included, typically using a min-heap priority queue",
+        "Sort all edges globally by weight and add them one at a time, skipping cycles",
+        "Compute all-pairs shortest paths and keep the cheapest paths",
+        "Randomly select V-1 edges and check afterward whether they form a tree"
+      ],
+      "answer_index": 0,
+      "explanation": "Prim's algorithm is vertex-centric: it maintains a growing connected tree and, at each step, uses a priority queue to pick the minimum-weight edge crossing the cut between the tree and the rest of the graph -- which is exactly why it benefits from the same decrease-key operation used in Dijkstra's algorithm."
+    },
+    {
+      "item_id": "ai_graphs_012",
+      "doc_id": "gate2024_cs2",
+      "competency_id": "graphs",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "GATE 2024 CS2 -- general Algorithms & Data Structures syllabus area (Graphs)",
+      "source_excerpt": "GATE's CS Algorithms/Data Structures syllabus includes graph connectivity as a standard examinable topic; this item targets that general concept area (connected components) rather than a specific transcribed exam question.",
+      "question": "Running BFS (or DFS) from every unvisited vertex in a graph, and counting how many times a fresh traversal has to be started, computes what property of the graph?",
+      "options": [
+        "The number of connected components",
+        "The number of edges",
+        "The diameter of the graph",
+        "Whether the graph is bipartite"
+      ],
+      "answer_index": 0,
+      "explanation": "Each BFS or DFS started from an unvisited vertex explores exactly one connected component in full before running out of reachable vertices, so the number of times a new traversal must be launched equals the number of connected components."
+    },
+    {
+      "item_id": "ai_dynamic_programming_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes dynamic programming as a standard examinable topic; this item targets that general concept area (the defining properties of DP) rather than a specific transcribed exam question.",
+      "question": "Dynamic programming is applicable to a problem primarily because of which two properties?",
+      "options": [
+        "Overlapping subproblems and optimal substructure",
+        "Sorted input and a single pass",
+        "Greedy choice property and matroid structure",
+        "Random access and constant extra space"
+      ],
+      "answer_index": 0,
+      "explanation": "DP exploits problems where the same subproblems recur many times (overlapping subproblems, so caching results saves work) and where an optimal solution can be built from optimal solutions to its subproblems (optimal substructure); the other listed properties describe unrelated algorithm classes."
+    },
+    {
+      "item_id": "ai_dynamic_programming_002",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes dynamic programming as a standard examinable topic; this item targets that general concept area (optimal substructure) rather than a specific transcribed exam question.",
+      "question": "What does it mean for a problem to exhibit 'optimal substructure'?",
+      "options": [
+        "An optimal solution to the problem can be constructed from optimal solutions to its subproblems",
+        "The problem has exactly one subproblem",
+        "The input array must already be sorted",
+        "The problem can only be solved by brute force"
+      ],
+      "answer_index": 0,
+      "explanation": "Optimal substructure is the property that lets a recursive optimal solution be assembled from optimal solutions of smaller instances of the same problem -- for example, the shortest path between two nodes is built from shortest sub-paths between intermediate nodes."
+    },
+    {
+      "item_id": "ai_dynamic_programming_003",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes dynamic programming implementation styles as a standard examinable topic; this item targets that general concept area (memoization vs tabulation) rather than a specific transcribed exam question.",
+      "question": "What is the key difference between the 'memoization' (top-down) and 'tabulation' (bottom-up) styles of implementing dynamic programming?",
+      "options": [
+        "Memoization uses recursion and caches results as they are computed on demand; tabulation iteratively fills a table starting from the smallest subproblems",
+        "Memoization is always faster than tabulation",
+        "Tabulation cannot be used for problems with more than one dimension",
+        "Memoization never requires extra memory"
+      ],
+      "answer_index": 0,
+      "explanation": "Both achieve the same asymptotic complexity by avoiding recomputation, but memoization is recursive and lazily computes only the subproblems actually needed, while tabulation is iterative and typically fills the entire table in a fixed dependency order."
+    },
+    {
+      "item_id": "ai_dynamic_programming_004",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "easy",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes dynamic programming via a classic recursion example as a standard examinable topic; this item targets that general concept area (Fibonacci complexity) rather than a specific transcribed exam question.",
+      "question": "Computing the nth Fibonacci number with the naive recursion F(n) = F(n-1) + F(n-2) (no caching) has what time complexity, and how does adding memoization change it?",
+      "options": [
+        "Naive is O(2^n); memoized is O(n)",
+        "Naive is O(n); memoized is O(1)",
+        "Naive is O(n^2); memoized is O(n log n)",
+        "Both are O(n); memoization only saves space"
+      ],
+      "answer_index": 0,
+      "explanation": "Without caching, the naive recursion re-derives the same F(k) values exponentially many times, giving O(2^n) time; memoizing each of the n distinct subproblems so it is computed only once reduces this to O(n)."
+    },
+    {
+      "item_id": "ai_dynamic_programming_005",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the 0/1 knapsack problem as a standard examinable topic; this item targets that general concept area (knapsack DP complexity) rather than a specific transcribed exam question.",
+      "question": "The 0/1 knapsack problem (n items, capacity W, each item used at most once) is solved with DP using a table dp[i][w]. What is the time and space complexity of the standard table-filling solution?",
+      "options": [
+        "O(nW) time and O(nW) space",
+        "O(2^n) time and O(n) space",
+        "O(n log W) time and O(n) space",
+        "O(W) time and O(n) space"
+      ],
+      "answer_index": 0,
+      "explanation": "The standard DP fills an (n+1) x (W+1) table, computing each cell in O(1) from previously computed cells, giving O(nW) time and space; this is a 'pseudo-polynomial' bound since it depends on the numeric value W, not just the item count n."
+    },
+    {
+      "item_id": "ai_dynamic_programming_006",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the longest common subsequence problem as a standard examinable topic; this item targets that general concept area (LCS DP complexity) rather than a specific transcribed exam question.",
+      "question": "Computing the length of the longest common subsequence (LCS) of two strings of lengths m and n using the standard 2D DP table has what time complexity?",
+      "options": [
+        "O(mn)",
+        "O(m+n)",
+        "O(m log n)",
+        "O(2^(m+n))"
+      ],
+      "answer_index": 0,
+      "explanation": "The DP table has (m+1) x (n+1) cells, and each cell dp[i][j] is computed in O(1) from dp[i-1][j], dp[i][j-1], and dp[i-1][j-1], so the total work is O(mn)."
+    },
+    {
+      "item_id": "ai_dynamic_programming_007",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the longest increasing subsequence problem as a standard examinable topic; this item targets that general concept area (LIS O(n^2) DP) rather than a specific transcribed exam question.",
+      "question": "The classic O(n^2) DP solution for the longest increasing subsequence (LIS) of an array of length n defines dp[i] as the length of the LIS ending exactly at index i. How is dp[i] computed?",
+      "options": [
+        "dp[i] = 1 + max(dp[j]) over all j < i with arr[j] < arr[i], or 1 if no such j exists",
+        "dp[i] = dp[i-1] + 1 always",
+        "dp[i] = max(dp[i-1], dp[i-2])",
+        "dp[i] = 1 + dp[i-1] if arr[i] > arr[i-1], else dp[i] = 1, considering only the immediately preceding element"
+      ],
+      "answer_index": 0,
+      "explanation": "To end an increasing subsequence at index i, the previous element must be some earlier arr[j] < arr[i]; taking the best (longest) such dp[j] and extending it by one covers every possible increasing subsequence ending at i, which option D wrongly restricts to only the immediately preceding element."
+    },
+    {
+      "item_id": "ai_dynamic_programming_008",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the longest increasing subsequence problem as a standard examinable topic; this item targets that general concept area (LIS O(n log n)) rather than a specific transcribed exam question.",
+      "question": "The longest increasing subsequence (LIS) problem can also be solved in O(n log n) instead of O(n^2). What technique enables this speedup?",
+      "options": [
+        "Maintaining an auxiliary array of the smallest possible tail value for each achievable subsequence length, updated via binary search as elements are scanned",
+        "Sorting the array first, which does not change the LIS but removes the need for a table",
+        "Using a hash map to store every previously seen subsequence explicitly",
+        "Running the O(n^2) DP twice and taking the shorter runtime"
+      ],
+      "answer_index": 0,
+      "explanation": "The patience-sorting-based method keeps one array where index k holds the smallest tail value among all increasing subsequences of length k+1; each new element is placed via binary search (O(log n)) into this array, and the final array's length is the LIS length, giving O(n log n) total."
+    },
+    {
+      "item_id": "ai_dynamic_programming_009",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the coin-change problem as a standard examinable topic; this item targets that general concept area (minimum-coins DP) rather than a specific transcribed exam question.",
+      "question": "In the minimum-coins DP (given coin denominations and a target amount, find the fewest coins summing to it, with unlimited supply of each), how is dp[amount] typically computed?",
+      "options": [
+        "dp[amount] = 1 + min(dp[amount - coin]) over every coin denomination <= amount, with dp[0] = 0 and unreachable amounts treated as infinity",
+        "dp[amount] = dp[amount-1] + 1, using only the smallest coin",
+        "dp[amount] equals the number of denominations available",
+        "dp[amount] is computed by always greedily picking the largest coin <= amount"
+      ],
+      "answer_index": 0,
+      "explanation": "Trying every denomination that fits and taking the option that minimizes coins used (plus the one coin just added) correctly explores all ways to reach 'amount'; the greedy largest-coin approach in option D fails for non-canonical coin systems, e.g. denominations {1,3,4} for target 6: greedy gives 4+1+1 = 3 coins, but the true optimum is 3+3 = 2 coins."
+    },
+    {
+      "item_id": "ai_dynamic_programming_010",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the edit-distance problem as a standard examinable topic; this item targets that general concept area (edit-distance recurrence) rather than a specific transcribed exam question.",
+      "question": "The edit distance DP between two strings of lengths m and n computes dp[i][j] as the minimum number of insert/delete/substitute operations to convert the first i characters of one string into the first j characters of the other. What is the recurrence when the i-th and j-th characters differ?",
+      "options": [
+        "dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]), covering delete, insert, and substitute",
+        "dp[i][j] = dp[i-1][j-1] unconditionally",
+        "dp[i][j] = dp[i-1][j] + dp[i][j-1]",
+        "dp[i][j] = min(dp[i-1][j], dp[i][j-1]) with no added cost"
+      ],
+      "answer_index": 0,
+      "explanation": "When the characters differ, the best move is whichever of the three edit operations is cheapest given the already-computed smaller subproblems, plus one for the operation itself; when the characters match instead, dp[i][j] = dp[i-1][j-1] with no added cost, which is why that case (option B) applies only when characters match, not when they differ as asked here."
+    },
+    {
+      "item_id": "ai_dynamic_programming_011",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes matrix chain multiplication as a standard examinable topic; this item targets that general concept area (interval DP complexity) rather than a specific transcribed exam question.",
+      "question": "Matrix chain multiplication DP finds the parenthesization of a chain of matrices that minimizes the total number of scalar multiplications. What does dp[i][j] represent, and what is the overall time complexity?",
+      "options": [
+        "dp[i][j] is the minimum multiplication cost to compute the product of matrices i through j, found by trying every split point k between i and j; overall time is O(n^3)",
+        "dp[i][j] is the dimension of matrix i; overall time is O(n)",
+        "dp[i][j] always equals dp[i][j-1] + dp[i+1][j]; overall time is O(n^2)",
+        "dp[i][j] represents whether matrices i and j can be multiplied; overall time is O(n log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "For each of the O(n^2) (i,j) pairs, the DP tries all O(n) split points k to find the cheapest way to combine dp[i][k] and dp[k+1][j] plus the cost of that final multiplication, giving O(n^2) * O(n) = O(n^3) overall -- the standard interval-DP time bound."
+    },
+    {
+      "item_id": "ai_dynamic_programming_012",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the subset-sum problem as a standard examinable topic; this item targets that general concept area (subset-sum DP complexity) rather than a specific transcribed exam question.",
+      "question": "The subset-sum DP (given a set of n positive integers and a target sum S, decide if some subset sums exactly to S) uses a boolean table dp[i][s]. What is its time and space complexity?",
+      "options": [
+        "O(nS) time and O(nS) space, reducible to O(S) space",
+        "O(2^n) time and O(n) space",
+        "O(n log S) time and O(S) space",
+        "O(n+S) time and O(1) space"
+      ],
+      "answer_index": 0,
+      "explanation": "The table has (n+1) x (S+1) cells, each computed in O(1) from the row above, giving O(nS) time; since each row only needs the previous row, a rolling 1D array of size S+1, processed carefully to avoid reusing an item twice, reduces space to O(S)."
+    },
+    {
+      "item_id": "ai_dynamic_programming_013",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes space-optimized dynamic programming as a standard examinable topic; this item targets that general concept area (rolling-array optimization) rather than a specific transcribed exam question.",
+      "question": "A 2D DP table dp[i][j] where each row only depends on the previous row (dp[i-1][*]) can have its space complexity reduced from O(n*m) to what, using a 'rolling array' technique?",
+      "options": [
+        "O(m), the size of a single row (or O(n) if rolling the other dimension)",
+        "O(1)",
+        "O(n*m), still, since no reduction is possible",
+        "O(log(n*m))"
+      ],
+      "answer_index": 0,
+      "explanation": "If row i only ever needs row i-1, keeping just the two most recent rows (or one row updated carefully in place, depending on dependency direction) suffices, dropping space from O(n*m) to O(m) while leaving time complexity unchanged -- a common optimization for knapsack- and LCS-style DPs when only the final answer, not the full table, is needed."
+    },
+    {
+      "item_id": "ai_dynamic_programming_014",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus contrasts dynamic programming with greedy algorithms as a standard examinable topic; this item targets that general concept area (why greedy fails for coin change) rather than a specific transcribed exam question.",
+      "question": "For coin denominations {1, 3, 4} and a target amount of 6, a greedy algorithm that always picks the largest coin <= the remaining amount gives 4 + 1 + 1 = 3 coins. Why does this show that dynamic programming, not greedy, is needed for the general minimum-coin-change problem?",
+      "options": [
+        "The optimal answer for this instance is 2 coins (3+3), so the greedy locally-optimal choice can produce a globally suboptimal result for arbitrary denomination sets, whereas DP examines all combinations and always finds the true optimum",
+        "Greedy and DP always produce the same answer, so this example is not a counterexample",
+        "Greedy fails here only because the target amount is even",
+        "DP cannot solve this instance at all because 3 does not divide 6 evenly"
+      ],
+      "answer_index": 0,
+      "explanation": "3+3=6 uses only 2 coins, beating greedy's 3-coin answer, which demonstrates that the greedy-choice property does not hold for general coin systems (it does hold for 'canonical' systems like standard currency denominations); DP's exhaustive-but-memoized exploration of all combinations guarantees optimality regardless of the denomination set."
+    },
+    {
+      "item_id": "ai_dynamic_programming_015",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus contrasts dynamic programming with divide-and-conquer as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "Both dynamic programming and divide-and-conquer break a problem into subproblems. What distinguishes when DP is the appropriate technique instead of plain divide-and-conquer?",
+      "options": [
+        "DP is used when the subproblems overlap (the same subproblem recurs many times), so caching results avoids redundant work; divide-and-conquer subproblems are typically disjoint, so there is nothing to cache",
+        "DP is only for sorting algorithms, while divide-and-conquer is only for searching algorithms",
+        "Divide-and-conquer always runs in O(n log n), while DP always runs in O(n^2)",
+        "There is no meaningful distinction; the two terms are interchangeable"
+      ],
+      "answer_index": 0,
+      "explanation": "Merge sort's two halves, for example, never overlap, so plain recursion suffices; but Fibonacci's or LCS's subproblems recur across many recursive branches, and it is exactly that overlap that makes memoization or tabulation valuable -- the defining reason DP is treated as a distinct technique from divide-and-conquer."
+    },
+    {
+      "item_id": "ai_dynamic_programming_016",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes palindrome-related DP problems as a standard examinable topic; this item targets that general concept area (longest palindromic subsequence) rather than a specific transcribed exam question.",
+      "question": "The longest palindromic subsequence (LPS) of a string of length n can be computed via DP as the longest common subsequence (LCS) of the string with which other string, and what is the resulting time complexity?",
+      "options": [
+        "The reverse of the original string; O(n^2) time via the standard LCS DP",
+        "The sorted version of the original string; O(n log n) time",
+        "An empty string; O(n) time",
+        "The original string with all duplicate characters removed; O(n) time"
+      ],
+      "answer_index": 0,
+      "explanation": "Any palindromic subsequence reads the same forwards and backwards, so it must also be a common subsequence of the string and its reverse; running the O(n^2) LCS DP between the string and its reverse therefore yields the LPS length in O(n^2) time."
+    },
+    {
+      "item_id": "ai_dynamic_programming_017",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "medium",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the rod-cutting problem as a standard examinable topic; this item targets that general concept area (rod-cutting DP) rather than a specific transcribed exam question.",
+      "question": "The rod-cutting DP problem (a rod of length n, a price table for each possible cut length, maximize total revenue from cutting the rod into pieces) defines dp[len] as the best revenue for a rod of that length. How is dp[len] computed?",
+      "options": [
+        "dp[len] = max over all cut positions k from 1 to len of (price[k] + dp[len - k])",
+        "dp[len] = price[len] always, ignoring further cuts",
+        "dp[len] = dp[len-1] + price[1]",
+        "dp[len] = max(price[1], ..., price[len]) with no recursive term"
+      ],
+      "answer_index": 0,
+      "explanation": "Considering every possible length k for the first piece cut off, and recursively taking the best revenue for the remaining len-k rod, covers every possible way of cutting the rod, so the maximum over all k gives the optimal dp[len]."
+    },
+    {
+      "item_id": "ai_dynamic_programming_018",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "dynamic_programming",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes dynamic programming via a classic recursion example as a standard examinable topic; this item targets that general concept area (memoized Fibonacci complexity) rather than a specific transcribed exam question.",
+      "question": "After memoizing the recursive Fibonacci function so each F(k) for k from 0 to n is computed exactly once, what is the overall time complexity?",
+      "options": [
+        "O(n)",
+        "O(2^n)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "Memoization ensures each of the n+1 distinct subproblems F(0) through F(n) is computed exactly once in O(1) additional work given its already-cached dependencies, so the total time collapses from exponential to linear."
+    },
+    {
+      "item_id": "ai_dynamic_programming_019",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "dynamic_programming",
+      "difficulty": "hard",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Dynamic Programming)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes counting problems solved via dynamic programming (Catalan-number style recurrences) as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "The number of structurally distinct binary search trees that can be formed with n distinct keys (the nth Catalan number) can be computed with a DP recurrence dp[n] = sum over i from 1 to n of dp[i-1] * dp[n-i], with dp[0] = 1. What does the term dp[i-1] * dp[n-i] represent for a fixed choice of root rank i?",
+      "options": [
+        "The number of ways to arrange the (i-1) keys smaller than the root as its left subtree, multiplied by the number of ways to arrange the (n-i) keys larger than the root as its right subtree",
+        "The total number of BSTs possible for any n, regardless of i",
+        "The height of the resulting tree when key i is the root",
+        "The number of leaf nodes in the tree when key i is the root"
+      ],
+      "answer_index": 0,
+      "explanation": "Fixing key rank i as the root splits the remaining keys into a left subtree of the (i-1) smaller keys and a right subtree of the (n-i) larger keys; since the left and right subtree shapes are chosen independently, the count for that choice of root multiplies the two smaller Catalan values, and summing over all possible roots i gives the total dp[n]."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_001",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes elementary sorting algorithms as a standard examinable topic; this item targets that general concept area (bubble sort complexity) rather than a specific transcribed exam question.",
+      "question": "What are the best-case and worst-case time complexities of bubble sort on an array of n elements?",
+      "options": [
+        "Best-case O(n), with an early-exit optimization on an already-sorted array; worst-case O(n^2)",
+        "Best-case O(n log n); worst-case O(n^2)",
+        "Best-case and worst-case are both O(n^2)",
+        "Best-case O(1); worst-case O(n)"
+      ],
+      "answer_index": 0,
+      "explanation": "A bubble sort that stops early when a full pass makes no swaps runs in O(n) on an already-sorted array, since one pass confirms no swaps are needed; on a reverse-sorted array it needs Theta(n^2) comparisons and swaps across n passes."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_002",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes elementary sorting algorithms as a standard examinable topic; this item targets that general concept area (selection sort comparisons vs swaps) rather than a specific transcribed exam question.",
+      "question": "Selection sort scans the unsorted remainder for the minimum and swaps it into place, once per pass. How many comparisons and how many swaps does it perform in the worst case on n elements?",
+      "options": [
+        "Theta(n^2) comparisons but only O(n) swaps",
+        "Theta(n^2) comparisons and Theta(n^2) swaps",
+        "O(n) comparisons and O(n) swaps",
+        "Theta(n log n) comparisons and O(n) swaps"
+      ],
+      "answer_index": 0,
+      "explanation": "Selection sort always scans the full unsorted remainder each pass regardless of input order, giving Theta(n^2) comparisons in every case, but it performs at most one swap per pass (n-1 swaps total), which is why it is sometimes preferred when swaps are expensive relative to comparisons."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_003",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes elementary sorting algorithms as a standard examinable topic; this item targets that general concept area (insertion sort complexity) rather than a specific transcribed exam question.",
+      "question": "What are the best-case and worst-case time complexities of insertion sort on an array of n elements?",
+      "options": [
+        "Best-case O(n) for nearly/already sorted input; worst-case O(n^2) for reverse-sorted input",
+        "Best-case O(n log n); worst-case O(n log n)",
+        "Best-case O(1); worst-case O(n)",
+        "Best-case and worst-case are both O(n^2), regardless of input order"
+      ],
+      "answer_index": 0,
+      "explanation": "When the array is already sorted, each new element only needs one comparison against its immediate predecessor before being placed, giving O(n) total; when the array is reverse-sorted, each new element must shift past every previously placed element, giving Theta(n^2)."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_004",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes merge sort as a standard examinable topic; this item targets that general concept area (merge sort stability and space) rather than a specific transcribed exam question.",
+      "question": "Merge sort is described as stable and as requiring O(n) auxiliary space. What in its algorithm produces each of those two properties?",
+      "options": [
+        "Stability comes from the merge step always taking from the left sub-array first when keys are equal; the O(n) space comes from needing a temporary array to hold merged output before copying it back",
+        "Stability comes from sorting in place with no extra memory; the O(n) space is only used for the recursion call stack",
+        "It is not actually stable; the O(n) space is for storing the pivot at each level",
+        "Stability and the O(n) space are both consequences of always splitting the array exactly in half"
+      ],
+      "answer_index": 0,
+      "explanation": "During merging, always copying from the left run when its current element is less than or equal to the right run's current element preserves the original relative order of equal-keyed elements; the merged results need a separate buffer before being written back over the input, which is the source of the O(n) auxiliary space beyond the O(log n) recursion stack."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_005",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "easy",
+      "bloom_level": "remember",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes quicksort as a standard examinable topic; this item targets that general concept area (quicksort average complexity) rather than a specific transcribed exam question.",
+      "question": "What is quicksort's average-case time complexity?",
+      "options": [
+        "O(n log n)",
+        "O(n^2)",
+        "O(n)",
+        "O(log n)"
+      ],
+      "answer_index": 0,
+      "explanation": "With a reasonably good pivot choice, such as random or median-of-three, quicksort's partitions are balanced enough on average that the recursion depth is O(log n) with O(n) work per level, giving O(n log n) expected time."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_006",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes quicksort's worst case as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "Quicksort that always picks the first element of the (sub)array as the pivot is run on an already-sorted array of n elements. What time complexity results, and why?",
+      "options": [
+        "O(n^2), because each partition splits off only a single element (the pivot ends up at one extreme every time), leaving a recursive call on n-1 elements at every level",
+        "O(n log n), the same as the average case, because pivot choice never affects quicksort's complexity",
+        "O(n), because a sorted array requires no swaps",
+        "O(log n), because sorted input always produces perfectly balanced partitions"
+      ],
+      "answer_index": 0,
+      "explanation": "On sorted input, taking the first element as pivot means every one of the remaining n-1 elements is larger, so the partition is maximally unbalanced (1 element versus n-1); the recurrence T(n) = T(n-1) + O(n) solves to O(n^2), quicksort's classic worst case, which is why practical implementations use randomized or median-of-three pivot selection to avoid this pattern on sorted or adversarial input."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_007",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes quicksort pivot-selection strategies as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "Why is 'median-of-three' (comparing the first, middle, and last elements and using their median) a commonly used pivot-selection strategy for quicksort?",
+      "options": [
+        "It is cheap to compute, O(1), yet substantially reduces the chance of consistently picking an extreme value as pivot, avoiding the worst-case O(n^2) pattern on already-sorted or reverse-sorted input",
+        "It guarantees O(n log n) worst-case time in every situation",
+        "It eliminates the need for a partition step entirely",
+        "It always selects the true median of the entire array in O(1) time"
+      ],
+      "answer_index": 0,
+      "explanation": "Median-of-three does not guarantee balance in every adversarial case, since an adversary can still construct bad inputs, but it is a cheap heuristic that is far less likely to hit the worst-case pattern than always using the first or last element, precisely the pathological case for already-sorted arrays."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_008",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes non-comparison-based sorting as a standard examinable topic; this item targets that general concept area (counting sort) rather than a specific transcribed exam question.",
+      "question": "Counting sort achieves O(n+k) time, with n elements and k possible key values, instead of the Omega(n log n) comparison-sort lower bound. How does it do this, and what limits its applicability?",
+      "options": [
+        "It counts occurrences of each key value directly, never comparing two elements against each other, and uses those counts to place elements, so it works well only when k is not much larger than n and keys are small non-negative integers (or can be mapped to them)",
+        "It uses a smarter comparison strategy that halves the search space each step, and works on any comparable data type",
+        "It is a comparison sort that happens to run faster than merge sort on all inputs",
+        "It sorts by recursively partitioning around a pivot, the same as quicksort, but with a different pivot rule"
+      ],
+      "answer_index": 0,
+      "explanation": "Because it never compares two elements directly, counting sort sidesteps the Omega(n log n) comparison-sort lower bound entirely, but this only pays off when the key range k is small, ideally O(n); for a very large or non-integer key range it becomes impractical or inapplicable."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_009",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes non-comparison-based sorting as a standard examinable topic; this item targets that general concept area (radix sort) rather than a specific transcribed exam question.",
+      "question": "Radix sort sorts d-digit numbers by repeatedly applying a stable sort, typically counting sort, on each digit, from least significant to most significant. What is its overall time complexity in terms of n numbers, d digits, and a per-digit counting-sort cost of O(n+k)?",
+      "options": [
+        "O(d*(n+k))",
+        "O(n log n) regardless of d",
+        "O(d^2 * n)",
+        "O(n+k) regardless of d"
+      ],
+      "answer_index": 0,
+      "explanation": "Each of the d digit-passes costs O(n+k) using counting sort, with k being the digit's base such as 10, and correctness relies on each pass being stable so earlier, less-significant digit orderings are preserved; running d such passes gives O(d*(n+k)) total, which is linear in n when d and k are treated as constants relative to n."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_010",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes non-comparison-based sorting as a standard examinable topic; this item targets that general concept area (bucket sort) rather than a specific transcribed exam question.",
+      "question": "Bucket sort distributes n elements into a fixed number of buckets based on value ranges, sorts each bucket individually, and concatenates the results. Under what input assumption does it achieve close to O(n) average time?",
+      "options": [
+        "The input is roughly uniformly distributed over its range, so each bucket receives close to the same, small number of elements",
+        "The input must already be nearly sorted before bucket sort is applied",
+        "The number of buckets must equal n^2",
+        "It achieves O(n) time for any input distribution, including highly skewed ones"
+      ],
+      "answer_index": 0,
+      "explanation": "If elements are roughly uniformly spread across the value range, each of the O(n) buckets ends up with O(1) elements on average, so sorting all buckets, for example with insertion sort, plus concatenation costs O(n) total; a highly skewed distribution can dump most elements into one bucket, degrading performance toward that bucket's own worst-case sort time."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_011",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes sorting-algorithm stability as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "What does it mean for a sorting algorithm to be 'stable'?",
+      "options": [
+        "Elements with equal keys retain their original relative order in the sorted output",
+        "The algorithm always runs in the same amount of time regardless of input",
+        "The algorithm never uses more than O(1) extra memory",
+        "The algorithm always produces the same output for the same input"
+      ],
+      "answer_index": 0,
+      "explanation": "Stability specifically concerns the relative ordering of equal-keyed elements; it matters, for instance, when sorting records by a secondary key after already sorting them by a primary key, since a stable sort keeps the primary-key order intact for ties."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_012",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "hard",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the comparison-sort lower bound as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "Comparison-based sorting algorithms, those that only compare pairs of elements such as merge sort or quicksort, have a worst-case lower bound of Omega(n log n) comparisons. What argument establishes this bound?",
+      "options": [
+        "A decision-tree argument: there are n! possible orderings of n elements, and a binary decision tree distinguishing all of them needs at least log2(n!) = Omega(n log n) levels, hence comparisons, in the worst case",
+        "It follows directly from the master theorem applied to any sort's recurrence",
+        "It is an empirical observation with no formal proof",
+        "It applies only to merge sort, not to comparison sorts in general"
+      ],
+      "answer_index": 0,
+      "explanation": "Since a comparison sort must distinguish among all n! possible input permutations using yes/no comparisons, and a binary tree with n! leaves needs height at least log2(n!), which is Theta(n log n) by Stirling's approximation, no comparison-based algorithm can beat Theta(n log n) in the worst case -- which is exactly why non-comparison sorts like counting sort can only beat it by exploiting extra structure, such as a bounded key range, rather than comparisons."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_013",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus contrasts in-place and non-in-place sorting algorithms as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "Quicksort, which partitions in place within the original array, and merge sort, which needs a separate O(n) buffer for merging, are contrasted on which property?",
+      "options": [
+        "In-place-ness (auxiliary space usage) -- quicksort typically needs only O(log n) extra space for recursion, while standard array-based merge sort needs O(n) extra space",
+        "Only merge sort can sort arrays; quicksort only works on linked lists",
+        "Quicksort is always slower than merge sort in every case",
+        "Merge sort is in-place while quicksort requires extra memory"
+      ],
+      "answer_index": 0,
+      "explanation": "Quicksort partitions elements within the same array using swaps, needing only O(log n) stack space for recursion in the balanced case; merge sort's merge step needs a temporary array of size n to combine two sorted runs before copying back, which is why the standard array implementation is described as not in-place."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_014",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "easy",
+      "bloom_level": "apply",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes adaptive sorting behavior as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "For an array that is already 'nearly sorted', where each element is at most a small constant distance from its final sorted position, which classic comparison sort typically performs best in practice, and why?",
+      "options": [
+        "Insertion sort, because it is adaptive -- its running time is proportional to the number of inversions, which is small for nearly-sorted input",
+        "Selection sort, because it always does the same Theta(n^2) comparisons regardless of input order",
+        "Merge sort, because it always splits the array exactly in half regardless of existing order",
+        "Radix sort, because digit-based sorting ignores existing order entirely"
+      ],
+      "answer_index": 0,
+      "explanation": "Insertion sort's inner loop only shifts elements past out-of-place predecessors, so its running time scales with the number of inversions (out-of-order pairs) rather than always doing Theta(n^2) work; a nearly-sorted array has few inversions, making insertion sort close to O(n) in practice, unlike selection sort, which always scans the full remainder."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_015",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "medium",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes gap-sequence-based sorting (Shell sort) as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "Shell sort generalizes insertion sort by first sorting elements that are far apart, using a decreasing sequence of gaps, and gradually reducing the gap to 1. What is the motivation for this approach?",
+      "options": [
+        "Moving elements long distances early, while the gap is large, removes many inversions cheaply, so the final gap-1 pass (plain insertion sort) has much less work left to do than plain insertion sort would starting from the unsorted array",
+        "It guarantees O(n log n) worst-case time, strictly better than plain insertion sort",
+        "It eliminates the need for any comparisons in the final pass",
+        "It is only used to sort linked lists, never arrays"
+      ],
+      "answer_index": 0,
+      "explanation": "Plain insertion sort only ever swaps adjacent elements, so an element far from its correct position must be moved one step at a time; sorting with large gaps first lets far-apart out-of-place elements jump most of the way to their correct position quickly, so by the time the gap shrinks to 1 the array is already close to sorted and the final pass is fast."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_016",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "easy",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes the merge step of merge sort as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "The merge step of merge sort combines two already-sorted sub-arrays of total size n into one sorted array. What is the time complexity of this single merge step?",
+      "options": [
+        "O(n)",
+        "O(n log n)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "answer_index": 0,
+      "explanation": "Merging advances a pointer through each sub-array, always outputting the smaller of the two current front elements, doing exactly one comparison-and-copy per output position, so a merge of two sub-arrays totaling n elements takes O(n) time; it is the O(log n) levels of recursion, each doing O(n) merge work, that together give merge sort's overall O(n log n)."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_017",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "hard",
+      "bloom_level": "evaluate",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus contrasts sorting algorithms on linked structures as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "For sorting a singly linked list, with no random access to arbitrary indices, why is merge sort generally preferred over quicksort?",
+      "options": [
+        "Merge sort's merge step only needs sequential access and can be implemented with O(1) extra space for linked lists by relinking pointers, while quicksort's partitioning benefits heavily from random access and tends to degrade without it",
+        "Quicksort cannot be implemented on linked lists under any circumstances",
+        "Merge sort is not comparison-based, so it avoids the Omega(n log n) lower bound on linked lists",
+        "Linked lists cannot be sorted by any O(n log n) algorithm"
+      ],
+      "answer_index": 0,
+      "explanation": "Quicksort's efficient in-place partitioning relies on being able to jump directly to arbitrary indices from both ends, which a singly linked list does not support without extra traversal cost; merge sort's merge step only ever needs to look at the current front of each list, so it adapts naturally to sequential-access structures and can even avoid the O(n) auxiliary array needed for array-based merging by relinking nodes in place."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_018",
+      "doc_id": "gate2026_cs2",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "hard",
+      "bloom_level": "understand",
+      "locator": "GATE 2026 CS2 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus includes sorting data larger than main memory as a standard examinable topic; this item targets that general concept area (external sorting) rather than a specific transcribed exam question.",
+      "question": "'External sorting' refers to sorting techniques used when the dataset is too large to fit in main memory. What general strategy do external sorting algorithms, such as external merge sort, use?",
+      "options": [
+        "Break the data into chunks small enough to fit in memory, sort each chunk internally, write the sorted chunks (runs) to disk, then repeatedly merge the sorted runs using only a small in-memory buffer per run",
+        "Load the entire dataset into a compressed in-memory format and run standard quicksort on it",
+        "Use a hash table to store every element uniquely, then read them back out in sorted key order",
+        "External sorting is impossible; datasets that don't fit in memory cannot be sorted"
+      ],
+      "answer_index": 0,
+      "explanation": "External merge sort applies the same divide-and-merge principle as in-memory merge sort, but at the granularity of disk-sized chunks: sortable-in-RAM runs are produced first, then merged in passes that only need to hold one buffered block per run in memory at a time, minimizing costly disk I/O relative to the amount of data processed."
+    },
+    {
+      "item_id": "ai_sorting_algorithms_019",
+      "doc_id": "gate2026_cs1",
+      "competency_id": "sorting_algorithms",
+      "difficulty": "medium",
+      "bloom_level": "analyze",
+      "locator": "GATE 2026 CS1 -- general Algorithms syllabus area (Sorting)",
+      "source_excerpt": "GATE's CS Algorithms syllabus contrasts elementary sorting algorithms by swap/move count as a standard examinable topic; this item targets that general concept area rather than a specific transcribed exam question.",
+      "question": "Among bubble sort, selection sort, and insertion sort, which one performs the fewest element swaps or moves in the worst case on an array of n elements, and how many?",
+      "options": [
+        "Selection sort, which performs at most n-1 swaps, one per pass, only when the pass finds a new minimum, regardless of the input's initial order",
+        "Bubble sort, which performs zero swaps in the worst case",
+        "Insertion sort, which never needs more than O(1) total shifts",
+        "All three always perform exactly the same number of swaps"
+      ],
+      "answer_index": 0,
+      "explanation": "Selection sort only swaps once per outer-loop pass, placing the found minimum into position, giving at most n-1 swaps total no matter how the input is arranged, whereas bubble sort and insertion sort can each require up to Theta(n^2) swaps or shifts on a reverse-sorted array -- which is why selection sort is sometimes preferred when the cost of writing or swapping is much higher than the cost of comparing."
+    }
+  ]
+}

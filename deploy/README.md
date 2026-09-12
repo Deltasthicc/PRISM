@@ -26,9 +26,9 @@ instead of six times:
    the moment routes are genuinely protected (as of Lane 5's `game.py`/`learning_*` auth work),
    a shared backend needs one real, shared way to get a token, not six local ones that only work on
    their own machine.
-
-Everyone's frontend still runs locally (`npm run dev` on your own laptop) -- it just points at the
-shared backend URL instead of `localhost:8000`.
+4. **A hosted frontend** (`prism-frontend` on Render, `next start`) -- a single, always-on URL
+   anyone can open without running `npm run dev` themselves. Running the frontend locally still
+   works exactly as before; this is an additional option, not a replacement.
 
 ## One-time setup (whoever stands this up)
 
@@ -43,14 +43,15 @@ shared backend URL instead of `localhost:8000`.
    you). You'll paste this into Render as `DATABASE_URL` in step 3 below -- Render can't create a
    Neon project for you, this step has to happen in Neon's own dashboard.
 
-### 2. Backend + OIDC provider -- Render
+### 2. Backend + OIDC provider + frontend -- Render
 
-`render.yaml` at the repo root defines both services as a single Render "Blueprint":
+`render.yaml` at the repo root defines all three services as a single Render "Blueprint":
 
 1. In Render, choose **New > Blueprint**, connect this GitHub repo, and point it at `main`
    (or whichever branch you're deploying from).
-2. Render reads `render.yaml` and creates two services: `prism-backend` and `prism-keycloak`. It
-   will prompt you for every env var marked `sync: false` in that file during creation -- fill in:
+2. Render reads `render.yaml` and creates three services: `prism-backend`, `prism-keycloak`, and
+   `prism-frontend`. It will prompt you for every env var marked `sync: false` in that file during
+   creation -- fill in:
    - `prism-keycloak`'s `KC_BOOTSTRAP_ADMIN_USERNAME` / `KC_BOOTSTRAP_ADMIN_PASSWORD` -- pick
      anything, this is just the Keycloak admin console login, nobody else needs it.
    - `prism-keycloak`'s `KC_HOSTNAME` -- **you don't know this until Render assigns the service its
@@ -66,10 +67,17 @@ shared backend URL instead of `localhost:8000`.
      out of `backend/keycloak/README.md` (they're the same fixed dev-only values that ship in
      `prism-realm-export.json`, not a new secret to invent).
    - `prism-backend`'s `GEMINI_API_KEY` -- same key format as local dev (`.env.example`).
+   - `prism-frontend`'s `NEXT_PUBLIC_API_URL` -- **also not knowable on the very first deploy**,
+     for the same reason as `KC_HOSTNAME` above: it needs `prism-backend`'s real hostname, which
+     only exists after `prism-backend` has deployed once. Deploy the blueprint, note
+     `prism-backend`'s assigned `.onrender.com` hostname, then set `prism-frontend`'s
+     `NEXT_PUBLIC_API_URL` to `https://<that hostname>` and redeploy `prism-frontend`.
 3. Render's build for `prism-backend` runs `pip install -r requirements.txt`, then its start
    command runs `python -m alembic upgrade head` before starting `uvicorn` -- the shared database
    gets migrated to head automatically on every deploy, the same guarantee
    `db/database.py::require_database_at_migration_head` already enforces for local PostgreSQL.
+   `prism-frontend`'s build runs `npm ci && npm run build`, then `npm run start` (`next start`,
+   which reads Render's assigned `$PORT` automatically).
 
 **A note on `prism-keycloak`'s memory:** Keycloak is a real JVM app, and Render's free tier caps
 the container at 512Mi. `backend/keycloak/Dockerfile` tunes the JVM to fit -- verified directly
@@ -79,7 +87,7 @@ teammate logins (visible as the service restarting on its own in Render's dashbo
 upgrading `prism-keycloak`'s plan to Render's smallest paid tier for more RAM, not more JVM flags --
 see the Dockerfile's own comment for the full story of what was tried.
 
-### 3. Point your own frontend at the shared backend
+### 3. Point your own frontend at the shared backend (still optional -- `prism-frontend` above is hosted for you)
 
 In your own `frontend/.env.local` (per-laptop, not committed):
 
@@ -89,7 +97,8 @@ NEXT_PUBLIC_API_URL=https://<prism-backend's real Render hostname>
 
 That's the only frontend change needed -- `frontend/lib/config.js`'s `API_BASE_URL` already reads
 this env var. If `prism-backend`'s `FRONTEND_ORIGINS` env var doesn't already include your local
-`http://localhost:3000`, add it there (comma-separated) or your browser's CORS preflight will fail.
+`http://localhost:3000` (or `prism-frontend`'s own hostname, once it's deployed), add it there
+(comma-separated) or your browser's CORS preflight will fail.
 
 ## What this does NOT give you yet
 

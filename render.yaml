@@ -1,13 +1,23 @@
-# Render Blueprint for PRISM's shared backend + shared local-standards OIDC
-# provider. Deploy: push this file to `main`, then in the Render dashboard
-# choose "New > Blueprint" and point it at this repo/branch.
+# Render Blueprint for PRISM's shared backend + frontend + shared
+# local-standards OIDC provider. Deploy: push this file to `main`, then in
+# the Render dashboard choose "New > Blueprint" and point it at this
+# repo/branch.
 #
-# What this does NOT cover: the frontend (still runs per-laptop via `npm run
-# dev`, pointed at the deployed backend's URL through NEXT_PUBLIC_API_URL)
-# and the database (Neon is provisioned separately -- Render can't create a
-# Neon project for you; paste its connection string in as DATABASE_URL
-# below). Neither Keycloak here nor the backend is a government-approved
-# production system -- see SIH26101_MASTER_CHECKLIST.md 5.1.
+# What this does NOT cover: the database (Neon is provisioned separately --
+# Render can't create a Neon project for you; paste its connection string in
+# as DATABASE_URL below). Neither Keycloak here, the backend, nor the
+# frontend is a government-approved production system -- see
+# SIH26101_MASTER_CHECKLIST.md 5.1.
+#
+# The frontend service below needs one manual step after first deploy: once
+# prism-backend has its own real onrender.com hostname, paste
+# `https://<that hostname>` into prism-frontend's NEXT_PUBLIC_API_URL env var
+# (Render prompts for every `sync: false` value below, but this one has a
+# circular dependency -- the backend's URL doesn't exist until it's deployed
+# once -- so it can't be filled in automatically on the very first blueprint
+# run). Everyone can still run the frontend per-laptop via `npm run dev`
+# pointed at either URL; this hosted copy is an additional, not a
+# replacement, option.
 #
 # Every `sync: false` env var below has no value in this file on purpose --
 # Render will prompt for it once during blueprint creation and store it as a
@@ -47,10 +57,14 @@ services:
         sync: false
       - key: OIDC_AUDIENCE
         value: prism-backend-dev
-      # Every teammate's local frontend origin, comma-separated -- everyone
-      # still runs `npm run dev` on their own laptop, just pointed at this
-      # shared backend instead of localhost:8000. Add each new contributor's
-      # port here if it's ever not the Next.js default.
+      # Every origin allowed to call this API with credentials -- teammates'
+      # local frontends (still fine to run via `npm run dev`, pointed at this
+      # shared backend instead of localhost:8000) plus the hosted
+      # prism-frontend service below. Add prism-frontend's real
+      # onrender.com hostname here once it's deployed (this has the same
+      # first-deploy circular-dependency caveat as NEXT_PUBLIC_API_URL
+      # below), and any new contributor's local port if it's ever not the
+      # Next.js default.
       - key: FRONTEND_ORIGINS
         value: http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001
       - key: GEMINI_API_KEY
@@ -108,4 +122,30 @@ services:
       # issued token's `iss` claim will be wrong and OIDC_ISSUER above will
       # never match it.
       - key: KC_HOSTNAME
+        sync: false
+
+  # ── Frontend (Next.js, server-rendered -- see the file's own top comment
+  #    for the one manual step this needs after first deploy) ─────────────
+  - type: web
+    name: prism-frontend
+    runtime: node
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    # `next start` reads Render's assigned $PORT automatically -- no
+    # explicit --port flag needed (confirmed: Next.js CLI falls back to
+    # process.env.PORT when none is passed).
+    startCommand: npm run start
+    envVars:
+      # Pins the same Node major this repo's package.json already requires
+      # (engines.node >= 22.13) -- without this, Render picks its own
+      # current default, which may not satisfy that constraint.
+      - key: NODE_VERSION
+        value: 22.13.0
+      # See this file's top comment: fill this in with
+      # https://<prism-backend's real onrender.com hostname> once that
+      # service exists -- it can't be known before prism-backend's first
+      # deploy, so Render can't prompt for it up front the way every other
+      # sync: false value here is prompted for.
+      - key: NEXT_PUBLIC_API_URL
         sync: false

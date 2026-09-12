@@ -401,6 +401,25 @@ export const courseEnrollment = {
     request(`/learning/catalogue/enrollments?player_id=${encodeURIComponent(playerId)}`),
 };
 
+// Real, persisted exam-integrity signal log (backend/routes/proctoring.py).
+// The actual face/phone detection runs entirely client-side
+// (components/ProctoringMonitor.jsx, via real in-browser ML models) -- this
+// client only reports the resulting violation events, never a video frame or
+// image. Deliberately a plain event log, not a pass/fail gate: see that
+// route's docstring for the anti-fabrication rationale.
+export const proctoring = {
+  reportViolation: (playerId, attemptId, violationType, detail) =>
+    request('/learning/proctoring/violations', {
+      method: 'POST',
+      body: { player_id: playerId, attempt_id: attemptId, violation_type: violationType, detail },
+    }),
+
+  listViolations: (playerId, attemptId) =>
+    request(
+      `/learning/proctoring/violations?player_id=${encodeURIComponent(playerId)}&attempt_id=${encodeURIComponent(attemptId)}`
+    ),
+};
+
 // Multipart requests (file upload) can't go through request() above -- the
 // browser must set its own multipart boundary in the Content-Type header,
 // which request()'s hardcoded 'application/json' would clobber.

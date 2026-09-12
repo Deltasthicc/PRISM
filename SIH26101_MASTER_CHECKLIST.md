@@ -177,6 +177,10 @@ Do these before adding new “AI” features.
 - [ ] Add honest learner-dashboard learning hours: derive them from real internal/provider events or show `not available`; never invent time (`PS-13`).
 - [ ] Limit the demo admin dashboard to latest-distinct-learner aggregates and descriptive trends. Defer predictive workforce claims until representative data, baselines and validation exist (`PS-14`).
 
+### 4.5 Exam integrity (competitive addition, not a PS-26101 line item)
+
+- [x] ~~Add a real webcam-based exam-integrity signal to the baseline assessment, matching the class of feature competing SIH26101 submissions ship.~~ **DONE 12 September 2026:** `frontend/components/ProctoringMonitor.jsx` runs real, pretrained client-side ML (`@tensorflow-models/blazeface` for face count, `@tensorflow-models/coco-ssd` for phone detection) plus tab-switch/fullscreen-exit browser signals, opt-in and off by default. Only the resulting event is sent to a new `POST /learning/proctoring/violations` (real `proctoring_events` table, migration `8623dd43be9d`) — no video or image ever leaves the browser. Deliberately built as an audit signal for a human reviewer, never an automatic pass/fail: violations have zero effect on grading, competency scoring, or Submit availability, consistent with this project's existing "no fabricated psychometric precision" stance elsewhere (`UNSCORED_EVIDENCE_TYPES`, `SimulatedIGOTAdapter`, difficulty labels). Verified end-to-end against a real dev server: toggle → camera-denied graceful fallback (exam continues) → a real tab-switch event → real `POST` → real DB row → the completed-report view's "Webcam Integrity Summary" honestly showing the recorded count and its breakdown. See README's [Exam Integrity](README.md#-exam-integrity-webcam-proctoring) section and its [Known limitations](README.md#-known-limitations) entry on the classifier's real false-positive/false-negative rate. **VERIFIED**
+
 ## 5. P2 — controlled-pilot engineering
 
 ### 5.1 Identity, privacy and authorization

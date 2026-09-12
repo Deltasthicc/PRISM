@@ -23,7 +23,8 @@ DSA_SUBMISSIONS_REVISION = "d2e3f4a5b6c7"
 DSA_SUBMISSIONS_LANGUAGE_REVISION = "e3f4a5b6c7d8"
 GENERATED_QUIZZES_SCORE_REVISION = "f4a5b6c7d8e9"
 COURSE_ENROLLMENTS_REVISION = "c456ff178c61"
-HEAD_REVISION = COURSE_ENROLLMENTS_REVISION
+PROCTORING_EVENTS_REVISION = "8623dd43be9d"
+HEAD_REVISION = PROCTORING_EVENTS_REVISION
 GOVERNANCE_TABLES = {
     "audit_events",
     "evidence_records",
@@ -75,7 +76,8 @@ def test_full_migration_chain_upgrades_and_downgrades_fresh_database(tmp_path):
     assert QUESTION_BANK_TABLES <= names
     assert "dsa_submissions" in names
     assert "course_enrollments" in names
-    assert len(names) == 22
+    assert "proctoring_events" in names
+    assert len(names) == 23
 
     _run_alembic(database_url, "downgrade", "base")
     assert inspect(engine).get_table_names() == ["alembic_version"]

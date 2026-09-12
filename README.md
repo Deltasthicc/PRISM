@@ -12,7 +12,7 @@
 ![Languages](https://img.shields.io/badge/UI-11%20languages-orange)
 ![Tests](https://img.shields.io/badge/backend%20tests-969-brightgreen)
 
-[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Recommended Learning](#-recommended-learning--igotnssta-enrollment) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
+[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Recommended Learning](#-recommended-learning--igotnssta-enrollment) · [Exam Integrity](#-exam-integrity-webcam-proctoring) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
 </div>
 
@@ -144,6 +144,16 @@ Every tracked skill gap gets real, ranked course recommendations, and a learner 
 - **No fabricated competency claims** — completing a course writes an `EvidenceRecord` with `evidence_type="provider_imported"`, a type `learning_engine.py` deliberately excludes from competency scoring (`UNSCORED_EVIDENCE_TYPES`). A simulated provider signal is recorded for transparency, never used to inflate a skill level that hasn't actually been demonstrated.
 - In-app practice recommendations have no enrollment step — they're a direct link into `/dungeon`'s adaptive quest for that competency, since there's nothing to "enroll" in beyond visiting the page.
 
+## 🛡️ Exam Integrity (Webcam Proctoring)
+
+A real, on-device webcam integrity monitor for the baseline assessment ([`frontend/components/ProctoringMonitor.jsx`](frontend/components/ProctoringMonitor.jsx), [`backend/routes/proctoring.py`](backend/routes/proctoring.py)) — opt-in, and never a pass/fail gate:
+
+- **Real client-side ML, not a mockup indicator** — [`@tensorflow-models/blazeface`](https://github.com/tensorflow/tfjs-models/tree/master/blazeface) checks face count (flags zero or multiple faces) and [`@tensorflow-models/coco-ssd`](https://github.com/tensorflow/tfjs-models/tree/master/coco-ssd) checks for a `cell phone` in frame, both real pretrained models run entirely in the browser via `@tensorflow/tfjs`. Two non-camera browser signals (tab switch, fullscreen exit) run alongside them.
+- **No video or image is ever sent to the backend** — only the resulting event (`no_face_detected`, `multiple_faces_detected`, `phone_detected`, `tab_switch`, `fullscreen_exit`, plus a confidence score for phone detection) is persisted, to a real `proctoring_events` table via `POST /learning/proctoring/violations`.
+- **Explicit opt-in, off by default** — no camera is requested until the learner flips the toggle themselves; camera denial is handled gracefully and never blocks the exam.
+- **An audit signal, never a score** — a continuously-true condition is debounced (re-reported at most once per 20s) so the count reflects distinct incidents, not poll noise. The completed-report view shows a plain "N integrity signals recorded" breakdown for a human reviewer to weigh; violations have zero effect on grading, competency scoring, or whether Submit is enabled.
+- Directly answers PS-26101's exam-integrity requirement — matches the class of feature competing SIH26101 submissions ship, without pretending server-side certainty a lightweight client-side classifier can't honestly claim (see [Known limitations](#-known-limitations)).
+
 ## 🤖 Learner Assistant (RAG)
 
 A real, access-filtered, cited retrieval engine ([`backend/ai/retrieval.py`](backend/ai/retrieval.py), [`ai/assistant.py`](backend/ai/assistant.py), exposed at `/assistant` in the frontend) — not a general-purpose chatbot, and it says so:
@@ -161,7 +171,7 @@ Being honest about this line is the point of this section — the frontend has a
 
 | Route | Status |
 |---|---|
-| `/login` → `/register` → `/baseline-assessment` | **Real.** Resolves an actual backend player via `useAuthStore`, then a real profile form, then a source-cited baseline quiz served by `routes/competency_quiz.py`. |
+| `/login` → `/register` → `/baseline-assessment` | **Real.** Resolves an actual backend player via `useAuthStore`, then a real profile form, then a source-cited baseline quiz served by `routes/competency_quiz.py`, with an opt-in real webcam integrity monitor — see [Exam Integrity](#-exam-integrity-webcam-proctoring). |
 | `/stats` | **Real.** Every number comes from `GET /learning/pathway` — no hardcoded competency data, including the recommended-courses list — see [Recommended Learning](#-recommended-learning--igotnssta-enrollment) below. |
 | `/dungeon` ("Prerequisite Pathways") | **Real, for all four curricula.** Driven by `GET /learning/pathway/{player_id}` (the same engine `/stats` uses) merged with real per-player room unlock status from `GET /game/dungeon/{id}`. "Practice this competency" opens `/practice`, a plain quiz scoped to that one competency; finishing it updates `AccuracyHistory`, which is what flips a room to unlocked/weak/mastered and advances the "biggest gap" pointer — verified live across every curriculum, not just DSA. |
 | `/dsa-sandbox` | **Real.** See [DSA Sandbox](#-dsa-sandbox) below — real code, a real Judge0 judge, no simulated pass/fail. |
@@ -257,6 +267,7 @@ Then open `http://localhost:3000`.
 | `competency_quiz.py` | `/learning/competency-quiz` | Source-cited competency quiz bank — by topic (baseline) or by a single `competency_id` (`/practice`) |
 | `dsa_sandbox.py` | `/learning/dsa-sandbox` | Real Judge0 code execution — see [DSA Sandbox](#-dsa-sandbox) |
 | `sampling_lab.py` | `/learning/sampling-lab` | Bounded sample-size calculation tasks — see [Virtual Lab](#-virtual-lab-official-statistics) |
+| `proctoring.py` | `/learning/proctoring` | Real, persisted webcam/browser exam-integrity signal log — see [Exam Integrity](#-exam-integrity-webcam-proctoring) |
 | `dev_auth.py` | `/auth` | Local-dev bridge: demo login → real Keycloak token (not a backdoor, not the real OIDC flow) |
 | `ai_real.py` | `/ai` | Learner Assistant (`/ai/assistant/query`), retrieval (`/ai/retrieval/search`, `/ai/retrieval/index`) — see [Learner Assistant (RAG)](#-learner-assistant-rag) |
 | `ai_voice.py` | `/ai/voice` | Authenticated WebSocket voice pipeline (`/ai/voice/stream`) — see [Voice AI pipeline](#-voice-ai-pipeline) |
@@ -278,7 +289,7 @@ Then open `http://localhost:3000`.
 
 ## 🧪 Tests & CI
 
-- **1,014 backend tests** (989 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
+- **1,036 backend tests** (1,011 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
 - **No frontend test suite** exists yet — `frontend/package.json` only defines `dev`/`build`/`start`/`lint`.
 - [`ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`:
   - `backend-tests` — `pip-audit` + full pytest suite against Postgres
@@ -305,6 +316,7 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 - The Whisper domain fine-tune (see above) has been trained and measured (21–22% relative WER improvement on held-out validation), but the resulting model file isn't bundled with the repo — `WHISPER_MODEL_PATH` needs to point at your own locally-trained output (or the stock model is used, which still works, just with the known domain-vocabulary mis-transcriptions).
 - 9 of the 11 UI languages are a first machine-translation pass awaiting native-speaker review — see [Internationalization](#-internationalization).
 - The real browser OIDC/PKCE login flow (as opposed to the demo bypass and the dev-login bridge) is not yet implemented.
+- Webcam proctoring ([Exam Integrity](#-exam-integrity-webcam-proctoring)) runs a real but lightweight pretrained classifier (`blazeface`/`coco-ssd`), not a purpose-trained exam-proctoring model — expect real false positives (poor lighting, an object that looks phone-like) and false negatives (a phone held out of frame). That's exactly why it's designed as an audit signal for a human reviewer rather than an automatic pass/fail; a production deployment would want a higher-fidelity, purpose-built model and a documented false-positive rate before treating it as more than that.
 - No frontend automated test suite.
 - Render's free tier means cold starts and tight memory headroom on Keycloak — not a production-scale deployment.
 

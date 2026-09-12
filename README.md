@@ -303,7 +303,7 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 
 ## ☁️ Deployment
 
-[`render.yaml`](render.yaml) is a Render Blueprint defining two services — `prism-backend` (FastAPI, Python 3.11.9 pinned) and `prism-keycloak` (Docker). The frontend and the Neon database are **not** part of this blueprint: the frontend runs per-laptop via `npm run dev` pointed at the deployed backend, and Neon is provisioned separately. See [`deploy/README.md`](deploy/README.md) for the full setup walkthrough.
+[`render.yaml`](render.yaml) is a Render Blueprint defining three services — `prism-backend` (FastAPI, Python 3.11.9 pinned), `prism-keycloak` (Docker), and `prism-frontend` (Next.js, `next start`, Node 22.13 pinned). The Neon database is **not** part of this blueprint and is provisioned separately. `prism-frontend`'s `NEXT_PUBLIC_API_URL` has a one-time manual fill-in step after the first deploy (see the comment at the top of `render.yaml` — it can't be known before `prism-backend` has its own hostname). Running the frontend per-laptop via `npm run dev` still works and isn't replaced by this — it's an additional, always-on hosted copy, not a requirement. See [`deploy/README.md`](deploy/README.md) for the full setup walkthrough.
 
 ## ⚠️ Known limitations
 

@@ -289,6 +289,50 @@ def seed_role_targets():
         db.close()
 
 
+def seed_judgment_scenarios():
+    """Materialize the hand-authored branching scenarios
+    (data/judgment_scenarios.json, loaded via
+    services/judgment_scenario_content.py) as real `judgment_scenarios`
+    rows, keyed by the content file's own fixed scenario_id so this is
+    idempotent across restarts (matching seed_role_targets()'s pattern just
+    above).
+
+    Unconditional, like ai/seed_corpus.py's chunk-store indexing in
+    main.py's lifespan -- this is real, human-authored content (not
+    synthetic demo data), so it should exist in every deployment mode, not
+    only when SEED_DEMO_DATA is on.
+    """
+    from models.judgment_scenario import JudgmentScenario
+    from services.judgment_scenario_content import load_scenarios, validate_scenario_graph
+
+    db = SessionLocal()
+    try:
+        created = 0
+        for scenario in load_scenarios():
+            validate_scenario_graph(scenario)
+            existing = (
+                db.query(JudgmentScenario)
+                .filter(JudgmentScenario.scenario_id == scenario["scenario_id"])
+                .first()
+            )
+            if existing:
+                continue
+            db.add(JudgmentScenario(
+                scenario_id=scenario["scenario_id"],
+                competency_id=scenario["competency_id"],
+                title=scenario["title"],
+                situation_brief=scenario["situation_brief"],
+                nodes=scenario["nodes"],
+                start_node_id=scenario["start_node_id"],
+            ))
+            created += 1
+        if created:
+            db.commit()
+            print(f"Seeded {created} judgment_scenarios row(s) from data/judgment_scenarios.json.")
+    finally:
+        db.close()
+
+
 if __name__ == "__main__":
     seed_database()
     seed_curricula_dungeons()

@@ -87,7 +87,7 @@ export default function QuizGeneratorPanel({ onGenerated }) {
             name="learning_file"
             type="file"
             required
-            accept=".txt,.md,.pdf,.docx"
+            accept=".txt,.md,.pdf,.docx,.pptx,.vtt,.srt,.transcript,.mp4,.mov,.webm,.mp3,.wav,.m4a"
             className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 file:bg-[#00236f] file:text-white file:border-0 file:rounded-md file:px-3 file:py-1.5 file:mr-3"
           />
         </label>

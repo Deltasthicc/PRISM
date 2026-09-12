@@ -101,6 +101,15 @@ export default function SourceQuizGeneratorPage() {
           <h1 className="font-sans text-lg font-bold text-[#00236f]">{t('quizGeneratorPage.heading')}</h1>
         </div>
         <p className="font-sans text-sm text-[#757682] mt-2 max-w-2xl">{t('quizGeneratorPage.subtitle')}</p>
+        {/* Not yet translated into the other 10 UI languages -- same honesty
+            convention as this project's other documented pending items (see
+            app/sampling-lab/page.jsx). Kept separate from the translated
+            subtitle above rather than editing that key, so the other 10
+            languages' existing translations don't go stale. */}
+        <p className="font-mono text-[10px] text-[#8a8f9d] mt-1 max-w-2xl">
+          Also accepts PPTX slides, VTT/SRT/plain transcripts, and audio or video files (MP4, MOV,
+          WEBM, MP3, WAV, M4A, up to 60 MB / 10 minutes) -- speech is transcribed automatically.
+        </p>
       </div>
 
       <div className="flex items-center gap-1 bg-[#f2f3ff] rounded-lg p-1 self-start">

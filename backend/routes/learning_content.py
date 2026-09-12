@@ -18,7 +18,12 @@ from schemas.learning import (
     QuizSubmitResponse,
 )
 from security.rbac import BoundPrincipal, Permission
-from services.content_ingestion import ContentExtractionError, MAX_UPLOAD_BYTES, extract_text
+from services.content_ingestion import (
+    MAX_AUDIO_VIDEO_UPLOAD_BYTES,
+    MAX_UPLOAD_BYTES,
+    ContentExtractionError,
+    extract_text,
+)
 from services.quiz_generator import generate_quiz as _service_generate_quiz
 from services.quiz_scoring import DIFFICULTY_WEIGHT, pace_label, time_factor
 
@@ -58,7 +63,12 @@ async def create_quiz(
     # require_own_player's docstring), this endpoint 403'd unconditionally.
     require_own_player(principal, player_id)
     player_or_404(db, player_id)
-    content = await file.read(MAX_UPLOAD_BYTES + 1)
+    # Read up to the larger of the two caps -- ai.ingestion.ingest_document()
+    # applies the real, extension-aware limit (a small text document still
+    # gets MAX_UPLOAD_BYTES; only audio/video gets the larger
+    # MAX_AUDIO_VIDEO_UPLOAD_BYTES headroom) and rejects anything past it.
+    read_limit = max(MAX_UPLOAD_BYTES, MAX_AUDIO_VIDEO_UPLOAD_BYTES)
+    content = await file.read(read_limit + 1)
     try:
         text = extract_text(file.filename or "upload", content)
         questions, generation_mode = await _generate_quiz(

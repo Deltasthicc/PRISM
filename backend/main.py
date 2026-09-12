@@ -27,7 +27,7 @@ from models.submission import AnswerSubmission
 from models.guild import Guild
 from models.dungeon import Dungeon, Room
 from models.session import GameSession
-from models.learning import LearnerProfile, CompetencyAssessment, LearningMaterial, GeneratedQuiz
+from models.learning import LearnerProfile, CompetencyAssessment, LearningMaterial, GeneratedQuiz, GeneratedQuizAttempt
 from models.governance import RoleTarget, EvidenceRecord, SourceVersion, AuditEvent
 from models.identity import IdentityBinding
 from models.question_bank import QuestionBankItem, QuestionBankAttempt
@@ -80,6 +80,11 @@ async def lifespan(app: FastAPI):
     ensure_columns("generated_quizzes", [
         ("best_score", "REAL"),
         ("last_attempted_at", "TEXT"),
+        ("review_status", "TEXT DEFAULT 'private'"),
+        ("submitted_for_review_at", "TEXT"),
+        ("reviewed_by", "TEXT"),
+        ("reviewed_at", "TEXT"),
+        ("reviewer_notes", "TEXT"),
     ])
 
     # Auto-seed the demo DSA dungeon, then materialize every other curriculum

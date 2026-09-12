@@ -122,7 +122,9 @@ class LearningMaterial(Base):
 class GeneratedQuiz(Base):
     """A generated quiz's questions, verbatim, plus which generation path
     produced them ("gemini-grounded" or "extractive-fallback" -- see
-    services/quiz_generator.py). Never rewritten after creation."""
+    services/quiz_generator.py). `questions` itself is never rewritten after
+    creation; `review_status` and the reviewer fields below are, via the
+    real trainer review/approval workflow in routes/quiz_review.py."""
 
     __tablename__ = "generated_quizzes"
 
@@ -136,13 +138,49 @@ class GeneratedQuiz(Base):
     questions = Column(JSON, default=list)
     generation_mode = Column(String, default="extractive-fallback")
 
-    # Denormalized best-attempt summary from routes/learning_content.py's
-    # POST /learning/quiz/{quiz_id}/submit -- deliberately NOT written into
-    # AccuracyHistory/the real competency vector, since a generated quiz's
-    # `competency` field is free text from the model or the extractive
-    # fallback, not a real curriculum competency_id (see services/curricula.py).
-    # This is a real, honest score for this one quiz, not curriculum evidence.
+    # Denormalized best-attempt summary -- see routes/learning_content.py's
+    # POST /learning/quiz/{quiz_id}/submit. Reflects only the OWNER's own
+    # attempts (routes/quiz_review.py's published-quiz-library lets other
+    # learners take a copy too; their attempts land in GeneratedQuizAttempt
+    # instead, so a non-owner's score never overwrites the creator's own
+    # best_score). Deliberately NOT written into AccuracyHistory/the real
+    # competency vector, since a generated quiz's `competency` field is free
+    # text from the model or the extractive fallback, not a real curriculum
+    # competency_id (see services/curricula.py). This is a real, honest score
+    # for this one quiz, not curriculum evidence.
     best_score = Column(Float, nullable=True)
     last_attempted_at = Column(DateTime(timezone=True), nullable=True)
 
+    # Real trainer review/approval lifecycle (routes/quiz_review.py):
+    # private (default, only the creator can see/take it, current behavior
+    # unchanged) -> pending_review (creator submitted it for publication) ->
+    # published (a content_reviewer/trainer approved it -- now listed in the
+    # shared quiz library for any learner) or rejected (resubmittable).
+    review_status = Column(String, nullable=False, default="private", server_default="private")
+    submitted_for_review_at = Column(DateTime(timezone=True), nullable=True)
+    reviewed_by = Column(String, nullable=True)
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
+    reviewer_notes = Column(String, nullable=True)
+
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+
+class GeneratedQuizAttempt(Base):
+    """One real, persisted attempt at a GeneratedQuiz, by whoever took it --
+    not just the quiz's creator. Exists because a published quiz (see
+    review_status above) can be taken by any learner, and GeneratedQuiz's
+    own best_score/last_attempted_at columns are a single slot that must
+    keep reflecting the CREATOR's own attempts (routes/learning_content.py's
+    existing submit flow), not get overwritten by someone else's score."""
+
+    __tablename__ = "generated_quiz_attempts"
+
+    attempt_id = Column(String, primary_key=True, default=generate_uuid)
+    quiz_id = Column(String, ForeignKey("generated_quizzes.quiz_id"), nullable=False, index=True)
+    player_id = Column(String, ForeignKey("players.player_id"), nullable=False, index=True)
+
+    correct_count = Column(Integer, nullable=False)
+    total_questions = Column(Integer, nullable=False)
+    weighted_score = Column(Float, nullable=False)
+
+    attempted_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

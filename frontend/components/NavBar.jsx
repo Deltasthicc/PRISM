@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { learning } from '@/lib/api/client';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import AccessibilityMenu from '@/components/AccessibilityMenu';
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -118,6 +119,7 @@ export default function NavBar() {
             {questModeOn ? t('nav.questModeOn') : t('nav.questModeOff')}
           </button>
           <LanguageSwitcher />
+          <AccessibilityMenu />
           <Link
             href="/stats"
             className="flex items-center gap-2.5 bg-[#f2f3ff]/80 px-3 py-1.5 rounded-lg border border-[#c5c5d3]/30 hover:bg-[#e2e7ff] hover:border-[#00236f]/30 transition-all"

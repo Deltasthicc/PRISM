@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAccessibility } from '@/lib/a11y/AccessibilityContext';
 
 const TONE_COLOR = {
   damage: '#c43d3d',
@@ -15,16 +16,17 @@ const TONE_COLOR = {
  * keyed by a counter — AnimatePresence handles the exit unmount).
  */
 export default function DamageNumber({ items }) {
+  const { reducedMotion } = useAccessibility();
   return (
     <div className="relative h-0 pointer-events-none">
       <AnimatePresence>
         {items.map((item, i) => (
           <motion.span
             key={item.id}
-            initial={{ opacity: 0, y: 0, scale: 0.6 }}
+            initial={reducedMotion ? { opacity: 1, y: -40, scale: 1 } : { opacity: 0, y: 0, scale: 0.6 }}
             animate={{ opacity: 1, y: -40, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
+            transition={reducedMotion ? { duration: 0 } : { duration: 0.9, ease: 'easeOut' }}
             className="absolute font-display text-sm whitespace-nowrap"
             style={{
               color: TONE_COLOR[item.tone] || '#ece3cf',

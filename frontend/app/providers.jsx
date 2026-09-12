@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/useAuthStore';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
+import { AccessibilityProvider } from '@/lib/a11y/AccessibilityContext';
 
 function AuthBootstrap() {
   const fetchMe = useAuthStore((s) => s.fetchMe);
@@ -26,8 +27,10 @@ export default function Providers({ children }) {
   return (
     <QueryClientProvider client={client}>
       <LanguageProvider>
-        <AuthBootstrap />
-        {children}
+        <AccessibilityProvider>
+          <AuthBootstrap />
+          {children}
+        </AccessibilityProvider>
       </LanguageProvider>
     </QueryClientProvider>
   );

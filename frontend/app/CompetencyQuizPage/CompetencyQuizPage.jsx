@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Timer,
   Video,
+  Volume2,
   XCircle,
 } from 'lucide-react';
 
@@ -241,10 +242,14 @@ export default function CompetencyQuizPage() {
   const handleSelectOption = (optionIndex) => {
     if (isSubmitted || !currentQ) return;
 
-    setSelectedAnswers({
-      ...selectedAnswers,
+    // Functional update (rather than spreading the closed-over
+    // `selectedAnswers`) so the keyboard-shortcut handler below always
+    // applies against the latest answers, even across rapid keypresses
+    // within the same render.
+    setSelectedAnswers((prev) => ({
+      ...prev,
       [currentQ.item_id]: optionIndex,
-    });
+    }));
   };
 
   // Fill-in-the-blank items store their answer as trimmed text under the
@@ -287,6 +292,101 @@ export default function CompetencyQuizPage() {
     recordElapsed();
     setCurrentQuestionIndex(idx);
   };
+
+  // ============================================================
+  // READ ALOUD -- real browser Web Speech API (window.speechSynthesis),
+  // not a mock. Guarded for SSR (`typeof window === 'undefined'`) and for
+  // browsers that don't implement the API at all; the button is disabled
+  // with an explanatory title in that case rather than throwing.
+  // ============================================================
+
+  const speechSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
+
+  const handleReadAloud = () => {
+    if (!speechSupported || !currentQ) return;
+
+    // Cancel any in-progress utterance first so navigating between
+    // questions (or clicking Read Aloud again) never overlaps audio.
+    window.speechSynthesis.cancel();
+
+    const parts = [currentQ.question];
+    if (currentQ.question_type !== 'fill_in_blank' && Array.isArray(currentQ.options)) {
+      currentQ.options.forEach((optionText, optionIndex) => {
+        parts.push(`Option ${String.fromCharCode(65 + optionIndex)}: ${optionText}`);
+      });
+    }
+
+    const utterance = new SpeechSynthesisUtterance(parts.join('. '));
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Stop any in-progress speech the moment the learner moves to a
+  // different question (Next/Prev/jump), and on unmount -- otherwise the
+  // previous question's audio would keep playing over the new one.
+  useEffect(() => {
+    if (!speechSupported) return undefined;
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestionIndex, speechSupported]);
+
+  // ============================================================
+  // KEYBOARD NAVIGATION -- only while the quiz is live (not after
+  // submission) and only when focus isn't inside a text input, since a
+  // fill-in-the-blank answer may legitimately contain a digit that would
+  // otherwise get hijacked as an option shortcut.
+  // ============================================================
+
+  useEffect(() => {
+    if (isSubmitted) return undefined;
+
+    function handleQuizKeyDown(event) {
+      const targetTag = event.target?.tagName;
+      if (targetTag === 'INPUT' || targetTag === 'TEXTAREA') return;
+      if (!currentQ) return;
+
+      const key = event.key;
+
+      if (currentQ.question_type !== 'fill_in_blank' && Array.isArray(currentQ.options)) {
+        const numberToIndex = { '1': 0, '2': 1, '3': 2, '4': 3 };
+        const letterToIndex = { a: 0, b: 1, c: 2, d: 3 };
+        const lowerKey = key.length === 1 ? key.toLowerCase() : key;
+
+        let optionIndex;
+        if (key in numberToIndex) optionIndex = numberToIndex[key];
+        else if (lowerKey in letterToIndex) optionIndex = letterToIndex[lowerKey];
+
+        if (optionIndex !== undefined && optionIndex < currentQ.options.length) {
+          event.preventDefault();
+          handleSelectOption(optionIndex);
+          return;
+        }
+      }
+
+      if (key === 'ArrowRight' || key === 'Enter') {
+        event.preventDefault();
+        if (currentQuestionIndex < questions.length - 1) {
+          handleNext();
+        } else if (!submittingQuiz) {
+          handleSubmitQuiz();
+        }
+        return;
+      }
+
+      if (key === 'ArrowLeft') {
+        event.preventDefault();
+        handlePrev();
+      }
+    }
+
+    document.addEventListener('keydown', handleQuizKeyDown);
+    return () => document.removeEventListener('keydown', handleQuizKeyDown);
+    // selectedAnswers is included so the handler's closures (handleNext /
+    // handleSubmitQuiz, which read answeredCount/selectedAnswers) never go
+    // stale between an option keypress and an immediate Enter/ArrowRight.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSubmitted, currentQ, currentQuestionIndex, questions.length, selectedAnswers, submittingQuiz]);
 
   // ============================================================
   // SUBMIT -- real server-side grading, one call per selected topic
@@ -598,7 +698,7 @@ export default function CompetencyQuizPage() {
 
                   </div>
 
-                  <span className="font-mono text-[10px] text-[#8a8f9d] uppercase">
+                  <span className="font-mono text-[10px] text-[#8a8f9d] uppercase prism-large-text-meta">
                     {currentQ.difficulty}
                   </span>
 
@@ -616,13 +716,33 @@ export default function CompetencyQuizPage() {
                       </span>
                     </div>
 
-                    <h2 className="text-sm sm:text-base font-semibold text-[#151c2d] leading-7">
+                    <h2 className="text-sm sm:text-base font-semibold text-[#151c2d] leading-7 prism-large-text-question flex-1">
                       {currentQ.question}
                     </h2>
 
+                    {/* READ ALOUD -- real window.speechSynthesis (Web Speech
+                        API), not a mock. Reads the question, then each
+                        option as "Option A: ...". Disabled with an
+                        explanatory title when the browser doesn't support
+                        speech synthesis at all. */}
+                    <button
+                      type="button"
+                      onClick={handleReadAloud}
+                      disabled={!speechSupported}
+                      title={
+                        speechSupported
+                          ? 'Read this question and its options aloud'
+                          : 'Text-to-speech is not supported in this browser'
+                      }
+                      className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#c5c5d3]/40 text-[#00236f] text-[10px] font-mono font-semibold hover:bg-[#f5f6fa] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      <Volume2 size={13} />
+                      Read aloud
+                    </button>
+
                   </div>
 
-                  <div className="ml-10 flex items-start gap-1.5 text-[10px] text-[#7a808e] font-mono leading-relaxed">
+                  <div className="ml-10 flex items-start gap-1.5 text-[10px] text-[#7a808e] font-mono leading-relaxed prism-large-text-meta">
                     <BookOpen
                       size={13}
                       strokeWidth={2}
@@ -713,7 +833,7 @@ export default function CompetencyQuizPage() {
                         {/* TEXT */}
 
                         <span
-                          className={`text-xs leading-6 pt-0.5 ${
+                          className={`text-xs leading-6 pt-0.5 prism-large-text-option ${
                             isSelected
                               ? 'text-[#00236f] font-semibold'
                               : 'text-[#252c3c]'

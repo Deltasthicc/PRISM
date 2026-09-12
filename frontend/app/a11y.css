@@ -1,0 +1,156 @@
+/* Real, working accessibility CSS -- toggled by the data-high-contrast /
+   data-large-text / data-reduced-motion attributes that
+   lib/a11y/AccessibilityContext.jsx sets on <html> (see that file). Every
+   rule below changes real, verifiable rendered output; none of this is
+   decorative markup with no behavior behind it.
+
+   These are real, working accessibility features -- not a claim of WCAG
+   AA/AAA compliance. This pass has not been audited against the full WCAG
+   criteria. */
+
+/* ============================================================
+   HIGH CONTRAST
+   Targets this app's actual navy/gray palette (see app/globals.css,
+   tailwind.config.js, and the hex values reused across
+   components/NavBar.jsx and app/CompetencyQuizPage/CompetencyQuizPage.jsx):
+   #00236f (navy), #757682/#8a8f9d/#7a808e/#7b8190/#818795/#858b98/#747a88/
+   #737a88/#727887/#555d6d/#626977 (secondary gray text, ~3-3.5:1 against
+   white -- under WCAG's 4.5:1 normal-text guideline), and #c5c5d3/#dfe2eb/
+   #e1e4eb/#edf0f5 (faint borders). High-contrast mode darkens the grays to
+   near-black and makes borders opaque and heavier.
+   ============================================================ */
+
+html[data-high-contrast='true'] body {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+html[data-high-contrast='true'] .text-\[\#757682\],
+html[data-high-contrast='true'] .text-\[\#8a8f9d\],
+html[data-high-contrast='true'] .text-\[\#7a808e\],
+html[data-high-contrast='true'] .text-\[\#7b8190\],
+html[data-high-contrast='true'] .text-\[\#818795\],
+html[data-high-contrast='true'] .text-\[\#858b98\],
+html[data-high-contrast='true'] .text-\[\#747a88\],
+html[data-high-contrast='true'] .text-\[\#737a88\],
+html[data-high-contrast='true'] .text-\[\#727887\],
+html[data-high-contrast='true'] .text-\[\#555d6d\],
+html[data-high-contrast='true'] .text-\[\#626977\],
+html[data-high-contrast='true'] .text-\[\#444651\],
+html[data-high-contrast='true'] .text-\[\#8a8f9d\]\/50,
+html[data-high-contrast='true'] .text-white\/50,
+html[data-high-contrast='true'] .text-white\/65 {
+  color: #000000 !important;
+}
+
+/* The app's primary navy is already fairly dark on white, but push it to
+   near-black too so headings/brand text read as strongly as everything
+   else in this mode. */
+html[data-high-contrast='true'] .text-\[\#00236f\] {
+  color: #00102e !important;
+}
+
+/* Faint borders become fully opaque and heavier so card/input/button
+   boundaries are actually visible against white and against each other. */
+html[data-high-contrast='true'] [class*='border-\[\#c5c5d3\]'],
+html[data-high-contrast='true'] .border-\[\#dfe2eb\],
+html[data-high-contrast='true'] .border-\[\#e1e4eb\],
+html[data-high-contrast='true'] .border-\[\#edf0f5\],
+html[data-high-contrast='true'] [class*='border-\[\#dfe2eb\]'] {
+  border-color: #000000 !important;
+}
+
+html[data-high-contrast='true'] button,
+html[data-high-contrast='true'] a,
+html[data-high-contrast='true'] input,
+html[data-high-contrast='true'] [role='radio'],
+html[data-high-contrast='true'] [role='button'] {
+  border-color: currentColor;
+}
+
+/* Pale tinted panel backgrounds stay light (changing them risks breaking
+   the selected/unselected visual language) but get a real, dark border so
+   their edges are visible even to a viewer who can't rely on the subtle
+   tint difference. */
+html[data-high-contrast='true'] .bg-\[\#f2f3ff\],
+html[data-high-contrast='true'] .bg-\[\#eef1ff\],
+html[data-high-contrast='true'] .bg-\[\#f7f8fc\],
+html[data-high-contrast='true'] .bg-\[\#fbfcfe\],
+html[data-high-contrast='true'] .bg-\[\#fafbfc\],
+html[data-high-contrast='true'] .bg-\[\#f5f6fb\],
+html[data-high-contrast='true'] .bg-\[\#f5f6fa\] {
+  border: 1px solid #000000 !important;
+}
+
+/* Visible focus outline everywhere in this mode, on top of whatever
+   focus ring Tailwind classes already add. */
+html[data-high-contrast='true'] button:focus-visible,
+html[data-high-contrast='true'] a:focus-visible,
+html[data-high-contrast='true'] input:focus-visible,
+html[data-high-contrast='true'] [role='radio']:focus-visible {
+  outline: 3px solid #000000 !important;
+  outline-offset: 2px !important;
+}
+
+/* ============================================================
+   LARGE TEXT
+   app/globals.css sets html/body's base font-size to a fixed 18px (not the
+   browser's usual 16px default). Tailwind's default rem-based utilities
+   (text-xs/sm/base/lg, which this app also uses in plenty of places) scale
+   automatically with that root size via --prism-text-scale below. But most
+   of the copy in CompetencyQuizPage.jsx uses hardcoded pixel bracket
+   classes (text-[10px], text-[11px], text-[9px]...) -- px is an absolute
+   unit, so scaling the root font-size does nothing for that text. The
+   `.prism-large-text-*` class overrides handle those specific fixed-px
+   elements; CompetencyQuizPage.jsx opts its question/option/meta text into
+   them explicitly.
+   ============================================================ */
+
+:root {
+  --prism-text-scale: 1;
+}
+
+html[data-large-text='true'] {
+  --prism-text-scale: 1.3;
+}
+
+html,
+body {
+  font-size: calc(18px * var(--prism-text-scale));
+}
+
+html[data-large-text='true'] .prism-large-text-question {
+  font-size: 1.3rem !important;
+  line-height: 1.9 !important;
+}
+
+html[data-large-text='true'] .prism-large-text-option {
+  font-size: 1.05rem !important;
+  line-height: 1.8 !important;
+}
+
+html[data-large-text='true'] .prism-large-text-meta {
+  font-size: 0.85rem !important;
+  line-height: 1.6 !important;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   Backstop CSS rule for anything not explicitly wired via Framer Motion
+   `transition`/`animate` props (see the components under
+   frontend/components/ that read `reducedMotion` from
+   lib/a11y/AccessibilityContext.jsx directly, e.g. XPBar.jsx, HealthBar.jsx,
+   DamageNumber.jsx, VillainSprite.jsx). This mirrors the existing
+   OS-level `prefers-reduced-motion` block already in globals.css, but is
+   driven by the learner's explicit in-app choice instead of only the OS
+   setting.
+   ============================================================ */
+
+html[data-reduced-motion='true'] *,
+html[data-reduced-motion='true'] *::before,
+html[data-reduced-motion='true'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}

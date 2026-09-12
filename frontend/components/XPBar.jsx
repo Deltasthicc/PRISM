@@ -1,11 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useAccessibility } from '@/lib/a11y/AccessibilityContext';
 
 // Mirrors backend/services/game_logic.py's calculate_level: floor(total_xp / 100) + 1.
 const XP_PER_LEVEL = 100;
 
 export default function XPBar({ level, totalXp }) {
+  const { reducedMotion } = useAccessibility();
   const xpIntoLevel = totalXp % XP_PER_LEVEL;
   const pct = (xpIntoLevel / XP_PER_LEVEL) * 100;
 
@@ -19,7 +21,7 @@ export default function XPBar({ level, totalXp }) {
           <motion.div
             className="h-full bg-gold"
             animate={{ width: `${pct}%` }}
-            transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+            transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 100, damping: 20 }}
           />
           <div
             className="absolute inset-[2px] pointer-events-none mix-blend-multiply opacity-70"

@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Upload
 from sqlalchemy.orm import Session
 
 from db.database import get_db
-from models.learning import GeneratedQuiz, LearningMaterial
+from models.learning import GeneratedQuiz, GeneratedQuizAttempt, LearningMaterial
 from routes.authorization import require_own_player, require_own_player_dependency, require_permission_dependency
 from routes.learning_common import player_or_404
 from schemas.learning import (
@@ -111,12 +111,15 @@ async def get_quiz(
 ):
     """Fetch one previously generated quiz's full content -- used by the
     frontend to re-open a quiz from history and take/retake it, since the
-    list endpoint below only returns lightweight metadata."""
+    list endpoint below only returns lightweight metadata. Also reachable
+    for a quiz that isn't the caller's own, as long as it has been published
+    through the real trainer review workflow (routes/quiz_review.py) --
+    that's the entire point of a shared quiz library."""
     player_or_404(db, player_id)
     quiz = db.query(GeneratedQuiz).filter(GeneratedQuiz.quiz_id == quiz_id).first()
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
-    if quiz.player_id != player_id:
+    if quiz.player_id != player_id and quiz.review_status != "published":
         raise HTTPException(status_code=403, detail="This quiz belongs to a different player")
     return QuizResponse(
         quiz_id=quiz.quiz_id,
@@ -145,14 +148,21 @@ async def submit_quiz(
     a generated quiz's per-question `competency` is free text (from the
     model or the extractive fallback), not a real curriculum competency_id,
     so treating it as curriculum evidence would be exactly the kind of
-    fabrication this project has repeatedly had to fix elsewhere."""
+    fabrication this project has repeatedly had to fix elsewhere.
+
+    A published quiz (routes/quiz_review.py) can be taken by any learner,
+    not just its creator. Every attempt, by anyone, is recorded as a real
+    GeneratedQuizAttempt row; best_score/last_attempted_at below only ever
+    reflect the creator's OWN attempts, so someone else taking a published
+    copy can never overwrite the creator's recorded best."""
     require_own_player(principal, body.player_id)
     player_or_404(db, body.player_id)
 
     quiz = db.query(GeneratedQuiz).filter(GeneratedQuiz.quiz_id == quiz_id).first()
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
-    if quiz.player_id != body.player_id:
+    is_owner = quiz.player_id == body.player_id
+    if not is_owner and quiz.review_status != "published":
         raise HTTPException(status_code=403, detail="This quiz belongs to a different player")
 
     questions = quiz.questions or []
@@ -216,9 +226,20 @@ async def submit_quiz(
         for difficulty, bucket in totals_by_difficulty.items()
     }
 
-    if quiz.best_score is None or weighted_score > quiz.best_score:
-        quiz.best_score = weighted_score
-    quiz.last_attempted_at = datetime.now(timezone.utc)
+    if is_owner:
+        if quiz.best_score is None or weighted_score > quiz.best_score:
+            quiz.best_score = weighted_score
+        quiz.last_attempted_at = datetime.now(timezone.utc)
+
+    db.add(
+        GeneratedQuizAttempt(
+            quiz_id=quiz.quiz_id,
+            player_id=body.player_id,
+            correct_count=correct_count,
+            total_questions=len(results),
+            weighted_score=weighted_score,
+        )
+    )
     db.commit()
 
     return QuizSubmitResponse(
@@ -261,6 +282,8 @@ async def list_quizzes(
                 "created_at": quiz.created_at.isoformat() if quiz.created_at else None,
                 "best_score": quiz.best_score,
                 "last_attempted_at": quiz.last_attempted_at.isoformat() if quiz.last_attempted_at else None,
+                "review_status": quiz.review_status,
+                "reviewer_notes": quiz.reviewer_notes,
             }
             for quiz in quizzes
         ]

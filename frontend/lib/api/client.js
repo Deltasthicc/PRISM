@@ -496,6 +496,28 @@ export const learning = {
       body: { player_id: playerId, answers },
     }),
 
+  // Real trainer review/approval workflow (routes/quiz_review.py) -- a
+  // learner's private quiz stays private by default; these are the opt-in
+  // publish-for-others actions.
+  submitQuizForReview: (quizId, playerId) =>
+    request(`/learning/quiz/${quizId}/submit-for-review`, {
+      method: 'POST',
+      body: { player_id: playerId },
+    }),
+
+  getReviewQueue: () => request('/learning/quiz/review/queue'),
+
+  reviewQuiz: (quizId, decision, notes) =>
+    request(`/learning/quiz/${quizId}/review`, {
+      method: 'POST',
+      body: { decision, notes },
+    }),
+
+  getQuizLibrary: () => request('/learning/quiz/review/library'),
+
+  getQuizAttempts: (quizId, playerId) =>
+    request(`/learning/quiz/${quizId}/attempts?player_id=${encodeURIComponent(playerId)}`),
+
   getAdminOverview: (uiLang = 'en') => request(`/learning/admin/overview?lang=${uiLang}`),
 
   // Real, source-cited competency quiz (routes/competency_quiz.py) -- see

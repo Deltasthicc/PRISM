@@ -146,6 +146,53 @@ class FasterWhisperSTT:
         """Asynchronously transcribe PCM audio in a background worker thread."""
         return await asyncio.to_thread(self.transcribe, pcm_bytes, sample_rate)
 
+    def transcribe_file(self, audio: Any, max_duration_seconds: float | None = None) -> TranscriptionResult:
+        """Transcribe an arbitrary audio/video file -- a path, a file-like
+        object (e.g. io.BytesIO of uploaded bytes), or an already-decoded
+        array. Unlike transcribe() above (which requires pre-resampled 16kHz
+        mono PCM16, the shape live mic capture already produces), this lets
+        faster-whisper's own PyAV-based decoding handle the container and
+        resampling -- PyAV is already a faster-whisper dependency, so any
+        format it supports (mp4, mov, webm, mp3, wav, m4a, ...) works with no
+        extra dependency. Used by ai/ingestion.py's video/audio material
+        ingestion, not the live voice pipeline.
+
+        Raises ValueError if max_duration_seconds is given and the decoded
+        audio is longer -- checked before transcription runs, so an
+        oversized upload doesn't pay for the CPU time to transcribe it.
+        """
+        model = self._ensure_model()
+
+        t_start = time.perf_counter()
+        segments, info = model.transcribe(
+            audio,
+            language="en",
+            task="transcribe",
+            beam_size=1,
+            vad_filter=False,
+            word_timestamps=False,
+        )
+        duration_seconds = info.duration or 0.0
+        if max_duration_seconds is not None and duration_seconds > max_duration_seconds:
+            raise ValueError(
+                f"Audio/video is {duration_seconds:.0f}s long, exceeding the "
+                f"{max_duration_seconds:.0f}s limit for automatic transcription."
+            )
+
+        transcribed_text = " ".join(s.text.strip() for s in segments if s.text.strip()).strip()
+        t_end = time.perf_counter()
+
+        processing_time_ms = (t_end - t_start) * 1000.0
+        duration_ms = duration_seconds * 1000.0
+        rtf = (processing_time_ms / duration_ms) if duration_ms > 0 else 0.0
+
+        return TranscriptionResult(
+            text=transcribed_text,
+            duration_ms=round(duration_ms, 2),
+            processing_time_ms=round(processing_time_ms, 2),
+            real_time_factor=round(rtf, 4),
+        )
+
 
 _singleton_lock = threading.Lock()
 _singleton_engine: FasterWhisperSTT | None = None

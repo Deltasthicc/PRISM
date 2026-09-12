@@ -1,7 +1,8 @@
 """Lane 4 (Content AI, RAG & Evaluation) — Bounded Ingestion Engine.
 
-Parses TXT, Markdown, PDF, DOCX, PPTX, and timestamped transcripts into
-immutable SourceVersion records and Chunk objects with exact source locators.
+Parses TXT, Markdown, PDF, DOCX, PPTX, timestamped transcripts, and now
+audio/video files into immutable SourceVersion records and Chunk objects
+with exact source locators.
 """
 from __future__ import annotations
 
@@ -15,7 +16,14 @@ from typing import Any
 from ai.provenance import Chunk, SourceLocator, SourceVersion, generate_uuid
 from ai.security import sanitize_untrusted_text
 
-MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB -- documents (txt/md/pdf/docx/pptx/transcripts)
+# Real audio/video needs far more headroom than a text document -- a few
+# minutes of compressed speech easily exceeds 5 MB. MAX_AUDIO_VIDEO_SECONDS
+# is the actual cost control (bounds Whisper's CPU transcription time);
+# this byte cap just keeps a clearly-oversized upload from being read into
+# memory at all before that duration check ever runs.
+MAX_AUDIO_VIDEO_UPLOAD_BYTES = 60 * 1024 * 1024  # 60 MB
+MAX_AUDIO_VIDEO_SECONDS = 600  # 10 minutes
 MAX_EXTRACTED_CHARS = 120_000
 MAX_PDF_PAGES = 100
 MAX_PPTX_SLIDES = 100
@@ -23,7 +31,10 @@ MAX_DOCX_UNCOMPRESSED_BYTES = 40 * 1024 * 1024  # 40 MB zip-bomb guard
 MAX_PPTX_UNCOMPRESSED_BYTES = 40 * 1024 * 1024  # 40 MB zip-bomb guard
 MIN_EXTRACTED_CHARS = 100
 
-ALLOWED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx", ".pptx", ".vtt", ".srt", ".transcript"}
+AUDIO_VIDEO_EXTENSIONS = {".mp4", ".mov", ".webm", ".mp3", ".wav", ".m4a"}
+ALLOWED_EXTENSIONS = {
+    ".txt", ".md", ".pdf", ".docx", ".pptx", ".vtt", ".srt", ".transcript",
+} | AUDIO_VIDEO_EXTENSIONS
 
 
 class ContentExtractionError(Exception):
@@ -269,6 +280,42 @@ def _parse_transcript(content: bytes) -> list[tuple[str, SourceLocator]]:
     return blocks
 
 
+def _parse_audio_video(content: bytes) -> list[tuple[str, SourceLocator]]:
+    """Real speech-to-text extraction for an uploaded audio/video file --
+    reuses the exact faster-whisper tiny.en model that already powers the
+    voice pipeline (ai/voice/stt.py), lazy-loaded on first use so this adds
+    no extra startup cost when nobody uploads audio/video. PyAV (already a
+    faster-whisper dependency) decodes the container and resamples
+    in-process; no ffmpeg binary or subprocess is needed.
+
+    A single chunk covering the whole transcript, not per-timestamp
+    segments -- a real, honest scope given the same "bounded ingestion, not
+    a full transcription-editing product" posture every other parser here
+    holds. MAX_AUDIO_VIDEO_SECONDS bounds the actual transcription cost,
+    checked before the (expensive) segment generator is ever consumed.
+    """
+    from ai.voice.stt import get_stt_engine
+
+    try:
+        result = get_stt_engine().transcribe_file(
+            io.BytesIO(content), max_duration_seconds=MAX_AUDIO_VIDEO_SECONDS
+        )
+    except ValueError as exc:
+        raise ContentExtractionError(str(exc)) from exc
+    except Exception as exc:  # pragma: no cover - defensive: an unparseable/corrupt media file
+        raise ContentExtractionError(
+            f"Could not decode this audio/video file: {exc}"
+        ) from exc
+
+    if not result.text:
+        raise ContentExtractionError("No speech could be transcribed from this audio/video file.")
+
+    return [(
+        result.text,
+        SourceLocator(locator_type="section", index=1, label="Full audio/video transcript"),
+    )]
+
+
 _PARSERS = {
     ".txt": _parse_txt_or_md,
     ".md": _parse_txt_or_md,
@@ -278,6 +325,12 @@ _PARSERS = {
     ".vtt": _parse_transcript,
     ".srt": _parse_transcript,
     ".transcript": _parse_transcript,
+    ".mp4": _parse_audio_video,
+    ".mov": _parse_audio_video,
+    ".webm": _parse_audio_video,
+    ".mp3": _parse_audio_video,
+    ".wav": _parse_audio_video,
+    ".m4a": _parse_audio_video,
 }
 
 
@@ -365,15 +418,19 @@ def ingest_document(
     Returns:
         (source_version, chunks, full_extracted_text)
     """
-    if len(content) > MAX_UPLOAD_BYTES:
-        raise ContentExtractionError(
-            f"File exceeds {MAX_UPLOAD_BYTES // (1024 * 1024)} MB upload limit."
-        )
-
     ext = _extension(filename)
     if ext not in ALLOWED_EXTENSIONS:
         raise ContentExtractionError(
             f"Unsupported file type '{ext or filename}'. Supported formats: {', '.join(sorted(ALLOWED_EXTENSIONS))}."
+        )
+
+    # Audio/video gets a much larger byte cap -- MAX_AUDIO_VIDEO_SECONDS
+    # (enforced inside _parse_audio_video, before transcription runs) is the
+    # real cost control, not this upload size.
+    upload_limit = MAX_AUDIO_VIDEO_UPLOAD_BYTES if ext in AUDIO_VIDEO_EXTENSIONS else MAX_UPLOAD_BYTES
+    if len(content) > upload_limit:
+        raise ContentExtractionError(
+            f"File exceeds {upload_limit // (1024 * 1024)} MB upload limit."
         )
 
     parser = _PARSERS[ext]

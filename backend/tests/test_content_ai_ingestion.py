@@ -1,16 +1,39 @@
 """Lane 4 Tests — Safe Bounded Content Ingestion & Provenance Retention."""
 import io
+import wave
 import zipfile
 import pytest
 
 from ai.ingestion import (
     ALLOWED_EXTENSIONS,
+    AUDIO_VIDEO_EXTENSIONS,
+    MAX_AUDIO_VIDEO_SECONDS,
+    MAX_AUDIO_VIDEO_UPLOAD_BYTES,
     MAX_DOCX_UNCOMPRESSED_BYTES,
     MAX_UPLOAD_BYTES,
     ContentExtractionError,
     ingest_document,
 )
 from services.content_ingestion import extract_text
+
+
+def _make_wav_bytes(duration_seconds: float, sample_rate: int = 16000) -> bytes:
+    """A real, valid WAV file of silence -- enough to exercise the actual
+    PyAV decode + faster-whisper inference path end to end without needing
+    a real speech sample or network access. Silence transcribing to empty
+    text (see test below) is itself the meaningful assertion: it proves the
+    real pipeline ran, not a mock -- the same "live smoke test on silence"
+    approach tests/test_content_ai_voice.py's
+    test_live_faster_whisper_tiny_en_smoke already uses for the streaming
+    STT path."""
+    num_samples = int(duration_seconds * sample_rate)
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as wav_file:
+        wav_file.setnchannels(1)
+        wav_file.setsampwidth(2)
+        wav_file.setframerate(sample_rate)
+        wav_file.writeframes(b"\x00\x00" * num_samples)
+    return buf.getvalue()
 
 
 def _create_dummy_pptx_bytes() -> bytes:
@@ -148,6 +171,60 @@ def test_too_short_extracted_text_rejection():
     with pytest.raises(ValueError) as exc_info:
         ingest_document("tiny.txt", b"Too short text.")
     assert "too short" in str(exc_info.value)
+
+
+def test_audio_video_extensions_are_registered():
+    assert AUDIO_VIDEO_EXTENSIONS <= ALLOWED_EXTENSIONS
+    assert {".mp4", ".mov", ".webm", ".mp3", ".wav", ".m4a"} == AUDIO_VIDEO_EXTENSIONS
+
+
+def test_wav_ingestion_runs_the_real_stt_pipeline_and_rejects_silence():
+    """A real .wav file goes through the actual PyAV decode + faster-whisper
+    inference (no mocking) -- silence correctly produces no transcribable
+    speech, which is itself proof the real pipeline ran rather than a stub.
+    This is a slow test (loads the real tiny.en model on first use)."""
+    wav_bytes = _make_wav_bytes(duration_seconds=1.0)
+    with pytest.raises(ContentExtractionError) as exc_info:
+        ingest_document("meeting.wav", wav_bytes)
+    assert "No speech could be transcribed" in str(exc_info.value)
+
+
+def test_audio_video_gets_a_much_larger_upload_cap_than_documents():
+    # Between the two limits: too big for a document, fine for audio/video.
+    oversized_for_docs = b"\x00" * (MAX_UPLOAD_BYTES + 1024)
+    assert len(oversized_for_docs) < MAX_AUDIO_VIDEO_UPLOAD_BYTES
+
+    with pytest.raises(ContentExtractionError) as doc_exc:
+        ingest_document("notes.txt", oversized_for_docs)
+    assert "upload limit" in str(doc_exc.value)
+
+    # The same byte count, but as a .wav, is rejected for a DIFFERENT
+    # reason (unparseable as a real WAV container) -- never the upload-size
+    # check, proving the larger cap is actually being applied for this
+    # extension rather than merely documented.
+    with pytest.raises(ContentExtractionError) as audio_exc:
+        ingest_document("clip.wav", oversized_for_docs)
+    assert "upload limit" not in str(audio_exc.value)
+
+
+def test_oversized_audio_video_upload_is_still_rejected():
+    too_big = b"\x00" * (MAX_AUDIO_VIDEO_UPLOAD_BYTES + 1024)
+    with pytest.raises(ContentExtractionError) as exc_info:
+        ingest_document("huge_video.mp4", too_big)
+    assert "upload limit" in str(exc_info.value)
+
+
+def test_audio_video_over_the_duration_limit_is_rejected_before_transcription(monkeypatch):
+    """Caps the duration limit down to something a fast test can actually
+    exceed, rather than generating 10 real minutes of audio -- the
+    assertion (rejected for being too long, not for any other reason) is
+    exactly the same real check as production's MAX_AUDIO_VIDEO_SECONDS."""
+    monkeypatch.setattr("ai.ingestion.MAX_AUDIO_VIDEO_SECONDS", 1)
+    wav_bytes = _make_wav_bytes(duration_seconds=3.0)
+
+    with pytest.raises(ContentExtractionError) as exc_info:
+        ingest_document("long_clip.wav", wav_bytes)
+    assert "exceeding" in str(exc_info.value) and "limit" in str(exc_info.value)
 
 
 def test_backward_compatible_extract_text_service():

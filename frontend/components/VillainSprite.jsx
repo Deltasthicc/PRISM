@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import PixelSprite from './PixelSprite';
 import { monsterForTopic } from '@/lib/sprites/monsterSprites';
+import { useAccessibility } from '@/lib/a11y/AccessibilityContext';
 
 const HIT_FX_FRAMES = [
   '/sprites/fx/hit_frame_1.png',
@@ -21,6 +22,7 @@ const FX_FRAME_MS = 85;
  * render.
  */
 export default function VillainSprite({ topic, hitKey, defeated, size = 72 }) {
+  const { reducedMotion } = useAccessibility();
   const monster = monsterForTopic(topic);
   const [flash, setFlash] = useState(false);
   const [fxFrame, setFxFrame] = useState(0);
@@ -43,8 +45,12 @@ export default function VillainSprite({ topic, hitKey, defeated, size = 72 }) {
   return (
     <motion.div
       className="relative inline-block"
-      animate={flash ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0, opacity: defeated ? 0.35 : 1 }}
-      transition={{ duration: 0.35 }}
+      animate={
+        flash && !reducedMotion
+          ? { x: [0, -6, 6, -4, 4, 0] }
+          : { x: 0, opacity: defeated ? 0.35 : 1 }
+      }
+      transition={reducedMotion ? { duration: 0 } : { duration: 0.35 }}
     >
       <PixelSprite src={monster.image} grid={monster.grid} palette={monster.palette} size={size} title={monster.name} />
       {flash && <div className="absolute inset-0 bg-blood mix-blend-color opacity-60 pointer-events-none" />}

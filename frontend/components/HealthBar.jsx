@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useAccessibility } from '@/lib/a11y/AccessibilityContext';
 
 /**
  * Reusable HP bar — used by both Combat.jsx and BossFight.jsx (per spec).
@@ -9,19 +10,20 @@ import { motion } from 'framer-motion';
  * and briefly shakes whenever `current` drops.
  */
 export default function HealthBar({ current, max, label, kind = 'player' }) {
+  const { reducedMotion } = useAccessibility();
   const pct = max > 0 ? Math.max(0, Math.min(100, (current / max) * 100)) : 0;
   const prevRef = useRef(current);
   const [shake, setShake] = useState(false);
 
   useEffect(() => {
     if (current < prevRef.current) {
-      setShake(true);
+      setShake(!reducedMotion);
       const t = setTimeout(() => setShake(false), 400);
       prevRef.current = current;
       return () => clearTimeout(t);
     }
     prevRef.current = current;
-  }, [current]);
+  }, [current, reducedMotion]);
 
   const color =
     pct > 60 ? (kind === 'player' ? '#6ee7d0' : '#ff6b3d') : pct > 25 ? '#e8b339' : '#c43d3d';
@@ -39,7 +41,7 @@ export default function HealthBar({ current, max, label, kind = 'player' }) {
           className="h-full"
           style={{ backgroundColor: color }}
           animate={{ width: `${pct}%` }}
-          transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+          transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 120, damping: 18 }}
         />
         {/* static pixel-notch overlay, independent of fill width */}
         <div

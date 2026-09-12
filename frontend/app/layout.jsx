@@ -1,5 +1,6 @@
 import { Press_Start_2P, VT323 } from 'next/font/google';
 import './globals.css';
+import './a11y.css';
 import Providers from './providers';
 import MainShell from '@/components/MainShell';
 import OnboardingModal from '@/components/OnboardingModal';

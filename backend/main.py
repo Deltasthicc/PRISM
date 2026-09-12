@@ -33,6 +33,7 @@ from models.identity import IdentityBinding
 from models.question_bank import QuestionBankItem, QuestionBankAttempt
 from models.dsa_submission import DsaSubmission
 from models.course_enrollment import CourseEnrollment
+from models.proctoring import ProctoringEvent
 
 
 @asynccontextmanager

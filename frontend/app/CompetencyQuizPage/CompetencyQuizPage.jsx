@@ -15,7 +15,9 @@ import {
   Lightbulb,
   Network,
   Radar,
+  ShieldCheck,
   Timer,
+  Video,
   XCircle,
 } from 'lucide-react';
 
@@ -23,6 +25,7 @@ import { learning } from '@/lib/api/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { COMPETENCY_TOPICS } from '@/lib/competencyTopics';
+import ProctoringMonitor, { VIOLATION_LABELS } from '@/components/ProctoringMonitor';
 
 const QUESTIONS_PER_TOPIC = 3;
 
@@ -55,6 +58,16 @@ export default function CompetencyQuizPage() {
   const [submitError, setSubmitError] = useState('');
   const [results, setResults] = useState(null);
   const [submittingQuiz, setSubmittingQuiz] = useState(false);
+
+  // Webcam integrity monitoring -- opt-in, off by default (see
+  // components/ProctoringMonitor.jsx). `proctoringEverEnabled` survives a
+  // later toggle-off/submission so the completed report can still show an
+  // honest "N signals recorded" summary rather than losing it the moment the
+  // camera stops. Counts are purely local bookkeeping for that summary --
+  // ProctoringMonitor itself owns reporting each event to the backend.
+  const [proctoringEnabled, setProctoringEnabled] = useState(false);
+  const [proctoringEverEnabled, setProctoringEverEnabled] = useState(false);
+  const [violationCounts, setViolationCounts] = useState({});
 
   // Per-question elapsed time, keyed by item_id, accumulated across every
   // visit to that question (Next/Prev/jump all flush the running delta) --
@@ -190,6 +203,30 @@ export default function CompetencyQuizPage() {
   // client until after /submit grades it server-side.
 
   const currentQ = questions[currentQuestionIndex];
+
+  // attempt_id here is issued per-topic (see the questions-loading effect
+  // above), but one proctoring session should span the whole multi-topic
+  // quiz -- group every violation under the first topic's attempt_id rather
+  // than trying to attribute a webcam signal to whichever topic happens to
+  // be on screen when it fires.
+  const proctoringAttemptId = questions[0]?.attempt_id ?? null;
+
+  const totalViolations = useMemo(
+    () => Object.values(violationCounts).reduce((sum, count) => sum + count, 0),
+    [violationCounts]
+  );
+
+  const handleToggleProctoring = () => {
+    setProctoringEnabled((prev) => {
+      const next = !prev;
+      if (next) setProctoringEverEnabled(true);
+      return next;
+    });
+  };
+
+  const handleProctoringViolation = (violationType) => {
+    setViolationCounts((prev) => ({ ...prev, [violationType]: (prev[violationType] || 0) + 1 }));
+  };
 
   const answeredCount = Object.keys(selectedAnswers).length;
 
@@ -479,6 +516,47 @@ export default function CompetencyQuizPage() {
 
             </div>
 
+            {/* WEBCAM INTEGRITY MONITORING -- explicit opt-in, default off.
+                Never started silently: the camera only ever turns on after
+                this button is clicked. */}
+            <div className="mt-4 flex flex-wrap items-center gap-3 p-3 rounded-xl bg-white border border-[#dfe2eb]">
+              <button
+                type="button"
+                onClick={handleToggleProctoring}
+                aria-pressed={proctoringEnabled}
+                className="flex items-center gap-2.5 cursor-pointer"
+              >
+                <span
+                  className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${
+                    proctoringEnabled ? 'bg-[#00236f]' : 'bg-[#dfe2eb]'
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                      proctoringEnabled ? 'translate-x-4' : 'translate-x-0.5'
+                    }`}
+                  />
+                </span>
+                <Video size={14} className="text-[#00236f] shrink-0" />
+                <span className="text-[11px] font-mono font-semibold text-[#151c2d] text-left">
+                  Enable webcam integrity monitoring for this session
+                </span>
+              </button>
+
+              {proctoringEnabled && (
+                <span className="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#eef1ff] text-[#00236f] font-mono text-[10px] font-bold">
+                  <ShieldCheck size={12} />
+                  {totalViolations} signal{totalViolations === 1 ? '' : 's'} so far
+                </span>
+              )}
+            </div>
+
+            <p className="mt-1.5 text-[9px] text-[#8a8f9d] font-mono leading-relaxed px-1">
+              Optional and off by default. This never blocks or auto-fails your submission -- it
+              only records signals (face/phone visibility, tab or fullscreen changes) for a human
+              reviewer.
+            </p>
+
           </div>
         )}
 
@@ -715,6 +793,15 @@ export default function CompetencyQuizPage() {
             ================================================== */}
 
             <div className="lg:col-span-4 space-y-4">
+
+              {proctoringEnabled && (
+                <ProctoringMonitor
+                  playerId={player?.player_id}
+                  attemptId={proctoringAttemptId}
+                  enabled={proctoringEnabled}
+                  onViolation={handleProctoringViolation}
+                />
+              )}
 
               {/* QUESTION INDEX */}
 
@@ -1287,6 +1374,53 @@ export default function CompetencyQuizPage() {
                 </ul>
 
               </div>
+
+              {/* ==================================================
+                  EXAM INTEGRITY SUMMARY -- only shown if the learner opted
+                  in at some point this session. Framed strictly as a signal
+                  for a human reviewer, never a pass/fail verdict: this score
+                  and this summary are computed independently, and neither
+                  ever affects the other.
+              ================================================== */}
+
+              {proctoringEverEnabled && (
+                <div className="bg-[#f7f8fc] border border-[#dfe2eb] rounded-2xl p-5 mb-6">
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className="w-8 h-8 rounded-xl bg-[#eef1ff] text-[#00236f] flex items-center justify-center">
+                      <ShieldCheck size={17} strokeWidth={2} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-[#00236f]">Webcam Integrity Summary</h3>
+                      <p className="text-[9px] text-[#858b98] font-mono mt-0.5 uppercase tracking-wide">
+                        Audit signal, not a score
+                      </p>
+                    </div>
+                  </div>
+
+                  {totalViolations === 0 ? (
+                    <p className="text-[11px] text-[#005147] font-mono font-semibold">
+                      No integrity signals recorded this session.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-[11px] text-[#555d6d] leading-6 font-mono mb-3">
+                        <strong className="text-[#904d00]">{totalViolations}</strong> integrity
+                        signal{totalViolations === 1 ? '' : 's'} recorded this session. These are raw
+                        client-reported events for a human reviewer to weigh -- not an automatic
+                        pass/fail, and they had no effect on the diagnostic score above.
+                      </p>
+                      <ul className="space-y-1.5 text-[10px] text-[#252c3c] font-mono">
+                        {Object.entries(violationCounts).map(([type, count]) => (
+                          <li key={type} className="flex items-center justify-between gap-3">
+                            <span>{VIOLATION_LABELS[type] || type}</span>
+                            <span className="font-bold text-[#904d00]">{count}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* ==================================================
                   BOTTOM ACTIONS

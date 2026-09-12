@@ -20,6 +20,7 @@ from routes.sampling_lab import router as sampling_lab_router
 from routes.course_enrollment import router as course_enrollment_router
 from routes.proctoring import router as proctoring_router
 from routes.quiz_review import router as quiz_review_router
+from routes.judgment_scenarios import router as judgment_scenarios_router
 
 router = APIRouter()
 router.include_router(profile_router)
@@ -33,6 +34,7 @@ router.include_router(sampling_lab_router)
 router.include_router(course_enrollment_router)
 router.include_router(proctoring_router)
 router.include_router(quiz_review_router)
+router.include_router(judgment_scenarios_router)
 
 __all__ = [
     "admin_overview",

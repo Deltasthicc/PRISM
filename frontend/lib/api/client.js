@@ -420,6 +420,36 @@ export const proctoring = {
     ),
 };
 
+// Branching "Judgment Simulation" decision trees (backend/routes/judgment_scenarios.py).
+// getNode() never returns next_node_id/feedback/is_recommended -- those are
+// only revealed by choose(), after a choice is already committed. complete()
+// re-validates the whole path server-side and is what actually writes real
+// practice evidence for the scenario's competency, so path_taken must be the
+// full ordered list of {node_id, choice_id} steps the player actually took.
+export const judgmentScenarios = {
+  list: () => request('/learning/scenarios/'),
+
+  getNode: (scenarioId, nodeId) =>
+    request(`/learning/scenarios/${encodeURIComponent(scenarioId)}/node/${encodeURIComponent(nodeId)}`),
+
+  choose: (scenarioId, playerId, nodeId, choiceId) =>
+    request(`/learning/scenarios/${encodeURIComponent(scenarioId)}/choose`, {
+      method: 'POST',
+      body: { player_id: playerId, node_id: nodeId, choice_id: choiceId },
+    }),
+
+  complete: (scenarioId, playerId, pathTaken) =>
+    request(`/learning/scenarios/${encodeURIComponent(scenarioId)}/complete`, {
+      method: 'POST',
+      body: { player_id: playerId, path_taken: pathTaken },
+    }),
+
+  getAttempts: (scenarioId, playerId) =>
+    request(
+      `/learning/scenarios/${encodeURIComponent(scenarioId)}/attempts?player_id=${encodeURIComponent(playerId)}`
+    ),
+};
+
 // Multipart requests (file upload) can't go through request() above -- the
 // browser must set its own multipart boundary in the Content-Type header,
 // which request()'s hardcoded 'application/json' would clobber.

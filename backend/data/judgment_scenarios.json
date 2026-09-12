@@ -1,0 +1,391 @@
+[
+  {
+    "scenario_id": "js_pa_decision_making_data_quality",
+    "competency_id": "pa_decision_making",
+    "title": "The Overnight Briefing",
+    "situation_brief": "At 9 PM, the night before a Minister's briefing, you discover a data quality issue in the district report you compiled -- and there is no clean way to fix it before morning.",
+    "start_node_id": "discovery",
+    "nodes": {
+      "discovery": {
+        "prompt": "You are the desk officer who compiled the district's quarterly performance report, due at the Minister's office at 9 AM tomorrow. Reviewing it one last time tonight, you notice that one sub-division's figures were entered from a preliminary data feed that was later revised upward by roughly 12% -- and the copy in front of you still has the old numbers. The report has already been formatted, cleared by your section, and is sitting in the outbox for the morning courier. Nobody else has noticed. What do you do?",
+        "choices": [
+          {
+            "choice_id": "flag_delay",
+            "text": "Call your superior tonight, flag the discrepancy, and ask whether the briefing can be pushed back a few hours so the figure can be corrected first.",
+            "next_node_id": "escalate_response",
+            "feedback": "Calling it in tonight, while there is still time to act, is the choice that protects both the Minister and you -- a late-night call is a minor inconvenience next to a wrong number reaching a public briefing. It does put your superior in the position of having to make a fast decision under pressure, which is a real cost, but it is theirs to make with accurate information rather than yours to make by omission.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "footnote",
+            "text": "Add a footnote noting the sub-division's figure is provisional and pending revision, and let the report go out on schedule.",
+            "next_node_id": "footnote_response",
+            "feedback": "A footnote is honest and better than silence, but it quietly shifts a decision that is really your superior's to make -- whether a 12% understatement is acceptable to brief on -- onto whoever happens to read the fine print, if anyone does. It is a defensible middle path, not a wrong one, but it treats disclosure as a substitute for escalation when the number is significant enough that someone senior should decide, not just be told in a footnote.",
+            "is_recommended": false
+          },
+          {
+            "choice_id": "submit_silent",
+            "text": "Submit the report as prepared. The gap is inside normal revision variance, and you can quietly correct it in next quarter's figures.",
+            "next_node_id": "silent_response",
+            "feedback": "Treating this as ordinary revision noise is the choice that looks easiest tonight and costs the most later. A 12% gap in a figure a Minister is about to cite in public is not routine variance, and choosing silence here is a decision about what the Minister does and doesn't need to know -- one you don't have the standing to make unilaterally.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "escalate_response": {
+        "prompt": "Your superior picks up, is glad you called, but says the briefing slot is fixed by the Minister's office and cannot realistically move by more than an hour or two without a formal request neither of you has the standing to make alone tonight.",
+        "choices": [
+          {
+            "choice_id": "push_for_delay",
+            "text": "Push for the delay anyway -- offer to draft a short written note your superior can escalate upward tonight, explaining the risk of briefing on an understated figure.",
+            "next_node_id": "reconciliation",
+            "feedback": "Putting the risk in writing gives your superior something concrete to escalate rather than asking them to make the same judgment call on your verbal say-so alone. It costs a few more minutes tonight and it may still not move the slot, but it puts the decision where it belongs -- with someone who can actually weigh the political and practical trade-off -- instead of leaving it as an unrecorded hallway conversation.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "compromise",
+            "text": "Propose the realistic middle ground: brief on a clearly-marked provisional figure tomorrow, and send the corrected number in writing to the Minister's office within 48 hours.",
+            "next_node_id": "reconciliation",
+            "feedback": "This is the practical, and honestly common, resolution when a slot truly cannot move -- it does not pretend the number is final, and it commits to closing the gap on a short, concrete timeline rather than leaving the correction to \"eventually.\" The residual risk is that a number said out loud in a briefing sticks in people's memory regardless of a footnote read later, so this only holds up if the follow-up correction is actually sent, not just intended.",
+            "is_recommended": true
+          }
+        ]
+      },
+      "footnote_response": {
+        "prompt": "The report goes out with the footnote. In the briefing the next morning, a committee member notices the caveat and asks you directly, in front of the room, what it means for the headline number.",
+        "choices": [
+          {
+            "choice_id": "own_it",
+            "text": "Answer plainly: explain the revision, give your best estimate of the corrected figure, and commit to circulating the confirmed number in writing.",
+            "next_node_id": "reconciliation",
+            "feedback": "Once asked directly, answering plainly is the only real option -- and doing it without hedging or minimizing is what turns an awkward footnote moment into a straightforward correction. It would have been cleaner to have this conversation with your superior the night before rather than in the room, but a clear, direct answer now is still the right move.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "downplay",
+            "text": "Downplay it as a routine formatting note and move the briefing along quickly.",
+            "next_node_id": "quiet_ending",
+            "feedback": "Downplaying a direct question in a public briefing is where a defensible footnote turns into something worse -- it reads, correctly, as minimizing a known issue in front of the people meant to be relying on the number. The footnote bought honesty; downplaying it in the room spends that honesty back.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "silent_response": {
+        "prompt": "Three weeks later, an opposition MLA cites the outdated sub-division figure in a public statement, and a journalist's RTI query surfaces the fact that a revised feed existed before your report was finalized.",
+        "choices": [
+          {
+            "choice_id": "correct_now",
+            "text": "Proactively write a memo to your superior laying out exactly what happened and when, before the department is asked to explain it.",
+            "next_node_id": "reconciliation",
+            "feedback": "Getting ahead of it with a factual, timestamped account of your own decision is the honest recovery available at this point -- it will not erase that the figure went out uncorrected, but it is the difference between a department that can show it responded quickly to its own error and one that looks like it was caught.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "wait",
+            "text": "Wait and see whether the department's press office handles it without needing your account of what happened.",
+            "next_node_id": "exposure_ending",
+            "feedback": "Waiting to see if you can avoid surfacing your own role is the same choice as the original silence, made twice now -- and it leaves whoever does have to respond to the RTI working with less information than you actually have, at exactly the moment more information is needed fastest.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "reconciliation": {
+        "prompt": "The immediate issue is contained -- the corrected figure is either already briefed honestly or on its way in writing. One thing remains: whether to put a short note of the whole episode, including the original error, on the file for the record.",
+        "choices": [
+          {
+            "choice_id": "write_full_note",
+            "text": "Write a short, factual note for the file: what the error was, how it was caught, and how it was corrected.",
+            "next_node_id": "good_ending",
+            "feedback": "A brief factual record is what lets this be treated as a process near-miss worth learning from, rather than an incident that only exists in people's memory of a stressful evening. It costs you an afternoon and a moment of visible admission that a mistake happened -- which is exactly why it is the choice that is easy to skip and worth not skipping.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "let_it_rest",
+            "text": "Let it rest informally now that the number itself has been corrected -- writing it up risks reopening a settled matter.",
+            "next_node_id": "informal_ending",
+            "feedback": "This is not dishonest, and in a low-stakes case it might be a reasonable call -- but for something that reached a ministerial briefing, an undocumented resolution means the next desk officer who hits the same preliminary-feed problem has nothing to learn from, and there is no record if the question about the original figure ever comes back.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "good_ending": {
+        "prompt": "The corrected figure stands on the record, the briefing's caveat was handled honestly, and a short file note now exists documenting exactly what happened and how it was fixed -- the kind of paper trail that protects everyone who acted on the number in good faith.",
+        "choices": []
+      },
+      "informal_ending": {
+        "prompt": "The corrected figure stands and no lasting harm was done, but the episode lives only in memory. If the original number is ever questioned again, there is nothing on file explaining what happened -- a quieter ending than it needed to be.",
+        "choices": []
+      },
+      "quiet_ending": {
+        "prompt": "The downplaying in the room is noticed by at least one attendee. The report's number is technically corrected on paper, but the public impression left is that the department brushed off a direct question rather than answered it -- a harder story to walk back than the original data error.",
+        "choices": []
+      },
+      "exposure_ending": {
+        "prompt": "The department's press office, caught without your account, gives an answer that turns out to understate how long the discrepancy was known internally. When your role does surface days later, it now looks like concealment rather than a missed correction -- a much larger problem than the original 12% gap.",
+        "choices": []
+      }
+    }
+  },
+  {
+    "scenario_id": "js_pa_ethics_vendor_gift",
+    "competency_id": "pa_ethics",
+    "title": "The Diwali Hamper",
+    "situation_brief": "A vendor you have known socially for years -- and whose bid you are currently evaluating -- sends a gift hamper to your home while the tender is still open.",
+    "start_node_id": "the_gift",
+    "nodes": {
+      "the_gift": {
+        "prompt": "You sit on the evaluation committee for a departmental equipment tender. One of the three shortlisted vendors is run by a family you have known socially for over a decade, long before this tender existed. Two days before the committee's final scoring meeting, a courier delivers a Diwali gift hamper to your residence, addressed to your family, worth roughly Rs. 3,000 -- above the Rs. 1,500 sanction threshold that applies to your post under the CCS (Conduct) Rules. There is no note referencing the tender. What do you do?",
+        "choices": [
+          {
+            "choice_id": "return_and_disclose",
+            "text": "Return the hamper, and file a written disclosure to the tender committee noting both the gift and your prior social relationship with the vendor.",
+            "next_node_id": "committee_reaction",
+            "feedback": "This is the choice that treats the rule as it is actually written -- a hamper above the sanction threshold needs sanction you do not have, full stop, regardless of how innocent the intent behind it was. Disclosing the pre-existing relationship on top of returning the gift is what lets the committee, not you alone, judge whether your continued participation in scoring this vendor is appropriate.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "accept_quietly",
+            "text": "Accept it as an ordinary social gesture between old family friends, unconnected to the tender, and say nothing.",
+            "next_node_id": "later_discovery",
+            "feedback": "The relationship predating the tender is real context, but it does not make the gift's timing or value irrelevant -- a hamper over the sanction threshold, arriving days before you score that same vendor's bid, is exactly the situation the rule exists for. Treating your own read of the vendor's intent as settling the question is the part that doesn't hold up: that judgment isn't yours to make unilaterally, and it's the one a reviewer will not accept after the fact either.",
+            "is_recommended": false
+          },
+          {
+            "choice_id": "accept_and_log",
+            "text": "Accept it, but log the gift and its estimated value in the department's gift register so there is a record of it.",
+            "next_node_id": "registry_review",
+            "feedback": "Logging it is a genuine attempt to be transparent, and it is better than silence -- but a register entry is not the same thing as the sanction the rule actually requires above the threshold. This is a real, honest middle ground, not a cover-up, but it substitutes a paperwork habit for the specific approval the situation calls for.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "committee_reaction": {
+        "prompt": "The committee chair thanks you for the disclosure and returned gift, but points out that your decade-long social relationship with the vendor's family existed before the hamper ever arrived -- and asks whether you should recuse yourself from scoring that specific bid, gift or no gift.",
+        "choices": [
+          {
+            "choice_id": "recuse",
+            "text": "Agree to recuse yourself from scoring that vendor's bid, while continuing to sit on the committee for the other two.",
+            "next_node_id": "closing",
+            "feedback": "Recognizing that returning the gift resolves the gift problem but not the underlying relationship is the sharper judgment here -- a longstanding personal tie to one bidder is a conflict of interest independent of any single hamper, and recusal from just that one score keeps the rest of the process, and your own participation in it, clean.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "insist_on_staying",
+            "text": "Point out that the gift was returned and no impropriety occurred, and ask to continue scoring all three bids as originally assigned.",
+            "next_node_id": "insist_ending",
+            "feedback": "Returning the gift was the right call, but treating that as resolving the whole question conflates two separate issues -- the gift, and the pre-existing relationship the gift merely drew attention to. Insisting on staying because the gift itself was handled correctly misses the chair's actual concern.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "later_discovery": {
+        "prompt": "Six weeks later, a routine internal audit -- triggered by a new courier-value reporting rule you were not aware of -- flags the hamper's delivery to your address during the tender window. You are asked to explain it in writing.",
+        "choices": [
+          {
+            "choice_id": "disclose_now",
+            "text": "Disclose the gift fully now, along with the social relationship, and offer to reimburse its value to the department.",
+            "next_node_id": "closing",
+            "feedback": "Coming forward fully once asked, rather than minimizing, is the honest path still available at this point -- it will not erase that the gift went undisclosed for six weeks while the tender was live, but a complete and voluntary account, offered before you are pressed further, is materially different from a reluctant one.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "deny_or_minimize",
+            "text": "Describe it as an unsolicited personal gift unrelated to the tender and downplay its value.",
+            "next_node_id": "denial_ending",
+            "feedback": "Minimizing the value and the relationship to an auditor who already has the courier's declared value on record is the choice that turns an honest-but-delayed disclosure problem into a credibility problem -- the gift itself was defensible as an accident of timing; understating it to the people reviewing it is not.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "registry_review": {
+        "prompt": "A quarterly compliance review flags your register entry: logging a gift is good practice, but the Conduct Rules require prior sanction once value exceeds the threshold, and a log entry after the fact does not substitute for that. You are asked to resolve it.",
+        "choices": [
+          {
+            "choice_id": "comply_and_return_value",
+            "text": "Accept the finding, return the hamper's value to the department, and recuse from scoring that vendor's bid going forward.",
+            "next_node_id": "closing",
+            "feedback": "Accepting the correction rather than arguing the register entry should have been enough is what actually closes the gap between what you did (transparent, but procedurally short) and what the rule requires. It's a modest course-correction, not a serious violation, and treating it that way -- rather than defending the shortcut -- is the right-sized response.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "argue_registry_was_enough",
+            "text": "Argue that logging the gift in good faith already satisfies the spirit of the rule, and decline further action.",
+            "next_node_id": "argue_ending",
+            "feedback": "The register entry was a genuinely good-faith step, but treating it as sufficient once a reviewer has pointed out the actual sanction requirement reads as resisting a correction rather than accepting one -- a much worse look than the original, honestly-logged gift ever was.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "closing": {
+        "prompt": "The immediate conflict-of-interest question is resolved -- the gift is returned or its value accounted for, and your role on the vendor's specific evaluation has been addressed. One decision remains: whether to write a short note for the tender file summarizing the episode and how it was handled.",
+        "choices": [
+          {
+            "choice_id": "write_full_note_for_record",
+            "text": "Write a brief, factual note for the tender file documenting the gift, the disclosure, and the resulting recusal or correction.",
+            "next_node_id": "good_ending",
+            "feedback": "A documented resolution is what lets the tender withstand later scrutiny -- if the losing vendors ever question the process, there is a contemporaneous record showing the conflict was identified and handled, not just a recollection of a conversation.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "let_it_rest_informally",
+            "text": "Consider it resolved informally between you and the committee chair, without a formal file note.",
+            "next_node_id": "informal_ending",
+            "feedback": "Nothing dishonest happened here, but an undocumented resolution to a conflict-of-interest question is exactly the kind of gap a later audit or a disappointed bidder's complaint will ask about -- and without a note, the honest handling of the situation is much harder to demonstrate after the fact.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "good_ending": {
+        "prompt": "The conflict of interest was identified, disclosed, and resolved, and the tender file now documents exactly how -- the kind of record that protects the integrity of the process and your own conduct in it, regardless of who ultimately wins the bid.",
+        "choices": []
+      },
+      "informal_ending": {
+        "prompt": "The situation was handled honestly in substance, but with no note on file. If a losing bidder later questions the tender's integrity, there is nothing contemporaneous to point to beyond people's memory of a conversation.",
+        "choices": []
+      },
+      "insist_ending": {
+        "prompt": "You continue scoring all three bids. The vendor you have a long social relationship with ultimately wins narrowly, and a losing bidder's later complaint focuses less on the returned gift -- which is on record -- and more on why you were still permitted to score a bidder you had disclosed a decade-long relationship with.",
+        "choices": []
+      },
+      "denial_ending": {
+        "prompt": "The audit team already has the courier's declared value on file, and your minimized account does not match it. What began as a defensible timing problem -- a gift arriving from an old friend during an open tender -- is now treated as an attempt to understate it under review, a considerably harder position to be in.",
+        "choices": []
+      },
+      "argue_ending": {
+        "prompt": "The compliance review is not persuaded that a register entry satisfies a sanction requirement, and your pushback is read as resistance rather than a good-faith disagreement. The eventual resolution ends up identical to simply complying earlier, minus the goodwill spent arguing against it.",
+        "choices": []
+      }
+    }
+  },
+  {
+    "scenario_id": "js_pa_change_management_efiling_rollout",
+    "competency_id": "pa_change_management",
+    "title": "The Reluctant District Office",
+    "situation_brief": "You are leading the rollout of a mandated e-filing system to a district office with two decades of paper habits and a fixed two-week go-live date from head office.",
+    "start_node_id": "rollout_kickoff",
+    "nodes": {
+      "rollout_kickoff": {
+        "prompt": "Head office has mandated a new e-filing system for all district offices, with your district's go-live date set for two weeks from today. In your first visit to the office, several of the most experienced clerks -- some with twenty years on paper registers -- express quiet skepticism that the system will work for their caseload at all, though none has said so in an official meeting yet. What do you do?",
+        "choices": [
+          {
+            "choice_id": "run_pilot_first",
+            "text": "Ask head office for a short structured pilot with a handful of volunteer clerks before the full office switches over, even if it means the fixed date slips slightly.",
+            "next_node_id": "pilot_results",
+            "feedback": "Surfacing real problems on a small scale, with people who volunteered rather than a full office under a deadline, is what actually reduces risk to the mandated date -- a short pilot is a much cheaper place to discover a real gap than a district-wide go-live is. Asking to adjust the date is itself a professional judgment call, not a delay for its own sake, and it is the harder thing to ask for precisely because it means pushing back on head office's timeline.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "mandate_full_rollout",
+            "text": "Proceed with the full office switch on the mandated date -- the timeline came from head office, and slipping it signals the rollout isn't serious.",
+            "next_node_id": "rollout_friction",
+            "feedback": "Holding a firm date has real value -- a rollout that keeps slipping never lands -- but treating the date as untouchable regardless of what a pilot might have surfaced trades a knowable, fixable risk now for an unknown one across the whole office later. Sticking to schedule is not the same as protecting the schedule.",
+            "is_recommended": false
+          },
+          {
+            "choice_id": "quiet_workaround",
+            "text": "Let clerks keep their paper registers informally for now, requiring only that summary figures be entered into the new system for upward reporting, and plan to enforce full adoption later.",
+            "next_node_id": "shadow_system_grows",
+            "feedback": "This looks like a low-friction compromise, but it quietly commits to running two systems of record at once with no real plan for closing the gap -- \"enforce it later\" rarely arrives on its own, and every week the paper register stays authoritative is a week the digital system's numbers are a re-typed proxy rather than a real record.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "pilot_results": {
+        "prompt": "The pilot surfaces a genuine, specific gap: the new system's form fields don't support a locally-used multilingual entry format the clerks rely on for a meaningful share of cases, alongside the general resistance you already expected.",
+        "choices": [
+          {
+            "choice_id": "escalate_gap_and_adjust",
+            "text": "Escalate the field-format gap to the system's technical team, and adjust the wider rollout plan to include a workaround or a fix before the district-wide switch.",
+            "next_node_id": "wider_rollout",
+            "feedback": "A pilot's entire value is in finding exactly this kind of concrete, fixable gap before it becomes a district-wide problem -- escalating it and building the fix into the wider rollout plan is what turns a two-week delay into an investment instead of a setback.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "proceed_and_patch_later",
+            "text": "Proceed with the district-wide rollout on the original schedule and patch the field-format issue afterward.",
+            "next_node_id": "schedule_ending",
+            "feedback": "Having found the gap and chosen to roll out ahead of fixing it trades away the one advantage a pilot gave you -- the whole office now inherits a known problem instead of a small volunteer group having already worked around it, and \"patch it later\" competes with every other post-launch priority once the office is fully live.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "rollout_friction": {
+        "prompt": "The mandated full rollout produces real friction within days: a data-entry backlog builds up, and at least two senior clerks have quietly reverted to keeping their own paper shadow-records alongside the system, without saying so openly.",
+        "choices": [
+          {
+            "choice_id": "pause_and_reset",
+            "text": "Pause the full rollout, acknowledge the backlog honestly to head office, and restart with a short pilot to work out the fixable problems.",
+            "next_node_id": "wider_rollout",
+            "feedback": "Recognizing that the friction is a signal worth stopping for -- rather than a temporary cost to push through -- is what recovers the rollout. It costs a visible, honest admission that the original approach needed adjusting, which is exactly why it is the harder and better choice.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "escalate_discipline",
+            "text": "Treat the clerks' reversion to paper as non-compliance and escalate it as a disciplinary matter to enforce adoption.",
+            "next_node_id": "discipline_ending",
+            "feedback": "Disciplining the symptom without addressing why experienced staff quietly reverted to paper in the first place treats resistance as the problem instead of as information about a rollout that wasn't ready for their caseload -- it may force compliance on paper, but it will not fix the backlog or the underlying gap that caused it.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "shadow_system_grows": {
+        "prompt": "Months later, the paper register has become the office's real working record, and the \"summary figures\" entered upward into the digital system are increasingly re-typed guesses rather than reconciled data -- exactly the data-quality risk the quiet workaround was meant to avoid creating.",
+        "choices": [
+          {
+            "choice_id": "come_clean_and_restart",
+            "text": "Report the situation honestly to head office, and restart the rollout properly with a pilot and a real transition plan for retiring the paper register.",
+            "next_node_id": "wider_rollout",
+            "feedback": "Admitting that the workaround became the permanent system, rather than continuing to describe it as temporary, is what makes an actual fix possible -- it is an uncomfortable report to write, but the alternative is the same undocumented drift continuing indefinitely.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "keep_patching_reports",
+            "text": "Keep quietly reconciling the reported figures by hand each cycle so the numbers look consistent, without changing the underlying process.",
+            "next_node_id": "patch_ending",
+            "feedback": "Manually smoothing over the numbers each cycle hides the exact problem that needs to be visible to get fixed, and it puts the ongoing data-quality risk entirely on your own undocumented effort rather than on a process anyone else could inspect or improve.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "wider_rollout": {
+        "prompt": "With the specific gap addressed and a workable version of the system in place, the office is ready for a full switch. The last decision is how to sustain adoption once the initial attention on the rollout inevitably moves elsewhere.",
+        "choices": [
+          {
+            "choice_id": "build_local_champions",
+            "text": "Identify a few respected clerks as local champions with ongoing support access, and schedule a follow-up check-in a month after go-live.",
+            "next_node_id": "sustained_ending",
+            "feedback": "Adoption that depends on your continued personal attention will fade the moment you move to the next priority -- building support that lives inside the office itself, plus a concrete follow-up date, is what makes the change stick after the rollout project formally ends.",
+            "is_recommended": true
+          },
+          {
+            "choice_id": "declare_victory",
+            "text": "Declare the rollout complete once the office is live, and move your attention to the next assignment.",
+            "next_node_id": "regression_ending",
+            "feedback": "A go-live date is a milestone, not the finish line for adoption -- without anyone locally invested in sustaining it or any planned follow-up, early enthusiasm (or early compliance under watch) is exactly the kind of thing that quietly erodes once nobody is checking.",
+            "is_recommended": false
+          }
+        ]
+      },
+      "sustained_ending": {
+        "prompt": "A month after go-live, the follow-up check-in finds the system genuinely in use, with the local champions fielding most day-to-day questions themselves -- the office has actually adopted the new way of working, not just switched it on.",
+        "choices": []
+      },
+      "regression_ending": {
+        "prompt": "Six weeks after you move on, a routine data check finds usage quietly dropping and several clerks back on informal paper notes for anything unusual. With no one locally responsible for sustaining it and no planned check-in, the rollout that looked complete at go-live is unraveling with nobody assigned to notice.",
+        "choices": []
+      },
+      "schedule_ending": {
+        "prompt": "The district-wide rollout goes ahead as scheduled, and the known field-format gap now affects the full office's caseload rather than a small pilot group. The eventual patch takes longer than planned, competing with every other post-launch demand once the office is fully live.",
+        "choices": []
+      },
+      "discipline_ending": {
+        "prompt": "The disciplinary approach forces the paper shadow-records to stop, but the backlog and the underlying workload mismatch that caused clerks to revert in the first place are never actually addressed -- compliance is restored on paper while the office's trust in the rollout, and in you, quietly erodes.",
+        "choices": []
+      },
+      "patch_ending": {
+        "prompt": "The hand-reconciled figures continue to look consistent on the surface, but the underlying process -- a shadow paper system feeding guessed-at digital reports -- never changes, and the real data-quality risk simply continues one cycle at a time, unseen by anyone who isn't doing the patching.",
+        "choices": []
+      }
+    }
+  }
+]

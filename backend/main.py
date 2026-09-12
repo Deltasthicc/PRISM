@@ -34,6 +34,7 @@ from models.question_bank import QuestionBankItem, QuestionBankAttempt
 from models.dsa_submission import DsaSubmission
 from models.course_enrollment import CourseEnrollment
 from models.proctoring import ProctoringEvent
+from models.judgment_scenario import JudgmentScenario, JudgmentScenarioAttempt
 
 
 @asynccontextmanager
@@ -115,6 +116,13 @@ async def lifespan(app: FastAPI):
     from ai.seed_corpus import seed_default_chunk_store
     indexed = seed_default_chunk_store()
     print(f"Indexed {indexed} source-cited chunks into the Learner Assistant's retrieval store.")
+
+    # Also unconditional, same reasoning: the 3 hand-authored Judgment
+    # Simulation scenarios (data/judgment_scenarios.json) are real,
+    # human-written content, not synthetic demo data -- see
+    # db/seed.py::seed_judgment_scenarios for the idempotency contract.
+    from db.seed import seed_judgment_scenarios
+    seed_judgment_scenarios()
 
     yield
 

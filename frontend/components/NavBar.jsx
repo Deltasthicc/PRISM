@@ -34,6 +34,9 @@ export default function NavBar() {
   const hasOfficialStatistics = Boolean(
     profileData?.profile?.target_domains?.includes('official-statistics')
   );
+  const hasPublicPolicy = Boolean(
+    profileData?.profile?.target_domains?.includes('public-policy')
+  );
 
   if (!isAuthenticated) return null;
 
@@ -59,6 +62,12 @@ export default function NavBar() {
     // comment) -- a plain English label rather than a fake/missing t() key.
     ...(hasOfficialStatistics
       ? [{ href: '/sampling-lab', label: 'Sampling Lab', hasDot: false }]
+      : []),
+    // Same convention: gated behind the learner having picked public-policy
+    // as a target domain, and not yet run through the i18n pipeline (see
+    // app/scenarios/page.jsx's own header comment).
+    ...(hasPublicPolicy
+      ? [{ href: '/scenarios', label: 'Judgment Simulations', hasDot: false }]
       : []),
     { href: '/assistant', label: t('nav.assistant'), hasDot: false },
     { href: '/voice', label: t('nav.voiceAssistant'), hasDot: false },

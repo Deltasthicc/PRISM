@@ -40,6 +40,10 @@ export default function FixedQuizPanel() {
   } = useQuery({
     queryKey: ['competency-quiz-topics'],
     queryFn: () => learning.getCompetencyQuizTopics(),
+    // The fixed topic_id list (lib/competencyTopics.js) this maps to never
+    // changes at runtime -- cache it for the whole session.
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
 
   const topics = topicsData || [];

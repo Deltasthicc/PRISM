@@ -40,6 +40,10 @@ function RegisterForm() {
   } = useQuery({
     queryKey: ['register-curricula', language],
     queryFn: async () => (await learning.getCurricula(language)).curricula,
+    // Seeded, near-static curriculum definitions -- see the same queryKey's
+    // comment in app/dungeon/page.jsx.
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   useEffect(() => {

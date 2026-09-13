@@ -30,7 +30,7 @@ export default function TrainerReviewPage() {
   // quiz_id -> a working copy of that quiz's questions while a reviewer is
   // editing them (null/absent means "not currently editing that quiz").
   // source_excerpt is deliberately never part of this editable state -- see
-  // lib/api/client.js's reviewQuiz() comment for why it can't be re-verified.
+  // lib/api/client.js's reviewQuiz() comment for why it can&apos;t be re-verified.
   const [editedQuestionsByQuiz, setEditedQuestionsByQuiz] = useState({});
   const [editError, setEditError] = useState('');
 
@@ -294,7 +294,7 @@ export default function TrainerReviewPage() {
                         className="w-full text-sm font-sans border border-[#c5c5d3]/50 rounded-lg px-3 py-2 mt-1 outline-none focus:border-[#00236f]"
                       />
                       <blockquote className="font-sans text-xs text-[#8a8f9d] border-l-4 border-[#c5c5d3] pl-3 mt-2">
-                        Source (not editable -- can't be re-verified against the original material):{' '}
+                        Source (not editable -- can&apos;t be re-verified against the original material):{' '}
                         {quiz.questions[questionIndex]?.source_excerpt}
                       </blockquote>
                     </li>

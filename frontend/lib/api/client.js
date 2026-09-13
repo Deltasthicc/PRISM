@@ -537,10 +537,19 @@ export const learning = {
 
   getReviewQueue: () => request('/learning/quiz/review/queue'),
 
-  reviewQuiz: (quizId, decision, notes) =>
+  // editedQuestions is optional and only valid with decision: 'approve' --
+  // a reviewer's corrected question/options/answer_index/explanation.
+  // source_excerpt must stay byte-identical to the original (enforced
+  // server-side, see routes/quiz_review.py's EditedQuestion docstring for
+  // why it can never be re-verified against the full original material).
+  reviewQuiz: (quizId, decision, notes, editedQuestions) =>
     request(`/learning/quiz/${quizId}/review`, {
       method: 'POST',
-      body: { decision, notes },
+      body: {
+        decision,
+        notes,
+        ...(editedQuestions ? { edited_questions: editedQuestions } : {}),
+      },
     }),
 
   getQuizLibrary: () => request('/learning/quiz/review/library'),

@@ -41,6 +41,19 @@ python-multipart==0.0.32
 pypdf==6.16.2
 python-docx==1.1.2
 
+# OCR fallback for scanned PDFs/legacy statistical tables and direct image
+# uploads (backend/ai/ingestion.py's _parse_pdf/_parse_image). pymupdf
+# (imported as `fitz`) renders PDF pages to bitmaps in pure Python/C, no
+# external poppler binary needed. pytesseract is only a thin wrapper around
+# the real `tesseract` binary -- that binary is NOT installed by this pip
+# package; see backend/Dockerfile, which installs it via apt so it's actually
+# present in the deployed environment (the native Render Python runtime
+# cannot install it, which is why prism-backend now builds from that
+# Dockerfile -- see render.yaml).
+pymupdf==1.28.2
+pytesseract==0.3.13
+Pillow==12.3.0
+
 # Voice AI pipeline additions (backend/ai/voice, backend/routes/ai_voice.py):
 numpy==2.4.6
 faster-whisper==1.2.1

@@ -27,26 +27,20 @@ services:
   # ── Shared FastAPI backend ──────────────────────────────────────────────
   - type: web
     name: prism-backend
-    runtime: python
+    # Was `runtime: python` (Render's native buildpack: `pip install` only,
+    # no apt-get). Switched to Docker because ai/ingestion.py's OCR fallback
+    # needs the real `tesseract` binary installed on the OS -- pytesseract is
+    # only a Python wrapper around it, and the native runtime has no way to
+    # `apt-get install tesseract-ocr`. backend/Dockerfile does that install;
+    # this mirrors prism-keycloak's own runtime: docker + dockerfilePath
+    # below. PYTHON_VERSION is dropped: the Dockerfile's own base image
+    # (python:3.11-slim) pins the Python version now, so that env var has
+    # nothing left to configure and would just be dead configuration.
+    runtime: docker
+    dockerfilePath: ./Dockerfile
     plan: free
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: >-
-      python -m alembic upgrade head &&
-      uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
-      # Without this, Render picks whatever Python it currently defaults new
-      # services to -- confirmed live to be 3.14, which has no prebuilt wheel
-      # yet for pydantic-core==2.23.4, so pip falls back to compiling it from
-      # Rust source via maturin and fails outright (Render's build sandbox
-      # has a read-only Cargo cache directory). 3.11 is what this repo's own
-      # CI already runs backend-tests against (.github/workflows/ci.yml) and
-      # was independently verified this session: a fresh Python 3.11 venv
-      # installing straight from requirements.txt, full test suite green.
-      # backend/.python-version pins the same version as a second signal, in
-      # case Render's buildpack checks that instead of/before this env var.
-      - key: PYTHON_VERSION
-        value: 3.11.9
       # Neon's connection string, e.g.
       # postgresql://user:password@ep-xxxx.neon.tech/prism?sslmode=require
       - key: DATABASE_URL

@@ -54,6 +54,12 @@ jobs:
       - name: Audit Python dependencies
         run: python -m pip_audit -r requirements.txt
 
+      # ai/ingestion.py's OCR fallback tests (test_content_ai_ingestion.py)
+      # exercise the real pytesseract -> tesseract pipeline, not a mock --
+      # without the actual binary here, they'd fail with TesseractNotFoundError.
+      - name: Install tesseract-ocr
+        run: sudo apt-get update && sudo apt-get install -y tesseract-ocr
+
       - name: Run backend test suite
         run: python -m pytest -v
 

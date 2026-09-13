@@ -7,6 +7,7 @@ import pytest
 from ai.ingestion import (
     ALLOWED_EXTENSIONS,
     AUDIO_VIDEO_EXTENSIONS,
+    IMAGE_EXTENSIONS,
     MAX_AUDIO_VIDEO_SECONDS,
     MAX_AUDIO_VIDEO_UPLOAD_BYTES,
     MAX_DOCX_UNCOMPRESSED_BYTES,
@@ -235,3 +236,239 @@ def test_backward_compatible_extract_text_service():
     result = extract_text("cpi.txt", text.encode("utf-8"))
     assert "Consumer Price Index" in result
     assert "Household Consumer Expenditure" in result
+
+
+# ---------------------------------------------------------------------------
+# OCR fallback (scanned PDFs / legacy statistical tables / direct image
+# uploads -- the "document scanner" case). These use the real Tesseract OCR
+# pipeline end-to-end wherever possible, not mocks: pytesseract is only a
+# thin wrapper around the actual `tesseract` binary, and OCR accuracy is
+# inherently fuzzy, so assertions check for recognizable substrings rather
+# than exact text equality.
+# ---------------------------------------------------------------------------
+
+_OCR_SAMPLE_LINES = [
+    "PRISM STATISTICS TRAINING",
+    "Household Consumer Expenditure Survey",
+    "Sampling frame construction procedures",
+    "for official government use only",
+]
+
+
+def _make_ocr_test_image_bytes(lines: list[str] = _OCR_SAMPLE_LINES, font_size: int = 40, width: int = 1000) -> bytes:
+    """A real rendered PNG containing actual text, built entirely with
+    Pillow's own bundled scalable default font (`ImageFont.load_default`,
+    size-aware since Pillow 10.1) -- no system font dependency, so this
+    renders identically on any CI runner. Used to exercise the real
+    Tesseract OCR pipeline, not a mock."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    line_height = font_size + 20
+    height = line_height * len(lines) + 40
+    image = Image.new("RGB", (width, height), color="white")
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.load_default(size=font_size)
+    y = 20
+    for line in lines:
+        draw.text((20, y), line, fill="black", font=font)
+        y += line_height
+
+    buf = io.BytesIO()
+    image.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def _make_scanned_pdf_bytes(image_png_bytes: bytes, page_width: int = 1000, page_height: int = 300) -> bytes:
+    """A single-page PDF containing only a rendered image -- no text layer at
+    all, built directly with PyMuPDF so pypdf's `extract_text()` on it
+    returns empty, exactly like a real scanned document, and _parse_pdf must
+    fall back to rendering + OCR-ing the page itself."""
+    import fitz
+
+    doc = fitz.open()
+    try:
+        page = doc.new_page(width=page_width, height=page_height)
+        page.insert_image(fitz.Rect(0, 0, page_width, page_height), stream=image_png_bytes)
+        return doc.tobytes()
+    finally:
+        doc.close()
+
+
+def _make_mixed_pdf_bytes(real_text: str, image_png_bytes: bytes) -> bytes:
+    """A two-page PDF: page 1 has a genuine embedded text layer (extractable
+    by pypdf directly), page 2 is image-only (no text layer, needs OCR)."""
+    import fitz
+
+    doc = fitz.open()
+    try:
+        text_page = doc.new_page(width=600, height=200)
+        text_page.insert_text((50, 100), real_text, fontsize=12)
+        image_page = doc.new_page(width=1000, height=300)
+        image_page.insert_image(fitz.Rect(0, 0, 1000, 300), stream=image_png_bytes)
+        return doc.tobytes()
+    finally:
+        doc.close()
+
+
+def test_png_jpg_jpeg_extensions_are_registered():
+    assert IMAGE_EXTENSIONS <= ALLOWED_EXTENSIONS
+    assert {".png", ".jpg", ".jpeg"} == IMAGE_EXTENSIONS
+
+
+def test_direct_image_upload_ocr_extracts_recognizable_text():
+    """Real Pillow-rendered PNG, real Tesseract OCR -- no mocking. This is
+    the "document scanner" case: a trainer photographs a page and uploads
+    the image directly rather than a PDF."""
+    png_bytes = _make_ocr_test_image_bytes()
+
+    source_ver, chunks, extracted_text = ingest_document(
+        filename="scanned_notes.png",
+        content=png_bytes,
+        source_id="src-img-ocr-001",
+    )
+
+    assert source_ver.content_type == "png"
+    upper = extracted_text.upper()
+    assert "STATISTIC" in upper
+    assert "SURVEY" in upper
+
+    ocr_locators = [loc for c in chunks for loc in c.locators if "OCR" in loc.label]
+    assert ocr_locators
+
+
+def test_scanned_pdf_page_is_extracted_via_ocr_fallback():
+    """A synthetic single-page 'scanned' PDF (image only, no text layer) --
+    _parse_pdf must render the page and OCR it rather than treating it as
+    empty."""
+    png_bytes = _make_ocr_test_image_bytes()
+    pdf_bytes = _make_scanned_pdf_bytes(png_bytes)
+
+    source_ver, chunks, extracted_text = ingest_document(
+        filename="scanned_report.pdf",
+        content=pdf_bytes,
+        source_id="src-scanned-pdf-001",
+    )
+
+    assert source_ver.content_type == "pdf"
+    upper = extracted_text.upper()
+    assert "STATISTIC" in upper
+    assert "SURVEY" in upper
+
+    ocr_page_locators = [
+        loc for c in chunks for loc in c.locators
+        if loc.locator_type == "page" and "OCR" in loc.label
+    ]
+    assert ocr_page_locators
+    assert ocr_page_locators[0].label == "Page 1 (OCR)"
+
+
+def test_mixed_pdf_with_real_text_page_and_scanned_page_extracts_both():
+    """One page with a genuine text layer, one scanned/image-only page --
+    both must contribute text; the real-text page must NOT be routed through
+    OCR, and the scanned page must be."""
+    real_text = (
+        "The Ministry of Statistics conducts periodic labour force surveys "
+        "nationwide across sampled households for employment estimation."
+    )
+    png_bytes = _make_ocr_test_image_bytes()
+    pdf_bytes = _make_mixed_pdf_bytes(real_text, png_bytes)
+
+    source_ver, chunks, extracted_text = ingest_document(
+        filename="mixed_report.pdf",
+        content=pdf_bytes,
+        source_id="src-mixed-pdf-001",
+    )
+
+    assert "Ministry of Statistics" in extracted_text
+    assert "STATISTIC" in extracted_text.upper()
+
+    labels = [loc.label for c in chunks for loc in c.locators]
+    assert "Page 1" in labels  # real text layer -- no OCR involved
+    assert "Page 2 (OCR)" in labels  # image-only page -- OCR fallback used
+
+
+def test_tesseract_not_installed_raises_honest_content_extraction_error(monkeypatch):
+    """The one case that's fine to mock: pytesseract.image_to_string raising
+    TesseractNotFoundError simulates the tesseract binary genuinely missing
+    from the environment (can't reliably force this any other way). The
+    fallback must degrade honestly -- a clear ContentExtractionError, never a
+    silent empty result pretending the page had nothing on it."""
+    import pytesseract
+
+    def _raise_not_found(*args, **kwargs):
+        raise pytesseract.TesseractNotFoundError()
+
+    monkeypatch.setattr(pytesseract, "image_to_string", _raise_not_found)
+
+    png_bytes = _make_ocr_test_image_bytes()
+    with pytest.raises(ContentExtractionError) as exc_info:
+        ingest_document("scanned_photo.png", png_bytes, source_id="src-no-tess-001")
+
+    message = str(exc_info.value)
+    assert "tesseract binary is not installed" in message
+    assert "OCR is not available" in message
+
+
+def test_mixed_pdf_degrades_gracefully_when_tesseract_is_missing(monkeypatch):
+    """A document with SOME real-text pages must not hard-fail just because
+    tesseract is unavailable for its scanned pages -- the real text should
+    still come through, with an honest note about what could not be read,
+    rather than either crashing or silently dropping the scanned page."""
+    import pytesseract
+
+    def _raise_not_found(*args, **kwargs):
+        raise pytesseract.TesseractNotFoundError()
+
+    monkeypatch.setattr(pytesseract, "image_to_string", _raise_not_found)
+
+    real_text = (
+        "The Ministry of Statistics conducts periodic labour force surveys "
+        "nationwide across sampled households for employment estimation."
+    )
+    png_bytes = _make_ocr_test_image_bytes()
+    pdf_bytes = _make_mixed_pdf_bytes(real_text, png_bytes)
+
+    source_ver, chunks, extracted_text = ingest_document(
+        filename="mixed_report_no_tesseract.pdf",
+        content=pdf_bytes,
+        source_id="src-mixed-no-tess-001",
+    )
+
+    assert "Ministry of Statistics" in extracted_text
+    assert "OCR unavailable" in extracted_text
+    assert "tesseract binary is not installed" in extracted_text
+
+
+def test_fully_scanned_pdf_raises_honest_error_when_tesseract_is_missing(monkeypatch):
+    """When literally every page needs OCR and none can be read, this must
+    surface as "OCR genuinely could not run here", not the generic
+    too-short-text failure."""
+    import pytesseract
+
+    def _raise_not_found(*args, **kwargs):
+        raise pytesseract.TesseractNotFoundError()
+
+    monkeypatch.setattr(pytesseract, "image_to_string", _raise_not_found)
+
+    png_bytes = _make_ocr_test_image_bytes()
+    pdf_bytes = _make_scanned_pdf_bytes(png_bytes)
+
+    with pytest.raises(ContentExtractionError) as exc_info:
+        ingest_document("fully_scanned_no_tesseract.pdf", pdf_bytes, source_id="src-scanned-no-tess-001")
+
+    assert "OCR is not available" in str(exc_info.value)
+
+
+def test_oversized_image_pixel_count_is_rejected(monkeypatch):
+    """Guards against a decompression-bomb-sized image -- checked against
+    header-reported dimensions before any pixel data is decoded. The real
+    limit (40 megapixels) is impractical to build a real fixture for in a
+    fast test, so it's lowered here to something a small real image can
+    exceed, the same technique this file already uses for
+    MAX_AUDIO_VIDEO_SECONDS above."""
+    monkeypatch.setattr("ai.ingestion.MAX_IMAGE_PIXELS", 100)
+
+    png_bytes = _make_ocr_test_image_bytes(lines=["small"], font_size=20, width=200)
+    with pytest.raises(ContentExtractionError) as exc_info:
+        ingest_document("huge.png", png_bytes, source_id="src-bomb-001")
+    assert "megapixel limit" in str(exc_info.value)

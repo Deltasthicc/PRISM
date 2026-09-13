@@ -126,9 +126,60 @@ async def review_queue(
     }
 
 
+class EditedQuestion(BaseModel):
+    """A reviewer's corrected version of one question -- question wording,
+    options, the correct answer, and explanation may all be edited.
+    `source_excerpt` may NOT: this app only ever persists a 1000-character
+    preview of the original uploaded material (models.learning.
+    LearningMaterial.text_excerpt), not the full text, so there is no way
+    to re-verify an edited excerpt is still a real, literal substring of
+    what was actually uploaded. review_quiz() below enforces that every
+    edited question's source_excerpt matches the original item's exactly,
+    rather than trusting a reviewer's free-text replacement -- the same
+    "never fabricate grounding" boundary the rest of this app holds."""
+
+    question: str = Field(min_length=10, max_length=1000)
+    options: list[str] = Field(min_length=2, max_length=6)
+    answer_index: int = Field(ge=0)
+    explanation: str = Field(min_length=1, max_length=2000)
+    source_excerpt: str
+
+
 class ReviewDecisionRequest(BaseModel):
     decision: str = Field(pattern="^(approve|reject)$")
     notes: str | None = Field(default=None, max_length=2000)
+    # Only meaningful with decision="approve" -- see EditedQuestion's own
+    # docstring for what can and cannot be edited and why.
+    edited_questions: list[EditedQuestion] | None = None
+
+
+def _validate_edited_questions(original_questions: list[dict], edited: list[EditedQuestion]) -> None:
+    if len(edited) != len(original_questions):
+        raise HTTPException(
+            status_code=422,
+            detail=f"Submitted {len(edited)} edited questions, but this quiz has {len(original_questions)}",
+        )
+    for index, (original, replacement) in enumerate(zip(original_questions, edited)):
+        original_excerpt = " ".join(str(original.get("source_excerpt", "")).split())
+        replacement_excerpt = " ".join(replacement.source_excerpt.split())
+        if original_excerpt != replacement_excerpt:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"Question {index + 1}'s source_excerpt was changed -- that can't be "
+                    "re-verified against the original material and is rejected, not silently trusted."
+                ),
+            )
+        cleaned_options = [opt.strip() for opt in replacement.options]
+        if any(not opt for opt in cleaned_options):
+            raise HTTPException(status_code=422, detail=f"Question {index + 1} has an empty option.")
+        if len({opt.lower() for opt in cleaned_options}) != len(cleaned_options):
+            raise HTTPException(status_code=422, detail=f"Question {index + 1}'s options must be distinct.")
+        if replacement.answer_index >= len(replacement.options):
+            raise HTTPException(
+                status_code=422,
+                detail=f"Question {index + 1}'s answer_index is out of range for its options.",
+            )
 
 
 @router.post("/{quiz_id}/review")
@@ -145,6 +196,25 @@ async def review_quiz(
             status_code=422,
             detail=f"Quiz is '{quiz.review_status}', not pending review",
         )
+    if body.edited_questions is not None and body.decision != "approve":
+        raise HTTPException(status_code=422, detail="edited_questions is only valid when approving")
+
+    if body.edited_questions is not None:
+        original_questions = quiz.questions or []
+        _validate_edited_questions(original_questions, body.edited_questions)
+        merged_questions = []
+        for original, replacement in zip(original_questions, body.edited_questions):
+            merged = dict(original)
+            merged.update(
+                {
+                    "question": replacement.question,
+                    "options": replacement.options,
+                    "answer_index": replacement.answer_index,
+                    "explanation": replacement.explanation,
+                }
+            )
+            merged_questions.append(merged)
+        quiz.questions = merged_questions
 
     quiz.review_status = "published" if body.decision == "approve" else "rejected"
     quiz.reviewed_by = principal.audit_actor
@@ -157,6 +227,7 @@ async def review_quiz(
         "reviewed_by": quiz.reviewed_by,
         "reviewed_at": quiz.reviewed_at.isoformat(),
         "reviewer_notes": quiz.reviewer_notes,
+        "questions_edited": body.edited_questions is not None,
     }
 
 

@@ -337,3 +337,129 @@ def test_attempts_endpoint_is_own_player_scoped():
 
     cross_view = taker_client.get(f"/learning/quiz/{quiz_id}/attempts", params={"player_id": owner_id})
     assert cross_view.status_code == 403
+
+
+# ---------------------------------------------------------------------------
+# edit-before-approve
+# ---------------------------------------------------------------------------
+
+
+def test_approving_with_an_edited_question_persists_the_edit():
+    db = _db()
+    player_id = _make_player(db)
+    quiz_id = _make_quiz(db, player_id, review_status="pending_review")
+    client = TestClient(_app(db, _principal(None, roles=("content_reviewer",))))
+
+    response = client.post(
+        f"/learning/quiz/{quiz_id}/review",
+        json={
+            "decision": "approve",
+            "edited_questions": [
+                {
+                    "question": "2 + 2 = ? (corrected wording)",
+                    "options": ["3", "4", "5", "7"],
+                    "answer_index": 1,
+                    "explanation": "Basic arithmetic, corrected.",
+                    "source_excerpt": "n/a",
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["questions_edited"] is True
+    quiz = db.get(GeneratedQuiz, quiz_id)
+    assert quiz.review_status == "published"
+    assert quiz.questions[0]["question"] == "2 + 2 = ? (corrected wording)"
+    assert quiz.questions[0]["options"] == ["3", "4", "5", "7"]
+    assert quiz.questions[0]["explanation"] == "Basic arithmetic, corrected."
+    # Untouched fields (competency, bloom_level, difficulty) must survive the merge.
+    assert quiz.questions[0]["competency"] == "Arithmetic"
+
+
+def test_editing_the_source_excerpt_is_rejected():
+    db = _db()
+    player_id = _make_player(db)
+    quiz_id = _make_quiz(db, player_id, review_status="pending_review")
+    client = TestClient(_app(db, _principal(None, roles=("content_reviewer",))))
+
+    response = client.post(
+        f"/learning/quiz/{quiz_id}/review",
+        json={
+            "decision": "approve",
+            "edited_questions": [
+                {
+                    "question": "2 + 2 = ?",
+                    "options": ["3", "4", "5", "6"],
+                    "answer_index": 1,
+                    "explanation": "Basic arithmetic.",
+                    "source_excerpt": "a fabricated excerpt that was never in the original material",
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 422
+    quiz = db.get(GeneratedQuiz, quiz_id)
+    assert quiz.review_status == "pending_review"
+
+
+def test_edited_questions_must_match_the_original_count():
+    db = _db()
+    player_id = _make_player(db)
+    quiz_id = _make_quiz(db, player_id, review_status="pending_review")
+    client = TestClient(_app(db, _principal(None, roles=("content_reviewer",))))
+
+    response = client.post(
+        f"/learning/quiz/{quiz_id}/review",
+        json={"decision": "approve", "edited_questions": []},
+    )
+    assert response.status_code == 422
+
+
+def test_edited_questions_reject_duplicate_options():
+    db = _db()
+    player_id = _make_player(db)
+    quiz_id = _make_quiz(db, player_id, review_status="pending_review")
+    client = TestClient(_app(db, _principal(None, roles=("content_reviewer",))))
+
+    response = client.post(
+        f"/learning/quiz/{quiz_id}/review",
+        json={
+            "decision": "approve",
+            "edited_questions": [
+                {
+                    "question": "2 + 2 = ?",
+                    "options": ["4", "4", "5", "6"],
+                    "answer_index": 0,
+                    "explanation": "Basic arithmetic.",
+                    "source_excerpt": "n/a",
+                }
+            ],
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_edited_questions_are_rejected_when_rejecting_the_quiz():
+    db = _db()
+    player_id = _make_player(db)
+    quiz_id = _make_quiz(db, player_id, review_status="pending_review")
+    client = TestClient(_app(db, _principal(None, roles=("content_reviewer",))))
+
+    response = client.post(
+        f"/learning/quiz/{quiz_id}/review",
+        json={
+            "decision": "reject",
+            "edited_questions": [
+                {
+                    "question": "2 + 2 = ?",
+                    "options": ["3", "4", "5", "6"],
+                    "answer_index": 1,
+                    "explanation": "Basic arithmetic.",
+                    "source_excerpt": "n/a",
+                }
+            ],
+        },
+    )
+    assert response.status_code == 422

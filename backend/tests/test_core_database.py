@@ -39,7 +39,7 @@ def test_explicit_postgresql_driver_is_preserved():
 
 
 def test_question_bank_revision_is_the_single_migration_head():
-    assert migration_head_revision() == "7d9c7a7c14fe"
+    assert migration_head_revision() == "951dbad5f9f6"
 
 
 def test_unversioned_database_is_rejected_with_upgrade_instruction():
@@ -60,7 +60,7 @@ def test_baseline_only_database_is_rejected():
         )
 
     assert database_revision(bind) == "65bc8695fadc"
-    with pytest.raises(RuntimeError, match="required=7d9c7a7c14fe"):
+    with pytest.raises(RuntimeError, match="required=951dbad5f9f6"):
         require_database_at_migration_head(bind)
 
 
@@ -74,7 +74,7 @@ def test_governance_only_database_is_rejected_after_identity_migration():
 
     with pytest.raises(
         RuntimeError,
-        match="current=2baf7d4bd8a2, required=7d9c7a7c14fe",
+        match="current=2baf7d4bd8a2, required=951dbad5f9f6",
     ):
         require_database_at_migration_head(bind)
 
@@ -84,7 +84,7 @@ def test_database_at_head_is_accepted():
     with bind.begin() as connection:
         connection.execute(text("CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL)"))
         connection.execute(
-            text("INSERT INTO alembic_version (version_num) VALUES ('7d9c7a7c14fe')")
+            text("INSERT INTO alembic_version (version_num) VALUES ('951dbad5f9f6')")
         )
 
     require_database_at_migration_head(bind)

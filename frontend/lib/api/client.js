@@ -487,6 +487,63 @@ export const adaptiveDiagnostic = {
     ),
 };
 
+// Real "QR-code live quiz session" feature (backend/routes/live_sessions.py) --
+// a trainer hosts a shared, paced session of an existing quiz (their own, or
+// any published one, exactly like the `learning` Quiz Library above), and
+// participants join on their own device via a short join_code (rendered as a
+// QR code client-side, see app/host-session/page.jsx) to answer in lockstep
+// with the host. Distinct prefix (/learning/live-sessions) rather than
+// /learning/quiz/* -- see that route module's own docstring for the
+// single-segment catch-all collision this sidesteps.
+export const liveSessions = {
+  create: (hostPlayerId, quizId) =>
+    request('/learning/live-sessions/', {
+      method: 'POST',
+      body: { host_player_id: hostPlayerId, quiz_id: quizId },
+    }),
+
+  // Resolves a join_code to its session -- how a participant's own device
+  // finds the session after typing in the code or scanning the QR code.
+  resolveJoinCode: (joinCode) =>
+    request(`/learning/live-sessions/by-code/${encodeURIComponent(joinCode)}`),
+
+  // Idempotent -- rejoining (a phone refresh) returns the same row.
+  join: (sessionId, playerId) =>
+    request(`/learning/live-sessions/${encodeURIComponent(sessionId)}/join`, {
+      method: 'POST',
+      body: { player_id: playerId },
+    }),
+
+  start: (sessionId) =>
+    request(`/learning/live-sessions/${encodeURIComponent(sessionId)}/start`, { method: 'POST' }),
+
+  advance: (sessionId) =>
+    request(`/learning/live-sessions/${encodeURIComponent(sessionId)}/advance`, { method: 'POST' }),
+
+  // Only accepted for the question the host is CURRENTLY showing -- a stale
+  // answer for a question the host has already moved past is rejected by
+  // the backend (422), not silently accepted.
+  answer: (sessionId, playerId, questionIndex, selectedIndex) =>
+    request(`/learning/live-sessions/${encodeURIComponent(sessionId)}/answer`, {
+      method: 'POST',
+      body: { player_id: playerId, question_index: questionIndex, selected_index: selectedIndex },
+    }),
+
+  end: (sessionId) =>
+    request(`/learning/live-sessions/${encodeURIComponent(sessionId)}/end`, { method: 'POST' }),
+
+  // Cheap enough to poll every few seconds -- see that route's own docstring.
+  getState: (sessionId, playerId) =>
+    request(
+      `/learning/live-sessions/${encodeURIComponent(sessionId)}?player_id=${encodeURIComponent(playerId)}`
+    ),
+
+  getResults: (sessionId, playerId) =>
+    request(
+      `/learning/live-sessions/${encodeURIComponent(sessionId)}/results?player_id=${encodeURIComponent(playerId)}`
+    ),
+};
+
 // Multipart requests (file upload) can't go through request() above -- the
 // browser must set its own multipart boundary in the Content-Type header,
 // which request()'s hardcoded 'application/json' would clobber.

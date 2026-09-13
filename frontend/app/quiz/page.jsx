@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { FileQuestion, Library } from 'lucide-react';
+import { FileQuestion, Library, Radio } from 'lucide-react';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -229,16 +230,30 @@ export default function SourceQuizGeneratorPage() {
                     )}
                   </div>
                 </button>
-                {(item.review_status === 'private' || item.review_status === 'rejected') && (
-                  <button
-                    type="button"
-                    onClick={() => submitForReview.mutate(item.quiz_id)}
-                    disabled={submitForReview.isPending}
-                    className="shrink-0 font-mono text-[10px] uppercase tracking-wide px-2.5 py-1.5 rounded-md border border-[#00236f]/30 text-[#00236f] hover:bg-[#f2f3ff] disabled:opacity-50 cursor-pointer"
-                  >
-                    {item.review_status === 'rejected' ? 'Resubmit for review' : 'Submit for review'}
-                  </button>
-                )}
+                <div className="shrink-0 flex items-center gap-2">
+                  {(item.review_status === 'private' || item.review_status === 'published') && (
+                    // Reuses the real live-session infrastructure
+                    // (backend/routes/live_sessions.py) -- a trainer can host
+                    // a shared, paced session of any quiz they can already
+                    // see, private or published, not yet pending/rejected.
+                    <Link
+                      href={`/host-session?quizId=${encodeURIComponent(item.quiz_id)}`}
+                      className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide px-2.5 py-1.5 rounded-md border border-[#00236f]/30 text-[#00236f] hover:bg-[#f2f3ff] cursor-pointer"
+                    >
+                      <Radio size={11} aria-hidden="true" /> Host a live session
+                    </Link>
+                  )}
+                  {(item.review_status === 'private' || item.review_status === 'rejected') && (
+                    <button
+                      type="button"
+                      onClick={() => submitForReview.mutate(item.quiz_id)}
+                      disabled={submitForReview.isPending}
+                      className="font-mono text-[10px] uppercase tracking-wide px-2.5 py-1.5 rounded-md border border-[#00236f]/30 text-[#00236f] hover:bg-[#f2f3ff] disabled:opacity-50 cursor-pointer"
+                    >
+                      {item.review_status === 'rejected' ? 'Resubmit for review' : 'Submit for review'}
+                    </button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

@@ -35,6 +35,7 @@ from models.dsa_submission import DsaSubmission
 from models.course_enrollment import CourseEnrollment
 from models.proctoring import ProctoringEvent
 from models.judgment_scenario import JudgmentScenario, JudgmentScenarioAttempt
+from models.live_session import LiveQuizSession, LiveSessionParticipant
 
 
 @asynccontextmanager

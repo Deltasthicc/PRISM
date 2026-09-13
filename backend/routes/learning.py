@@ -22,6 +22,7 @@ from routes.proctoring import router as proctoring_router
 from routes.quiz_review import router as quiz_review_router
 from routes.judgment_scenarios import router as judgment_scenarios_router
 from routes.adaptive_diagnostic import router as adaptive_diagnostic_router
+from routes.live_sessions import router as live_sessions_router
 
 router = APIRouter()
 router.include_router(profile_router)
@@ -37,6 +38,7 @@ router.include_router(proctoring_router)
 router.include_router(quiz_review_router)
 router.include_router(judgment_scenarios_router)
 router.include_router(adaptive_diagnostic_router)
+router.include_router(live_sessions_router)
 
 __all__ = [
     "admin_overview",

@@ -56,6 +56,10 @@ export default function NavBar() {
       label: t('nav.sourceQuizGenerator'),
       hasDot: false,
     },
+    // Not yet run through the i18n pipeline (see app/host-session/page.jsx's
+    // own header comment) -- a plain English label, same convention as the
+    // Sampling Lab/Judgment Simulations tabs below.
+    { href: '/host-session', label: 'Live Session', hasDot: false },
     ...(hasDsaFundamentals
       ? [{ href: '/dsa-sandbox', label: t('nav.dsaSandbox'), hasDot: false }]
       : []),

@@ -53,14 +53,14 @@ services:
         value: prism-backend-dev
       # Every origin allowed to call this API with credentials -- teammates'
       # local frontends (still fine to run via `npm run dev`, pointed at this
-      # shared backend instead of localhost:8000) plus the hosted
-      # prism-frontend service below. Add prism-frontend's real
-      # onrender.com hostname here once it's deployed (this has the same
-      # first-deploy circular-dependency caveat as NEXT_PUBLIC_API_URL
-      # below), and any new contributor's local port if it's ever not the
-      # Next.js default.
+      # shared backend instead of localhost:8000) plus the hosted frontend
+      # below. Add any new contributor's local port here if it's ever not
+      # the Next.js default. Every *.vercel.app subdomain of this project
+      # (production alias + every preview build) is trusted separately via
+      # main.py's FRONTEND_ORIGIN_REGEX, so a new Vercel preview deploy
+      # never needs a manual edit here.
       - key: FRONTEND_ORIGINS
-        value: http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001
+        value: http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001,https://prism-iota-azure.vercel.app
       - key: GEMINI_API_KEY
         sync: false
       - key: LLM_MODEL

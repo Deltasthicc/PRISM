@@ -10,9 +10,10 @@
 ![Frontend](https://img.shields.io/badge/frontend-Next.js%2015%20%2F%20React%2019-000000?logo=nextdotjs&logoColor=white)
 ![Database](https://img.shields.io/badge/database-PostgreSQL%20(Neon)-4169E1?logo=postgresql&logoColor=white)
 ![Languages](https://img.shields.io/badge/UI-11%20languages-orange)
-![Tests](https://img.shields.io/badge/backend%20tests-969-brightgreen)
+![Tests](https://img.shields.io/badge/backend%20tests-1098-brightgreen)
+![Deploy](https://img.shields.io/badge/frontend-Vercel-000000?logo=vercel&logoColor=white)
 
-[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Recommended Learning](#-recommended-learning--igotnssta-enrollment) · [Exam Integrity](#-exam-integrity-webcam-proctoring) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
+[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [Adaptive Diagnostic](#-adaptive-diagnostic-two-stage-misconception-targeted) · [Live Quiz Sessions](#-live-quiz-sessions-qr-code-classroom-delivery) · [Trainer Review](#-trainer-review-edit-before-approve) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Recommended Learning](#-recommended-learning--igotnssta-enrollment) · [Exam Integrity](#-exam-integrity-webcam-proctoring) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [Admin Analytics](#-admin-analytics) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
 </div>
 
@@ -32,14 +33,15 @@ The whole UI and the deterministic gap-analysis prose is available in **11 langu
 
 ## 🖥️ Live demo
 
-The backend is deployed on Render, backed by a Neon Postgres database:
+- **Frontend (Vercel)**: [`https://prism-iota-azure.vercel.app`](https://prism-iota-azure.vercel.app) — the real, hosted app. Every push to `main` redeploys it automatically; every PR gets its own preview URL.
+- **API (Render)**: `https://prism-backend-2voe.onrender.com`, backed by a Neon Postgres database and built from [`backend/Dockerfile`](backend/Dockerfile) (Docker, not Render's native buildpack — see [Deployment](#-deployment) for why).
+- **Auth provider** (Keycloak, largely vestigial in demo mode — see [Auth model](#-auth-model-read-this-before-you-judge-the-security)): `https://prism-keycloak.onrender.com`
 
-- API: `https://prism-backend-2voe.onrender.com`
-- Auth provider (Keycloak, largely vestigial in demo mode — see [Auth model](#-auth-model-read-this-before-you-judge-the-security)): `https://prism-keycloak.onrender.com`
+Running the frontend per-laptop via `npm run dev` still works too — the Vercel deployment is an additional, always-on option, not a replacement. A [`keepalive` workflow](.github/workflows/keepalive.yml) pings the Render services every 10 minutes so their free tier doesn't cold-start mid-demo (a cold Keycloak boot is 3–4+ minutes; Vercel's own hosting doesn't have this problem).
 
-There is no hosted frontend — everyone on the team runs `npm run dev` locally against the shared backend. A [`keepalive` workflow](.github/workflows/keepalive.yml) pings both services every 10 minutes so Render's free tier doesn't cold-start them mid-demo (a cold Keycloak boot is 3–4+ minutes).
+> Free-tier constraints apply on the Render side: cold starts on first request after idle, and Keycloak sits at roughly 90% of its 512MB memory cap. This is a hackathon demo environment, **not** a government-approved production deployment.
 
-> Free-tier constraints apply: cold starts on first request after idle, and Keycloak sits at roughly 90% of its 512MB memory cap. This is a hackathon demo environment, **not** a government-approved production deployment.
+**Navigation is tuned to feel instant, not just work.** The frontend's shared React Query client previously had no default cache lifetime, so every route change re-fetched everything from scratch; it now caches appropriately (short-lived for live/changing data, longer for near-static reference data like curricula), most routes show an immediate loading skeleton instead of a blank screen while data resolves, and likely next-page navigation is prefetched ahead of the click.
 
 ## 🔐 Auth model — read this before you judge the security
 
@@ -61,12 +63,12 @@ A companion piece, [`routes/dev_auth.py`](backend/routes/dev_auth.py), bridges t
 
 ```mermaid
 flowchart LR
-    subgraph Client["Browser (per teammate, npm run dev)"]
-        FE["Next.js 15 / React 19\nEN / HI via LanguageContext"]
+    subgraph Vercel["Vercel (hosted) + npm run dev (local)"]
+        FE["Next.js 15 / React 19\n11-language UI"]
     end
 
     subgraph Render["Render (shared, free tier)"]
-        BE["FastAPI backend\n(DISABLE_AUTH=true in demo)"]
+        BE["FastAPI backend\n(Docker: needs tesseract-ocr;\nDISABLE_AUTH=true in demo)"]
         KC["Keycloak\n(real OIDC provider)"]
     end
 
@@ -78,7 +80,7 @@ flowchart LR
     BE -. "dev_auth.py bridge" .-> KC
     BE -- "ai_client.py" --> GEMINI
 
-    style Client fill:#eef2ff,stroke:#4f46e5
+    style Vercel fill:#eef2ff,stroke:#4f46e5
     style Render fill:#ecfdf5,stroke:#059669
 ```
 
@@ -89,9 +91,17 @@ There's also a **separate, standalone second FastAPI app** at repo root (`servic
 There are two genuinely separate, working quiz mechanisms — not one quiz reused everywhere:
 
 1. **Competency quiz bank** ([`backend/routes/competency_quiz.py`](backend/routes/competency_quiz.py)) — **176 hand-authored questions** (both multiple-choice and fill-in-the-blank) across **22 topics** spanning all four curricula, servable either as a whole topic (onboarding baseline, `/baseline-assessment`) or scoped to exactly one competency (`/practice`, reached from a Prerequisite Pathways room — see [`frontend/lib/competencyTopics.js`](frontend/lib/competencyTopics.js) for the full topic list). Every question traces back to a real, hash-verified government document registered in [`document_corpus.json`](backend/data/document_corpus.json) — **51 source documents** in total, including official GATE CS/IT and Data Science & AI question papers (DSA), MoSPI/NSSO/Census/DST publications (Official Statistics), UPSC prelims papers, DARPG/NITI Aayog/DoPT documents (Public Policy), and MeitY/I4C/NIELIT material (Digital Literacy) — loaded via [`hand_authored_questions.py`](backend/services/hand_authored_questions.py). Every DSA competency now has at least one verified question.
-2. **Grounded quiz generation** ([`learning_content.py`](backend/routes/learning_content.py), via [`quiz_generator.py`](backend/services/quiz_generator.py)) — upload your own `.txt`/`.md`/`.pdf`/`.docx` material from the Academy page and get back a fresh MCQ set with an exact source citation for every answer, with a local fallback generator when no Gemini key is configured.
+2. **Grounded quiz generation** ([`learning_content.py`](backend/routes/learning_content.py), via [`quiz_generator.py`](backend/services/quiz_generator.py)) — upload your own material from the Academy page and get back a fresh MCQ set with an exact source citation for every answer, with a local fallback generator when no Gemini key is configured. Supported formats: `.txt`, `.md`, `.pdf`, `.docx`, `.pptx`, `.vtt`/`.srt`/`.transcript`, audio/video (`.mp3`/`.wav`/`.mp4`/`.mov`/`.webm`, transcribed locally via `faster-whisper`), and now **`.png`/`.jpg`/`.jpeg` images plus scanned PDFs** — see [Document ingestion & OCR](#-document-ingestion--ocr) below.
 
 Both the competency quiz and the DSA Sandbox write to the same `AccuracyHistory` table that drives Prerequisite Pathways room unlocking — finishing either kind of real practice moves the map forward, for every course and topic.
+
+### 📠 Document ingestion & OCR
+
+Every format above is parsed by one bounded ingestion engine ([`backend/ai/ingestion.py`](backend/ai/ingestion.py)) — no arbitrary code execution, hard per-format size/page/slide caps, and zip-bomb guards on DOCX/PPTX/image uploads:
+
+- **A photographed page or scanned/legacy statistical table now actually extracts text.** A PDF page with no text layer is rendered via [PyMuPDF](https://pymupdf.readthedocs.io/) and OCR'd with [Tesseract](https://github.com/tesseract-ocr/tesseract) (`pytesseract`); a directly-uploaded image goes through the same OCR path. This closes what was previously the platform's biggest content-ingestion gap versus rival SIH26101 submissions that already handled scanned documents.
+- **Honest degradation, never silent data loss** — if some pages have a real text layer and others need OCR, the readable pages still come through with an inline note on which page numbers couldn't be read; if the OCR engine itself is unavailable in a given environment (the `tesseract` binary missing), that's reported as a clear error rather than the document silently looking empty.
+- **Why the backend runs on Docker now**: `pytesseract` only wraps the real `tesseract` binary — it isn't bundled with the pip package, and Render's native Python buildpack has no way to `apt-get install` it. [`backend/Dockerfile`](backend/Dockerfile) installs `tesseract-ocr` at build time; `render.yaml`'s `prism-backend` service builds from it instead of a plain `pip install`.
 
 ```mermaid
 sequenceDiagram
@@ -113,6 +123,40 @@ sequenceDiagram
     FE->>BE: GET /learning/pathway/{player_id}
     BE-->>FE: Real gap analysis, no hardcoded data
 ```
+
+## 🎯 Adaptive Diagnostic (two-stage, misconception-targeted)
+
+A real two-stage diagnostic ([`backend/services/adaptive_diagnostic.py`](backend/services/adaptive_diagnostic.py), [`backend/routes/adaptive_diagnostic.py`](backend/routes/adaptive_diagnostic.py), `/adaptive-diagnostic` in the frontend) — not a second copy of the competency quiz:
+
+- **Stage 1** serves a balanced spread of items across the learner's curriculum to find where they're actually weak, using the same real, hand-authored question bank the competency quiz draws from — no separate/duplicated content.
+- **Stage 2 targets the specific misconception behind a stage-1 miss**, not just "more questions on the same topic". [`backend/data/misconception_tags.json`](backend/data/misconception_tags.json) is a curated mapping of real question `item_id`s to real misconception categories (e.g. `sampling-design-tradeoff-confusion`, `dpdp-definition-scope-underestimation`) built by reading each question's actual distractors — most tags are honestly single-item where no genuine cluster of related items exists, rather than inflating apparent coverage with generic labels.
+- **Honestly unavailable when there's no real signal** — if stage 1 doesn't surface a specific misconception (e.g. the learner did fine, or missed items with no shared tag), stage 2 says so rather than serving an arbitrary follow-up quiz.
+- Both stages write through the same `_record_evidence()` path as everything else — `AccuracyHistory` + `EvidenceRecord(evidence_type="observed_practice")` — so a diagnostic session moves Prerequisite Pathways exactly like any other real practice.
+
+## 📡 Live Quiz Sessions (QR-code classroom delivery)
+
+A real, host-paced group quiz session ([`backend/models/live_session.py`](backend/models/live_session.py), [`backend/routes/live_sessions.py`](backend/routes/live_sessions.py), `/host-session` + `/join/[joinCode]` in the frontend) — the classroom/training-hall delivery mode competing submissions in this space already ship:
+
+- **A trainer hosts, a group joins by 6-character code or QR** (rendered client-side via the `qrcode` package) — no lookalike-character confusion, the code alphabet excludes `0`/`O`/`1`/`I`.
+- **The host controls pacing** — `start`, `advance` (next question), and `end` are host-only actions; participants answer whatever question index is currently live, and a stale-question answer is rejected rather than silently accepted.
+- **Real, weighted scoring** — session end computes each participant's score using the same `DIFFICULTY_WEIGHT`/`time_factor` algorithm ([`backend/services/quiz_scoring.py`](backend/services/quiz_scoring.py)) every other quiz mechanism uses (with an honest neutral time factor, since a live session doesn't track individual per-question timing), and writes one real `GeneratedQuizAttempt` per participant — not a separate, disconnected leaderboard.
+- **A real, persisted leaderboard** — `GET /learning/live-sessions/{id}/results` only returns results after the host ends the session, so no one sees a live/partial ranking mid-quiz.
+
+## ✍️ Trainer Review (edit-before-approve)
+
+Trainer review of AI-generated quiz content ([`backend/routes/quiz_review.py`](backend/routes/quiz_review.py), `/trainer-review` in the frontend) is no longer approve-or-reject only:
+
+- A trainer can now **edit question text, options, the correct answer, and the explanation** before approving — not just accept an AI-generated question as-is or throw it away.
+- **The source excerpt itself is deliberately not editable** — it's validated server-side to exactly match the original on submit (a 422 if it's been changed), so a trainer can refine the question but can't quietly rewrite what the AI was actually shown or claimed to cite.
+
+## 📊 Admin Analytics
+
+`GET /learning/admin/overview` ([`backend/routes/learning_analytics.py`](backend/routes/learning_analytics.py), `/admin` in the frontend) covers more than a point-in-time snapshot:
+
+- **Training effectiveness** — for each player/competency with at least two `CompetencyAssessment` records, the real earliest-vs-latest score delta, ranked by magnitude (top 8) — a genuine before/after measurement, not a synthetic trend line.
+- **Course completion** — SQL-aggregated directly from real `CourseEnrollment` rows (see [Recommended Learning](#-recommended-learning--igotnssta-enrollment)).
+- **Activity trend** — real weekly activity counts only; a week with no real activity is never zero-padded to look like a continuous series, and there is deliberately no fabricated "hours spent" metric where no real signal for it exists.
+- **Emerging skill gaps** — competencies whose miss-frequency is rising between the earlier and later half of a player's assessment history, surfaced as a real, ranked signal rather than a hardcoded "trending" list.
 
 ## 🧮 DSA Sandbox
 
@@ -176,9 +220,12 @@ Being honest about this line is the point of this section — the frontend has a
 | `/dungeon` ("Prerequisite Pathways") | **Real, for all four curricula.** Driven by `GET /learning/pathway/{player_id}` (the same engine `/stats` uses) merged with real per-player room unlock status from `GET /game/dungeon/{id}`. "Practice this competency" opens `/practice`, a plain quiz scoped to that one competency; finishing it updates `AccuracyHistory`, which is what flips a room to unlocked/weak/mastered and advances the "biggest gap" pointer — verified live across every curriculum, not just DSA. |
 | `/dsa-sandbox` | **Real.** See [DSA Sandbox](#-dsa-sandbox) below — real code, a real Judge0 judge, no simulated pass/fail. |
 | `/sampling-lab` | **Real.** See [Virtual Lab](#-virtual-lab-official-statistics) below — bounded, deterministic sample-size tasks, no learner code execution. |
-| `/assistant` | **Real.** See [Learner Assistant (RAG)](#-learner-assistant-rag) below — a real, cited retrieval engine, not a general chatbot. |
-| `/quiz` (Source Quiz Generator) | **Real.** Upload your own material, get back a real generated quiz — see [Quizzes](#-quizzes) above. |
-| `/academy`, `/register`, `/dashboard`, `/admin` | **Real.** Backed by live API calls (`learning.*` / `game.*`). |
+| `/assistant` | **Real.** Text and voice chat are now one page with a mode toggle (previously two separate nav tabs) — see [Learner Assistant (RAG)](#-learner-assistant-rag) and [Voice AI pipeline](#-voice-ai-pipeline) below; `/voice` now redirects here. |
+| `/quiz` (Source Quiz Generator) | **Real.** Upload your own material — including scanned documents/images now — and get back a real generated quiz — see [Quizzes](#-quizzes) and [Document ingestion & OCR](#-document-ingestion--ocr) above. |
+| `/adaptive-diagnostic` | **Real.** See [Adaptive Diagnostic](#-adaptive-diagnostic-two-stage-misconception-targeted) above. |
+| `/host-session`, `/join/[joinCode]` | **Real.** See [Live Quiz Sessions](#-live-quiz-sessions-qr-code-classroom-delivery) above. |
+| `/trainer-review` | **Real**, now with edit-before-approve — see [Trainer Review](#-trainer-review-edit-before-approve) above. |
+| `/academy`, `/register`, `/dashboard`, `/admin` | **Real.** Backed by live API calls (`learning.*` / `game.*`) — `/admin` includes real training-effectiveness, course-completion, activity-trend, and emerging-skill-gap analytics, see [Admin Analytics](#-admin-analytics) above. |
 | `/character`, `/combat/[roomId]`, `/boss/[dungeonId]`, `/leaderboard` | **Real, but gated behind Quest Mode.** Off by default — visiting directly shows `QuestModeGate` (a "turn on Quest Mode?" prompt) until the learner opts in from the NavBar toggle. Once on, these render genuine player/game state (hint tokens, damage, hero selection, XP-ranked leaderboard) on top of the same real competency-quiz question bank. Leaderboard's heading reads "ALL-TIME RANKS" — the backend ranks by lifetime `total_xp`, no weekly window exists. |
 | `/guild` | **Gated behind Quest Mode, and still a self-contained mockup underneath.** The real backend endpoints it should call (`/game/guild/raid/join`, `/raid/status`) exist and work — `joinGuildRaid()` in `frontend/lib/api/client.js` is correctly wired — but nothing in the UI calls it yet; it's disconnected working infrastructure for a legitimately future feature, not fake code. |
 | `/integration-registry` | **Still a mockup**, but its copy was fixed for honesty — it used to assert specific, never-checked compliance claims ("VERIFIED COMPLIANT", a fabricated audit hash, a specific RTI Act citation); now framed explicitly as "design-intent, not measured." |
@@ -219,8 +266,8 @@ flowchart LR
 
 - Server-derived identity only — `tenant_id`, `user_id`, `player_id`, and `roles` sent by the client are rejected outright; the same tenant/role-scoped RAG filtering and prompt-injection detection used by the text-based assistant applies here too.
 - Cooperative cancellation and barge-in: a learner can interrupt mid-response.
-- **Local-only for now** — the Piper voice model isn't committed to the repo (`.gitignore`'d, configured via `PIPER_MODEL_PATH`/`PIPER_CONFIG_PATH`), so this isn't part of the hosted Render demo; it runs when you bring your own model file locally.
-- **`/voice`**: a real page wired to this WebSocket -- captures mic audio, resamples to 16kHz mono PCM16 client-side (Web Audio API), streams it up, and renders the live transcript plus the same grounded/cited answer `/assistant` shows. Handles barge-in and a denied/unavailable microphone with a clear error. `DISABLE_AUTH=true` now covers this endpoint too (it previously had no demo bypass at all, unlike every other route, so voice could never connect in this app's normal local/demo setup).
+- **TTS synthesis is local-only for now** — the Piper voice model isn't committed to the repo (`.gitignore`'d, configured via `PIPER_MODEL_PATH`/`PIPER_CONFIG_PATH`), so spoken replies aren't part of the hosted demo; it runs when you bring your own model file locally. STT (speech-to-text) works out of the box anywhere the backend runs.
+- **`/assistant`**: text and voice are one page with a mode toggle (previously two separate nav tabs, `/assistant` and `/voice`; `/voice` now just redirects here). Voice mode captures mic audio, resamples to 16kHz mono PCM16 client-side (Web Audio API), streams it over the WebSocket above, and renders the live transcript plus the same grounded/cited answer text mode shows. Handles barge-in and a denied/unavailable microphone with a clear error. `DISABLE_AUTH=true` now covers this endpoint too (it previously had no demo bypass at all, unlike every other route, so voice could never connect in this app's normal local/demo setup).
 - **TTS needs a local Piper model you bring yourself** (see below) -- without one, the server honestly reports `TTS_FAILURE` per turn and the page shows the real text answer with a "voice reply unavailable" note, rather than pretending to speak. STT works out of the box (`faster-whisper`'s `tiny.en` model downloads automatically on first use).
 - Verified with a real spoken sentence fed through the actual WebSocket protocol end-to-end: real VAD speech-start/end, a real `faster-whisper` transcript, a real RAG-grounded answer with citations, and an honest `TTS_FAILURE` with no Piper model configured. Live microphone capture through a real browser was not part of that verification (see Known limitations).
 
@@ -263,7 +310,10 @@ Then open `http://localhost:3000`.
 | `learning_content.py` | `/learning` | Quiz/content generation and listing |
 | `learning_integration.py` | `/learning` | External catalog (iGOT/NSSTA) integration status |
 | `course_enrollment.py` | `/learning/catalogue` | Real enroll/complete lifecycle for recommended iGOT/NSSTA courses — see [Recommended Learning](#-recommended-learning--igotnssta-enrollment) |
-| `learning_analytics.py` | `/learning` | Admin overview & analytics |
+| `learning_analytics.py` | `/learning` | Admin overview & analytics — see [Admin Analytics](#-admin-analytics) |
+| `adaptive_diagnostic.py` | `/learning/diagnostic` | Two-stage, misconception-targeted diagnostic — see [Adaptive Diagnostic](#-adaptive-diagnostic-two-stage-misconception-targeted) |
+| `live_sessions.py` | `/learning/live-sessions` | QR-code/join-code live group quiz sessions — see [Live Quiz Sessions](#-live-quiz-sessions-qr-code-classroom-delivery) |
+| `quiz_review.py` | — | Trainer approve/reject/edit for AI-generated quizzes — see [Trainer Review](#-trainer-review-edit-before-approve) |
 | `competency_quiz.py` | `/learning/competency-quiz` | Source-cited competency quiz bank — by topic (baseline) or by a single `competency_id` (`/practice`) |
 | `dsa_sandbox.py` | `/learning/dsa-sandbox` | Real Judge0 code execution — see [DSA Sandbox](#-dsa-sandbox) |
 | `sampling_lab.py` | `/learning/sampling-lab` | Bounded sample-size calculation tasks — see [Virtual Lab](#-virtual-lab-official-statistics) |
@@ -282,17 +332,18 @@ Then open `http://localhost:3000`.
 | Database | PostgreSQL (Neon, serverless) |
 | Auth | Keycloak (OIDC), demo-bypassable per above |
 | AI | Gemini (`gemini-flash-lite-latest`) |
+| Document ingestion | pypdf, python-docx, stdlib PPTX parsing, PyMuPDF + Tesseract (`pytesseract`) for OCR — see [Document ingestion & OCR](#-document-ingestion--ocr) |
 | Voice | faster-whisper 1.2.1 (STT), piper-tts 1.8.0 (TTS), Silero VAD (bundled ONNX) — all local |
 | Frontend | Next.js 15, React 19, Zustand, TanStack Query, Recharts, React Flow, Framer Motion, Tailwind CSS |
-| Deployment | Render (Blueprint: backend + Keycloak), Neon (DB) |
+| Deployment | Vercel (frontend), Render (Blueprint: backend as Docker + Keycloak), Neon (DB) |
 | CI | GitHub Actions — see below |
 
 ## 🧪 Tests & CI
 
-- **1,036 backend tests** (1,011 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
+- **1,098 backend tests** (1,098 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
 - **No frontend test suite** exists yet — `frontend/package.json` only defines `dev`/`build`/`start`/`lint`.
 - [`ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`:
-  - `backend-tests` — `pip-audit` + full pytest suite against Postgres
+  - `backend-tests` — `pip-audit` + full pytest suite against Postgres (installs `tesseract-ocr` first, so the OCR tests run against the real binary, not a mock)
   - `frontend-checks` — lint + production build
   - `contract-checks` — validates `docs/contracts/openapi.json`
   - `security-checks` — `gitleaks` secret scan
@@ -303,7 +354,10 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 
 ## ☁️ Deployment
 
-[`render.yaml`](render.yaml) is a Render Blueprint defining three services — `prism-backend` (FastAPI, Python 3.11.9 pinned), `prism-keycloak` (Docker), and `prism-frontend` (Next.js, `next start`, Node 22.13 pinned). The Neon database is **not** part of this blueprint and is provisioned separately. `prism-frontend`'s `NEXT_PUBLIC_API_URL` has a one-time manual fill-in step after the first deploy (see the comment at the top of `render.yaml` — it can't be known before `prism-backend` has its own hostname). Running the frontend per-laptop via `npm run dev` still works and isn't replaced by this — it's an additional, always-on hosted copy, not a requirement. See [`deploy/README.md`](deploy/README.md) for the full setup walkthrough.
+- **Frontend**: hosted on **Vercel** (zero-config Next.js deploy, Root Directory set to `frontend`), auto-deploying `main`. `render.yaml` also still defines an optional `prism-frontend` Render service (`next start`, Node 22.13 pinned) — an alternative hosted copy, not the primary one; running per-laptop via `npm run dev` works exactly as before either way.
+- **Backend**: [`render.yaml`](render.yaml) is a Render Blueprint defining `prism-backend` (now built from [`backend/Dockerfile`](backend/Dockerfile), not Render's native Python buildpack — needed once OCR required the real `tesseract` binary, see [Document ingestion & OCR](#-document-ingestion--ocr)) and `prism-keycloak` (Docker). The Neon database is **not** part of this blueprint and is provisioned separately.
+- **CORS**: `FRONTEND_ORIGINS` (exact-match list) covers local dev ports and the stable Vercel production alias; `main.py`'s `FRONTEND_ORIGIN_REGEX` (default `^https://prism-[a-z0-9-]+\.vercel\.app$`) additionally trusts every one of this project's own Vercel preview-deployment subdomains by pattern, so a new PR preview never needs a manual CORS edit.
+- See [`deploy/README.md`](deploy/README.md) for the full Render/Neon setup walkthrough.
 
 ## ⚠️ Known limitations
 
@@ -312,30 +366,34 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 - iGOT/NSSTA course enrollment ([Recommended Learning](#-recommended-learning--igotnssta-enrollment)) is a real, persisted lifecycle on PRISM's side, but the provider itself is `SimulatedIGOTAdapter` — no real iGOT Karmayogi or NSSTA API contract exists to integrate against yet, so "enroll"/"complete" never leave this app.
 - The optional gamified practice layer (Quest Mode: `/character`, `/combat`, `/boss/[dungeonId]`, `/guild`, `/leaderboard`) is off by default and intentionally not part of the front-page pitch for now — see the [real-vs-mockup table](#-whats-real-and-whats-a-mockup) if you need the detail.
 - The Learner Assistant's answer quality without a working `GEMINI_API_KEY` is extractive (it quotes the top-matching evidence directly rather than synthesizing prose) — real and honestly labeled, but a configured key gives noticeably better answers. The 176-excerpt seed corpus is UPSC-exam-style passages, so some phrasing reads more like an exam question than a textbook explanation.
-- The voice pipeline's `/voice` UI is real but has two real constraints: TTS output needs a local Piper model you supply yourself (STT and the text answer work without one), and live microphone capture through a real browser has not been verified in this development environment (no physical microphone available here) — the WebSocket protocol itself was verified end-to-end with a real generated speech sample. See [Voice AI pipeline](#-voice-ai-pipeline).
+- The voice pipeline's voice mode (inside `/assistant`, formerly the standalone `/voice` page) is real but has two real constraints: TTS output needs a local Piper model you supply yourself (STT and the text answer work without one), and live microphone capture through a real browser has not been verified in this development environment (no physical microphone available here) — the WebSocket protocol itself was verified end-to-end with a real generated speech sample. See [Voice AI pipeline](#-voice-ai-pipeline).
 - The Whisper domain fine-tune (see above) has been trained and measured (21–22% relative WER improvement on held-out validation), but the resulting model file isn't bundled with the repo — `WHISPER_MODEL_PATH` needs to point at your own locally-trained output (or the stock model is used, which still works, just with the known domain-vocabulary mis-transcriptions).
 - 9 of the 11 UI languages are a first machine-translation pass awaiting native-speaker review — see [Internationalization](#-internationalization).
 - The real browser OIDC/PKCE login flow (as opposed to the demo bypass and the dev-login bridge) is not yet implemented.
 - Webcam proctoring ([Exam Integrity](#-exam-integrity-webcam-proctoring)) runs a real but lightweight pretrained classifier (`blazeface`/`coco-ssd`), not a purpose-trained exam-proctoring model — expect real false positives (poor lighting, an object that looks phone-like) and false negatives (a phone held out of frame). That's exactly why it's designed as an audit signal for a human reviewer rather than an automatic pass/fail; a production deployment would want a higher-fidelity, purpose-built model and a documented false-positive rate before treating it as more than that.
 - No frontend automated test suite.
-- Render's free tier means cold starts and tight memory headroom on Keycloak — not a production-scale deployment.
+- Render's free tier means cold starts and tight memory headroom on Keycloak — not a production-scale deployment. The Vercel-hosted frontend does not have this cold-start problem.
+- OCR ([Document ingestion & OCR](#-document-ingestion--ocr)) uses Tesseract's default English-language data only — accuracy on non-English scanned text, handwriting, or low-quality scans is unverified and expected to be weaker than on clean printed English text. It's a real fallback for the "no text layer at all" case, not a purpose-tuned document-scanning product.
+- `backend/requirements.lock` is a standalone dependency-audit artifact and is currently stale relative to the OCR packages (`pymupdf`, `pytesseract`, `Pillow`) added to `requirements.txt` — nothing installs from the lock file today (CI, Render, and the Dockerfile all use `requirements.txt`/`requirements-dev.txt`), so this doesn't affect what's actually deployed, but it should be regenerated.
 
 ## 📁 Project structure
 
 ```
 backend/
-  routes/            FastAPI routers (game, learning/*, auth, ai, ai_voice, dsa_sandbox)
-  services/          Domain logic — curricula, gap engine, quiz generation, catalogues
-  ai/                Retrieval, ingestion, the Learner Assistant, corpus seeding, voice/ (local VAD/STT/TTS)
+  Dockerfile         Backend runtime image (installs tesseract-ocr; Render builds from this now)
+  routes/            FastAPI routers (game, learning/*, auth, ai, ai_voice, dsa_sandbox, live_sessions, adaptive_diagnostic)
+  services/          Domain logic — curricula, gap engine, quiz generation, catalogues, adaptive_diagnostic
+  ai/                Retrieval, ingestion (incl. OCR), the Learner Assistant, corpus seeding, voice/ (local VAD/STT/TTS)
   i18n_pipeline/     Documented, re-runnable scripts that machine-translated 9 UI languages
-  models/            SQLAlchemy models (players, learning, governance, dungeon, guild, ...)
+  models/            SQLAlchemy models (players, learning, governance, dungeon, guild, live_session, ...)
   security/          Real OIDC identity + RBAC (untouched by the demo bypass)
   migrations/        Alembic migrations
-  tests/             994 pytest tests
+  tests/             1,098 pytest tests
 
 frontend/
-  app/           Next.js App Router pages (see the real-vs-mockup table above)
-  components/    Shared UI (AcademyHub, MLDashboard, NavBar, ...)
+  app/           Next.js App Router pages (see the real-vs-mockup table above); most routes have a
+                 loading.jsx skeleton so navigation shows something immediately instead of a blank screen
+  components/    Shared UI (AcademyHub, MLDashboard, NavBar, ui/Skeleton, ...)
   lib/           API client, i18n (translations.js, LanguageContext.jsx, 11 languages)
   store/         Zustand stores (auth, game)
 

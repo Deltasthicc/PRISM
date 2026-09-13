@@ -153,10 +153,24 @@ frontend_origins = [
     if origin.strip()
 ]
 
+# Vercel gives every deployment of this project its own unique *.vercel.app
+# subdomain -- the stable production alias, plus a fresh one for every single
+# preview build -- always prefixed with this project's name ("prism-...").
+# Hand-editing FRONTEND_ORIGINS for every new preview URL isn't practical, so
+# the whole family of this project's own Vercel subdomains is trusted by
+# pattern instead of by exact match. This is intentionally narrower than a
+# blanket "*.vercel.app" (which would trust every other Vercel-hosted project
+# too) -- see FRONTEND_ORIGIN_REGEX below to override it if the Vercel
+# project is ever renamed.
+FRONTEND_ORIGIN_REGEX = os.getenv(
+    "FRONTEND_ORIGIN_REGEX", r"^https://prism-[a-z0-9-]+\.vercel\.app$"
+)
+
 # Credentialed browser requests require explicit origins.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=frontend_origins,
+    allow_origin_regex=FRONTEND_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

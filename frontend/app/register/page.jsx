@@ -32,7 +32,12 @@ function RegisterForm() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
 
-  const { data: curricula } = useQuery({
+  const {
+    data: curricula,
+    isError: curriculaErrored,
+    isLoading: curriculaLoading,
+    refetch: refetchCurricula,
+  } = useQuery({
     queryKey: ['register-curricula', language],
     queryFn: async () => (await learning.getCurricula(language)).curricula,
   });
@@ -124,15 +129,33 @@ function RegisterForm() {
               value={curriculumSlug}
               onChange={(event) => setCurriculumSlug(event.target.value)}
               required
-              className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f]"
+              disabled={curriculaErrored}
+              className="bg-white text-[#131b2e] font-sans text-sm px-3 py-2.5 rounded-lg border border-[#c5c5d3]/60 outline-none focus:border-[#00236f] focus:ring-1 focus:ring-[#00236f] disabled:opacity-60"
             >
-              {!curricula?.length && <option value="">{t('register.loadingSpecialties')}</option>}
+              {!curricula?.length && (
+                <option value="">
+                  {curriculaErrored ? t('register.loadFailedSpecialties') : t('register.loadingSpecialties')}
+                </option>
+              )}
               {curricula?.map((curriculum) => (
                 <option key={curriculum.slug} value={curriculum.slug}>
                   {curriculum.name}
                 </option>
               ))}
             </select>
+            {/* Without this, a failed fetch left the dropdown stuck on
+                "Loading..." forever with no way out -- react-query's
+                default retry (providers.jsx: retry: 1) had already given
+                up silently by then. */}
+            {curriculaErrored && (
+              <button
+                type="button"
+                onClick={() => refetchCurricula()}
+                className="self-start font-sans text-xs text-[#00236f] underline cursor-pointer"
+              >
+                {t('register.retrySpecialties')}
+              </button>
+            )}
           </label>
           {formError && (
             <p className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2">

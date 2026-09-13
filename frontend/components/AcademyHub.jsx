@@ -37,7 +37,12 @@ export default function AcademyHub() {
   const player = useAuthStore((state) => state.player);
   const { t, language } = useLanguage();
   const [profile, setProfile] = useState(EMPTY_PROFILE);
+  // 'official-statistics' is only a placeholder until the real profile
+  // loads below -- it must never be the lasting default, or every
+  // learner's Academy hub shows the same curriculum "Selected" regardless
+  // of what they actually registered with (profile.target_domains).
   const [selectedSlug, setSelectedSlug] = useState('official-statistics');
+  const [hasAppliedProfileDomain, setHasAppliedProfileDomain] = useState(false);
   const [working, setWorking] = useState('');
   const [error, setError] = useState('');
 
@@ -58,6 +63,19 @@ export default function AcademyHub() {
   useEffect(() => {
     if (data?.profile) setProfile({ ...EMPTY_PROFILE, ...data.profile });
   }, [data?.profile]);
+
+  // Real fix for "the same curriculum always shows Selected" -- once, on
+  // the first profile load, adopt whatever this learner actually chose at
+  // registration (profile.target_domains[0]) instead of leaving the
+  // hardcoded 'official-statistics' placeholder in place. Only runs once
+  // (hasAppliedProfileDomain) so a learner's own later clicks on a
+  // different card are never overwritten by a background refetch.
+  useEffect(() => {
+    if (hasAppliedProfileDomain || !data?.profile) return;
+    const firstTargetDomain = data.profile.target_domains?.[0];
+    if (firstTargetDomain) setSelectedSlug(firstTargetDomain);
+    setHasAppliedProfileDomain(true);
+  }, [data?.profile, hasAppliedProfileDomain]);
 
   if (!ready || isLoading) {
     return <p className="font-sans text-sm text-[#757682] text-center mt-10">{t('academy.loadingAcademy')}</p>;

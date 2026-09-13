@@ -1,8 +1,9 @@
 """
 Bounded, dependency-light text extraction for TXT, Markdown, PDF, DOCX, PPTX,
-transcripts, and audio/video files. Every extractor is capped so an
+transcripts, images, and audio/video files. Every extractor is capped so an
 oversized, malicious, or overlong file can't exhaust memory or CPU before
-downstream models see the text.
+downstream models see the text. Scanned PDF pages and directly uploaded
+images are OCR'd via Tesseract (see `ai.ingestion`'s module docstring).
 
 Wraps the unified Lane 4 ingestion engine in `ai.ingestion`.
 """
@@ -11,10 +12,12 @@ from __future__ import annotations
 from ai.ingestion import (
     ALLOWED_EXTENSIONS,
     AUDIO_VIDEO_EXTENSIONS,
+    IMAGE_EXTENSIONS,
     MAX_AUDIO_VIDEO_SECONDS,
     MAX_AUDIO_VIDEO_UPLOAD_BYTES,
     MAX_DOCX_UNCOMPRESSED_BYTES,
     MAX_EXTRACTED_CHARS,
+    MAX_IMAGE_PIXELS,
     MAX_PDF_PAGES,
     MAX_PPTX_SLIDES,
     MAX_PPTX_UNCOMPRESSED_BYTES,

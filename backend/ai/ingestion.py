@@ -1,8 +1,18 @@
 """Lane 4 (Content AI, RAG & Evaluation) — Bounded Ingestion Engine.
 
-Parses TXT, Markdown, PDF, DOCX, PPTX, timestamped transcripts, and now
+Parses TXT, Markdown, PDF, DOCX, PPTX, timestamped transcripts, images, and
 audio/video files into immutable SourceVersion records and Chunk objects
 with exact source locators.
+
+OCR fallback (closes the gap vs. rival teams' pipelines that already handle
+scanned PDFs/legacy statistical tables): when a PDF page has no extractable
+text layer, or a standalone image is uploaded directly (the "document
+scanner" case), the page/image is rendered/opened and run through Tesseract
+via pytesseract. pytesseract is only a thin Python wrapper -- it shells out
+to the real `tesseract` binary, which is NOT bundled with the pip package.
+If that binary isn't installed in this environment, OCR degrades honestly
+(see `_ocr_image`) instead of silently returning empty text as if the page
+had nothing on it.
 """
 from __future__ import annotations
 
@@ -30,15 +40,67 @@ MAX_PPTX_SLIDES = 100
 MAX_DOCX_UNCOMPRESSED_BYTES = 40 * 1024 * 1024  # 40 MB zip-bomb guard
 MAX_PPTX_UNCOMPRESSED_BYTES = 40 * 1024 * 1024  # 40 MB zip-bomb guard
 MIN_EXTRACTED_CHARS = 100
+# Scanned PDF pages are rendered to a bitmap at this resolution before OCR --
+# 150-200 DPI is the standard tradeoff for Tesseract (materially better
+# accuracy than screen resolution, without the multi-second-per-page cost of
+# print-quality 300+ DPI). No separate "max pages to OCR" constant is needed:
+# MAX_PDF_PAGES above already bounds the whole document (and therefore how
+# many pages could ever need OCR) before this is reached.
+OCR_RENDER_DPI = 175
+# Guards a directly-uploaded image against a decompression-bomb-sized file
+# (a small file that decodes to an enormous pixel buffer) -- checked against
+# the image's header-reported dimensions *before* the pixel data is decoded,
+# the same "validate before doing the expensive part" shape as the DOCX/PPTX
+# zip-bomb guards below.
+MAX_IMAGE_PIXELS = 40_000_000  # ~40 megapixels
 
 AUDIO_VIDEO_EXTENSIONS = {".mp4", ".mov", ".webm", ".mp3", ".wav", ".m4a"}
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
 ALLOWED_EXTENSIONS = {
     ".txt", ".md", ".pdf", ".docx", ".pptx", ".vtt", ".srt", ".transcript",
-} | AUDIO_VIDEO_EXTENSIONS
+} | AUDIO_VIDEO_EXTENSIONS | IMAGE_EXTENSIONS
 
 
 class ContentExtractionError(Exception):
     """Raised when a file cannot be safely or validly extracted."""
+
+
+def _ocr_image(image: Any) -> str:
+    """Run Tesseract OCR on a Pillow image and return the recognized text.
+
+    pytesseract is only a thin Python wrapper -- it shells out to the real
+    `tesseract` binary, which is NOT bundled with the pip package. If that
+    binary isn't installed in this environment, pytesseract raises
+    TesseractNotFoundError; that is turned into a clear, honest
+    ContentExtractionError here rather than being allowed to crash the
+    request or silently swallowed as if the page had no content.
+    """
+    import pytesseract
+
+    try:
+        return (pytesseract.image_to_string(image) or "").strip()
+    except pytesseract.TesseractNotFoundError as exc:
+        raise ContentExtractionError(
+            "OCR is not available in this environment (the tesseract binary is "
+            "not installed) -- scanned pages could not be read; only pages "
+            "with a text layer were extracted."
+        ) from exc
+
+
+def _render_pdf_page_to_image(fitz_doc: Any, page_index: int, dpi: int = OCR_RENDER_DPI) -> Any:
+    """Render one PDF page to a Pillow RGB image via PyMuPDF.
+
+    Pure Python/C-extension rendering -- no external poppler binary needed,
+    unlike pdf2image.
+    """
+    import fitz  # PyMuPDF
+    from PIL import Image
+
+    page = fitz_doc[page_index]
+    zoom = dpi / 72.0  # PyMuPDF's native page units are 72 DPI
+    pixmap = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom))
+    mode = "RGB" if pixmap.n < 4 else "RGBA"
+    return Image.frombytes(mode, (pixmap.width, pixmap.height), pixmap.samples).convert("RGB")
 
 
 def _extension(filename: str) -> str:
@@ -117,13 +179,72 @@ def _parse_pdf(content: bytes) -> list[tuple[str, SourceLocator]]:
         raise ContentExtractionError(f"PDF exceeds {MAX_PDF_PAGES} page limit ({len(reader.pages)} pages).")
 
     pages: list[tuple[str, SourceLocator]] = []
-    for i, page in enumerate(reader.pages, start=1):
-        extracted = (page.extract_text() or "").strip()
-        if extracted:
-            pages.append((
-                extracted,
-                SourceLocator(locator_type="page", index=i, label=f"Page {i}"),
-            ))
+    ocr_unavailable_pages: list[int] = []
+    fitz_doc = None  # opened lazily -- only if some page actually needs OCR
+
+    try:
+        for i, page in enumerate(reader.pages, start=1):
+            extracted = (page.extract_text() or "").strip()
+            if extracted:
+                pages.append((
+                    extracted,
+                    SourceLocator(locator_type="page", index=i, label=f"Page {i}"),
+                ))
+                continue
+
+            # No text layer on this page -- likely a scanned image or a
+            # legacy statistical table rendered as a picture (the exact gap
+            # this OCR fallback closes). Render just this page and OCR it
+            # rather than silently contributing nothing for it.
+            if fitz_doc is None:
+                import fitz  # PyMuPDF -- renders pages without an external poppler binary
+                fitz_doc = fitz.open(stream=content, filetype="pdf")
+
+            try:
+                image = _render_pdf_page_to_image(fitz_doc, i - 1)
+                ocr_text = _ocr_image(image)
+            except ContentExtractionError:
+                # The tesseract binary itself is missing -- note it and keep
+                # going rather than failing the whole document if other
+                # pages already have a real text layer.
+                ocr_unavailable_pages.append(i)
+                continue
+
+            if ocr_text:
+                pages.append((
+                    ocr_text,
+                    SourceLocator(locator_type="page", index=i, label=f"Page {i} (OCR)"),
+                ))
+    finally:
+        if fitz_doc is not None:
+            fitz_doc.close()
+
+    if ocr_unavailable_pages:
+        if not pages:
+            # Every page in this PDF needed OCR and none of them could be
+            # read -- this is "OCR genuinely could not run here", not "the
+            # document has no content". Say so honestly instead of falling
+            # through to the generic too-short-text error downstream.
+            raise ContentExtractionError(
+                "OCR is not available in this environment (the tesseract binary is "
+                "not installed) -- scanned pages could not be read; only pages "
+                "with a text layer were extracted."
+            )
+        # Partial degradation: some pages had a real text layer, so don't
+        # hard-fail the whole ingest -- just leave an honest note alongside
+        # the real content instead of pretending the scanned pages were blank.
+        page_list = ", ".join(str(n) for n in ocr_unavailable_pages)
+        pages.append((
+            f"[OCR unavailable in this environment: the tesseract binary is not "
+            f"installed. Page(s) {page_list} appear to be scanned/image-only and "
+            f"could not be read.]",
+            SourceLocator(
+                locator_type="page",
+                index=ocr_unavailable_pages[0],
+                label="OCR unavailable",
+            ),
+        ))
+
     return pages
 
 
@@ -316,6 +437,45 @@ def _parse_audio_video(content: bytes) -> list[tuple[str, SourceLocator]]:
     )]
 
 
+def _parse_image(content: bytes) -> list[tuple[str, SourceLocator]]:
+    """OCR a directly uploaded image (.png/.jpg/.jpeg) -- the "document
+    scanner" case: a trainer photographs a page rather than uploading a PDF.
+    Distinct from `_parse_pdf`'s per-page OCR fallback, but shares the same
+    `_ocr_image` path (and therefore the same honest missing-tesseract
+    handling).
+    """
+    try:
+        from PIL import Image
+    except ImportError as exc:
+        raise ContentExtractionError("Image parsing requires the 'Pillow' package.") from exc
+
+    try:
+        image = Image.open(io.BytesIO(content))
+        # .size reads only the header -- no pixel decoding yet, so this
+        # dimension check runs *before* the expensive/exploitable part,
+        # mirroring the DOCX/PPTX zip-bomb guards' "validate before doing
+        # the expensive work" shape.
+        width, height = image.size
+    except Exception as exc:
+        raise ContentExtractionError("Could not parse image -- corrupted or invalid format.") from exc
+
+    if width * height > MAX_IMAGE_PIXELS:
+        raise ContentExtractionError(
+            f"Image exceeds the {MAX_IMAGE_PIXELS // 1_000_000} megapixel limit "
+            f"({width}x{height}) -- possible decompression bomb."
+        )
+
+    try:
+        image = image.convert("RGB")
+    except Exception as exc:
+        raise ContentExtractionError("Could not parse image -- corrupted or invalid format.") from exc
+
+    text = _ocr_image(image)
+    if not text:
+        return []
+    return [(text, SourceLocator(locator_type="page", index=1, label="Page 1 (OCR)"))]
+
+
 _PARSERS = {
     ".txt": _parse_txt_or_md,
     ".md": _parse_txt_or_md,
@@ -331,6 +491,9 @@ _PARSERS = {
     ".mp3": _parse_audio_video,
     ".wav": _parse_audio_video,
     ".m4a": _parse_audio_video,
+    ".png": _parse_image,
+    ".jpg": _parse_image,
+    ".jpeg": _parse_image,
 }
 
 

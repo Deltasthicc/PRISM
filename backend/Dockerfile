@@ -30,6 +30,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# Run as a non-root user (flagged by this repo's own SAST gate,
+# dockerfile.security.missing-user -- a container that runs as root gives an
+# attacker who compromises the process root inside it). Nothing under /app
+# needs to be written at runtime (alembic writes to the database, not the
+# filesystem), so a plain ownership change of the already-copied tree is
+# enough -- no writable-volume carve-out needed like prism-keycloak's image.
+RUN useradd --uid 1000 --create-home appuser && chown -R appuser:appuser /app
+USER appuser
+
 # Render sets $PORT at runtime; alembic upgrade head runs the same migration
 # step render.yaml's previous native startCommand already ran, unchanged.
 CMD ["sh", "-c", "python -m alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"]

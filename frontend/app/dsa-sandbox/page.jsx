@@ -76,6 +76,10 @@ export default function DsaSandboxPage() {
     queryKey: ['dsa-sandbox-problems'],
     queryFn: () => learning.getDsaSandboxProblems(),
     enabled: ready && !!player && hasDsaFundamentals,
+    // The problem bank is fixed seeded content, not per-player state --
+    // cache it much longer than the app-wide default.
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   const problems = useMemo(() => problemsData?.problems || [], [problemsData]);

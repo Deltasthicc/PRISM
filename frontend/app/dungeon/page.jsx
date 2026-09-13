@@ -58,11 +58,21 @@ export default function DungeonMapPage() {
     queryKey: ['curricula', language],
     queryFn: () => learning.getCurricula(language),
     enabled: ready && !!player,
+    // Curriculum definitions (services/curricula.py) are seeded content, not
+    // something that changes within a session -- cache them much longer than
+    // the app-wide default so switching between /academy, /dungeon and
+    // /stats never re-fetches the same static list.
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
   const { data: dungeonsData } = useQuery({
     queryKey: ['dungeons-list'],
     queryFn: () => game.listDungeons(),
     enabled: ready && !!player,
+    // One dungeon per curriculum, seeded server-side -- same rationale as
+    // 'curricula' above.
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   const profile = profileData?.profile;

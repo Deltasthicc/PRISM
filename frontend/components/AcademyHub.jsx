@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { BookOpen, BrainCircuit, FileQuestion, ShieldCheck } from 'lucide-react';
 import { useRequireAuth } from '@/lib/useRequireAuth';
@@ -34,6 +35,7 @@ const LINK_BUTTON_CLASS = [
 
 export default function AcademyHub() {
   const { ready } = useRequireAuth();
+  const router = useRouter();
   const player = useAuthStore((state) => state.player);
   const { t, language } = useLanguage();
   const [profile, setProfile] = useState(EMPTY_PROFILE);
@@ -63,6 +65,16 @@ export default function AcademyHub() {
   useEffect(() => {
     if (data?.profile) setProfile({ ...EMPTY_PROFILE, ...data.profile });
   }, [data?.profile]);
+
+  // /stats and /dungeon are the nav bar's first two tabs and the near-certain
+  // next stop from this hub -- prefetch their route chunks as soon as the
+  // Academy's own data has loaded so clicking either feels instant instead of
+  // waiting on a fresh JS chunk fetch.
+  useEffect(() => {
+    if (!data) return;
+    router.prefetch('/stats');
+    router.prefetch('/dungeon');
+  }, [data, router]);
 
   // Real fix for "the same curriculum always shows Selected" -- once, on
   // the first profile load, adopt whatever this learner actually chose at

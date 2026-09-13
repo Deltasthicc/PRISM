@@ -96,6 +96,10 @@ export default function StatsPage() {
     queryKey: ['curricula', language],
     queryFn: () => learning.getCurricula(language),
     enabled: ready && !!player,
+    // Seeded, near-static curriculum definitions -- see the same queryKey's
+    // comment in app/dungeon/page.jsx.
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   const profile = profileData?.profile;

@@ -450,6 +450,43 @@ export const judgmentScenarios = {
     ),
 };
 
+// Real two-stage adaptive diagnostic (routes/adaptive_diagnostic.py) -- a
+// broad stage-1 quiz across a curriculum, then, only when stage 1's wrong
+// answers carry a real tagged misconception, a stage-2 quiz targeted at
+// exactly that misconception. See that route's own docstring for the
+// honesty boundary: stage 2 is reported unavailable rather than faked when
+// there's no real signal or no real follow-up item left to serve.
+export const adaptiveDiagnostic = {
+  startStage1: (playerId, curriculumSlug) =>
+    request('/learning/diagnostic/stage1/start', {
+      method: 'POST',
+      body: { player_id: playerId, curriculum_slug: curriculumSlug },
+    }),
+
+  submitStage1: (sessionId, playerId, answers) =>
+    request('/learning/diagnostic/stage1/submit', {
+      method: 'POST',
+      body: { session_id: sessionId, player_id: playerId, answers },
+    }),
+
+  startStage2: (sessionId, playerId) =>
+    request('/learning/diagnostic/stage2/start', {
+      method: 'POST',
+      body: { session_id: sessionId, player_id: playerId },
+    }),
+
+  submitStage2: (sessionId, playerId, answers) =>
+    request('/learning/diagnostic/stage2/submit', {
+      method: 'POST',
+      body: { session_id: sessionId, player_id: playerId, answers },
+    }),
+
+  getSession: (sessionId, playerId) =>
+    request(
+      `/learning/diagnostic/session/${encodeURIComponent(sessionId)}?player_id=${encodeURIComponent(playerId)}`
+    ),
+};
+
 // Multipart requests (file upload) can't go through request() above -- the
 // browser must set its own multipart boundary in the Content-Type header,
 // which request()'s hardcoded 'application/json' would clobber.

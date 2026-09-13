@@ -70,6 +70,10 @@ export default function NavBar() {
     ...(hasPublicPolicy
       ? [{ href: '/scenarios', label: 'Judgment Simulations', hasDot: false }]
       : []),
+    // Same convention: not yet run through the i18n pipeline (see the
+    // page's own header comment). Available for every curriculum, so no
+    // target-domain gate.
+    { href: '/adaptive-diagnostic', label: 'Adaptive Diagnostic', hasDot: false },
     // Text and voice are now one page (/assistant) with a mode toggle,
     // not two separate nav tabs -- see app/assistant/page.jsx's own
     // header comment.

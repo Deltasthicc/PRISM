@@ -1,0 +1,73 @@
+{
+  "note": "A curated, additive layer over existing hand-authored question items (data/hand_authored_questions.json) -- maps a subset of item_id values to the single real, identifiable misconception a wrong answer on that item most likely reflects. Deliberately NOT baked into hand_authored_questions.json itself: that file's schema and its own provenance tests are unrelated to this feature, and every tag here was written by reading that item's actual distractors, not invented from the competency_id alone. Only items where the wrong options represent one clear, defensible misunderstanding (not just a recall gap) are tagged; most items in the bank are not tagged at all, and that's fine -- services/adaptive_diagnostic.py treats an untagged wrong answer as carrying no misconception signal rather than guessing one. Most tags here are honestly single-item (a narrow, specific misconception); two are broader categories genuinely shared across multiple real items (sampling-design-tradeoff-confusion, dpdp-definition-scope-underestimation) -- grouped only where the items truly share one underlying misunderstanding, not to inflate apparent coverage.",
+  "tags": {
+    "ha_gate_graph_dag_dfs_times": {
+      "misconception": "dfs-interval-nesting-confusion",
+      "label": "Confusing which discovery/finish-time interval relationships DFS can and cannot produce for an edge"
+    },
+    "ha_gate_binary_search_precondition": {
+      "misconception": "binary-search-preconditions-confusion",
+      "label": "Believing binary search's O(log n) bound holds regardless of sortedness or random-access cost"
+    },
+    "ha_gate_heap_leaf_index": {
+      "misconception": "heap-leaf-boundary-confusion",
+      "label": "Miscalculating the array-index boundary between leaf and internal nodes in a binary heap"
+    },
+    "ha_gate_graph_mst_cycle_property": {
+      "misconception": "mst-cycle-property-confusion",
+      "label": "Misapplying the cycle/cut property that determines which edges must or must not appear in a minimum spanning tree"
+    },
+    "ha_p1_q5b_stratified_allocation": {
+      "misconception": "sampling-design-tradeoff-confusion",
+      "label": "Treating a sampling design choice as driven by unit counts alone, missing the variability/cost/probability tradeoffs that actually determine it"
+    },
+    "ha_p1_q8b_horvitz_thompson": {
+      "misconception": "sampling-design-tradeoff-confusion",
+      "label": "Treating a sampling design choice as driven by unit counts alone, missing the variability/cost/probability tradeoffs that actually determine it"
+    },
+    "ha_plfs_ufs_ppswr_mcq": {
+      "misconception": "sampling-design-tradeoff-confusion",
+      "label": "Treating a sampling design choice as driven by unit counts alone, missing the variability/cost/probability tradeoffs that actually determine it"
+    },
+    "ha_p2_q1c_control_chart_sample_size": {
+      "misconception": "range-vs-stddev-efficiency-confusion",
+      "label": "Treating a statistical-efficiency tradeoff (range vs. standard deviation as subgroup size grows) as a feasibility limitation instead"
+    },
+    "ha_nqaf_four_categories_mcq": {
+      "misconception": "nqaf-category-structure-confusion",
+      "label": "Misremembering how a quality-assurance framework's statements are actually grouped into categories"
+    },
+    "ha_upsc23_money_bill_finance_bill": {
+      "misconception": "money-bill-finance-bill-confusion",
+      "label": "Conflating a Money Bill's and an ordinary Finance Bill's distinct Rajya Sabha and joint-sitting procedures"
+    },
+    "ha_ccs_gift_threshold_group_cd": {
+      "misconception": "flat-gift-threshold-assumption",
+      "label": "Assuming a single flat gift-value threshold applies across all civil service groups rather than a tiered one"
+    },
+    "ha_darpg_client_vs_citizen": {
+      "misconception": "client-citizen-terminology-confusion",
+      "label": "Treating 'client' and 'citizen' as interchangeable in a service-charter framework that deliberately distinguishes them"
+    },
+    "ha_upsc23_president_election_void": {
+      "misconception": "constitutional-provision-overreach",
+      "label": "Assuming a constitutional safeguard or procedural rule applies more broadly than the specific provision actually states"
+    },
+    "ha_itact_asymmetric_crypto": {
+      "misconception": "asymmetric-key-pair-confusion",
+      "label": "Not recognizing the public/private key split that defines an asymmetric cryptographic system"
+    },
+    "ha_responsible_ai_nondiscrimination": {
+      "misconception": "ai-principle-scope-overreach",
+      "label": "Generalizing a specific AI ethics principle (anti-discrimination) into an unrelated blanket restriction"
+    },
+    "ha_dpdp_personal_data_breach": {
+      "misconception": "dpdp-definition-scope-underestimation",
+      "label": "Assuming a DPDP Act term (breach, processing) has a narrower everyday meaning than the statute's deliberately broad definition"
+    },
+    "ha_dpdp_processing_definition": {
+      "misconception": "dpdp-definition-scope-underestimation",
+      "label": "Assuming a DPDP Act term (breach, processing) has a narrower everyday meaning than the statute's deliberately broad definition"
+    }
+  }
+}

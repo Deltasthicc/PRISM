@@ -70,8 +70,10 @@ export default function NavBar() {
     ...(hasPublicPolicy
       ? [{ href: '/scenarios', label: 'Judgment Simulations', hasDot: false }]
       : []),
+    // Text and voice are now one page (/assistant) with a mode toggle,
+    // not two separate nav tabs -- see app/assistant/page.jsx's own
+    // header comment.
     { href: '/assistant', label: t('nav.assistant'), hasDot: false },
-    { href: '/voice', label: t('nav.voiceAssistant'), hasDot: false },
     {
       href: '/integration-registry',
       label: t('nav.integrationRegistry'),

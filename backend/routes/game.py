@@ -813,10 +813,19 @@ def _annotate_rooms_for_player(db: Session, dungeon: Dungeon, player_id: str) ->
     for room in dungeon.rooms:
         unlocked = _is_room_unlocked_for_player(db, player_id, room, dungeon.dungeon_id)
         recent_accuracy = accuracy_by_topic.get(room.topic, 0.0)
-        completion = (
+        damage_completion = (
             min(1.0, damage_by_topic.get(room.topic, 0) / room.enemy_count)
             if room.enemy_count > 0 else 0.0
         )
+        # Two independent, both-real signals of the same underlying mastery:
+        # Quest Mode's combat damage, and the always-visible professional
+        # path's plain accuracy practice (/practice -> AccuracyHistory,
+        # never touching damage_dealt). A learner who only ever practiced
+        # via /practice (this page's own actual, non-gamified path) was
+        # otherwise stuck at a permanent 0% here even after being marked
+        # "mastered" by the exact same recent_accuracy just below -- take
+        # whichever real signal is further along, not just the combat one.
+        completion = max(damage_completion, recent_accuracy)
         room.unlocked_for_player = unlocked
         room.recent_accuracy = recent_accuracy
         room.completion = completion

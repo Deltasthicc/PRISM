@@ -99,6 +99,8 @@ export const TRANSLATIONS = {
       "occupationPlaceholder": "e.g. Statistical Officer",
       "specialtyLabel": "What do you want to focus on?",
       "loadingSpecialties": "Loading…",
+      "loadFailedSpecialties": "Could not load specialties.",
+      "retrySpecialties": "Retry",
       "genericError": "Could not create your account. Please try again.",
       "submit": "Create account",
       "submitting": "Creating…",

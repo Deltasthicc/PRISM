@@ -157,25 +157,40 @@ export default function StatsPage() {
             </div>
           </div>
 
-          {curricula.length > 0 && (
-            <div className="flex items-center gap-2 bg-[#f2f3ff] px-3 py-1.5 rounded-lg border border-[#c5c5d3]/30">
-              <span className="font-mono text-xs text-[#757682]">{t('stats.curriculumLabel')}</span>
-              <select
-                value={activeSlug || ''}
-                onChange={(e) => {
-                  setSelectedSlug(e.target.value);
-                  setSelectedDimId(null);
-                }}
-                className="bg-transparent text-[#00236f] font-mono text-xs font-semibold outline-none cursor-pointer pr-1"
-              >
-                {curricula.map((c) => (
-                  <option key={c.slug} value={c.slug}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div className="flex items-center gap-2 flex-wrap">
+            {curricula.length > 0 && (
+              <div className="flex items-center gap-2 bg-[#f2f3ff] px-3 py-1.5 rounded-lg border border-[#c5c5d3]/30">
+                <span className="font-mono text-xs text-[#757682]">{t('stats.curriculumLabel')}</span>
+                <select
+                  value={activeSlug || ''}
+                  onChange={(e) => {
+                    setSelectedSlug(e.target.value);
+                    setSelectedDimId(null);
+                  }}
+                  className="bg-transparent text-[#00236f] font-mono text-xs font-semibold outline-none cursor-pointer pr-1"
+                >
+                  {curricula.map((c) => (
+                    <option key={c.slug} value={c.slug}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {/* The only always-reachable link to the proctored competency
+                assessment (app/CompetencyQuizPage's real webcam integrity
+                toggle) after the one-time registration redirect -- it was
+                previously reachable only from /register (first signup) or
+                /dungeon's capstone gate (locked until every competency in a
+                pathway is cleared), so a learner had no way back to it. */}
+            <button
+              type="button"
+              onClick={() => router.push('/baseline-assessment')}
+              className="font-mono text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#00236f]/30 text-[#00236f] hover:bg-[#f2f3ff] cursor-pointer"
+            >
+              Retake assessment (proctored)
+            </button>
+          </div>
         </div>
       </Panel>
 

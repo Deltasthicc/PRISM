@@ -822,13 +822,34 @@ def _annotate_rooms_for_player(db: Session, dungeon: Dungeon, player_id: str) ->
     heuristic (frontend/lib/api/client.js's `normalizeDungeon`, now removed),
     this works for every seeded curriculum, not only the DSA dungeon.
     """
+    # recent_accuracy is a rolling average over at most the last 5 answers
+    # (services/game_logic.py::update_accuracy_history) -- after a single
+    # answer that average is necessarily 0% or 100%, with no way to express
+    # "this is one data point, not a proven pattern." A live audit found
+    # this let one lucky baseline-assessment question flip a room straight
+    # to "MASTERED" while /stats's own gap-analysis copy was, for the exact
+    # same evidence, still hedging it as "provisional, low confidence" --
+    # an honesty inconsistency this project's own conventions elsewhere
+    # (see docs/contracts on fabricated competency claims) don't allow
+    # anywhere else. MIN_ATTEMPTS_FOR_ACCURACY_MASTERY gates only the
+    # accuracy-based path below; damage-based mastery (completion >= 1) is
+    # unaffected -- clearing a room's real enemy_count already requires
+    # multiple correct answers, so it has no equivalent single-data-point
+    # problem. Deliberately NOT touching AccuracyHistory.mastered (the
+    # one-way ratchet used for room-unlocking elsewhere) or the unlock
+    # threshold itself -- this only changes the user-facing status label,
+    # not what a learner can actually access.
+    MIN_ATTEMPTS_FOR_ACCURACY_MASTERY = 3
+
     histories = db.query(AccuracyHistory).filter(AccuracyHistory.player_id == player_id).all()
     accuracy_by_topic = {h.topic: h.recent_accuracy or 0.0 for h in histories}
+    attempts_by_topic = {h.topic: h.attempts or 0 for h in histories}
     damage_by_topic = {h.topic: h.damage_dealt or 0 for h in histories}
 
     for room in dungeon.rooms:
         unlocked = _is_room_unlocked_for_player(db, player_id, room, dungeon.dungeon_id)
         recent_accuracy = accuracy_by_topic.get(room.topic, 0.0)
+        topic_attempts = attempts_by_topic.get(room.topic, 0)
         damage_completion = (
             min(1.0, damage_by_topic.get(room.topic, 0) / room.enemy_count)
             if room.enemy_count > 0 else 0.0
@@ -845,9 +866,19 @@ def _annotate_rooms_for_player(db: Session, dungeon: Dungeon, player_id: str) ->
         room.unlocked_for_player = unlocked
         room.recent_accuracy = recent_accuracy
         room.completion = completion
+        # NOTE: `completion` itself (the numeric percentage above) already
+        # equals recent_accuracy whenever it's the larger of the two real
+        # signals -- so checking `completion >= 1` here would silently let
+        # the same single-data-point 100% back in through this branch. The
+        # "mastered" *label* below deliberately checks damage_completion
+        # directly (a real multi-question signal: enemy_count is never 1)
+        # instead of the folded `completion` value.
+        accuracy_mastered = (
+            recent_accuracy >= 0.9 and topic_attempts >= MIN_ATTEMPTS_FOR_ACCURACY_MASTERY
+        )
         if not unlocked:
             status = "locked"
-        elif completion >= 1 or recent_accuracy >= 0.9:
+        elif damage_completion >= 1 or accuracy_mastered:
             status = "mastered"
         elif 0 < recent_accuracy < 0.5:
             status = "weak"

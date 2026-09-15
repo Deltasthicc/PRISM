@@ -134,3 +134,80 @@ def test_combat_only_progress_still_shows_completion_as_before():
     assert response.status_code == 200
     arrays_room = next(r for r in response.json()["rooms"] if r["topic"] == "arrays")
     assert arrays_room["completion"] == 0.5
+
+
+def test_one_correct_answer_does_not_claim_mastered():
+    """A live audit found a single correct baseline-assessment question
+    (attempts=1, recent_accuracy necessarily 100%) flipped a room straight to
+    "MASTERED" -- overconfident given the same evidence is hedged as
+    "provisional, low confidence" on /stats. Real accuracy-based mastery now
+    needs at least MIN_ATTEMPTS_FOR_ACCURACY_MASTERY real attempts on that
+    topic; below that, the room shows "unlocked" instead."""
+    db = _db()
+    player = Player(username="one-question-learner")
+    db.add(player)
+    db.commit()
+
+    dungeon = Dungeon(name="DSA Fundamentals", domain="dsa-fundamentals", curriculum_slug="dsa-fundamentals")
+    db.add(dungeon)
+    db.flush()
+    room = Room(dungeon_id=dungeon.dungeon_id, topic="arrays", enemy_count=3, order_index=0)
+    db.add(room)
+
+    db.add(
+        AccuracyHistory(
+            player_id=player.player_id,
+            topic="arrays",
+            attempts=1,
+            correct=1,
+            recent_accuracy=1.0,
+            damage_dealt=0,
+        )
+    )
+    db.commit()
+
+    response = TestClient(_app(db, _principal(player.player_id))).get(
+        f"/game/dungeon/{dungeon.dungeon_id}", params={"player_id": player.player_id}
+    )
+
+    assert response.status_code == 200
+    arrays_room = next(r for r in response.json()["rooms"] if r["topic"] == "arrays")
+    assert arrays_room["status"] == "unlocked"
+    # completion itself is unchanged (still a real, honest 100% for that one
+    # answer) -- only the "mastered" *label* requires more evidence.
+    assert arrays_room["completion"] == 1.0
+
+
+def test_three_correct_answers_does_claim_mastered():
+    """The other side of the same fix: real accuracy-based mastery still
+    works once there's enough evidence to back the claim."""
+    db = _db()
+    player = Player(username="three-question-learner")
+    db.add(player)
+    db.commit()
+
+    dungeon = Dungeon(name="DSA Fundamentals", domain="dsa-fundamentals", curriculum_slug="dsa-fundamentals")
+    db.add(dungeon)
+    db.flush()
+    room = Room(dungeon_id=dungeon.dungeon_id, topic="arrays", enemy_count=3, order_index=0)
+    db.add(room)
+
+    db.add(
+        AccuracyHistory(
+            player_id=player.player_id,
+            topic="arrays",
+            attempts=3,
+            correct=3,
+            recent_accuracy=1.0,
+            damage_dealt=0,
+        )
+    )
+    db.commit()
+
+    response = TestClient(_app(db, _principal(player.player_id))).get(
+        f"/game/dungeon/{dungeon.dungeon_id}", params={"player_id": player.player_id}
+    )
+
+    assert response.status_code == 200
+    arrays_room = next(r for r in response.json()["rooms"] if r["topic"] == "arrays")
+    assert arrays_room["status"] == "mastered"

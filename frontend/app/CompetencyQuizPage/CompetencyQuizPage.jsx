@@ -183,6 +183,25 @@ export default function CompetencyQuizPage() {
     return () => clearInterval(interval);
   }, [isTimerRunning, isSubmitted]);
 
+  // A live audit found navigating away mid-assessment (e.g. clicking a
+  // NavBar tab) silently discards every answer so far, with no warning --
+  // restarting from Q1/0-answered on return. This can't cover in-app
+  // client-side route changes (Next's App Router has no route-change-block
+  // hook the way the old Pages Router did), but it does cover the most
+  // common accidental-loss paths: closing the tab, refreshing, or typing a
+  // new URL, which beforeunload's native browser-shown confirmation
+  // handles regardless of framework.
+  useEffect(() => {
+    const hasUnsavedProgress = !isSubmitted && Object.keys(selectedAnswers).length > 0;
+    if (!hasUnsavedProgress) return;
+    function handleBeforeUnload(event) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isSubmitted, selectedAnswers]);
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;

@@ -38,6 +38,19 @@ engine = create_engine(
     connect_args={"check_same_thread": False} if _is_sqlite else {},
     echo=False,
     pool_pre_ping=_is_postgresql,
+    # SQLAlchemy's own defaults here are pool_size=5 + max_overflow=10 -- a
+    # 15-connection ceiling for this one backend process. A concurrent-load
+    # test against the deployed Render/Neon stack (25 simultaneous
+    # POST /game/player/create calls) reproduced real HTTP 500s under that
+    # exact ceiling -- this comment block used to defer pool tuning for
+    # exactly this reason ("needs production numbers"); that test is the
+    # number. 20 + 20 = a 40-connection ceiling, comfortably inside Neon
+    # free tier's per-branch connection limit for the single Render
+    # web-service instance this app runs as (WEB_CONCURRENCY=1), with real
+    # headroom over the traffic this test measured. SQLite ignores these
+    # (single-file, no pooling model to tune) -- only applied for the real
+    # deployed Postgres path.
+    **({"pool_size": 20, "max_overflow": 20, "pool_timeout": 30} if _is_postgresql else {}),
     # A raised DBAPI error's default SQLAlchemy formatting includes the
     # failed statement's bound parameters -- fine for a stack trace in local
     # dev, but those parameters can be player_id, evidence detail, an

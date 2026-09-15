@@ -9,6 +9,7 @@ from typing import Optional
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from db.database import get_db
@@ -89,13 +90,28 @@ def _verdict_from_score(score: float) -> str:
 
 @router.post("/player/create")
 async def create_player(body: PlayerCreate, db: Session = Depends(get_db)):
-    """Create a new player with a unique username."""
+    """Create a new player with a unique username.
+
+    The pre-check below is a UX nicety (a fast, friendly rejection for the
+    common case), not the actual uniqueness guarantee -- two concurrent
+    requests for the same not-yet-taken username can both pass it before
+    either commits (a classic check-then-act race), a real failure mode a
+    concurrent-load test against this exact endpoint reproduced. The
+    database's own `unique=True` constraint on Player.username is the real
+    guarantee; catching the IntegrityError it raises on the losing commit
+    turns that race into the same clean 400 the pre-check already gives the
+    non-concurrent case, instead of an unhandled 500.
+    """
     existing = db.query(Player).filter(Player.username == body.username).first()
     if existing:
         raise HTTPException(status_code=400, detail="Username already taken")
     player = Player(username=body.username)
     db.add(player)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Username already taken")
     db.refresh(player)
     # A brand-new player has no accuracy_history rows yet (those are created
     # in start_session) -- pass [] rather than querying for rows that can't

@@ -23,6 +23,7 @@ export default function SamplingLabPage() {
   const { ready } = useRequireAuth();
   const player = useAuthStore((s) => s.player);
   const [tasks, setTasks] = useState([]);
+  const [tasksLoading, setTasksLoading] = useState(true);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [value, setValue] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -31,13 +32,15 @@ export default function SamplingLabPage() {
 
   useEffect(() => {
     if (!ready) return;
+    setTasksLoading(true);
     samplingLab
       .getTasks()
       .then((data) => {
         setTasks(data.tasks || []);
         if (data.tasks?.length) setSelectedTaskId(data.tasks[0].task_id);
       })
-      .catch((cause) => setError(cause.message || 'Could not load lab tasks.'));
+      .catch((cause) => setError(cause.message || 'Could not load lab tasks.'))
+      .finally(() => setTasksLoading(false));
   }, [ready]);
 
   const selectedTask = tasks.find((t) => t.task_id === selectedTaskId);
@@ -67,6 +70,15 @@ export default function SamplingLabPage() {
 
   if (!ready) {
     return <p className="font-sans text-sm text-[#757682] text-center mt-10">Loading…</p>;
+  }
+
+  // `ready` only reflects auth, not whether the task list itself has
+  // arrived yet -- without this, the page rendered its full shell with an
+  // empty task list and no indicator at all while samplingLab.getTasks()
+  // was still in flight, which read as a broken/blank page rather than a
+  // loading one under real network latency.
+  if (tasksLoading) {
+    return <p className="font-sans text-sm text-[#757682] text-center mt-10">Loading lab tasks…</p>;
   }
 
   return (

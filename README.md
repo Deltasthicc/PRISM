@@ -10,10 +10,10 @@
 ![Frontend](https://img.shields.io/badge/frontend-Next.js%2015%20%2F%20React%2019-000000?logo=nextdotjs&logoColor=white)
 ![Database](https://img.shields.io/badge/database-PostgreSQL%20(Neon)-4169E1?logo=postgresql&logoColor=white)
 ![Languages](https://img.shields.io/badge/UI-11%20languages-orange)
-![Tests](https://img.shields.io/badge/backend%20tests-1098-brightgreen)
+![Tests](https://img.shields.io/badge/backend%20tests-1102-brightgreen)
 ![Deploy](https://img.shields.io/badge/frontend-Vercel-000000?logo=vercel&logoColor=white)
 
-[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [Adaptive Diagnostic](#-adaptive-diagnostic-two-stage-misconception-targeted) · [Live Quiz Sessions](#-live-quiz-sessions-qr-code-classroom-delivery) · [Trainer Review](#-trainer-review-edit-before-approve) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Recommended Learning](#-recommended-learning--igotnssta-enrollment) · [Exam Integrity](#-exam-integrity-webcam-proctoring) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [Admin Analytics](#-admin-analytics) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
+[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [Adaptive Diagnostic](#-adaptive-diagnostic-two-stage-misconception-targeted) · [Live Quiz Sessions](#-live-quiz-sessions-qr-code-classroom-delivery) · [Trainer Review](#-trainer-review-edit-before-approve) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Recommended Learning](#-recommended-learning--igotnssta-enrollment) · [Exam Integrity](#-exam-integrity-webcam-proctoring) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [Admin Analytics](#-admin-analytics) · [Reliability hardening](#-reliability-hardening-from-a-real-audit) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
 </div>
 
@@ -209,6 +209,15 @@ A real, access-filtered, cited retrieval engine ([`backend/ai/retrieval.py`](bac
 - **Graceful LLM degradation** — with a working `GEMINI_API_KEY`, the top evidence is handed to Gemini for a synthesized, still-grounded answer; without one (or on an API error), it falls back to a deterministic extractive answer quoting the top-matching evidence directly, rather than failing.
 - Prompt-injection detection runs on every query before retrieval even starts.
 
+## 🛡️ Reliability hardening (from a real audit)
+
+The deployed app was put through a real functional audit and a bounded concurrent-load test against its own live Render/Neon/Vercel stack (not a staging copy) — registering real accounts, submitting real answers, and firing genuine concurrent traffic at the production API. Two real bugs came out of it and were fixed the same way everything else in this README claims to be real: reproduced, root-caused, fixed, regression-tested.
+
+- **Concurrent registrations were failing under load.** 25 simultaneous `POST /game/player/create` calls (unique usernames) produced HTTP 500s on 8 of them (32%) — a genuine check-then-insert race in `create_player` (two concurrent requests for the same not-yet-taken username could both pass the pre-check before either committed) plus an un-tuned SQLAlchemy connection pool (the code's own long-standing comment had flagged pool sizing as deferred, waiting on exactly this kind of production number). Fixed: the commit's `IntegrityError` is now caught and converted to the same clean 400 a non-concurrent duplicate already gets, and the pool is explicitly sized. Re-verified live afterward: 25/25 concurrent registrations succeed, and 10 concurrent requests for the *identical* username correctly give 1 success + 9 clean 400s + 0 crashes.
+- **A single correct answer could claim a room was "MASTERED."** `recent_accuracy` is a rolling average over at most the last 5 attempts, so after exactly one answer it's necessarily 0% or 100% — while `/stats`'s own gap-analysis copy, looking at the identical evidence, hedges it as "provisional, low confidence." Fixed: accuracy-based mastery now needs at least 3 real attempts on a topic before the label fires; damage-based mastery (clearing a room's real `enemy_count` in Quest Mode combat) is untouched, since that already requires multiple correct answers.
+- Two smaller fixes from the same pass: `/sampling-lab` now shows a real loading state while its task list fetches (it previously rendered an empty, indicator-free form shell during that wait); the baseline assessment now warns via the browser's native confirmation before a tab close, refresh, or typed-URL navigation would silently discard in-progress answers (in-app `<Link>` navigation isn't covered yet — Next's App Router has no route-change-block hook for that).
+- **What the same audit checked and did *not* find a bug in**, worth recording so it isn't re-litigated: the QR live-session results/leaderboard (independently reproduced twice, host-only and host+participant, both showing correct real scores), and registering an already-taken username (intentionally logs the caller into the existing account instead of erroring — there's no password in this demo mode to check, so treating it as "welcome back" is deliberate, not a data-integrity gap).
+
 ## ✅ What's real, and what's a mockup
 
 Being honest about this line is the point of this section — the frontend has a real split between pages backed by the actual engine and pages that are still visual placeholders for the demo narrative.
@@ -217,7 +226,7 @@ Being honest about this line is the point of this section — the frontend has a
 |---|---|
 | `/login` → `/register` → `/baseline-assessment` | **Real.** Resolves an actual backend player via `useAuthStore`, then a real profile form, then a source-cited baseline quiz served by `routes/competency_quiz.py`, with an opt-in real webcam integrity monitor — see [Exam Integrity](#-exam-integrity-webcam-proctoring). |
 | `/stats` | **Real.** Every number comes from `GET /learning/pathway` — no hardcoded competency data, including the recommended-courses list — see [Recommended Learning](#-recommended-learning--igotnssta-enrollment) below. |
-| `/dungeon` ("Prerequisite Pathways") | **Real, for all four curricula.** Driven by `GET /learning/pathway/{player_id}` (the same engine `/stats` uses) merged with real per-player room unlock status from `GET /game/dungeon/{id}`. "Practice this competency" opens `/practice`, a plain quiz scoped to that one competency; finishing it updates `AccuracyHistory`, which is what flips a room to unlocked/weak/mastered and advances the "biggest gap" pointer — verified live across every curriculum, not just DSA. |
+| `/dungeon` ("Prerequisite Pathways") | **Real, for all four curricula.** Driven by `GET /learning/pathway/{player_id}` (the same engine `/stats` uses) merged with real per-player room unlock status from `GET /game/dungeon/{id}`. "Practice this competency" opens `/practice`, a plain quiz scoped to that one competency; finishing it updates `AccuracyHistory`, which is what flips a room to unlocked/weak/mastered and advances the "biggest gap" pointer — verified live across every curriculum, not just DSA. "Mastered" now requires at least 3 real attempts on that topic (accuracy-based) or clearing the room's real enemy count (combat-based) — see [Reliability hardening](#-reliability-hardening-from-a-real-audit). |
 | `/dsa-sandbox` | **Real.** See [DSA Sandbox](#-dsa-sandbox) below — real code, a real Judge0 judge, no simulated pass/fail. |
 | `/sampling-lab` | **Real.** See [Virtual Lab](#-virtual-lab-official-statistics) below — bounded, deterministic sample-size tasks, no learner code execution. |
 | `/assistant` | **Real.** Text and voice chat are now one page with a mode toggle (previously two separate nav tabs) — see [Learner Assistant (RAG)](#-learner-assistant-rag) and [Voice AI pipeline](#-voice-ai-pipeline) below; `/voice` now redirects here. |
@@ -340,7 +349,7 @@ Then open `http://localhost:3000`.
 
 ## 🧪 Tests & CI
 
-- **1,098 backend tests** (1,098 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI.
+- **1,102 backend tests** (1,102 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI. Includes a deterministic regression test for the concurrent-registration race described in [Reliability hardening](#-reliability-hardening-from-a-real-audit) — it forces the exact interleaving rather than relying on real thread timing, and fails with the actual `IntegrityError` against the pre-fix code.
 - **No frontend test suite** exists yet — `frontend/package.json` only defines `dev`/`build`/`start`/`lint`.
 - [`ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`:
   - `backend-tests` — `pip-audit` + full pytest suite against Postgres (installs `tesseract-ocr` first, so the OCR tests run against the real binary, not a mock)
@@ -375,6 +384,7 @@ Not yet covered: end-to-end/Playwright smoke tests, SBOM, DAST.
 - Render's free tier means cold starts and tight memory headroom on Keycloak — not a production-scale deployment. The Vercel-hosted frontend does not have this cold-start problem.
 - OCR ([Document ingestion & OCR](#-document-ingestion--ocr)) uses Tesseract's default English-language data only — accuracy on non-English scanned text, handwriting, or low-quality scans is unverified and expected to be weaker than on clean printed English text. It's a real fallback for the "no text layer at all" case, not a purpose-tuned document-scanning product.
 - `backend/requirements.lock` is a standalone dependency-audit artifact and is currently stale relative to the OCR packages (`pymupdf`, `pytesseract`, `Pillow`) added to `requirements.txt` — nothing installs from the lock file today (CI, Render, and the Dockerfile all use `requirements.txt`/`requirements-dev.txt`), so this doesn't affect what's actually deployed, but it should be regenerated.
+- The baseline assessment's unsaved-progress warning ([Reliability hardening](#-reliability-hardening-from-a-real-audit)) only covers tab close, refresh, and typed-URL navigation — clicking a NavBar tab mid-assessment still silently discards progress with no warning, since intercepting in-app client-side route changes would need cross-component state Next's App Router has no built-in hook for.
 
 ## 📁 Project structure
 
@@ -388,7 +398,7 @@ backend/
   models/            SQLAlchemy models (players, learning, governance, dungeon, guild, live_session, ...)
   security/          Real OIDC identity + RBAC (untouched by the demo bypass)
   migrations/        Alembic migrations
-  tests/             1,098 pytest tests
+  tests/             1,102 pytest tests
 
 frontend/
   app/           Next.js App Router pages (see the real-vs-mockup table above); most routes have a

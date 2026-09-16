@@ -283,12 +283,12 @@ def _make_scanned_pdf_bytes(image_png_bytes: bytes, page_width: int = 1000, page
     all, built directly with PyMuPDF so pypdf's `extract_text()` on it
     returns empty, exactly like a real scanned document, and _parse_pdf must
     fall back to rendering + OCR-ing the page itself."""
-    import fitz
+    import pymupdf
 
-    doc = fitz.open()
+    doc = pymupdf.open()
     try:
         page = doc.new_page(width=page_width, height=page_height)
-        page.insert_image(fitz.Rect(0, 0, page_width, page_height), stream=image_png_bytes)
+        page.insert_image(pymupdf.Rect(0, 0, page_width, page_height), stream=image_png_bytes)
         return doc.tobytes()
     finally:
         doc.close()
@@ -297,14 +297,14 @@ def _make_scanned_pdf_bytes(image_png_bytes: bytes, page_width: int = 1000, page
 def _make_mixed_pdf_bytes(real_text: str, image_png_bytes: bytes) -> bytes:
     """A two-page PDF: page 1 has a genuine embedded text layer (extractable
     by pypdf directly), page 2 is image-only (no text layer, needs OCR)."""
-    import fitz
+    import pymupdf
 
-    doc = fitz.open()
+    doc = pymupdf.open()
     try:
         text_page = doc.new_page(width=600, height=200)
         text_page.insert_text((50, 100), real_text, fontsize=12)
         image_page = doc.new_page(width=1000, height=300)
-        image_page.insert_image(fitz.Rect(0, 0, 1000, 300), stream=image_png_bytes)
+        image_page.insert_image(pymupdf.Rect(0, 0, 1000, 300), stream=image_png_bytes)
         return doc.tobytes()
     finally:
         doc.close()

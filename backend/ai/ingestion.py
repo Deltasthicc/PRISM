@@ -93,12 +93,12 @@ def _render_pdf_page_to_image(fitz_doc: Any, page_index: int, dpi: int = OCR_REN
     Pure Python/C-extension rendering -- no external poppler binary needed,
     unlike pdf2image.
     """
-    import fitz  # PyMuPDF
+    import pymupdf  # PyMuPDF -- the modern top-level import; `fitz` still works but is deprecated
     from PIL import Image
 
     page = fitz_doc[page_index]
     zoom = dpi / 72.0  # PyMuPDF's native page units are 72 DPI
-    pixmap = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom))
+    pixmap = page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom))
     mode = "RGB" if pixmap.n < 4 else "RGBA"
     return Image.frombytes(mode, (pixmap.width, pixmap.height), pixmap.samples).convert("RGB")
 
@@ -197,8 +197,8 @@ def _parse_pdf(content: bytes) -> list[tuple[str, SourceLocator]]:
             # this OCR fallback closes). Render just this page and OCR it
             # rather than silently contributing nothing for it.
             if fitz_doc is None:
-                import fitz  # PyMuPDF -- renders pages without an external poppler binary
-                fitz_doc = fitz.open(stream=content, filetype="pdf")
+                import pymupdf  # PyMuPDF -- renders pages without an external poppler binary; modern import name
+                fitz_doc = pymupdf.open(stream=content, filetype="pdf")
 
             try:
                 image = _render_pdf_page_to_image(fitz_doc, i - 1)

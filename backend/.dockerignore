@@ -1,0 +1,54 @@
+# No .dockerignore existed at all until now -- a real Docker build (this
+# service's own render.yaml build, or a local `docker build backend/`)
+# sent the ENTIRE backend/ directory as build context, including every
+# developer's own .venv, __pycache__, and local SQLite database. An
+# independent audit measured this at 600+ MB of unnecessary transfer and
+# a build failure while unpacking it. None of the entries below are
+# needed inside the image -- the Dockerfile installs its own dependencies
+# fresh via requirements.txt.
+
+# Local virtual environments (a developer's own; the image builds its own)
+.venv/
+venv/
+env/
+ENV/
+.venv_*/
+
+# Python bytecode/test caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases (SQLite dev DBs, never the deployed Postgres)
+*.db
+*.db-shm
+*.db-wal
+*.sqlite3
+
+# Secrets and local-only config -- never bake these into an image
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Version control (irrelevant inside the image, and can be large)
+.git/
+.gitignore
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+
+# Machine-specific build artifacts already .gitignore'd for the same reason
+data/.doc_cache/
+models/piper/
+scripts/voice_finetuning/voices/
+scripts/voice_finetuning/audio/
+scripts/voice_finetuning/manifest_*.jsonl
+scripts/voice_finetuning/whisper-domain-finetuned/
+scripts/voice_finetuning/whisper-domain-finetuned-ct2/

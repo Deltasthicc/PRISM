@@ -9,13 +9,16 @@ on:
 # Lane 6 (Quality, Security, Release & Evidence) owns this file --
 # docs/internal/SIH26101_TEAM_ORCHESTRATION.md section 5, Lane 6 immediate package.
 #
-# What this currently covers: backend pytest, frontend lint + production build, and a JSON
-# well-formedness check on the docs/contracts/openapi.json scaffold.
+# What this currently covers (an independent audit flagged this comment block as stale relative to
+# the jobs below -- corrected here): backend pytest + a real `pip-audit` dependency scan, frontend
+# lint + production build, a JSON well-formedness check on the docs/contracts/openapi.json
+# scaffold, a `gitleaks` hardcoded-secret scan, and a Semgrep SAST pass.
 #
 # What this deliberately does NOT cover yet (open items, not silently skipped):
 #   - Cross-domain Playwright/E2E smoke (SIH26101_MASTER_CHECKLIST.md 3.2) -- Playwright is not
 #     installed in this repo yet; adding it is Lane 1/Lane 6 work, not assumed done here.
-#   - Dependency/secret/SAST/DAST scans and SBOM (SIH26101_MASTER_CHECKLIST.md 5.3).
+#   - DAST and an SBOM (SIH26101_MASTER_CHECKLIST.md 5.3) -- dependency/secret/SAST scanning is
+#     covered above now, but nothing here does dynamic scanning or generates a bill of materials.
 #   - Any deployment step -- there is no deploy target defined yet (see /deploy).
 
 jobs:

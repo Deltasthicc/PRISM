@@ -1,3 +1,8 @@
+> **Superseded 2026-09-29.** The team stopped pursuing SIH26101 and is now building against
+> **SIH26075** ("CAPACITY CONNECT"). Kept as historical record only — the engineering evidence it
+> documents (tests, migrations, security work) is still real and still true of the current
+> codebase, but its PS-alignment framing is no longer current. Do not use it as a live checklist.
+
 # SIH26101 master checklist
 
 Last evidence review: 3 September 2026

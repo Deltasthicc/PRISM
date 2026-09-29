@@ -1,3 +1,9 @@
+> **Superseded 2026-09-29.** The team stopped pursuing SIH26101 and is now building against
+> **SIH26075** ("CAPACITY CONNECT") — see [`docs/SIH26075_PROBLEM_STATEMENT.md`](../SIH26075_PROBLEM_STATEMENT.md).
+> This file is kept as historical record only (why the platform was originally shaped the way it
+> was), per this repo's existing convention for `docs/archive/**`. Do not use it as current
+> implementation guidance.
+
 # SIH26101 problem-statement source and requirement contract
 
 Captured: 29 August 2026

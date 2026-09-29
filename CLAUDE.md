@@ -6,42 +6,63 @@ Persistent project guidance for Claude Code working on `PRISM`.
 
 Before implementing anything, read:
 
-1. `docs/SIH26101_PROBLEM_STATEMENT.md` — canonical user-supplied requirements (`PS-01`…`PS-18`).
-2. `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` — six disjoint ownership lanes and contracts.
-3. `SIH26101_MASTER_CHECKLIST.md` — current priority/readiness gates.
-4. `README.md` — verified present behavior and known gaps.
-5. Relevant source and tests.
+1. `docs/SIH26075_PROBLEM_STATEMENT.md` — canonical requirements (`PS75-01`…`PS75-15`), including an
+   honest, code-audited "current PRISM state" column per requirement.
+2. `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` — the six-lane ownership *model* this team uses;
+   its content still describes the SIH26101 build, but the lane structure itself is being reused for
+   SIH26075 work unless/until the team says otherwise.
+3. `README.md` — verified present behavior and known gaps. This is the actively-maintained source of
+   truth for current implementation state; prefer it over this file's own "Current verified
+   baseline" section below, which has not been kept in sync with the codebase since early September.
+4. Relevant source and tests.
 
-Use `docs/internal/SIH26101_WINNING_PLAYBOOK.md` for demo/pitch choices. `docs/archive/**` is historical and must not be used as current implementation guidance.
+`docs/archive/**` (including the superseded `SIH26101_PROBLEM_STATEMENT.md` and
+`SIH26101_MASTER_CHECKLIST.md`, moved there 2026-09-29) is historical and must not be used as
+current implementation guidance.
 
-The problem-statement capture is persisted at `docs/SIH26101_PROBLEM_STATEMENT.md` with attachment SHA-256 `A745A905D42A03D363875C844418D22189F00B15E8C733B7EC6453172D36D561`. Do not silently narrow the product to quizzes or the inherited RPG.
+**2026-09-29: the team stopped pursuing SIH26101 (the problem statement is no longer being
+contested) and is now building against SIH26075, "CAPACITY CONNECT — A Digital Capacity Building and
+Learning Management Portal" (Ministry of Earth Sciences / India Meteorological Department).** Do not
+silently narrow the product to quizzes or the inherited RPG.
 
 ## Product definition
 
 The project's name is finalized: **PRISM** (Personalized Readiness Intelligence & Skill Mapping). Use the short form "PRISM" in nearly all user-facing and code contexts; spell out the full name only where establishing what the acronym stands for (e.g. a README/landing first mention).
 
-The user-supplied SIH26101 statement describes a MoSPI/DIID Skill Intelligence and Learning Platform for India’s Official Statistical System. It requires:
+SIH26075 asks for a general-purpose organizational Learning Management Portal — not sector-specific
+to Official Statistics the way SIH26101 was — with three distinct role experiences (Trainee,
+Trainer, Admin). Full requirement-by-requirement detail, including exactly what's real vs. absent
+today, lives in `docs/SIH26075_PROBLEM_STATEMENT.md`; summarized:
 
-- comprehensive profiles using designation, department, role, assignment, qualifications, experience and prior training (`PS-01`);
-- statistical, technical, digital-governance and behavioural/managerial competency frameworks (`PS-02`);
-- competency assessment, gaps and personalized paths using learning history, department/future-role priorities and career progression (`PS-03`, `PS-04`);
-- iGOT catalogue/recommendation/enrolment/completion/competency-update integration and NSSTA/TPAC programme recommendations (`PS-05`, `PS-17`);
-- learner assistant, adaptive assessments/modules, virtual labs, multilingual resources and dynamic progress updates (`PS-06`, `PS-07`, `PS-08`, `PS-09`, `PS-10`);
-- cited MCQs/quizzes from documents, presentations and videos with evaluation, explanations and feedback (`PS-11`, `PS-12`);
-- learner/admin dashboards including training effectiveness and responsibly bounded workforce insight (`PS-13`, `PS-14`);
-- secure, scalable, cloud-ready standard APIs, RBAC, SSO and secure data exchange (`PS-15`, `PS-16`);
-- measurable improvement in competency and learning-resource utilization (`PS-18`).
+- secure signup/login across three roles: Trainee, Trainer, Admin (`PS75-01`);
+- trainee professional profiles (qualifications, work experience, interests, skills, certificates), course enrollment, learning-resource access, subject-wise MCQ assessment, and course/content feedback (`PS75-02`–`PS75-06`);
+- trainer profile management, questionnaire authoring with deadlines, trainee participation/performance monitoring, and a trainer-owned content library (`PS75-07`–`PS75-10`);
+- admin user approval and role management, plus dashboards for courses, enrollments, certifications, assessments and participation (`PS75-11`, `PS75-12`);
+- a homepage notifications/announcements/achievements feed (`PS75-13`);
+- competency mapping used to identify which trainer is qualified to teach which subject — the reverse direction of PRISM's existing learner-gap-analysis engine (`PS75-14`);
+- scalable, secure, user-friendly, cross-device access (`PS75-15`).
+
+PRISM's existing competency-assessment/quiz-generation/RBAC/analytics engine transfers to this PS
+with real, substantial value (see the requirement doc's "what transfers" section), but several
+SIH26075-named features do not exist yet and must not be described as complete: certificate
+issuance, course/content feedback, the announcements feed, admin user-approval, a standalone trainer
+content library, trainer-authored questionnaires with deadlines, cohort-scoped trainer visibility
+into trainees, and trainer-to-subject competency matching.
 
 The named AI/ML/NLP/LLM/semantic-search techniques are implementation options. Use deterministic logic when it is safer, more explainable or easier to validate.
 
 ## Product surfaces
 
-- **Professional experience** — Academy, learner dashboard, admin dashboard, profile, gap, pathway, content, assistant and integration flows. This is the main SIH26101 product.
+- **Professional experience** — Academy, learner dashboard, admin dashboard, profile, gap, pathway, content, assistant and integration flows. This is the main product surface, now being repositioned toward SIH26075's Trainee/Trainer/Admin framing rather than SIH26101's MoSPI-specific one; none of the underlying engineering needs to be discarded to do that.
 - **Quest mode** — optional adaptive-practice engagement. Keep it unless the user deliberately reverses that decision.
 
 Quest XP, power-ups, heroes, guilds and combat never determine competency proficiency. Competency evidence stays explicit, versioned and explainable.
 
 ## Current verified baseline
+
+**This section is stale (last updated ~2026-09-03) and describes an early snapshot of the
+codebase, not its current state — README.md has been the actively-maintained source of truth since.
+Treat every number below as historical, not current, until this section is itself refreshed.**
 
 - FastAPI + SQLAlchemy backend; PostgreSQL/Alembic is the migration-managed target, SQLite remains
   a documented local zero-setup demo profile only. As of Package W (2026-09-03), `pytest -q`

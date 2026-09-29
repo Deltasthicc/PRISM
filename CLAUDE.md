@@ -8,13 +8,12 @@ Before implementing anything, read:
 
 1. `docs/SIH26075_PROBLEM_STATEMENT.md` — canonical requirements (`PS75-01`…`PS75-15`), including an
    honest, code-audited "current PRISM state" column per requirement.
-2. `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` — the six-lane ownership *model* this team uses;
-   its content still describes the SIH26101 build, but the lane structure itself is being reused for
-   SIH26075 work unless/until the team says otherwise.
-3. `README.md` — verified present behavior and known gaps. This is the actively-maintained source of
+2. `SIH26075_MASTER_CHECKLIST.md` — current priorities and completion gates.
+3. `docs/internal/SIH26075_TEAM_ORCHESTRATION.md` — current six-lane ownership and packages.
+4. `README.md` — verified present behavior and known gaps. This is the actively-maintained source of
    truth for current implementation state; prefer it over this file's own "Current verified
    baseline" section below, which has not been kept in sync with the codebase since early September.
-4. Relevant source and tests.
+5. Relevant source and tests.
 
 `docs/archive/**` (including the superseded `SIH26101_PROBLEM_STATEMENT.md` and
 `SIH26101_MASTER_CHECKLIST.md`, moved there 2026-09-29) is historical and must not be used as
@@ -138,7 +137,7 @@ The Quest engine/UI was forked from a differently branded DSA learning game and 
 
 ## Six-lane rule
 
-Identify the owner in `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` before editing:
+Identify the owner in `docs/internal/SIH26075_TEAM_ORCHESTRATION.md` before editing:
 
 1. Professional Experience & Accessibility
 2. Core Platform, Identity & Data

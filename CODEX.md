@@ -1,176 +1,93 @@
 # CODEX.md
 
-Persistent project guidance for Codex working on `PRISM`.
+Persistent project guidance for Codex working on PRISM.
 
 ## Read order and source of truth
 
-Before the first implementation action, read:
+Before implementation, read:
 
-1. `docs/SIH26101_PROBLEM_STATEMENT.md` — canonical user-supplied requirement contract (`PS-01`…`PS-18`).
-2. `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` — six lane/file/agent ownership boundaries.
-3. `SIH26101_MASTER_CHECKLIST.md` — current priorities and readiness gates.
-4. `README.md` — verified present behavior versus aspirations.
-5. Relevant source and tests.
+1. `docs/SIH26075_PROBLEM_STATEMENT.md` — canonical requirements and audited current state.
+2. `SIH26075_MASTER_CHECKLIST.md` — priorities and completion gates.
+3. `docs/internal/SIH26075_TEAM_ORCHESTRATION.md` — six-lane ownership and package boundaries.
+4. `README.md` — verified present behaviour and known limitations.
+5. Relevant contracts, source files, and tests.
 
-Use `docs/internal/SIH26101_WINNING_PLAYBOOK.md` for demo/pitch decisions. Treat `docs/archive/**` only as historical context.
-
-The problem-statement capture is preserved at `docs/SIH26101_PROBLEM_STATEMENT.md` with attachment SHA-256 `A745A905D42A03D363875C844418D22189F00B15E8C733B7EC6453172D36D561`. Do not silently reduce the project to a quiz generator or RPG.
+Use `docs/internal/SIH26075_DELIVERY_PLAYBOOK.md` for demo/pitch decisions and
+`docs/internal/SIH26075_SUBMISSION_DRAFT.md` for portal copy. `docs/archive/**`, dated evidence,
+`docs/internal/LANE2_SYNC.md`, and files beginning `SIH26101_` preserve historical engineering
+context; they are not current scope.
 
 ## Product definition
 
-This is PRISM (Personalized Readiness Intelligence & Skill Mapping), a prototype for SIH26101, supplied as a MoSPI/DIID Smart Education problem. The target is a professional skill-intelligence and learning platform for India’s Official Statistical System that:
+PRISM (Personalized Readiness Intelligence & Skill Mapping) targets SIH26075, CAPACITY CONNECT, for
+the Ministry of Earth Sciences / India Meteorological Department. The objective is a centralized
+learning and competency portal with three user roles:
 
-- builds profiles from role, assignment, qualifications, experience and training;
-- maps statistical, technical, digital-governance and behavioural/managerial competencies;
-- assesses evidence, explains gaps and creates personalized pathways;
-- recommends iGOT course modules and NSSTA/TPAC-informed programmes;
-- supports adaptive assessment, interactive learning, one bounded virtual lab and a learner assistant;
-- generates cited MCQs/quizzes from documents, presentations and video transcripts;
-- provides learner and administrator dashboards;
-- is designed for multilingual, RBAC/SSO, secure API interoperability and controlled scale.
+- **Trainee:** professional profile, certificates, courses/resources, subject MCQs, progress, and
+  course/content feedback.
+- **Trainer:** expertise profile, resource library, questionnaire authoring/deadlines, and assigned
+  cohort participation/performance.
+- **Admin:** account approval, roles, catalogue/dashboard oversight, certificates, homepage
+  publishing, and explainable subject-to-trainer discovery.
 
-The primary product is the Professional experience (`/academy`, `/admin` and their successors). Quest mode remains an optional adaptive-practice layer. XP, heroes and combat must never determine competency scores.
+Existing competency, assessment, ingestion, course, analytics, database, identity, and multilingual
+foundations are reusable. They are not evidence that missing SIH26075 role workflows work. The
+canonical requirement table names every real, partial, and absent capability.
 
-## Current verified reality
-
-- Backend: FastAPI + SQLAlchemy with a zero-setup SQLite demo profile and an additive PostgreSQL
-  16/Alembic profile; the 3 September Package W gate passed **442 tests with PostgreSQL stopped
-  (6 skipped)** and **448 with the local Compose PostgreSQL healthy**. Package W adds accepted
-  deterministic read repositories plus a privacy-safe database-status command and per-lane
-  integration guide; its final legacy-column count repair at `8d0d1de` awaits Claude's immutable
-  review. `players.preferred_mode` (migration `640603a37f2f`, `models/enums.py`'s
-  `LearningMode`) is a new base scaffold for the team's two-mode decision — see
-  `docs/contracts/data-authorization.md` section 8 for the exact boundary; no route reads or
-  writes it yet.
-- Frontend: Next.js; lint passed in the last verification.
-- Four curricula/34 competencies exist in the backend, but the supplied problem statement names a broader competency set.
-- Only the DSA Quest browser path is currently verified; three other backend dungeons are blocked by frontend route/filter assumptions.
-- The current “role-aware” result is actually experience-level-capped; other stored profile fields do not select a role target.
-- Quiz generation supports bounded TXT/MD/PDF/DOCX and normalized source-span checking. It is context stuffing, not retrieval RAG; PPTX/video ingestion and item review are absent.
-- Recommendations are internal practice/catalogue fallback. There is no authorized live iGOT/NSSTA enrolment, completion, SSO or score-writeback integration.
-- Lane 2 provides a cross-reviewed local OIDC verifier, issuer/subject binding, fixed RBAC policy,
-  deployment-database tenant boundary, audited data-rights/retention primitives and PostgreSQL
-  migrations/backup-restore drills. The retention-enforcement job's atomic PostgreSQL batch claiming
-  (`FOR UPDATE SKIP LOCKED`, live-drilled with 4 concurrent workers after a real race was found and
-  reproduced) and Package T (a stale-snapshot deleted-count fix and a non-injective `audit_actor`
-  encoding fix) are **Codex-accepted** on independent cold immutable review, including Codex's own
-  reproduction of the four-worker drill. Claude Code separately evaluated a second external audit's
-  four DB-hardening claims (Package U): rejected RLS and legacy-ETL because there is no identified
-  real source dataset, continuity requirement, approved mapping/conflict policy, reconciliation
-  contract or acceptance owner (not because of any tenant model -- tenancy is irrelevant to whether
-  that migration could exist), rejected evidence self-hashing as providing no tamper-evidence from
-  the same writer role, and implemented a scoped PostgreSQL trigger rejecting UPDATE/DELETE on
-  `audit_events`. Codex's own cold immutable audit of S/T/U (2026-09-01) accepted S and T outright
-  but rejected U's integration verdict: the unconditional DELETE rejection directly broke
-  `scripts/retention_job.py`, whose only registered category is `audit_events` -- the retention job
-  would become permanently unable to delete it the moment any maximum retention is ever cited.
-  Package V (2026-09-02) fixed this with a follow-up migration (`4631f204d4ba`) retiring only the
-  DELETE rejection -- UPDATE stays blocked at the database level (named precisely as that, not
-  "append-only", since DELETE through the retention job is intentional). Codex's review of Package V
-  **accepted its production migration/retention behavior outright**, and raised two bounded
-  test/evidence-hardening findings (a disposable-database cleanup gap, and a concurrency regression
-  that needed genuinely forced candidate-selection overlap plus a negative control proving that
-  forcing overlap is meaningful) -- both closed in follow-up `ac5a2e7` and accepted after Codex's
-  narrow immutable re-review: five consecutive 6-test live PostgreSQL runs, a fresh 347-test full
-  gate, clean Alembic head/check and no leaked disposable database. Full evidence and reasoning for
-  all of S/T/U/V is in `docs/internal/LANE2_SYNC.md`. Existing product routes do not invoke any of this foundation; there is no browser
-  SSO, row-level organization tenancy, approved production IdP, frontend test suite, observability
-  stack or production authorization. A CI workflow exists, but its presence alone is not evidence of
-  a green remote run.
-
-Reinspect code and run tests before repeating any status claim; these bullets are a baseline, not permanent truth.
+The professional experience is the default product surface. Quest mode is optional practice. XP,
+heroes, and combat never determine competency, certification, authorization, or trainer matching.
 
 ## Six-lane ownership
 
-When a human assigns a lane, edit only that lane’s controlled paths:
+1. **Role Experience & Accessibility** — `frontend/**`.
+2. **Identity, Core Data & Authorization** — database, models, schemas, security, migrations.
+3. **Competency & Matching Intelligence** — taxonomy, evidence/gaps/pathways, trainer matching, labs.
+4. **Content, Quiz AI & Retrieval** — ingestion, trainer material processing, grounded generation,
+   review, retrieval/assistant.
+5. **Product API, Workflows & Analytics** — domain routes, course/cohort/questionnaire/certificate/
+   feedback/announcement workflows and dashboards.
+6. **Quality, Security, Release & Evidence** — CI, E2E, deployment, accessibility/load/security
+   checks, current operational docs, and release evidence.
 
-1. Professional Experience & Accessibility — `frontend/**`.
-2. Core Platform, Identity & Data — database/models/schemas/security/migrations.
-3. Competency & Learning Intelligence — curricula, gap/pathway and adaptive-practice rules/labs.
-4. Content AI, RAG & Evaluation — ingestion, retrieval, assistant, quiz generation/grading and AI evaluation.
-5. Product API, Integrations & Analytics — domain routes, iGOT/NSSTA adapters and dashboard analytics.
-6. Quality, Security, Release & Evidence — CI/E2E/security/deployment/observability/current operational docs.
-
-The exact path map, test subtrees, contracts and reviewers live in `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`. If another lane must change, return a contract proposal; do not edit its files opportunistically. If the user explicitly assigns a cross-lane task, state the contract impacts and keep edits grouped by owner.
+Exact boundaries and reviewers are in `docs/internal/SIH26075_TEAM_ORCHESTRATION.md`. Inspect or
+review any lane, but edit another lane's files only after an explicit handoff.
 
 ## Architecture invariants
 
-- Frontend calls the backend only through `frontend/lib/api/client.js`.
-- HTTP handlers stay thin; domain logic belongs in services; persistence belongs in models/repositories.
-- The 65/35 demonstrated/self-report blend is a versioned prototype policy, not validated psychometrics.
-- “No evidence” is not equivalent to low proficiency.
-- Competency targets, formulas, prompts, models, sources, chunks, provider events and human overrides must become versioned/auditable rather than silently mutable.
-- Never fabricate a course ID, enrolment/completion event, API health, SSO state, approval or competency writeback.
-- An environment variable is not proof that an integration works. Use `SIMULATED`, `CATALOGUE`, `LIVE`, `PROVISIONAL` and `NO EVIDENCE` states precisely.
-- Uploaded files, retrieved text, transcripts and learner answers are untrusted input.
-- Never execute arbitrary learner code on the main API host.
-- Generated items remain drafts until checks and authorized review pass.
-- Do not describe whole-context prompting as RAG.
-- Do not call the prototype framework or five proficiency levels official FRAC/KCM.
-- Do not place real personal data or secrets in prompts, logs, fixtures, screenshots or the repository.
-- Preserve Quest mode unless the user deliberately reverses that decision.
+- Frontend calls the backend through `frontend/lib/api/client.js`.
+- HTTP handlers stay thin; domain logic belongs in services; persistence belongs in models or
+  repositories.
+- “No evidence” is not low proficiency. The 65/35 demonstrated/self-report blend is a versioned
+  prototype policy, not validated psychometrics.
+- Competency targets, formulas, prompts, models, sources, chunks, role grants, publishing actions,
+  and overrides must be versioned/auditable rather than silently mutable.
+- Trainer access is server-side assignment-scoped. A client-supplied learner ID is never authority.
+- Uploaded files, retrieved text, transcripts, and answers are untrusted. Never execute arbitrary
+  learner code on the main API host.
+- Generated items remain drafts until checks and authorized trainer review pass.
+- Do not call whole-context prompting RAG or a role name a complete role workflow.
+- Never fabricate a course, certificate, enrolment/completion event, API health, SSO state,
+  approval, trainer qualification, or competency writeback.
+- Do not place real employee data or secrets in prompts, logs, fixtures, screenshots, or the repo.
+- Existing Official Statistics and iGOT/NSSTA content is legacy sample functionality, not a current
+  SIH26075 requirement or official MoES/IMD integration.
 
-## Implementation priority
+## Truth boundary
 
-1. Confirm official rules and keep requirements/claims truthful.
-2. Repair the existing browser path and establish CI/E2E.
-3. Deliver one complete synthetic Official Statistics vertical loop.
-4. Add versioned role targets/evidence and one bounded statistics lab.
-5. Add cited retrieval, assistant, quiz review and one PPTX/transcript path.
-6. Add labelled provider simulator, analytics and reconciliation.
-7. Wire the existing identity/RBAC foundation into product routes, add authoritative organization
-   tenancy and browser login, and complete accessibility/security/operational gates for a
-   controlled pilot.
+Do not claim official approval, production readiness, compliance, scale, security, accessibility,
+model quality, or live external integration without the exact evidence required by the master
+checklist. Use **implemented**, **simulated**, **planned**, **blocked-external**, and **no evidence**
+precisely. A passing unit test does not by itself prove a browser journey or deployed behaviour.
 
-Do not build microservices, unrestricted code execution, speculative psychometric models or predictive workforce claims before the verified vertical loop works.
+## Current implementation priority
 
-## Coding standards
+1. Preserve a clean, repeatable demo while the problem-statement transition lands.
+2. Define missing data/authorization contracts: approval, trainer expertise, cohorts, resources,
+   questionnaires/deadlines, feedback, certificates, announcements.
+3. Deliver one complete synthetic Admin → Trainer → Trainee golden path.
+4. Add explainable subject-to-trainer matching and connected dashboards.
+5. Prove role/object-scope negatives, responsive accessibility, migrations/DR, deployment smoke,
+   and the final requirement evidence map.
 
-### Python
-
-- Python 3.11+; Pydantic v2 APIs only; type public functions.
-- Avoid broad exception swallowing and network work at import time.
-- Keep optional/heavy SDK imports lazy.
-- Bound file, prompt, token, time, memory, retry and external-call usage.
-- Add a regression test for every bug and negative authorization tests for protected data.
-
-### Frontend
-
-- Keep browser API calls centralized.
-- Build professional, keyboard-accessible and responsive states before visual spectacle.
-- Every async screen needs loading, empty, error, retry and offline/fallback behavior.
-- Status must never be conveyed only by color or an unlabeled icon.
-- Hindi/multilingual work includes navigation, inputs, errors, feedback and source display—not translated headings only.
-
-### Data and AI
-
-- Use synthetic demo identities/data.
-- Store provenance and immutable identifiers; make latest-versus-historical semantics explicit.
-- Require access filtering before retrieval, not after generation.
-- Evaluate with versioned datasets and report sample size/failures alongside percentages.
-- Prefer deterministic policy where an LLM adds no defensible value.
-
-## Verification
-
-Run the smallest relevant checks during implementation and the full gate before handoff, from the
-repository root wherever this checkout lives (its own directory name is not part of the product
-name and varies by clone -- do not assume `SIHLearningTool` or `PRISM`):
-
-```powershell
-cd backend
-& .\.venv\Scripts\python.exe -m pytest
-```
-
-```powershell
-cd frontend
-npm run lint
-npm run build
-```
-
-For behavior crossing the UI/API boundary, run the documented service pair and an actual browser/API round trip. Do not use existing `.next` output as fresh build evidence. Report exact commands, pass/fail counts, skipped checks and environmental blockers.
-
-## Definition of done
-
-A change is done only when behavior and failure behavior satisfy acceptance criteria, tests/evidence pass, relevant security/privacy/accessibility impacts are handled, documentation tells the current truth, an independent human reviews it, and reset/rollback is understood.
-
-Never equate “agent completed,” “HTTP 200,” “build artifact exists,” or “looks correct” with this definition.
+Reinspect code and rerun relevant tests before repeating any count or completion claim; README and
+evidence are snapshots, not permanent truth.

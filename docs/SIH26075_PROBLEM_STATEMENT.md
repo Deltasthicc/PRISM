@@ -2,11 +2,11 @@
 
 Captured: 29 September 2026
 
-Source: verbatim record supplied by Shashwat, independently cross-checked against a public
-structured mirror of the official SIH 2026 portal dataset (`vedantchalke36/sih-2026-problem-statements`,
-`data/sih2026_ps.json`, record `sno: 75`) — title, organization, theme, and full description text
-matched exactly. This file is the repository's canonical statement of the current requested product
-scope, superseding `docs/archive/SIH26101_PROBLEM_STATEMENT.md`.
+Source: verbatim record supplied by Shashwat and independently cross-checked against the live
+[official SIH 2026 problem-statement portal](https://sih.gov.in/sih2026PS) on 29 September 2026.
+The title, description, organization, department, category, theme, capacity, and deadline below
+matched the live HTML. This file is the repository's canonical statement of the current requested
+product scope, superseding `docs/archive/SIH26101_PROBLEM_STATEMENT.md`.
 
 ## Problem metadata
 
@@ -14,12 +14,13 @@ scope, superseding `docs/archive/SIH26101_PROBLEM_STATEMENT.md`.
 |---|---|
 | Problem Statement ID | `SIH26075` |
 | Organization | Ministry of Earth Sciences (MoES) |
-| Department | India Meteorological Department (IMD) — the public dataset's `department` field. Note: the portal's problem-creator record separately names "Ministry of Education's Innovation Cell (MIC)" — MIC is the hackathon's own facilitating body and appears as the administering contact on many unrelated ministries' problem statements in the same dataset, not SIH26075's owning department. Use MoES/IMD when precision about ownership matters. |
+| Department | India Meteorological Department (IMD) |
 | Category | Software |
 | Theme | Smart Education |
 | Dataset links | None supplied |
 | YouTube/contact | None supplied |
-| Ideas submitted (as of capture) | 0/500 — essentially uncontested at capture time, unlike SIH26101's much higher submission count |
+| Ideas submitted (as of capture) | 238/500 on 29 September 2026; mutable, so re-check before submission |
+| Submission deadline shown | 30 September 2026 |
 
 ## Supplied title
 
@@ -105,7 +106,10 @@ gap-analysis direction).
 ## Known unknowns requiring external confirmation
 
 - Current SIH 2026 team/mentor/nodal-center submission rules specific to SIH26075.
-- Whether MoES/IMD or MIC is the correct point of contact for any clarification request.
+- The public official listing does not expose the problem creator's name. “Sarim Moin” is
+  portal-provided but not independently verifiable from the public listing; omit it from public
+  claims unless the authenticated portal confirms it.
+- The correct authorized contact channel for MoES/IMD clarification; the public contact field is blank.
 - Whether "certificates" in PS75-02/PS75-12 means an uploaded prior credential (trainee-side) versus
   a platform-issued completion certificate (admin/course-side) — the supplied text uses the word in
   both senses and this repository should not assume which the evaluators mean without asking.

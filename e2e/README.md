@@ -1,10 +1,10 @@
 # e2e
 
-Owner: Lane 6 (Quality, Security, Release & Evidence) -- `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`
+Owner: Lane 6 (Quality, Security, Release & Evidence) — `docs/internal/SIH26075_TEAM_ORCHESTRATION.md`
 section 2.
 
 Empty scaffold. No end-to-end test tooling is installed in this repository yet. The next real
-step here (`SIH26101_MASTER_CHECKLIST.md` section 3.2) is:
+step here (`SIH26075_MASTER_CHECKLIST.md`, P0 golden path) is:
 
 - Add Playwright (or an equivalent browser-automation tool) as a frontend/dev dependency.
 - Cover the cross-domain browser smoke: Academy -> each of the four domains -> room renders ->
@@ -14,4 +14,4 @@ step here (`SIH26101_MASTER_CHECKLIST.md` section 3.2) is:
   from that workflow today; see the comment at the top of that file.
 
 Do not claim E2E coverage exists in README.md or the master checklist until a real suite runs
-here and its command/result is recorded in `SIH26101_MASTER_CHECKLIST.md` section 8.
+here and its command/result is recorded in the final SIH26075 requirement evidence map.

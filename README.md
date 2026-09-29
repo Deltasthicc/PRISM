@@ -14,6 +14,9 @@
 > [`docs/SIH26075_PROBLEM_STATEMENT.md`](docs/SIH26075_PROBLEM_STATEMENT.md) for the full,
 > requirement-by-requirement honest accounting. The former SIH26101-specific docs are preserved at
 > [`docs/archive/`](docs/archive/) as historical record, not current guidance.
+> Current execution lives in [`SIH26075_MASTER_CHECKLIST.md`](SIH26075_MASTER_CHECKLIST.md), with
+> six-lane ownership in [`docs/internal/SIH26075_TEAM_ORCHESTRATION.md`](docs/internal/SIH26075_TEAM_ORCHESTRATION.md)
+> and form-ready copy in [`docs/internal/SIH26075_SUBMISSION_DRAFT.md`](docs/internal/SIH26075_SUBMISSION_DRAFT.md).
 
 [![CI](https://github.com/Deltasthicc/PRISM/actions/workflows/ci.yml/badge.svg)](https://github.com/Deltasthicc/PRISM/actions/workflows/ci.yml)
 [![Keepalive](https://github.com/Deltasthicc/PRISM/actions/workflows/keepalive.yml/badge.svg)](https://github.com/Deltasthicc/PRISM/actions/workflows/keepalive.yml)
@@ -446,8 +449,8 @@ docs/internal/   Lane coordination/strategy docs (team orchestration, handoffs, 
 deploy/          Render/Neon deployment walkthrough
 ```
 
-Root now holds only what someone evaluating the product needs first: `README.md`, `docs/SIH26075_PROBLEM_STATEMENT.md`, `EVIDENCE.md`, and the agent-instruction files (`CLAUDE.md`, `CODEX.md`, `AGENTS.md`). The former `SIH26101_MASTER_CHECKLIST.md` is preserved at [`docs/archive/SIH26101_MASTER_CHECKLIST.md`](docs/archive/SIH26101_MASTER_CHECKLIST.md) as historical record. Internal lane-coordination docs live under `docs/internal/`.
+Root now holds only what someone evaluating the product needs first: `README.md`, `SIH26075_MASTER_CHECKLIST.md`, `docs/SIH26075_PROBLEM_STATEMENT.md`, `EVIDENCE.md`, and the agent-instruction files (`CLAUDE.md`, `CODEX.md`, `AGENTS.md`). The former `SIH26101_MASTER_CHECKLIST.md` is preserved at [`docs/archive/SIH26101_MASTER_CHECKLIST.md`](docs/archive/SIH26101_MASTER_CHECKLIST.md) as historical record. Internal lane-coordination docs live under `docs/internal/`.
 
 ## 🙌 Team
 
-Originally built for Smart India Hackathon 2026, Problem Statement 26101; as of 2026-09-29 the team is building against **Problem Statement 26075** ("CAPACITY CONNECT," Ministry of Earth Sciences/IMD) instead — see [`docs/SIH26075_PROBLEM_STATEMENT.md`](docs/SIH26075_PROBLEM_STATEMENT.md). Development continues across six coordinated lanes (identity & core data, AI/content, frontend, integrations, release engineering, and orchestration) — a structure built for the earlier PS and reused as-is for this one. See [`docs/internal/SIH26101_TEAM_ORCHESTRATION.md`](docs/internal/SIH26101_TEAM_ORCHESTRATION.md) for the lane breakdown (kept under its original filename as the lane *process* doc, not a PS-specific one) and [`EVIDENCE.md`](EVIDENCE.md) for the running evidence log.
+Originally built for Smart India Hackathon 2026, Problem Statement 26101; as of 2026-09-29 the team is building against **Problem Statement 26075** ("CAPACITY CONNECT," Ministry of Earth Sciences/IMD) instead — see [`docs/SIH26075_PROBLEM_STATEMENT.md`](docs/SIH26075_PROBLEM_STATEMENT.md). Development continues across six coordinated lanes: experience, identity/data, competency/matching, content AI, product workflows/analytics, and quality/release. See [`docs/internal/SIH26075_TEAM_ORCHESTRATION.md`](docs/internal/SIH26075_TEAM_ORCHESTRATION.md) for the current lane breakdown and [`EVIDENCE.md`](EVIDENCE.md) for the running evidence log.

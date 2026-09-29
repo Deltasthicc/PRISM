@@ -1,5 +1,8 @@
 # SIH26101 six-lane team orchestration
 
+> **Historical SIH26101 scope.** Do not use this as current product guidance. Current ownership and
+> SIH26075 packages live in `docs/internal/SIH26075_TEAM_ORCHESTRATION.md`.
+
 Last revised: 1 September 2026
 
 Purpose: six parallel, disjoint human workstreams with explicit agent boundaries, contracts, merge gates and a single release rhythm.

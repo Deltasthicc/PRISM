@@ -1,5 +1,8 @@
 # SIH26101 winning playbook
 
+> **Historical SIH26101 strategy.** Current SIH26075 demo and pitch guidance lives in
+> `docs/internal/SIH26075_DELIVERY_PLAYBOOK.md`.
+
 Last revised: 29 August 2026
 
 Status: evidence-backed strategy, not a promise of winning

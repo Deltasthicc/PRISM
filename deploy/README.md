@@ -1,12 +1,12 @@
 # deploy
 
-Owner: Lane 6 (Quality, Security, Release & Evidence) -- `docs/internal/SIH26101_TEAM_ORCHESTRATION.md`
+Owner: Lane 6 (Quality, Security, Release & Evidence) — `docs/internal/SIH26075_TEAM_ORCHESTRATION.md`
 section 2.
 
 Status: **a real, live, shared free-tier team environment** (database + backend + local-standards
 OIDC provider), so the six lanes stop looking at six different local databases. **Not** a
-government-approved production deployment -- see `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 11,
-"Production authorization remains external", and `SIH26101_MASTER_CHECKLIST.md` section 5.1. Free
+government-approved production deployment — see `SIH26075_MASTER_CHECKLIST.md` and the current
+orchestration's truth boundaries. Free
 hosting tiers, no SLA, no on-call, no DR -- good enough for a hackathon team to see each other's
 data, not for real learner data or a real government pilot.
 
@@ -105,7 +105,7 @@ this env var. If `prism-backend`'s `FRONTEND_ORIGINS` env var doesn't already in
 - **Still not the real browser OIDC/PKCE login** -- `ENABLE_DEV_LOGIN` bridges the existing
   username-only demo login to a real shared Keycloak token automatically (see
   `backend/routes/dev_auth.py`'s docstring); it is not a substitute for the Authorization Code +
-  PKCE flow `SIH26101_MASTER_CHECKLIST.md` 5.1 and `README.md` still track as open Lane 1/5 work.
+  PKCE flow `SIH26075_MASTER_CHECKLIST.md` and `README.md` still track as open Lane 1/5 work.
 - **No production TLS/secrets/KMS custody, no scheduled encrypted offsite backup, no DR runbook,
   no uptime guarantee** -- both services are on free tiers, which sleep/cold-start and carry no
   SLA. Fine for a team demo; not a claim of anything more.

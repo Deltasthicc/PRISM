@@ -5,7 +5,7 @@ Owner: Lane 2 (Core Platform, Identity & Data), Phase 2 / Package I.
 This is a real, standards-compliant local OIDC provider used to test
 `security/identity.py` honestly against real signed tokens and a real JWKS
 endpoint. **It is not a government-approved production identity provider.**
-`SIH26101_MASTER_CHECKLIST.md` section 5.1 tracks the real IdP integration
+`SIH26075_MASTER_CHECKLIST.md` tracks the real IdP integration
 separately as `BLOCKED-EXTERNAL` — nothing here changes that.
 
 ## Start it
@@ -26,7 +26,7 @@ docker compose -f docker-compose.dev.yml up -d --wait
 ## Test users
 
 Every user's password is `prism_dev_local_only`. Each has exactly one realm
-role, matching `docs/internal/SIH26101_TEAM_ORCHESTRATION.md` section 5's Lane 2 RBAC list.
+role, matching `docs/internal/SIH26075_TEAM_ORCHESTRATION.md`'s Lane 2 boundary.
 
 | Username | Role |
 |---|---|

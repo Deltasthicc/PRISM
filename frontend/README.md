@@ -60,5 +60,6 @@ store/                  Zustand: useAuthStore, useGameStore
 ## Known gaps
 
 - Player identity is username-only for this build; there is no password authentication or RBAC.
-- See the root [README.md](../README.md) and [`docs/SIH26101_ORCHESTRATION_PLAN.md`](../docs/SIH26101_ORCHESTRATION_PLAN.md)
+- See the root [README.md](../README.md), [SIH26075 checklist](../SIH26075_MASTER_CHECKLIST.md),
+  and [current orchestration](../docs/internal/SIH26075_TEAM_ORCHESTRATION.md)
   for the full API contract this frontend is built against and what's still aspirational.

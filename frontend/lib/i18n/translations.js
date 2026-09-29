@@ -369,7 +369,7 @@ export const TRANSLATIONS = {
       "begin": "BEGIN YOUR JOURNEY"
     },
     "footer": {
-      "copyright": "© 2024 Ministry of Statistics and Programme Implementation (MoSPI) • Smart India Hackathon Prototype 26101",
+      "copyright": "© 2026 Ministry of Earth Sciences (MoES) • Smart India Hackathon Prototype 26075",
       "auditBadge": "Audit: ISO-27001 Staging",
       "ndsapBadge": "NDSAP-Aligned",
       "syncBadge": "Sync: Catalog Mode"
@@ -720,7 +720,7 @@ export const TRANSLATIONS = {
       "begin": "अपनी यात्रा शुरू करें"
     },
     "footer": {
-      "copyright": "© 2024 सांख्यिकी और कार्यक्रम कार्यान्वयन मंत्रालय (MoSPI) • स्मार्ट इंडिया हैकाथॉन प्रोटोटाइप 26101",
+      "copyright": "© 2026 पृथ्वी विज्ञान मंत्रालय (MoES) • स्मार्ट इंडिया हैकाथॉन प्रोटोटाइप 26075",
       "auditBadge": "ऑडिट: ISO-27001 स्टेजिंग",
       "ndsapBadge": "NDSAP-संरेखित",
       "syncBadge": "सिंक: कैटलॉग मोड"
@@ -1071,7 +1071,7 @@ export const TRANSLATIONS = {
       "begin": "আপনার যাত্রা শুরু"
     },
     "footer": {
-      "copyright": "© 2024 পরিসংখ্যান ও কর্মসূচি বাস্তবায়ন মন্ত্রক (MoSPI) • স্মার্ট ইন্ডিয়া হ্যাকাথন প্রোটোটাইপ 26101",
+      "copyright": "© 2026 আর্থ সায়েন্স মন্ত্রক (MoES) • স্মার্ট ইন্ডিয়া হ্যাকাথন প্রোটোটাইপ 26075",
       "auditBadge": "অডিট: ISO-27001 স্টেজিং",
       "ndsapBadge": "NDSAP-সংযুক্ত",
       "syncBadge": "সিঙ্ক: ক্যাটালগ মোড"
@@ -1422,7 +1422,7 @@ export const TRANSLATIONS = {
       "begin": "तुमचा प्रवास सुरू करा"
     },
     "footer": {
-      "copyright": "© 2024 सांख्यिकी आणि कार्यक्रम अंमलबजावणी मंत्रालय (MoSPI) • स्मार्ट इंडिया हॅकाथॉन प्रोटोटाइप 26101",
+      "copyright": "© 2026 पृथ्वी विज्ञान मंत्रालय (MoES) • स्मार्ट इंडिया हॅकाथॉन प्रोटोटाइप 26075",
       "auditBadge": "ऑडिट: ISO-27001 स्टेजिंग",
       "ndsapBadge": "NDSAP-संरेखित",
       "syncBadge": "सिंक: कॅटलॉग मोड"
@@ -1773,7 +1773,7 @@ export const TRANSLATIONS = {
       "begin": "మీ ప్రయాణాన్ని ప్రారంభించండి"
     },
     "footer": {
-      "copyright": "© 2024 గణాంకాలు మరియు ప్రోగ్రామ్ అమలు మంత్రిత్వ శాఖ (MoSPI) • స్మార్ట్ ఇండియా హ్యాకథాన్ ప్రోటోటైప్ 26101",
+      "copyright": "© 2026 భూ శాస్త్రాల మంత్రిత్వ శాఖ (MoES) • స్మార్ట్ ఇండియా హ్యాకథాన్ ప్రోటోటైప్ 26075",
       "auditBadge": "ఆడిట్: ISO-27001 స్టేజింగ్",
       "ndsapBadge": "NDSAP-అలైన్ చేయబడింది",
       "syncBadge": "సమకాలీకరణ: కేటలాగ్ మోడ్"
@@ -2124,7 +2124,7 @@ export const TRANSLATIONS = {
       "begin": "உங்கள் பயணத்தைத் தொடங்குங்கள்"
     },
     "footer": {
-      "copyright": "© 2024 புள்ளியியல் மற்றும் திட்ட அமலாக்க அமைச்சகம் (MoSPI) • Smart India Hackathon முன்மாதிரி 26101",
+      "copyright": "© 2026 புவி அறிவியல் அமைச்சகம் (MoES) • Smart India Hackathon முன்மாதிரி 26075",
       "auditBadge": "தணிக்கை: ISO-27001 ஸ்டேஜிங்",
       "ndsapBadge": "NDSAP-சீரமைக்கப்பட்டது",
       "syncBadge": "ஒத்திசைவு: பட்டியல் முறை"
@@ -2475,7 +2475,7 @@ export const TRANSLATIONS = {
       "begin": "તમારી જર્ની શરૂ કરો"
     },
     "footer": {
-      "copyright": "© 2024 આંકડા અને કાર્યક્રમ અમલીકરણ મંત્રાલય (MoSPI) • સ્માર્ટ ઇન્ડિયા હેકાથોન પ્રોટોટાઇપ 26101",
+      "copyright": "© 2026 પૃથ્વી વિજ્ઞાન મંત્રાલય (MoES) • સ્માર્ટ ઇન્ડિયા હેકાથોન પ્રોટોટાઇપ 26075",
       "auditBadge": "ઓડિટ: ISO-27001 સ્ટેજીંગ",
       "ndsapBadge": "NDSAP- સંરેખિત",
       "syncBadge": "સમન્વયન: કેટલોગ મોડ"
@@ -2826,7 +2826,7 @@ export const TRANSLATIONS = {
       "begin": "اپنا سفر شروع کریں۔"
     },
     "footer": {
-      "copyright": "© 2024 وزارت شماریات اور پروگرام کے نفاذ (MoSPI) • اسمارٹ انڈیا ہیکاتھون پروٹو ٹائپ 26101",
+      "copyright": "© 2026 وزارتِ علوم ارضیات (MoES) • اسمارٹ انڈیا ہیکاتھون پروٹو ٹائپ 26075",
       "auditBadge": "آڈٹ: ISO-27001 اسٹیجنگ",
       "ndsapBadge": "NDSAP- منسلک",
       "syncBadge": "مطابقت پذیری: کیٹلاگ موڈ"
@@ -3177,7 +3177,7 @@ export const TRANSLATIONS = {
       "begin": "ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪ್ರಾರಂಭಿಸಿ"
     },
     "footer": {
-      "copyright": "© 2024 ಅಂಕಿಅಂಶ ಮತ್ತು ಕಾರ್ಯಕ್ರಮ ಅನುಷ್ಠಾನ ಸಚಿವಾಲಯ (MoSPI) • ಸ್ಮಾರ್ಟ್ ಇಂಡಿಯಾ ಹ್ಯಾಕಥಾನ್ ಮಾದರಿ 26101",
+      "copyright": "© 2026 ಭೂ ವಿಜ್ಞಾನಗಳ ಸಚಿವಾಲಯ (MoES) • ಸ್ಮಾರ್ಟ್ ಇಂಡಿಯಾ ಹ್ಯಾಕಥಾನ್ ಮಾದರಿ 26075",
       "auditBadge": "ಆಡಿಟ್: ISO-27001 ಸ್ಟೇಜಿಂಗ್",
       "ndsapBadge": "NDSAP-ಜೋಡಣೆ",
       "syncBadge": "ಸಿಂಕ್: ಕ್ಯಾಟಲಾಗ್ ಮೋಡ್"
@@ -3528,7 +3528,7 @@ export const TRANSLATIONS = {
       "begin": "ଆପଣଙ୍କର ଯାତ୍ରା ଆରମ୍ଭ କରନ୍ତୁ |"
     },
     "footer": {
-      "copyright": "© 2024 ପରିସଂଖ୍ୟାନ ଏବଂ ପ୍ରୋଗ୍ରାମ ନିୟୋଜନ ମନ୍ତ୍ରଣାଳୟ (MoSPI) • ସ୍ମାର୍ଟ ଇଣ୍ଡିଆ ହାକାଥନ୍ ପ୍ରୋଟୋଟାଇପ୍ 26101 |",
+      "copyright": "© 2026 ପୃଥିବୀ ବିଜ୍ଞାନ ମନ୍ତ୍ରଣାଳୟ (MoES) • ସ୍ମାର୍ଟ ଇଣ୍ଡିଆ ହାକାଥନ୍ ପ୍ରୋଟୋଟାଇପ୍ 26075",
       "auditBadge": "ଅଡିଟ୍: ISO-27001 ଷ୍ଟେଜ୍ |",
       "ndsapBadge": "NDSAP- ଆଲାଇନ୍ ହୋଇଛି |",
       "syncBadge": "ସିଙ୍କ୍: କାଟାଲଗ୍ ମୋଡ୍ |"
@@ -3879,7 +3879,7 @@ export const TRANSLATIONS = {
       "begin": "നിങ്ങളുടെ യാത്ര ആരംഭിക്കുക"
     },
     "footer": {
-      "copyright": "© 2024 സ്റ്റാറ്റിസ്റ്റിക്സ് ആൻ്റ് പ്രോഗ്രാം ഇംപ്ലിമെൻ്റേഷൻ മന്ത്രാലയം (MoSPI) • സ്മാർട്ട് ഇന്ത്യ ഹാക്കത്തോൺ പ്രോട്ടോടൈപ്പ് 26101",
+      "copyright": "© 2026 ഭൗമശാസ്ത്ര മന്ത്രാലയം (MoES) • സ്മാർട്ട് ഇന്ത്യ ഹാക്കത്തോൺ പ്രോട്ടോടൈപ്പ് 26075",
       "auditBadge": "ഓഡിറ്റ്: ISO-27001 സ്റ്റേജിംഗ്",
       "ndsapBadge": "NDSAP-അലൈൻ ചെയ്തു",
       "syncBadge": "സമന്വയം: കാറ്റലോഗ് മോഡ്"

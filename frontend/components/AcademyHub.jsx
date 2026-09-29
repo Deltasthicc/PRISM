@@ -145,8 +145,8 @@ export default function AcademyHub() {
       <Panel variant="accent">
         <h2 className="font-sans text-base font-bold text-[#00236f] mb-4">{t('academy.section1Heading')}</h2>
         <form onSubmit={saveProfile} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input id="designation" label={t('academy.designationLabel')} value={profile.designation || ''} onChange={(event) => setProfile({ ...profile, designation: event.target.value })} placeholder="Statistical Officer" />
-          <Input id="department" label={t('academy.departmentLabel')} value={profile.department || ''} onChange={(event) => setProfile({ ...profile, department: event.target.value })} placeholder="MoSPI / State department / University" />
+          <Input id="designation" label={t('academy.designationLabel')} value={profile.designation || ''} onChange={(event) => setProfile({ ...profile, designation: event.target.value })} placeholder="Training Officer" />
+          <Input id="department" label={t('academy.departmentLabel')} value={profile.department || ''} onChange={(event) => setProfile({ ...profile, department: event.target.value })} placeholder="Department / division / institution" />
           <Input id="job-role" label={t('academy.jobRoleLabel')} value={profile.job_role || ''} onChange={(event) => setProfile({ ...profile, job_role: event.target.value })} placeholder="Survey design and data quality" />
           <Input id="years-experience" label={t('academy.yearsExperienceLabel')} type="number" min="0" max="60" value={profile.years_experience ?? 0} onChange={(event) => setProfile({ ...profile, years_experience: event.target.value })} />
           <Input id="current-assignment" label={t('academy.currentAssignmentLabel')} textarea rows="3" value={profile.current_assignment || ''} onChange={(event) => setProfile({ ...profile, current_assignment: event.target.value })} placeholder="Responsibilities, datasets, programmes, or decisions you currently support" />

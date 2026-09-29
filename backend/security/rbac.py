@@ -51,6 +51,8 @@ class Permission(StrEnum):
     CONTENT_DRAFT_CREATE = "content.draft.create"
     CONTENT_REVIEW = "content.review"
     CONTENT_APPROVE = "content.approve"
+    COURSE_READ = "course.read"
+    COURSE_MANAGE = "course.manage"
     DEPARTMENT_ANALYTICS_READ = "analytics.department.read"
     ORGANIZATION_ANALYTICS_READ = "analytics.organization.read"
     ROLE_TARGET_MANAGE = "role_target.manage"
@@ -72,12 +74,19 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.PATHWAY_SELF_READ,
             Permission.PRACTICE_SELF_WRITE,
             Permission.CONTENT_DRAFT_CREATE,
+            Permission.COURSE_READ,
         }
     ),
     # Cross-learner trainer access is deliberately absent until a server-side
     # trainer/cohort assignment model exists. A role name alone is not object
-    # scope.
-    "trainer": frozenset({Permission.CONTENT_DRAFT_CREATE}),
+    # scope. COURSE_MANAGE is safe to grant broadly, unlike that gap: course
+    # routes (routes/course_catalog.py) additionally check the requesting
+    # trainer owns the specific course before any write, the same
+    # ownership-check pattern require_own_player_dependency already
+    # establishes for players.
+    "trainer": frozenset(
+        {Permission.CONTENT_DRAFT_CREATE, Permission.COURSE_READ, Permission.COURSE_MANAGE}
+    ),
     "content_reviewer": frozenset(
         {Permission.CONTENT_REVIEW, Permission.CONTENT_APPROVE}
     ),

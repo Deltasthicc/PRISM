@@ -2,7 +2,18 @@
 
 <div align="center">
 
-**An 11-language, explainable competency-gap engine for government skill development — built for Smart India Hackathon 2026 (PS: 26101).**
+**An 11-language, explainable competency-gap and learning-management platform for organizational capacity building — built for Smart India Hackathon 2026 (PS: 26075, "CAPACITY CONNECT," Ministry of Earth Sciences / IMD).**
+
+> **2026-09-29 — problem statement transition.** This project no longer targets SIH26101 (MoSPI's
+> Official Statistics competency platform, no longer being pursued); it now targets **SIH26075**.
+> Most of PRISM's engineering — the assessment/quiz-generation engine, RBAC/identity primitives,
+> course enrollment lifecycle, admin analytics, production deployment — transfers directly. Several
+> SIH26075-specific features (certificate issuance, course feedback, a homepage announcements feed,
+> admin user-approval, a trainer content library, trainer-authored questionnaires with deadlines,
+> and trainer-to-subject competency matching) do not exist yet. See
+> [`docs/SIH26075_PROBLEM_STATEMENT.md`](docs/SIH26075_PROBLEM_STATEMENT.md) for the full,
+> requirement-by-requirement honest accounting. The former SIH26101-specific docs are preserved at
+> [`docs/archive/`](docs/archive/) as historical record, not current guidance.
 
 [![CI](https://github.com/Deltasthicc/PRISM/actions/workflows/ci.yml/badge.svg)](https://github.com/Deltasthicc/PRISM/actions/workflows/ci.yml)
 [![Keepalive](https://github.com/Deltasthicc/PRISM/actions/workflows/keepalive.yml/badge.svg)](https://github.com/Deltasthicc/PRISM/actions/workflows/keepalive.yml)
@@ -13,7 +24,7 @@
 ![Tests](https://img.shields.io/badge/backend%20tests-1102-brightgreen)
 ![Deploy](https://img.shields.io/badge/frontend-Vercel-000000?logo=vercel&logoColor=white)
 
-[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [Adaptive Diagnostic](#-adaptive-diagnostic-two-stage-misconception-targeted) · [Live Quiz Sessions](#-live-quiz-sessions-qr-code-classroom-delivery) · [Trainer Review](#-trainer-review-edit-before-approve) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Recommended Learning](#-recommended-learning--igotnssta-enrollment) · [Exam Integrity](#-exam-integrity-webcam-proctoring) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [Admin Analytics](#-admin-analytics) · [Reliability hardening](#-reliability-hardening-from-a-real-audit) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
+[Live demo](#-live-demo) · [What it does](#-what-prism-actually-does) · [SIH26075 alignment](#-sih26075-alignment-what-transfers-what-doesnt) · [Architecture](#-architecture) · [Quizzes](#-quizzes) · [Adaptive Diagnostic](#-adaptive-diagnostic-two-stage-misconception-targeted) · [Live Quiz Sessions](#-live-quiz-sessions-qr-code-classroom-delivery) · [Trainer Review](#-trainer-review-edit-before-approve) · [DSA Sandbox](#-dsa-sandbox) · [Virtual Lab](#-virtual-lab-official-statistics) · [Recommended Learning](#-recommended-learning--igotnssta-enrollment) · [Exam Integrity](#-exam-integrity-webcam-proctoring) · [Learner Assistant (RAG)](#-learner-assistant-rag) · [Voice AI](#-voice-ai-pipeline) · [Admin Analytics](#-admin-analytics) · [Reliability hardening](#-reliability-hardening-from-a-real-audit) · [What's real vs. mockup](#-whats-real-and-whats-a-mockup) · [Local setup](#-running-it-locally) · [API](#-api-reference) · [Known limitations](#-known-limitations)
 
 </div>
 
@@ -21,9 +32,9 @@
 
 ## 📖 What PRISM actually does
 
-Government officers (MoSPI-style: statistical officers, analysts, policy staff) need a way to know exactly *which* skills they're missing, *why*, and *what to do about it* — without a vague "take this course" recommendation. PRISM is a **deterministic, explainable competency-gap engine**: it blends a learner's self-assessment with demonstrated performance (quiz results, exercises, real code submissions) at a fixed **65% demonstrated / 35% self-assessed** weighting, maps the result against a curated, government-source-cited competency catalog, and generates a personalized learning pathway (the "Prerequisite Pathways" map) with a plain-language rationale for every gap it identifies.
+Organizational trainees, trainers, and administrators need a way to know exactly *which* skills a learner is missing, *why*, and *what to do about it* — without a vague "take this course" recommendation, and without trainers and admins working from separate spreadsheets instead of one shared, evidence-based picture. PRISM is a **deterministic, explainable competency-gap and learning-management platform**: it blends a learner's self-assessment with demonstrated performance (quiz results, exercises, real code submissions) at a fixed **65% demonstrated / 35% self-assessed** weighting, maps the result against a curated, source-cited competency catalog, and generates a personalized learning pathway (the "Prerequisite Pathways" map) with a plain-language rationale for every gap it identifies.
 
-**Four curricula, 55 competencies**, each traceable to an actual government or standards document (see [`backend/services/competency_docs.py`](backend/services/competency_docs.py) and [`curricula.py`](backend/services/curricula.py)):
+**Four curricula, 55 competencies**, each traceable to an actual government or standards document (see [`backend/services/competency_docs.py`](backend/services/competency_docs.py) and [`curricula.py`](backend/services/curricula.py)) — built originally around the Official Statistics domain (SIH26101), kept as real, working content rather than discarded during the SIH26075 transition, and directly reusable as one organization's actual training subject matter, not just a demo fixture:
 - DSA Fundamentals
 - Official Statistics & Data Governance
 - Public Policy
@@ -42,6 +53,28 @@ Running the frontend per-laptop via `npm run dev` still works too — the Vercel
 > Free-tier constraints apply on the Render side: cold starts on first request after idle, and Keycloak sits at roughly 90% of its 512MB memory cap. This is a hackathon demo environment, **not** a government-approved production deployment.
 
 **Navigation is tuned to feel instant, not just work.** The frontend's shared React Query client previously had no default cache lifetime, so every route change re-fetched everything from scratch; it now caches appropriately (short-lived for live/changing data, longer for near-static reference data like curricula), most routes show an immediate loading skeleton instead of a blank screen while data resolves, and likely next-page navigation is prefetched ahead of the click.
+
+## 🔀 SIH26075 alignment — what transfers, what doesn't
+
+Full requirement-by-requirement detail (with a code-audited "current state" column, not a guess)
+lives in [`docs/SIH26075_PROBLEM_STATEMENT.md`](docs/SIH26075_PROBLEM_STATEMENT.md). Summary:
+
+**Transfers with real, substantial value** — this was not a cosmetic reskin of an unrelated product:
+- Real identity/RBAC primitives with three of the four roles SIH26075 needs already modeled (`learner`, `trainer`, `department_admin`/`organization_admin` in `security/rbac.py`) — though the deployed demo still runs `DISABLE_AUTH=true`, same disclosed caveat as always.
+- The entire assessment/quiz-generation engine — source-cited questions, AI-generated quizzes from uploaded material (with OCR for scanned pages), a two-stage adaptive diagnostic — is a strong, direct match for "attempt subject-wise MCQ assessments."
+- A real, persisted course enrollment lifecycle (`routes/course_enrollment.py`).
+- Real admin analytics — training-effectiveness, course-completion, activity-trend, emerging-skill-gap dashboards (`routes/learning_analytics.py`).
+- The production deployment shape (Docker backend, Vercel frontend, real CI, 1,100+ tests) and the trainer content-review/edit-before-approve workflow (`routes/quiz_review.py`).
+
+**Does not exist yet, and is not described as built anywhere in this README** — confirmed absent by
+grepping the backend, not assumed:
+- Certificate issuance; course/content feedback collection.
+- A homepage announcements/notifications/achievements feed.
+- Admin user-approval (every signup is immediately active today) and a dedicated role-management UI.
+- A standalone trainer content library — document upload today feeds AI quiz generation only, not a browsable materials repository.
+- Trainer-authored questionnaires with deadlines — today's trainer workflow reviews/edits *AI-generated* items, it doesn't author a fresh questionnaire from a blank page, and there's no due-date concept anywhere in the schema.
+- Cohort-scoped trainer visibility into "their" trainees — `security/rbac.py`'s own comment says this is deliberately withheld until a trainer/cohort assignment model exists.
+- Trainer-to-subject competency matching — PRISM's competency engine maps a *learner's* gaps against a target; SIH26075 asks for the reverse direction (finding a qualified trainer for a subject), which is a genuinely different, unbuilt feature.
 
 ## 🔐 Auth model — read this before you judge the security
 
@@ -413,8 +446,8 @@ docs/internal/   Lane coordination/strategy docs (team orchestration, handoffs, 
 deploy/          Render/Neon deployment walkthrough
 ```
 
-Root now holds only what someone evaluating the product needs first: `README.md`, `SIH26101_MASTER_CHECKLIST.md`, `EVIDENCE.md`, and the agent-instruction files (`CLAUDE.md`, `CODEX.md`, `AGENTS.md`). Internal lane-coordination docs live under `docs/internal/`.
+Root now holds only what someone evaluating the product needs first: `README.md`, `docs/SIH26075_PROBLEM_STATEMENT.md`, `EVIDENCE.md`, and the agent-instruction files (`CLAUDE.md`, `CODEX.md`, `AGENTS.md`). The former `SIH26101_MASTER_CHECKLIST.md` is preserved at [`docs/archive/SIH26101_MASTER_CHECKLIST.md`](docs/archive/SIH26101_MASTER_CHECKLIST.md) as historical record. Internal lane-coordination docs live under `docs/internal/`.
 
 ## 🙌 Team
 
-Built for Smart India Hackathon 2026, Problem Statement 26101, across six coordinated lanes (identity & core data, AI/content, frontend, integrations, release engineering, and orchestration). See [`docs/internal/SIH26101_TEAM_ORCHESTRATION.md`](docs/internal/SIH26101_TEAM_ORCHESTRATION.md) for the full lane breakdown and [`EVIDENCE.md`](EVIDENCE.md) for the running evidence log.
+Originally built for Smart India Hackathon 2026, Problem Statement 26101; as of 2026-09-29 the team is building against **Problem Statement 26075** ("CAPACITY CONNECT," Ministry of Earth Sciences/IMD) instead — see [`docs/SIH26075_PROBLEM_STATEMENT.md`](docs/SIH26075_PROBLEM_STATEMENT.md). Development continues across six coordinated lanes (identity & core data, AI/content, frontend, integrations, release engineering, and orchestration) — a structure built for the earlier PS and reused as-is for this one. See [`docs/internal/SIH26101_TEAM_ORCHESTRATION.md`](docs/internal/SIH26101_TEAM_ORCHESTRATION.md) for the lane breakdown (kept under its original filename as the lane *process* doc, not a PS-specific one) and [`EVIDENCE.md`](EVIDENCE.md) for the running evidence log.

@@ -18,6 +18,7 @@ from routes.competency_quiz import router as competency_quiz_router
 from routes.dsa_sandbox import router as dsa_sandbox_router
 from routes.sampling_lab import router as sampling_lab_router
 from routes.course_enrollment import router as course_enrollment_router
+from routes.course_catalog import router as course_catalog_router
 from routes.proctoring import router as proctoring_router
 from routes.quiz_review import router as quiz_review_router
 from routes.judgment_scenarios import router as judgment_scenarios_router
@@ -34,6 +35,7 @@ router.include_router(competency_quiz_router)
 router.include_router(dsa_sandbox_router)
 router.include_router(sampling_lab_router)
 router.include_router(course_enrollment_router)
+router.include_router(course_catalog_router)
 router.include_router(proctoring_router)
 router.include_router(quiz_review_router)
 router.include_router(judgment_scenarios_router)

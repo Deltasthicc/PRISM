@@ -4,6 +4,7 @@
 import { API_BASE_URL } from '../config';
 import { TOPIC_GRAPH, TOPIC_LABELS } from '../statMap';
 import { monsterForTopic } from '../sprites/monsterSprites';
+import { getValidAccessToken } from '../auth/oidc';
 
 const SESSION_KEY = 'prism-api-session';
 
@@ -53,10 +54,16 @@ function dedupe(key, run) {
 async function request(path, { method = 'GET', body, headers } = {}) {
   let response;
   try {
+    // Real OIDC deployments (DISABLE_AUTH unset) get a real bearer token
+    // attached here; DISABLE_AUTH demo deployments -- and any signed-out
+    // visitor otherwise -- get null and every request behaves exactly as
+    // it did before lib/auth/oidc.js existed. See that module's header.
+    const accessToken = await getValidAccessToken();
     response = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         ...headers,
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -187,6 +194,13 @@ export const auth = {
     clearLiveState();
     return { ok: true };
   },
+
+  // Real OIDC path (app/auth/callback, app/auth/complete-registration) --
+  // see lib/auth/oidc.js's header for how this differs from the
+  // demo-username flow above. Only reachable once a real bearer token
+  // exists (lib/auth/oidc.js::getValidAccessToken), so request() already
+  // attaches it; nothing here touches the token directly.
+  registerOidcAccount: (body) => request('/auth/register', { method: 'POST', body }),
 
   me: async () => rememberPlayer(await currentPlayer()),
 
@@ -550,7 +564,12 @@ export const liveSessions = {
 async function requestMultipart(path, formData) {
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, { method: 'POST', body: formData });
+    const accessToken = await getValidAccessToken();
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method: 'POST',
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+      body: formData,
+    });
   } catch (cause) {
     const error = new Error('Could not reach the backend. Is it running?');
     error.code = 0;

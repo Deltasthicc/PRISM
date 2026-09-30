@@ -1,21 +1,29 @@
-"""Real enroll/complete lifecycle for services/learning_catalog.py's
-recommend_courses() output.
+"""Real enroll/complete lifecycle for two distinct kinds of course.
 
-Before this route existed, recommend_courses() computed real, gap-ranked,
-provider-tagged course recommendations -- correctly -- but nothing in the
-app ever called it from a route, and nothing rendered its output in the
-frontend. A learner could never actually see, let alone act on, a single
-recommendation. This closes both ends: the route here, and
-frontend/components/RecommendedCourses.jsx on the UI side.
+1. "igot"/"nssta" -- services/learning_catalog.py::recommend_courses()
+   output. Computed correctly but, before this route existed, nothing in
+   the app ever called it from a route or rendered its output in the
+   frontend; a learner could never actually see, let alone act on, a single
+   recommendation. This closes both ends: the route here, and
+   frontend/components/RecommendedCourses.jsx on the UI side. These go
+   through integrations/provider.py's SimulatedIGOTAdapter, which is
+   honestly and permanently labeled SIMULATED -- no real iGOT/NSSTA
+   endpoint contract exists yet (see README's Known limitations).
+2. "internal" -- a real, trainer-authored `models.course.Course` row
+   (routes/course_catalog.py). Not imported, not simulated: this platform
+   is the source of truth, so enrolling/completing one is a plain database
+   write with no adapter call at all.
 
-"igot"/"nssta" courses go through integrations/provider.py's
-SimulatedIGOTAdapter, which is honestly and permanently labeled SIMULATED --
-no real iGOT/NSSTA endpoint contract exists yet (see README's Known
-limitations). A completed course writes evidence_type="provider_imported",
-which learning_engine.py's UNSCORED_EVIDENCE_TYPES deliberately excludes
-from competency scoring (recorded for transparency, not scored) -- exactly
-the same "don't fabricate psychometric precision" boundary the rest of this
-project holds everywhere else.
+Both write evidence_type="provider_imported", which
+learning_engine.py's UNSCORED_EVIDENCE_TYPES deliberately excludes from
+competency scoring. For the "internal" case this is a deliberate, narrower
+choice than it might look: an internal course is more verifiable than an
+external import, but whether completing one should carry real scoring
+weight is a scoring-policy decision this project requires to be an
+explicit, versioned choice (see CLAUDE.md's "65/35 blend... remain
+versioned prototype policies until validated"), not something to fold in
+quietly as a side effect of adding the model. Recorded for transparency,
+not scored, until that policy decision is made on its own.
 """
 from __future__ import annotations
 
@@ -27,6 +35,7 @@ from sqlalchemy.orm import Session
 
 from db.database import get_db
 from integrations.provider import SimulatedIGOTAdapter
+from models.course import Course
 from models.course_enrollment import CourseEnrollment
 from models.governance import EvidenceRecord
 from routes.authorization import require_own_player, require_permission_dependency
@@ -35,18 +44,33 @@ from security.rbac import BoundPrincipal, Permission
 
 router = APIRouter(prefix="/learning/catalogue", tags=["Course Enrollment"])
 
-_PROVIDER_PREFIXES = ("igot::", "nssta::")
+_PROVIDER_PREFIXES = ("igot::", "nssta::", "internal::")
 
 
 def _parse_course_id(course_id: str) -> tuple[str, str]:
-    """course_id is always "<provider>::<competency_id>", exactly as
-    services/learning_catalog.py::recommend_courses() generates it -- no
-    separate lookup table needed. Raises ValueError for anything else
-    (e.g. an internal-practice course_id, which has nothing to enroll in)."""
+    """course_id is always "<provider>::<value>". For "igot"/"nssta" that
+    value is a competency_id, exactly as
+    services/learning_catalog.py::recommend_courses() generates it. For
+    "internal" it is a real `courses.course_id` primary key instead (see
+    `_resolve_internal_course`). Raises ValueError for anything else (e.g.
+    an internal-practice recommendation course_id, which has nothing to
+    enroll in)."""
     for prefix in _PROVIDER_PREFIXES:
         if course_id.startswith(prefix):
             return prefix.rstrip(":"), course_id[len(prefix):]
     raise ValueError(f"Not an enrollable provider course_id: {course_id!r}")
+
+
+def _resolve_internal_course(db: Session, course_id: str) -> Course:
+    _, real_course_id = _parse_course_id(course_id)
+    course = (
+        db.query(Course)
+        .filter(Course.course_id == real_course_id, Course.is_published.is_(True))
+        .one_or_none()
+    )
+    if course is None:
+        raise HTTPException(status_code=404, detail="Course not found or not published")
+    return course
 
 
 class EnrollRequest(BaseModel):
@@ -67,7 +91,7 @@ async def enroll(
     player_or_404(db, body.player_id)
 
     try:
-        provider, competency_id = _parse_course_id(body.course_id)
+        provider, _ = _parse_course_id(body.course_id)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -82,17 +106,24 @@ async def enroll(
     if existing:
         return _serialize(existing)
 
-    adapter = SimulatedIGOTAdapter()
-    result = adapter.request_enrolment(body.course_id, idempotency_key=str(uuid.uuid4()))
-    if not result.data.get("accepted"):
-        raise HTTPException(status_code=502, detail="Provider declined the enrolment request")
+    if provider == "internal":
+        course = _resolve_internal_course(db, body.course_id)
+        competency_id = course.competency_id
+        title = course.title
+    else:
+        adapter = SimulatedIGOTAdapter()
+        result = adapter.request_enrolment(body.course_id, idempotency_key=str(uuid.uuid4()))
+        if not result.data.get("accepted"):
+            raise HTTPException(status_code=502, detail="Provider declined the enrolment request")
+        _, competency_id = _parse_course_id(body.course_id)
+        title = body.title
 
     enrollment = CourseEnrollment(
         player_id=body.player_id,
         course_id=body.course_id,
         provider=provider,
         competency_id=competency_id,
-        title=body.title,
+        title=title,
         status="enrolled",
     )
     db.add(enrollment)
@@ -130,10 +161,11 @@ async def complete(
     if enrollment.status == "completed":
         return _serialize(enrollment)
 
-    adapter = SimulatedIGOTAdapter()
-    result = adapter.report_completion(enrollment.course_id)
-    if not result.data.get("completed"):
-        raise HTTPException(status_code=502, detail="Provider did not confirm completion")
+    if enrollment.provider != "internal":
+        adapter = SimulatedIGOTAdapter()
+        result = adapter.report_completion(enrollment.course_id)
+        if not result.data.get("completed"):
+            raise HTTPException(status_code=502, detail="Provider did not confirm completion")
 
     from datetime import datetime, timezone
 

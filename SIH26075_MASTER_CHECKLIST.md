@@ -10,9 +10,20 @@ or design note alone is not a complete user workflow.
 
 - [ ] **PS75-01 / Lanes 1, 2, 5:** secure Trainee, Trainer, and Admin sign-in plus role-aware entry.
   Backend OIDC/RBAC primitives exist; demo auth bypass and role-specific browser journeys remain.
+  **2026-09-30 (Claude, PR #93):** self-service registration (`POST /auth/register`, requests
+  learner/trainer only, never an admin role — enforced by a DB constraint) is real and tested, but
+  still unreachable from the browser: `frontend/lib/api/client.js` has no bearer-token handling at
+  all, so nothing role-gated can be exercised in a real browser session yet. The real OIDC
+  Authorization Code + PKCE browser flow is in progress (Claude) as the actual remaining blocker for
+  this item — not a missing backend primitive.
 - [ ] **PS75-02 / Lanes 1, 2, 5:** complete trainee profile with structured experience, interests,
   skills, and certificates. Current learner profile is partial.
 - [x] **PS75-03 / Lanes 2, 5:** persisted course enrolment and completion lifecycle.
+  **2026-09-30 (Claude, PR #93):** extended, not just re-confirmed — a real trainer-authored `Course`
+  table now exists (`backend/models/course.py`), enrollable via a new `internal::<course_id>`
+  provider path in the pre-existing enroll/complete lifecycle, sitting alongside the untouched
+  igot/nssta simulated path. Still needs a trainee-facing browse/enroll UI (PS75-04/Lane 1) and a
+  trainer-facing create/publish UI (PS75-10/Lane 1) — the route contract is ready to build against.
 - [ ] **PS75-04 / Lanes 1, 4, 5:** trainee-browsable resource library. Existing ingestion and
   curricula are reusable, but a trainer-owned library is not yet present.
 - [x] **PS75-05 / Lanes 3, 4, 5:** subject-scoped MCQ assessment and adaptive diagnostic.
@@ -28,6 +39,11 @@ or design note alone is not a complete user workflow.
   and trainee viewing for recordings, presentations, and study material.
 - [ ] **PS75-11 / Lanes 1, 2, 5:** pending-account approval and role grant/revoke admin workflow,
   with audit events and denial tests.
+  **2026-09-30 (Claude, PR #93):** the API contract and audit trail exist and are tested
+  (`GET /auth/pending-registrations`, `POST /auth/pending-registrations/{id}/decide`,
+  `organization_admin`-gated, 13 tests including a permission-denial case) — still unchecked per
+  this checklist's own rule, since there is no admin-facing approval UI yet (Lane 1) and role
+  grant/revoke beyond the initial approval decision is out of scope for what shipped.
 - [ ] **PS75-12 / Lanes 1, 2, 5:** connected admin dashboard covering courses, enrolments,
   certificates, assessments, and participation. Existing analytics cover only part of this.
 - [ ] **PS75-13 / Lanes 1, 2, 5:** publishable homepage notifications, announcements,

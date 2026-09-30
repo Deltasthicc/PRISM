@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Callable, Protocol
 from urllib.parse import urlsplit
@@ -18,7 +19,8 @@ from urllib.parse import urlsplit
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from models.identity import IdentityBinding
+from models.identity import SELF_SERVICE_REQUESTABLE_ROLES, IdentityBinding
+from models.learning import LearnerProfile
 from models.player import Player
 from security.audit import record_audit_event
 
@@ -49,6 +51,8 @@ class Permission(StrEnum):
     CONTENT_DRAFT_CREATE = "content.draft.create"
     CONTENT_REVIEW = "content.review"
     CONTENT_APPROVE = "content.approve"
+    COURSE_READ = "course.read"
+    COURSE_MANAGE = "course.manage"
     DEPARTMENT_ANALYTICS_READ = "analytics.department.read"
     ORGANIZATION_ANALYTICS_READ = "analytics.organization.read"
     ROLE_TARGET_MANAGE = "role_target.manage"
@@ -70,12 +74,19 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.PATHWAY_SELF_READ,
             Permission.PRACTICE_SELF_WRITE,
             Permission.CONTENT_DRAFT_CREATE,
+            Permission.COURSE_READ,
         }
     ),
     # Cross-learner trainer access is deliberately absent until a server-side
     # trainer/cohort assignment model exists. A role name alone is not object
-    # scope.
-    "trainer": frozenset({Permission.CONTENT_DRAFT_CREATE}),
+    # scope. COURSE_MANAGE is safe to grant broadly, unlike that gap: course
+    # routes (routes/course_catalog.py) additionally check the requesting
+    # trainer owns the specific course before any write, the same
+    # ownership-check pattern require_own_player_dependency already
+    # establishes for players.
+    "trainer": frozenset(
+        {Permission.CONTENT_DRAFT_CREATE, Permission.COURSE_READ, Permission.COURSE_MANAGE}
+    ),
     "content_reviewer": frozenset(
         {Permission.CONTENT_REVIEW, Permission.CONTENT_APPROVE}
     ),
@@ -364,6 +375,203 @@ def deactivate_identity_binding(
             entity_type="identity_binding",
             entity_id=binding.binding_id,
             details={"reason": reason, "player_id": binding.player_id},
+            commit=False,
+        )
+        db.commit()
+        db.refresh(binding)
+        return binding
+    except Exception:
+        db.rollback()
+        raise
+
+
+def create_self_service_registration(
+    db: Session,
+    *,
+    subject: AuthenticatedSubjectLike,
+    username: str,
+    requested_role: str,
+    full_name: str,
+    designation: str = "",
+    department: str = "",
+    notes: str = "",
+) -> IdentityBinding:
+    """Let a freshly-verified subject with no binding yet request an account.
+
+    This is the one self-service exception to "only an admin creates a
+    binding" (`create_identity_binding` above). It differs from that
+    function in every way that matters for security:
+
+    - ``subject`` need not hold any application role yet -- by definition a
+      brand-new registrant has none. The caller (`routes/registration.py`)
+      must still have proven ``subject`` is a genuine, freshly-verified OIDC
+      token (`get_current_subject`); this function trusts verification, not
+      authorization, from its caller.
+    - ``requested_role`` is a request, not a grant: it is checked against
+      ``SELF_SERVICE_REQUESTABLE_ROLES`` (learner/trainer only -- an
+      admin role can never be self-requested) and stored for an admin to
+      see, but it grants no permission by itself. The binding starts
+      ``active=False``; nothing this deployment enforces
+      (`resolve_bound_principal`) treats an inactive binding as usable.
+      The requester's *actual* role, once approved, still comes only from
+      whatever role claim their own verified token carries -- unchanged by
+      this call.
+    - It creates the ``Player``/``LearnerProfile`` rows the applicant's
+      profile needs to exist at all, which `create_identity_binding` never
+      does (it always binds to an already-existing player).
+    """
+    if requested_role not in SELF_SERVICE_REQUESTABLE_ROLES:
+        raise AuthorizationError(
+            f"requested_role must be one of {sorted(SELF_SERVICE_REQUESTABLE_ROLES)}"
+        )
+    issuer = validate_issuer(subject.issuer)
+    subject_id = _required(subject.subject_id, "subject_id")
+    username = _required(username, "username", maximum=100)
+    full_name = _required(full_name, "full_name", maximum=200)
+    designation = (designation or "").strip()[:200]
+    department = (department or "").strip()[:200]
+    notes = (notes or "").strip()[:1000]
+
+    existing_binding = (
+        db.query(IdentityBinding)
+        .filter(
+            IdentityBinding.issuer == issuer,
+            IdentityBinding.subject_id == subject_id,
+        )
+        .one_or_none()
+    )
+    if existing_binding is not None:
+        raise IdentityBindingConflict(
+            "this verified identity has already registered or been bound"
+        )
+    if db.query(Player).filter(Player.username == username).first() is not None:
+        raise IdentityBindingConflict("username already taken")
+
+    player = Player(username=username)
+    try:
+        db.add(player)
+        db.flush()
+        db.add(
+            LearnerProfile(
+                player_id=player.player_id,
+                full_name=full_name,
+                designation=designation,
+                department=department,
+            )
+        )
+        binding = IdentityBinding(
+            issuer=issuer,
+            subject_id=subject_id,
+            player_id=player.player_id,
+            active=False,
+            requested_role=requested_role,
+            registration_notes=notes,
+        )
+        db.add(binding)
+        db.flush()
+        record_audit_event(
+            db,
+            actor=json.dumps(
+                {"issuer": issuer, "subject_id": subject_id},
+                ensure_ascii=True,
+                separators=(",", ":"),
+                sort_keys=True,
+            ),
+            action="identity_binding.self_register",
+            entity_type="identity_binding",
+            entity_id=binding.binding_id,
+            details={"requested_role": requested_role, "player_id": player.player_id},
+            commit=False,
+        )
+        db.commit()
+        db.refresh(binding)
+        return binding
+    except IntegrityError as exc:
+        db.rollback()
+        raise IdentityBindingConflict(
+            "username or verified identity is already registered"
+        ) from exc
+    except Exception:
+        db.rollback()
+        raise
+
+
+def list_pending_registrations(db: Session, *, actor: BoundPrincipal) -> list[IdentityBinding]:
+    """Admin-only: every self-service registration awaiting a decision."""
+    require_permission(actor, Permission.IDENTITY_BINDING_MANAGE)
+    require_deployment_tenant(actor)
+    return (
+        db.query(IdentityBinding)
+        .filter(
+            IdentityBinding.requested_role.isnot(None),
+            IdentityBinding.registration_decision.is_(None),
+        )
+        .order_by(IdentityBinding.created_at.asc())
+        .all()
+    )
+
+
+def decide_self_registration(
+    db: Session,
+    *,
+    actor: BoundPrincipal,
+    binding_id: str,
+    decision: str,
+    notes: str = "",
+) -> IdentityBinding:
+    """Admin approves or rejects one pending self-service registration.
+
+    Approval flips ``active`` to True through the exact same state
+    transition `reactivate_identity_binding` already uses (inlined here so
+    the decision stamp commits in the same transaction as one audited
+    event, not two). Rejection never sets ``active`` at all -- a rejected
+    applicant stays unable to authenticate as before, and the
+    ``registration_decision`` stamp is what distinguishes "reviewed and
+    rejected" from "still pending" in `list_pending_registrations`.
+
+    This still only gates whether the local binding is usable. The
+    requester's actual role claim continues to come from their own verified
+    token (Keycloak realm role), unchanged by this decision -- see
+    `create_self_service_registration`'s docstring.
+    """
+    if decision not in ("approved", "rejected"):
+        raise AuthorizationError("decision must be 'approved' or 'rejected'")
+    require_permission(actor, Permission.IDENTITY_BINDING_MANAGE)
+    require_deployment_tenant(actor)
+    _require_active_actor_binding(db, actor)
+    binding_id = _required(binding_id, "binding_id", maximum=200)
+    notes = (notes or "").strip()[:1000]
+
+    binding = (
+        db.query(IdentityBinding)
+        .filter(
+            IdentityBinding.binding_id == binding_id,
+            IdentityBinding.requested_role.isnot(None),
+            IdentityBinding.registration_decision.is_(None),
+        )
+        .with_for_update()
+        .one_or_none()
+    )
+    if binding is None:
+        raise PrincipalBindingError("pending registration not found")
+    try:
+        if decision == "approved":
+            binding.active = True
+        binding.registration_decision = decision
+        binding.registration_reviewed_by = actor.audit_actor
+        binding.registration_reviewed_at = datetime.now(timezone.utc)
+        record_audit_event(
+            db,
+            actor=actor.audit_actor,
+            action="identity_binding.registration_decided",
+            entity_type="identity_binding",
+            entity_id=binding.binding_id,
+            details={
+                "decision": decision,
+                "requested_role": binding.requested_role,
+                "notes": notes,
+                "player_id": binding.player_id,
+            },
             commit=False,
         )
         db.commit()

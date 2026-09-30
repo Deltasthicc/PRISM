@@ -88,6 +88,13 @@ async def lifespan(app: FastAPI):
         ("reviewed_at", "TEXT"),
         ("reviewer_notes", "TEXT"),
     ])
+    ensure_columns("identity_bindings", [
+        ("requested_role", "TEXT"),
+        ("registration_notes", "TEXT"),
+        ("registration_decision", "TEXT"),
+        ("registration_reviewed_by", "TEXT"),
+        ("registration_reviewed_at", "TEXT"),
+    ])
 
     # Auto-seed the demo DSA dungeon, then materialize every other curriculum
     # in services/curricula.py as its own dungeon (see db/seed.py's
@@ -131,9 +138,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="PRISM API",
     description=(
-        "Skill-intelligence backend for SIH26101: role-aware competency profiles, "
-        "explainable gap analysis, adaptive practice quests, and source-grounded quiz "
-        "generation across DSA, Official Statistics, Public Policy, and Digital Literacy."
+        "PRISM Capacity Connect backend for SIH26075: role-aware Trainee/Trainer/Admin "
+        "learning management, explainable competency gap analysis, adaptive practice "
+        "quests, and source-grounded quiz generation across DSA, Official Statistics, "
+        "Public Policy, and Digital Literacy."
     ),
     version="0.1.0",
     lifespan=lifespan,
@@ -197,10 +205,12 @@ app.add_middleware(RequestLoggingMiddleware)
 from routes.game import router as game_router
 from routes.ai_real import router as ai_router
 from routes.learning import router as learning_router
+from routes.registration import router as registration_router
 
 app.include_router(game_router)
 app.include_router(ai_router)
 app.include_router(learning_router)
+app.include_router(registration_router)
 
 # The voice pipeline (routes/ai_voice.py) pulls in heavy, optional ML
 # dependencies (faster-whisper, piper-tts, numpy) at import time. A missing

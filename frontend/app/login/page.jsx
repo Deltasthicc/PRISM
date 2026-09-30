@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
+import { beginLogin } from '@/lib/auth/oidc';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import Badge from '@/components/ui/Badge';
@@ -22,6 +23,18 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [oidcError, setOidcError] = useState('');
+
+  async function handleOidcLogin() {
+    setOidcError('');
+    try {
+      await beginLogin();
+    } catch (cause) {
+      // beginLogin() normally navigates away and never returns -- this only
+      // runs if the identity provider itself couldn't be reached.
+      setOidcError(cause.message || 'Could not reach the identity provider.');
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -83,6 +96,25 @@ export default function LoginPage() {
             {submitting ? t('login.submitting') : t('login.submit')}
           </Button>
         </form>
+
+        <div className="flex items-center gap-3 my-5">
+          <div className="h-px flex-1 bg-[#c5c5d3]/60" />
+          <span className="font-sans text-xs text-[#757682] uppercase tracking-wider">or</span>
+          <div className="h-px flex-1 bg-[#c5c5d3]/60" />
+        </div>
+        {oidcError && (
+          <p className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2 mb-3">
+            {oidcError}
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={handleOidcLogin}
+          className="w-full font-sans text-sm font-medium text-[#00236f] border border-[#00236f]/40 rounded-lg px-3 py-2.5 hover:bg-[#00236f]/5 transition-colors"
+        >
+          Sign in with your organization account
+        </button>
+
         <p className="font-sans text-sm text-[#757682] text-center mt-5">
           {t('login.newHere')}{' '}
           <Link href="/register" className="text-[#00236f] font-medium hover:underline">

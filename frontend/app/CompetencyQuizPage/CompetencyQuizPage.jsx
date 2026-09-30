@@ -477,6 +477,28 @@ export default function CompetencyQuizPage() {
         ),
       });
       setIsSubmitted(true);
+
+      // Persist a real CompetencyAssessment snapshot for every curriculum
+      // this quiz just touched -- /stats itself deliberately reads the
+      // idempotent GET /learning/pathway (see that page's own header
+      // comment) rather than creating a row on every dashboard view, which
+      // is correct, but it meant nothing anywhere ever called the
+      // assessment-creating POST /learning/assessment/{player_id}: an
+      // audit of the live deployment found zero persisted assessments
+      // despite real ongoing quiz activity, which left admin's Training
+      // Effectiveness and Emerging Skill Gaps panels permanently empty --
+      // both need a learner assessed more than once to show anything.
+      // Firing this here, right when a real assessment genuinely just
+      // completed, is the natural "before/after" checkpoint those panels
+      // are meant to compare. Deliberately fire-and-forget: this is a
+      // background snapshot, not something the learner is waiting on, so a
+      // failure here must never block them from seeing their own result.
+      const assessedSlugs = new Set(
+        selectedTopics.map((topic) => topic.curriculumSlug).filter(Boolean)
+      );
+      assessedSlugs.forEach((slug) => {
+        learning.assess(player.player_id, slug, {}).catch(() => {});
+      });
     } catch (cause) {
       setSubmitError(cause.message || 'The quiz could not be graded. Please retry.');
       setIsTimerRunning(true);

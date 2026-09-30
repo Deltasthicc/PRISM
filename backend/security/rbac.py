@@ -53,6 +53,8 @@ class Permission(StrEnum):
     CONTENT_APPROVE = "content.approve"
     COURSE_READ = "course.read"
     COURSE_MANAGE = "course.manage"
+    CERTIFICATE_READ = "certificate.read"
+    COURSE_FEEDBACK_WRITE = "course_feedback.write"
     DEPARTMENT_ANALYTICS_READ = "analytics.department.read"
     ORGANIZATION_ANALYTICS_READ = "analytics.organization.read"
     ROLE_TARGET_MANAGE = "role_target.manage"
@@ -75,6 +77,8 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.PRACTICE_SELF_WRITE,
             Permission.CONTENT_DRAFT_CREATE,
             Permission.COURSE_READ,
+            Permission.CERTIFICATE_READ,
+            Permission.COURSE_FEEDBACK_WRITE,
         }
     ),
     # Cross-learner trainer access is deliberately absent until a server-side
@@ -85,7 +89,13 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
     # ownership-check pattern require_own_player_dependency already
     # establishes for players.
     "trainer": frozenset(
-        {Permission.CONTENT_DRAFT_CREATE, Permission.COURSE_READ, Permission.COURSE_MANAGE}
+        {
+            Permission.CONTENT_DRAFT_CREATE,
+            Permission.COURSE_READ,
+            Permission.COURSE_MANAGE,
+            Permission.CERTIFICATE_READ,
+            Permission.COURSE_FEEDBACK_WRITE,
+        }
     ),
     "content_reviewer": frozenset(
         {Permission.CONTENT_REVIEW, Permission.CONTENT_APPROVE}

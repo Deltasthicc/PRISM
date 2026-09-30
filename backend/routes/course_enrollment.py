@@ -35,6 +35,7 @@ from sqlalchemy.orm import Session
 
 from db.database import get_db
 from integrations.provider import SimulatedIGOTAdapter
+from models.certificate import Certificate
 from models.course import Course
 from models.course_enrollment import CourseEnrollment
 from models.governance import EvidenceRecord
@@ -181,6 +182,29 @@ async def complete(
             detail=f"{enrollment.provider}:{enrollment.course_id}",
         )
     )
+    if enrollment.provider == "internal":
+        # A real completion certificate, not a claim -- issued exactly once
+        # per (player, course) here at the moment completion is first
+        # recorded above (this whole branch is unreachable on a repeat
+        # call: the `enrollment.status == "completed"` check earlier in
+        # this function already returned). title is a snapshot, not a live
+        # join, so the certificate stays valid and readable even if the
+        # source course is later renamed or unpublished (see
+        # models/certificate.py's docstring). Stored as the bare
+        # `courses.course_id` (stripping the "internal::" enrollment
+        # prefix, which only exists to disambiguate a provider inside
+        # CourseEnrollment), matching how models/feedback.py's real FK
+        # references the same course -- so a certificate's course_id and a
+        # feedback row's course_id for "the same course" are always the
+        # identical string.
+        _, real_course_id = _parse_course_id(enrollment.course_id)
+        db.add(
+            Certificate(
+                player_id=body.player_id,
+                course_id=real_course_id,
+                title=enrollment.title,
+            )
+        )
     db.commit()
     db.refresh(enrollment)
     return _serialize(enrollment)

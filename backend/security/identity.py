@@ -270,10 +270,24 @@ class OIDCVerifier:
             # here (e.g. an hour) would look configured but the underlying
             # signing keys would still get refetched every 300s anyway.
             # Passing `lifespan` explicitly keeps both layers in agreement.
+            #
+            # `cooldown_duration` (new in PyJWT >=2.14, default 30s) rate-
+            # limits a forced refresh after an unrecognized `kid` -- upstream
+            # added this to stop a client from hammering the JWKS endpoint
+            # with garbage key ids. Left at its default, a genuinely rotated
+            # key can be rejected for up to 30s after rotation: this
+            # deployment's key-rotation contract
+            # (test_key_rotation_is_handled_without_restart_or_code_change)
+            # predates that default and was reviewed and accepted as
+            # "rotation takes effect immediately, no code change or
+            # restart" -- explicitly disabling the cooldown here preserves
+            # that exact behavior instead of silently adopting upstream's
+            # new default.
             self._jwks_client = PyJWKClient(
                 jwks_uri,
                 timeout=self._discovery_timeout_seconds,
                 lifespan=max(1, int(self._jwks_cache_seconds)),
+                cooldown_duration=0,
             )
             self._jwks_client_fetched_at = now
         return self._jwks_client

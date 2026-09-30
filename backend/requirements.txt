@@ -33,7 +33,7 @@ python-dotenv==1.2.3
 google-generativeai==0.8.3
 pydantic==2.9.2
 httpx==0.27.2
-pyjwt[crypto]==2.13.0
+pyjwt[crypto]==2.15.1  # CVE-2026-102274 fixed in 2.14.0; pinned to latest known-good
 cryptography==50.0.1
 
 # Learning-platform additions (backend/routes/learning.py):

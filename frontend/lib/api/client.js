@@ -415,6 +415,51 @@ export const courseEnrollment = {
     request(`/learning/catalogue/enrollments?player_id=${encodeURIComponent(playerId)}`),
 };
 
+// Real, trainer-authored course catalog (backend/routes/course_catalog.py).
+// Distinct from the igot/nssta recommendations above -- these are courses
+// built on this platform, not external catalogue entries.
+export const courseCatalog = {
+  listPublished: () => request('/learning/courses'),
+  get: (courseId) => request(`/learning/courses/${encodeURIComponent(courseId)}`),
+  listMine: (trainerId) => request(`/learning/courses/mine?trainer_id=${encodeURIComponent(trainerId)}`),
+  create: (trainerId, title, description, competencyId) =>
+    request('/learning/courses', {
+      method: 'POST',
+      body: { trainer_id: trainerId, title, description, competency_id: competencyId },
+    }),
+  publish: (courseId, trainerId) =>
+    request(`/learning/courses/${encodeURIComponent(courseId)}/publish`, {
+      method: 'POST',
+      body: { trainer_id: trainerId },
+    }),
+  unpublish: (courseId, trainerId) =>
+    request(`/learning/courses/${encodeURIComponent(courseId)}/unpublish`, {
+      method: 'POST',
+      body: { trainer_id: trainerId },
+    }),
+};
+
+// Course feedback (backend/routes/course_feedback.py) -- one submission per
+// (player, course), upserted on resubmit.
+export const courseFeedback = {
+  submit: (courseId, playerId, rating, comment) =>
+    request(`/learning/courses/${encodeURIComponent(courseId)}/feedback`, {
+      method: 'POST',
+      body: { player_id: playerId, rating, comment },
+    }),
+  mine: (courseId, playerId) =>
+    request(`/learning/courses/${encodeURIComponent(courseId)}/feedback/mine?player_id=${encodeURIComponent(playerId)}`),
+  summary: (courseId) => request(`/learning/courses/${encodeURIComponent(courseId)}/feedback`),
+};
+
+// Completion certificates (backend/routes/certificates.py). `verify` is
+// the one public, unauthenticated read in this whole client -- anyone
+// holding a code can confirm a certificate is real without an account.
+export const certificates = {
+  listMine: (playerId) => request(`/learning/certificates?player_id=${encodeURIComponent(playerId)}`),
+  verify: (code) => request(`/learning/certificates/verify/${encodeURIComponent(code)}`),
+};
+
 // Real, persisted exam-integrity signal log (backend/routes/proctoring.py).
 // The actual face/phone detection runs entirely client-side
 // (components/ProctoringMonitor.jsx, via real in-browser ML models) -- this

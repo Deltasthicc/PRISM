@@ -90,7 +90,12 @@ def test_trainer_creates_a_draft_course_not_visible_to_public_browse():
 
     created = client.post(
         "/learning/courses",
-        json={"title": "Coastal Hazard Basics", "description": "Intro", "competency_id": "hazard_basics"},
+        json={
+            "trainer_id": trainer_id,
+            "title": "Coastal Hazard Basics",
+            "description": "Intro",
+            "competency_id": "hazard_basics",
+        },
     )
     assert created.status_code == 200
     body = created.json()
@@ -109,10 +114,15 @@ def test_publishing_makes_a_course_visible_to_public_browse():
 
     course_id = client.post(
         "/learning/courses",
-        json={"title": "Weather Station Maintenance", "description": "", "competency_id": "aws_maintenance"},
+        json={
+            "trainer_id": trainer_id,
+            "title": "Weather Station Maintenance",
+            "description": "",
+            "competency_id": "aws_maintenance",
+        },
     ).json()["course_id"]
 
-    publish = client.post(f"/learning/courses/{course_id}/publish")
+    publish = client.post(f"/learning/courses/{course_id}/publish", json={"trainer_id": trainer_id})
     assert publish.status_code == 200
     assert publish.json()["is_published"] is True
 
@@ -131,12 +141,35 @@ def test_a_trainer_cannot_publish_another_trainers_course():
     owner_client = TestClient(_app(db, _principal(owner_id, frozenset({"trainer"}))))
     course_id = owner_client.post(
         "/learning/courses",
-        json={"title": "Cyclone Response", "description": "", "competency_id": "cyclone_response"},
+        json={
+            "trainer_id": owner_id,
+            "title": "Cyclone Response",
+            "description": "",
+            "competency_id": "cyclone_response",
+        },
     ).json()["course_id"]
 
     other_client = TestClient(_app(db, _principal(other_id, frozenset({"trainer"}))))
-    response = other_client.post(f"/learning/courses/{course_id}/publish")
+    response = other_client.post(f"/learning/courses/{course_id}/publish", json={"trainer_id": other_id})
     assert response.status_code == 404
+
+
+def test_a_trainer_cannot_publish_impersonating_a_different_trainer_id():
+    db = _db()
+    owner_id = _make_player(db, username_prefix="owner")
+    other_id = _make_player(db, username_prefix="other")
+    owner_client = TestClient(_app(db, _principal(owner_id, frozenset({"trainer"}))))
+    course_id = owner_client.post(
+        "/learning/courses",
+        json={"trainer_id": owner_id, "title": "Impersonation Test", "description": "", "competency_id": "x"},
+    ).json()["course_id"]
+
+    other_client = TestClient(_app(db, _principal(other_id, frozenset({"trainer"}))))
+    # other_id tries to publish by claiming to be owner_id in the body --
+    # require_own_player must reject this using the bound principal, never
+    # trusting the client-supplied trainer_id alone.
+    response = other_client.post(f"/learning/courses/{course_id}/publish", json={"trainer_id": owner_id})
+    assert response.status_code == 403
 
 
 def test_learner_role_cannot_create_a_course():
@@ -146,7 +179,7 @@ def test_learner_role_cannot_create_a_course():
 
     response = client.post(
         "/learning/courses",
-        json={"title": "Should Fail", "description": "", "competency_id": "x"},
+        json={"trainer_id": learner_id, "title": "Should Fail", "description": "", "competency_id": "x"},
     )
     assert response.status_code == 403
 
@@ -157,9 +190,9 @@ def test_learner_can_browse_published_courses():
     trainer_client = TestClient(_app(db, _principal(trainer_id, frozenset({"trainer"}))))
     course_id = trainer_client.post(
         "/learning/courses",
-        json={"title": "Ocean Data Basics", "description": "", "competency_id": "ocean_data"},
+        json={"trainer_id": trainer_id, "title": "Ocean Data Basics", "description": "", "competency_id": "ocean_data"},
     ).json()["course_id"]
-    trainer_client.post(f"/learning/courses/{course_id}/publish")
+    trainer_client.post(f"/learning/courses/{course_id}/publish", json={"trainer_id": trainer_id})
 
     learner_id = _make_player(db)
     learner_client = TestClient(_app(db, _principal(learner_id, frozenset({"learner"}))))
@@ -174,10 +207,10 @@ def test_unpublishing_removes_a_course_from_public_browse():
     client = TestClient(_app(db, _principal(trainer_id, frozenset({"trainer"}))))
     course_id = client.post(
         "/learning/courses",
-        json={"title": "Draft Again", "description": "", "competency_id": "x"},
+        json={"trainer_id": trainer_id, "title": "Draft Again", "description": "", "competency_id": "x"},
     ).json()["course_id"]
-    client.post(f"/learning/courses/{course_id}/publish")
-    client.post(f"/learning/courses/{course_id}/unpublish")
+    client.post(f"/learning/courses/{course_id}/publish", json={"trainer_id": trainer_id})
+    client.post(f"/learning/courses/{course_id}/unpublish", json={"trainer_id": trainer_id})
 
     assert client.get("/learning/courses").json() == []
     assert client.get(f"/learning/courses/{course_id}").status_code == 404
@@ -189,9 +222,14 @@ def test_enrolling_in_a_published_internal_course_uses_its_real_title_and_compet
     trainer_client = TestClient(_app(db, _principal(trainer_id, frozenset({"trainer"}))))
     course_id = trainer_client.post(
         "/learning/courses",
-        json={"title": "Monsoon Forecasting 101", "description": "", "competency_id": "monsoon_forecasting"},
+        json={
+            "trainer_id": trainer_id,
+            "title": "Monsoon Forecasting 101",
+            "description": "",
+            "competency_id": "monsoon_forecasting",
+        },
     ).json()["course_id"]
-    trainer_client.post(f"/learning/courses/{course_id}/publish")
+    trainer_client.post(f"/learning/courses/{course_id}/publish", json={"trainer_id": trainer_id})
 
     learner_id = _make_player(db)
     learner_client = TestClient(_app(db, _principal(learner_id, frozenset({"learner"}))))
@@ -212,7 +250,7 @@ def test_enrolling_in_an_unpublished_internal_course_is_not_found():
     trainer_client = TestClient(_app(db, _principal(trainer_id, frozenset({"trainer"}))))
     course_id = trainer_client.post(
         "/learning/courses",
-        json={"title": "Still Draft", "description": "", "competency_id": "x"},
+        json={"trainer_id": trainer_id, "title": "Still Draft", "description": "", "competency_id": "x"},
     ).json()["course_id"]
 
     learner_id = _make_player(db)
@@ -230,9 +268,14 @@ def test_completing_an_internal_enrollment_writes_unscored_evidence_without_a_pr
     trainer_client = TestClient(_app(db, _principal(trainer_id, frozenset({"trainer"}))))
     course_id = trainer_client.post(
         "/learning/courses",
-        json={"title": "Tsunami Drill Design", "description": "", "competency_id": "tsunami_drills"},
+        json={
+            "trainer_id": trainer_id,
+            "title": "Tsunami Drill Design",
+            "description": "",
+            "competency_id": "tsunami_drills",
+        },
     ).json()["course_id"]
-    trainer_client.post(f"/learning/courses/{course_id}/publish")
+    trainer_client.post(f"/learning/courses/{course_id}/publish", json={"trainer_id": trainer_id})
 
     learner_id = _make_player(db)
     learner_client = TestClient(_app(db, _principal(learner_id, frozenset({"learner"}))))
@@ -255,3 +298,40 @@ def test_completing_an_internal_enrollment_writes_unscored_evidence_without_a_pr
     )
     assert evidence.evidence_type == "provider_imported"
     assert evidence.detail == f"internal:internal::{course_id}"
+
+
+def test_trainer_lists_only_their_own_courses_draft_and_published():
+    db = _db()
+    trainer_id = _make_player(db, username_prefix="trainer")
+    other_id = _make_player(db, username_prefix="other")
+    client = TestClient(_app(db, _principal(trainer_id, frozenset({"trainer"}))))
+    other_client = TestClient(_app(db, _principal(other_id, frozenset({"trainer"}))))
+
+    client.post(
+        "/learning/courses",
+        json={"trainer_id": trainer_id, "title": "Mine, Draft", "description": "", "competency_id": "x"},
+    )
+    published_id = client.post(
+        "/learning/courses",
+        json={"trainer_id": trainer_id, "title": "Mine, Published", "description": "", "competency_id": "x"},
+    ).json()["course_id"]
+    client.post(f"/learning/courses/{published_id}/publish", json={"trainer_id": trainer_id})
+    other_client.post(
+        "/learning/courses",
+        json={"trainer_id": other_id, "title": "Not Mine", "description": "", "competency_id": "x"},
+    )
+
+    response = client.get("/learning/courses/mine", params={"trainer_id": trainer_id})
+    assert response.status_code == 200
+    titles = {row["title"] for row in response.json()}
+    assert titles == {"Mine, Draft", "Mine, Published"}
+
+
+def test_a_trainer_cannot_list_courses_under_someone_elses_trainer_id():
+    db = _db()
+    trainer_id = _make_player(db, username_prefix="trainer")
+    other_id = _make_player(db, username_prefix="other")
+    other_client = TestClient(_app(db, _principal(other_id, frozenset({"trainer"}))))
+
+    response = other_client.get("/learning/courses/mine", params={"trainer_id": trainer_id})
+    assert response.status_code == 403

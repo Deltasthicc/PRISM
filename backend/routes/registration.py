@@ -44,6 +44,7 @@ from security.rbac import (
     create_self_service_registration,
     decide_self_registration,
     list_pending_registrations,
+    resolve_subject_registration_status,
 )
 
 router = APIRouter(prefix="/auth", tags=["Registration"])
@@ -87,6 +88,14 @@ class RegistrationDecisionResponse(BaseModel):
     requested_role: str
     decision: str
     active: bool
+
+
+class MeResponse(BaseModel):
+    status: str  # "not_registered" | "pending_approval" | "rejected" | "approved"
+    player_id: str | None
+    username: str | None
+    roles: list[str]
+    requested_role: str | None
 
 
 def _verified_subject(authorization: str | None = Header(default=None)):
@@ -134,6 +143,29 @@ def register(
         binding_id=binding.binding_id,
         player_id=binding.player_id,
         requested_role=binding.requested_role,
+    )
+
+
+@router.get("/me", response_model=MeResponse)
+def me(
+    subject=Depends(_verified_subject),
+    db: Session = Depends(get_db),
+) -> MeResponse:
+    """The real principal-hydration endpoint a live audit this session
+    found missing: the frontend had no reliable way to tell a first-time
+    registrant, a pending applicant, a rejected one, and an already-
+    approved returning user apart after a real OIDC sign-in -- every case
+    was routed through the same registration form. This is a verified-
+    subject read, same trust boundary as POST /register, never requiring
+    an existing active binding (unlike every other route in this file).
+    """
+    result = resolve_subject_registration_status(db, subject)
+    return MeResponse(
+        status=result.status,
+        player_id=result.player_id,
+        username=result.username,
+        roles=sorted(result.roles),
+        requested_role=result.requested_role,
     )
 
 

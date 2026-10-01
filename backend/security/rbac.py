@@ -261,6 +261,70 @@ def resolve_bound_principal(
     )
 
 
+@dataclass(frozen=True)
+class SubjectRegistrationStatus:
+    """What `GET /auth/me` (routes/registration.py) reports back to a
+    verified-but-not-necessarily-bound caller -- purely informational,
+    never an authorization decision. A caller with "pending_approval" or
+    "rejected" status still holds zero permissions; this exists only so
+    the frontend can route them to the right screen instead of a bare
+    403/404 with no explanation, closing the real gap a live audit this
+    session found: the OIDC callback had no way to tell a first-time
+    registrant from an already-approved returning user, so a returning
+    user with a perfectly valid, active binding was being routed back
+    through the registration form every time.
+    """
+
+    status: str  # "not_registered" | "pending_approval" | "rejected" | "approved"
+    player_id: str | None
+    username: str | None
+    roles: frozenset[str]
+    requested_role: str | None
+
+
+def resolve_subject_registration_status(
+    db: Session, subject: AuthenticatedSubjectLike
+) -> SubjectRegistrationStatus:
+    """Unlike `resolve_bound_principal`, this never raises on a missing or
+    inactive binding -- it reports the subject's real registration state
+    instead, active or not. Still fails closed on a malformed issuer/
+    subject_id exactly like every other entry point here; the only
+    difference from `resolve_bound_principal` is what happens once a
+    verified subject's binding turns out not to be active.
+    """
+    issuer = validate_issuer(subject.issuer)
+    subject_id = _required(subject.subject_id, "subject_id")
+    binding = (
+        db.query(IdentityBinding)
+        .filter(IdentityBinding.issuer == issuer, IdentityBinding.subject_id == subject_id)
+        .one_or_none()
+    )
+    if binding is None:
+        return SubjectRegistrationStatus(
+            status="not_registered", player_id=None, username=None, roles=frozenset(), requested_role=None
+        )
+    if binding.active:
+        player = db.query(Player).filter(Player.player_id == binding.player_id).one_or_none()
+        return SubjectRegistrationStatus(
+            status="approved",
+            player_id=binding.player_id,
+            username=player.username if player else None,
+            roles=effective_roles(subject),
+            requested_role=binding.requested_role,
+        )
+    if binding.registration_decision == "rejected":
+        status = "rejected"
+    else:
+        status = "pending_approval"
+    return SubjectRegistrationStatus(
+        status=status,
+        player_id=binding.player_id,
+        username=None,
+        roles=frozenset(),
+        requested_role=binding.requested_role,
+    )
+
+
 def require_any_role(
     *allowed_roles: str,
 ) -> Callable[[BoundPrincipal], BoundPrincipal]:

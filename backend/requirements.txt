@@ -38,7 +38,7 @@ cryptography==50.0.1
 
 # Learning-platform additions (backend/routes/learning.py):
 python-multipart==0.0.32
-pypdf==6.16.2
+pypdf==6.19.0  # CVE-2026-102993/94/95/96/97/98/99/103000 fixed across 6.17.0-6.19.0; pinned to latest known-good
 python-docx==1.1.2
 
 # OCR fallback for scanned PDFs/legacy statistical tables and direct image

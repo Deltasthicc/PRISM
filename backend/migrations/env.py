@@ -9,6 +9,7 @@ from db.database import Base, SQLALCHEMY_DATABASE_URL
 from models import (
     accuracy_history,
     certificate,
+    cohort,
     course,
     course_enrollment,
     dungeon,
@@ -31,6 +32,7 @@ from models import (
 _REGISTERED_MODEL_MODULES = (
     accuracy_history,
     certificate,
+    cohort,
     feedback,
     course,
     course_enrollment,

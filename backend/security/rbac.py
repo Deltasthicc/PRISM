@@ -55,6 +55,8 @@ class Permission(StrEnum):
     COURSE_MANAGE = "course.manage"
     CERTIFICATE_READ = "certificate.read"
     COURSE_FEEDBACK_WRITE = "course_feedback.write"
+    COHORT_MANAGE = "cohort.manage"
+    COHORT_READ = "cohort.read"
     DEPARTMENT_ANALYTICS_READ = "analytics.department.read"
     ORGANIZATION_ANALYTICS_READ = "analytics.organization.read"
     ROLE_TARGET_MANAGE = "role_target.manage"
@@ -81,13 +83,15 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.COURSE_FEEDBACK_WRITE,
         }
     ),
-    # Cross-learner trainer access is deliberately absent until a server-side
-    # trainer/cohort assignment model exists. A role name alone is not object
-    # scope. COURSE_MANAGE is safe to grant broadly, unlike that gap: course
-    # routes (routes/course_catalog.py) additionally check the requesting
-    # trainer owns the specific course before any write, the same
-    # ownership-check pattern require_own_player_dependency already
-    # establishes for players.
+    # Cross-learner trainer access used to be deliberately absent here
+    # pending a server-side trainer/cohort assignment model -- that model
+    # now exists (models/cohort.py, routes/cohorts.py). COHORT_READ is
+    # still not "see any learner": routes/cohorts.py additionally checks
+    # the requesting trainer owns the specific cohort before returning
+    # anything, the same ownership-check pattern
+    # require_own_player_dependency already establishes for players and
+    # routes/course_catalog.py established for courses. A role name alone
+    # is still never object scope.
     "trainer": frozenset(
         {
             # A trainer-only account (no "learner" role alongside it) could
@@ -107,6 +111,7 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.COURSE_MANAGE,
             Permission.CERTIFICATE_READ,
             Permission.COURSE_FEEDBACK_WRITE,
+            Permission.COHORT_READ,
         }
     ),
     "content_reviewer": frozenset(
@@ -123,6 +128,8 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.IDENTITY_BINDING_MANAGE,
             Permission.SUBJECT_DATA_EXPORT,
             Permission.SUBJECT_DATA_DELETE,
+            Permission.COHORT_MANAGE,
+            Permission.COHORT_READ,
         }
     ),
     "auditor": frozenset({Permission.AUDIT_READ, Permission.SUBJECT_DATA_EXPORT}),

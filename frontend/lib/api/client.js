@@ -460,6 +460,32 @@ export const certificates = {
   verify: (code) => request(`/learning/certificates/verify/${encodeURIComponent(code)}`),
 };
 
+// Real trainer/cohort assignment (backend/routes/cohorts.py). Admin-only
+// to create/assign/manage membership; a trainer's reads are scoped
+// server-side to only cohorts assigned to them -- see that route's own
+// docstring for the ownership-check pattern.
+export const cohorts = {
+  // Side-effect-free: unlike auth.login(), this never touches live.playerId
+  // -- the admin managing cohorts is looking up a *different* account's id,
+  // not switching whose session this browser tab is in.
+  lookupPlayerIdByUsername: (username) =>
+    request(`/game/player/by-username/${encodeURIComponent(username.trim())}`).then((data) => data.player_id),
+  create: (name, trainerId) => request('/learning/cohorts', { method: 'POST', body: { name, trainer_id: trainerId } }),
+  listAll: () => request('/learning/cohorts'),
+  listMine: (trainerId) => request(`/learning/cohorts/mine?trainer_id=${encodeURIComponent(trainerId)}`),
+  addMember: (cohortId, playerId) =>
+    request(`/learning/cohorts/${encodeURIComponent(cohortId)}/members?player_id=${encodeURIComponent(playerId)}`, {
+      method: 'POST',
+    }),
+  removeMember: (cohortId, playerId) =>
+    request(
+      `/learning/cohorts/${encodeURIComponent(cohortId)}/members/${encodeURIComponent(playerId)}`,
+      { method: 'DELETE' }
+    ),
+  listMembers: (cohortId) => request(`/learning/cohorts/${encodeURIComponent(cohortId)}/members`),
+  performance: (cohortId) => request(`/learning/cohorts/${encodeURIComponent(cohortId)}/performance`),
+};
+
 // Real, persisted exam-integrity signal log (backend/routes/proctoring.py).
 // The actual face/phone detection runs entirely client-side
 // (components/ProctoringMonitor.jsx, via real in-browser ML models) -- this

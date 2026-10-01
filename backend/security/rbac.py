@@ -90,6 +90,18 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
     # establishes for players.
     "trainer": frozenset(
         {
+            # A trainer-only account (no "learner" role alongside it) could
+            # not read or edit even its own generic profile before this --
+            # confirmed by reading this set, not assumed. PS75-07 requires
+            # trainers to manage their own profile; a trainer authenticated
+            # purely as "trainer" needs these same self-scoped permissions
+            # a learner already has, not a separate trainer-profile
+            # permission family (the underlying player/profile rows are
+            # shared, not role-specific).
+            Permission.PLAYER_SELF_READ,
+            Permission.PLAYER_SELF_WRITE,
+            Permission.PROFILE_SELF_READ,
+            Permission.PROFILE_SELF_WRITE,
             Permission.CONTENT_DRAFT_CREATE,
             Permission.COURSE_READ,
             Permission.COURSE_MANAGE,

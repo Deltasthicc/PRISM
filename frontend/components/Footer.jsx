@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BadgeCheck } from 'lucide-react';
+import { BadgeCheck, FlaskConical, Link2 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function Footer() {
@@ -15,11 +15,11 @@ export default function Footer() {
         </div>
         <div className="flex items-center gap-3 font-mono text-[11px] text-[#757682] flex-wrap justify-center">
           <span className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px]">history</span>{t('footer.auditBadge')}
+            <FlaskConical size={14} />{t('footer.auditBadge')}
           </span>
           <span>•</span>
           <span className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px]">policy</span>{t('footer.ndsapBadge')}
+            <Link2 size={14} />{t('footer.ndsapBadge')}
           </span>
           <span>•</span>
           <span>{t('footer.syncBadge')}</span>

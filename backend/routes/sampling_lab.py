@@ -24,7 +24,9 @@ from db.database import get_db
 from labs.sampling_lab import LabInputError, evaluate_submission, evidence_payload, list_tasks
 from models.accuracy_history import AccuracyHistory
 from models.governance import EvidenceRecord
+from routes.authorization import require_own_player, require_permission_dependency
 from routes.learning_common import player_or_404
+from security.rbac import BoundPrincipal, Permission
 from services.game_logic import update_accuracy_history
 
 router = APIRouter(prefix="/learning/sampling-lab", tags=["Sampling Lab"])
@@ -43,7 +45,18 @@ class SubmissionIn(BaseModel):
 
 
 @router.post("/submit")
-async def submit_answer(body: SubmissionIn, db: Session = Depends(get_db)) -> dict:
+async def submit_answer(
+    body: SubmissionIn,
+    db: Session = Depends(get_db),
+    principal: BoundPrincipal = Depends(require_permission_dependency(Permission.PRACTICE_SELF_WRITE)),
+) -> dict:
+    # Real P0 fix: this route had no principal dependency at all until now
+    # -- any caller could write EvidenceRecord/AccuracyHistory rows for any
+    # player_id just by naming it in the body, unauthenticated. Same
+    # require_own_player pattern every other body-scoped route in this
+    # codebase already uses (routes/course_enrollment.py,
+    # routes/learning_content.py).
+    require_own_player(principal, body.player_id)
     player_or_404(db, body.player_id)
     try:
         result = evaluate_submission(body.task_id, body.value)

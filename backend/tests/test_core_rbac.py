@@ -237,6 +237,21 @@ def test_permission_matrix_is_minimal_and_does_not_grant_trainer_cross_subject(d
     with pytest.raises(AuthorizationError):
         scoped_to_own_player(trainer, PLAYER_ID)
 
+
+def test_trainer_only_account_can_manage_its_own_generic_profile(db):
+    """A real gap this closes: a trainer authenticated purely as "trainer"
+    (no "learner" role alongside it) previously had no PLAYER_SELF_*/
+    PROFILE_SELF_* permission at all -- it could not read or edit even its
+    own generic profile, contradicting PS75-07. Still correctly denied any
+    cross-subject or org-wide permission."""
+    trainer = _principal(db, "trainer-profile-subject", {"trainer"})
+    require_permission(trainer, Permission.PLAYER_SELF_READ)
+    require_permission(trainer, Permission.PLAYER_SELF_WRITE)
+    require_permission(trainer, Permission.PROFILE_SELF_READ)
+    require_permission(trainer, Permission.PROFILE_SELF_WRITE)
+    with pytest.raises(AuthorizationError):
+        require_permission(trainer, Permission.ORGANIZATION_ANALYTICS_READ)
+
     auditor = _principal(db, "auditor-subject", {"auditor"})
     require_permission(auditor, Permission.SUBJECT_DATA_EXPORT)
     with pytest.raises(AuthorizationError):

@@ -370,8 +370,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 Ministry of Earth Sciences (MoES) • Smart India Hackathon Prototype 26075",
-      "auditBadge": "Audit: ISO-27001 Staging",
-      "ndsapBadge": "NDSAP-Aligned",
+      "auditBadge": "Synthetic Demo Data",
+      "ndsapBadge": "Source-Traceable Assessments",
       "syncBadge": "Sync: Catalog Mode"
     },
     "assistantPage": {
@@ -721,8 +721,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 पृथ्वी विज्ञान मंत्रालय (MoES) • स्मार्ट इंडिया हैकाथॉन प्रोटोटाइप 26075",
-      "auditBadge": "ऑडिट: ISO-27001 स्टेजिंग",
-      "ndsapBadge": "NDSAP-संरेखित",
+      "auditBadge": "सिंथेटिक डेमो डेटा",
+      "ndsapBadge": "स्रोत-अनुरेखणीय मूल्यांकन",
       "syncBadge": "सिंक: कैटलॉग मोड"
     },
     "assistantPage": {
@@ -1072,8 +1072,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 আর্থ সায়েন্স মন্ত্রক (MoES) • স্মার্ট ইন্ডিয়া হ্যাকাথন প্রোটোটাইপ 26075",
-      "auditBadge": "অডিট: ISO-27001 স্টেজিং",
-      "ndsapBadge": "NDSAP-সংযুক্ত",
+      "auditBadge": "সিন্থেটিক ডেমো ডেটা",
+      "ndsapBadge": "উৎস-অনুসরণযোগ্য মূল্যায়ন",
       "syncBadge": "সিঙ্ক: ক্যাটালগ মোড"
     },
     "assistantPage": {
@@ -1423,8 +1423,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 पृथ्वी विज्ञान मंत्रालय (MoES) • स्मार्ट इंडिया हॅकाथॉन प्रोटोटाइप 26075",
-      "auditBadge": "ऑडिट: ISO-27001 स्टेजिंग",
-      "ndsapBadge": "NDSAP-संरेखित",
+      "auditBadge": "सिंथेटिक डेमो डेटा",
+      "ndsapBadge": "स्रोत-अनुरेखणीय मूल्यांकन",
       "syncBadge": "सिंक: कॅटलॉग मोड"
     },
     "assistantPage": {
@@ -1774,8 +1774,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 భూ శాస్త్రాల మంత్రిత్వ శాఖ (MoES) • స్మార్ట్ ఇండియా హ్యాకథాన్ ప్రోటోటైప్ 26075",
-      "auditBadge": "ఆడిట్: ISO-27001 స్టేజింగ్",
-      "ndsapBadge": "NDSAP-అలైన్ చేయబడింది",
+      "auditBadge": "సింథటిక్ డెమో డేటా",
+      "ndsapBadge": "సోర్స్-ట్రేసబుల్ మూల్యాంకనాలు",
       "syncBadge": "సమకాలీకరణ: కేటలాగ్ మోడ్"
     },
     "assistantPage": {
@@ -2125,8 +2125,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 புவி அறிவியல் அமைச்சகம் (MoES) • Smart India Hackathon முன்மாதிரி 26075",
-      "auditBadge": "தணிக்கை: ISO-27001 ஸ்டேஜிங்",
-      "ndsapBadge": "NDSAP-சீரமைக்கப்பட்டது",
+      "auditBadge": "செயற்கை டெமோ தரவு",
+      "ndsapBadge": "மூல-கண்டறியக்கூடிய மதிப்பீடுகள்",
       "syncBadge": "ஒத்திசைவு: பட்டியல் முறை"
     },
     "assistantPage": {
@@ -2476,8 +2476,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 પૃથ્વી વિજ્ઞાન મંત્રાલય (MoES) • સ્માર્ટ ઇન્ડિયા હેકાથોન પ્રોટોટાઇપ 26075",
-      "auditBadge": "ઓડિટ: ISO-27001 સ્ટેજીંગ",
-      "ndsapBadge": "NDSAP- સંરેખિત",
+      "auditBadge": "સિન્થેટિક ડેમો ડેટા",
+      "ndsapBadge": "સ્ત્રોત-ટ્રેસ કરી શકાય તેવા મૂલ્યાંકનો",
       "syncBadge": "સમન્વયન: કેટલોગ મોડ"
     },
     "assistantPage": {
@@ -2827,8 +2827,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 وزارتِ علوم ارضیات (MoES) • اسمارٹ انڈیا ہیکاتھون پروٹو ٹائپ 26075",
-      "auditBadge": "آڈٹ: ISO-27001 اسٹیجنگ",
-      "ndsapBadge": "NDSAP- منسلک",
+      "auditBadge": "مصنوعی ڈیمو ڈیٹا",
+      "ndsapBadge": "ماخذ سے قابلِ ردیابی تشخیص",
       "syncBadge": "مطابقت پذیری: کیٹلاگ موڈ"
     },
     "assistantPage": {
@@ -3178,8 +3178,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 ಭೂ ವಿಜ್ಞಾನಗಳ ಸಚಿವಾಲಯ (MoES) • ಸ್ಮಾರ್ಟ್ ಇಂಡಿಯಾ ಹ್ಯಾಕಥಾನ್ ಮಾದರಿ 26075",
-      "auditBadge": "ಆಡಿಟ್: ISO-27001 ಸ್ಟೇಜಿಂಗ್",
-      "ndsapBadge": "NDSAP-ಜೋಡಣೆ",
+      "auditBadge": "ಸಿಂಥೆಟಿಕ್ ಡೆಮೊ ಡೇಟಾ",
+      "ndsapBadge": "ಮೂಲ-ಪತ್ತೆಹಚ್ಚಬಹುದಾದ ಮೌಲ್ಯಮಾಪನಗಳು",
       "syncBadge": "ಸಿಂಕ್: ಕ್ಯಾಟಲಾಗ್ ಮೋಡ್"
     },
     "assistantPage": {
@@ -3529,8 +3529,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 ପୃଥିବୀ ବିଜ୍ଞାନ ମନ୍ତ୍ରଣାଳୟ (MoES) • ସ୍ମାର୍ଟ ଇଣ୍ଡିଆ ହାକାଥନ୍ ପ୍ରୋଟୋଟାଇପ୍ 26075",
-      "auditBadge": "ଅଡିଟ୍: ISO-27001 ଷ୍ଟେଜ୍ |",
-      "ndsapBadge": "NDSAP- ଆଲାଇନ୍ ହୋଇଛି |",
+      "auditBadge": "ସିନ୍ଥେଟିକ୍ ଡେମୋ ଡାଟା",
+      "ndsapBadge": "ଉତ୍ସ-ଅନୁସରଣଯୋଗ୍ୟ ମୂଲ୍ୟାଙ୍କନ",
       "syncBadge": "ସିଙ୍କ୍: କାଟାଲଗ୍ ମୋଡ୍ |"
     },
     "assistantPage": {
@@ -3880,8 +3880,8 @@ export const TRANSLATIONS = {
     },
     "footer": {
       "copyright": "© 2026 ഭൗമശാസ്ത്ര മന്ത്രാലയം (MoES) • സ്മാർട്ട് ഇന്ത്യ ഹാക്കത്തോൺ പ്രോട്ടോടൈപ്പ് 26075",
-      "auditBadge": "ഓഡിറ്റ്: ISO-27001 സ്റ്റേജിംഗ്",
-      "ndsapBadge": "NDSAP-അലൈൻ ചെയ്തു",
+      "auditBadge": "സിന്തറ്റിക് ഡെമോ ഡാറ്റ",
+      "ndsapBadge": "ഉറവിട-കണ്ടെത്താവുന്ന മൂല്യനിർണ്ണയങ്ങൾ",
       "syncBadge": "സമന്വയം: കാറ്റലോഗ് മോഡ്"
     },
     "assistantPage": {

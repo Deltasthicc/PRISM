@@ -21,8 +21,23 @@ from main import app
 from models.accuracy_history import AccuracyHistory
 from models.governance import EvidenceRecord
 from models.player import Player
+from routes.authorization import require_principal
+from security.rbac import BoundPrincipal
 
 client = TestClient(app)
+
+
+class _Subject:
+    def __init__(self, player_id: str):
+        self.issuer = "https://issuer.example/realm"
+        self.subject_id = player_id
+        self.roles = frozenset({"learner"})
+
+
+def _principal_for(player_id: str) -> BoundPrincipal:
+    return BoundPrincipal(
+        subject=_Subject(player_id), binding_id="binding-1", player_id=player_id, roles=frozenset({"learner"})
+    )
 
 
 @pytest.fixture()
@@ -46,6 +61,7 @@ def db_session(tmp_path):
         yield db
     finally:
         app.dependency_overrides.pop(get_db, None)
+        app.dependency_overrides.pop(require_principal, None)
         db.close()
 
 
@@ -54,6 +70,11 @@ def _make_player(db) -> Player:
     db.add(player)
     db.commit()
     db.refresh(player)
+    # Real P0 fix: routes/sampling_lab.py previously had no principal
+    # dependency at all -- any caller could write EvidenceRecord/
+    # AccuracyHistory rows for any player_id, unauthenticated. Every test
+    # using this helper now authenticates as the player it just made.
+    app.dependency_overrides[require_principal] = lambda: _principal_for(player.player_id)
     return player
 
 
@@ -111,8 +132,36 @@ def test_unknown_task_is_a_422_not_a_500(db_session):
 
 
 def test_unknown_player_is_a_404(db_session):
+    # Authenticated AS "not-a-real-player" (own-player check passes) so the
+    # request reaches the deeper player_or_404 lookup this test actually
+    # means to exercise, rather than failing auth first.
+    app.dependency_overrides[require_principal] = lambda: _principal_for("not-a-real-player")
     response = client.post(
         "/learning/sampling-lab/submit",
         json={"player_id": "not-a-real-player", "task_id": "srs-basic", "value": 385},
     )
     assert response.status_code == 404
+
+
+def test_submitting_with_a_different_players_id_is_rejected(db_session):
+    """The real P0 this route had: no principal dependency at all meant
+    any caller could write EvidenceRecord/AccuracyHistory rows for any
+    other player just by naming their player_id in the body."""
+    victim = _make_player(db_session)
+    attacker = _make_player(db_session)  # this also re-points the override to attacker
+    response = client.post(
+        "/learning/sampling-lab/submit",
+        json={"player_id": victim.player_id, "task_id": "srs-basic", "value": 385},
+    )
+    assert response.status_code == 403
+    assert db_session.query(EvidenceRecord).filter_by(player_id=victim.player_id).count() == 0
+
+
+def test_submitting_with_no_credential_at_all_requires_auth():
+    """No db_session fixture, no override -- the real, unmocked
+    require_principal path with no Authorization header presented."""
+    response = client.post(
+        "/learning/sampling-lab/submit",
+        json={"player_id": "someone", "task_id": "srs-basic", "value": 385},
+    )
+    assert response.status_code == 401

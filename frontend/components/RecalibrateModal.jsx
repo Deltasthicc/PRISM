@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CheckCircle2, RefreshCw, SlidersHorizontal } from 'lucide-react';
 
 export const RecalibrateModal = ({
   isOpen,
@@ -36,7 +37,7 @@ export const RecalibrateModal = ({
         {/* Header */}
         <div className="bg-[#f2f3ff] px-6 py-4 border-b border-[#c5c5d3]/30 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#00236f] text-[22px]">tune</span>
+            <SlidersHorizontal className="text-[#00236f]" size={22} />
             <div>
               <h3 className="font-sans font-bold text-base text-[#00236f]">
                 NSO-XAI Engine Recalibration
@@ -128,7 +129,7 @@ export const RecalibrateModal = ({
 
           {successMsg && (
             <div className="p-3 bg-[#dce1ff] border border-[#00236f]/30 rounded-lg text-xs text-[#00236f] font-sans font-medium flex items-center gap-2 animate-in fade-in">
-              <span className="material-symbols-outlined text-[18px]">check_circle</span>
+              <CheckCircle2 size={18} />
               <span>{successMsg}</span>
             </div>
           )}
@@ -155,7 +156,7 @@ export const RecalibrateModal = ({
               </>
             ) : (
               <>
-                <span className="material-symbols-outlined text-[16px]">sync</span>
+                <RefreshCw size={16} />
                 <span>Execute Recalibration</span>
               </>
             )}

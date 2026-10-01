@@ -12,10 +12,25 @@ from main import app
 from models.accuracy_history import AccuracyHistory
 from models.governance import AuditEvent, EvidenceRecord
 from models.player import Player
-from routes.competency_quiz import TOPICS
+from routes.authorization import require_principal
+from routes.competency_quiz import TOPICS, _optional_principal
 from routes.competency_quiz import _questions_for_competency as questions_for_competency
+from security.rbac import BoundPrincipal
 
 client = TestClient(app)
+
+
+class _Subject:
+    def __init__(self, player_id: str):
+        self.issuer = "https://issuer.example/realm"
+        self.subject_id = player_id
+        self.roles = frozenset({"learner"})
+
+
+def _principal_for(player_id: str) -> BoundPrincipal:
+    return BoundPrincipal(
+        subject=_Subject(player_id), binding_id="binding-1", player_id=player_id, roles=frozenset({"learner"})
+    )
 DIFFICULTY_ORDER = {"easy": 0, "medium": 1, "hard": 2}
 
 
@@ -301,6 +316,7 @@ def test_submission_persists_separate_diagnostic_evidence_and_audit(tmp_path):
             session.close()
 
     app.dependency_overrides[get_db] = override_db
+    app.dependency_overrides[_optional_principal] = lambda: _principal_for(player.player_id)
     try:
         issued = issue("price_statistics", 2)
         response = client.post(
@@ -335,6 +351,7 @@ def test_submission_persists_separate_diagnostic_evidence_and_audit(tmp_path):
             assert row.mastered is True  # is_proven()'s accuracy ratchet, all-correct submission
     finally:
         app.dependency_overrides.pop(get_db, None)
+        app.dependency_overrides.pop(_optional_principal, None)
         db.close()
         engine.dispose()
 
@@ -363,6 +380,7 @@ def test_repeated_submissions_accumulate_the_same_accuracy_history_row(tmp_path)
             session.close()
 
     app.dependency_overrides[get_db] = override_db
+    app.dependency_overrides[_optional_principal] = lambda: _principal_for(player.player_id)
     try:
         for _ in range(2):
             issued = issue("data_quality", 2)
@@ -377,5 +395,61 @@ def test_repeated_submissions_accumulate_the_same_accuracy_history_row(tmp_path)
         assert rows[0].correct == 4
     finally:
         app.dependency_overrides.pop(get_db, None)
+        app.dependency_overrides.pop(_optional_principal, None)
         db.close()
         engine.dispose()
+
+
+def test_submitting_with_a_different_players_id_is_rejected(tmp_path):
+    """The real P0 this route had: no principal dependency at all meant
+    any caller could write EvidenceRecord/AccuracyHistory rows for any
+    other player just by naming their player_id in the body. Confirms
+    that's closed, not merely that the honest-caller path still works."""
+    engine = create_engine(
+        f"sqlite:///{tmp_path / 'quiz3.db'}", connect_args={"check_same_thread": False}
+    )
+    Base.metadata.create_all(bind=engine)
+    TestSession = sessionmaker(bind=engine)
+    db = TestSession()
+    victim = Player(username=f"victim-{uuid.uuid4()}")
+    attacker = Player(username=f"attacker-{uuid.uuid4()}")
+    db.add_all([victim, attacker])
+    db.commit()
+    db.refresh(victim)
+    db.refresh(attacker)
+
+    def override_db():
+        session = TestSession()
+        try:
+            yield session
+        finally:
+            session.close()
+
+    app.dependency_overrides[get_db] = override_db
+    # Authenticated as attacker, but the body claims victim's player_id.
+    app.dependency_overrides[_optional_principal] = lambda: _principal_for(attacker.player_id)
+    try:
+        issued = issue("price_statistics", 2)
+        response = client.post(
+            "/learning/competency-quiz/submit",
+            json=submit_payload(issued, correct=True, player_id=victim.player_id),
+        )
+        assert response.status_code == 403
+        assert db.query(EvidenceRecord).filter_by(player_id=victim.player_id).count() == 0
+    finally:
+        app.dependency_overrides.pop(get_db, None)
+        app.dependency_overrides.pop(_optional_principal, None)
+        db.close()
+        engine.dispose()
+
+
+def test_submitting_with_a_player_id_but_no_credential_at_all_requires_auth():
+    """No Authorization header and no dependency override -- the real,
+    unmocked `_optional_principal` path -- must not silently treat a
+    claimed player_id as anonymous."""
+    issued = issue("price_statistics", 2)
+    response = client.post(
+        "/learning/competency-quiz/submit",
+        json=submit_payload(issued, correct=True, player_id="someone-else"),
+    )
+    assert response.status_code == 401

@@ -28,15 +28,17 @@ import random
 import time
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from db.database import get_db
 from models.accuracy_history import AccuracyHistory
 from models.governance import EvidenceRecord
+from routes.authorization import require_own_player, require_principal
 from routes.learning_common import player_or_404
 from security.audit import record_audit_event
+from security.rbac import BoundPrincipal
 from services.curricula import CURRICULA
 from services.game_logic import update_accuracy_history
 from services.ai_authored_questions import questions_for_competency as _ai_questions_for_competency
@@ -46,6 +48,32 @@ from services.quiz_scoring import pace_label as _pace_label
 from services.quiz_scoring import time_factor as _time_factor
 
 router = APIRouter(prefix="/learning/competency-quiz", tags=["Competency Quiz"])
+
+
+def _optional_principal(
+    authorization: str | None = Header(default=None),
+    db: Session = Depends(get_db),
+) -> BoundPrincipal | None:
+    """Real P0 fix: this route previously accepted a client-supplied
+    `player_id` with no principal dependency at all -- anyone could write
+    EvidenceRecord/AccuracyHistory rows for any other player. The route
+    also deliberately supports genuinely anonymous practice (no
+    `player_id` in the request, no persistence -- see
+    `persisted_as_diagnostic_evidence` below), which a blanket
+    `require_permission_dependency` would break. This resolves a real
+    principal when one can be resolved (including the existing
+    DISABLE_AUTH demo path, via `require_principal` itself), and only
+    falls back to anonymous when literally no Authorization header was
+    presented -- a bad/expired token a caller DID present still fails
+    loudly (401/403), never silently downgrades to "anonymous" and masks
+    the failure.
+    """
+    try:
+        return require_principal(authorization=authorization, db=db)
+    except HTTPException as exc:
+        if authorization is None and exc.status_code == 401:
+            return None
+        raise
 
 TOPICS: dict[str, dict] = {
     "statistical_foundations": {
@@ -466,7 +494,12 @@ class SubmitResponse(BaseModel):
 async def submit_quiz(
     body: SubmitRequest,
     db: Session = Depends(get_db),
+    principal: BoundPrincipal | None = Depends(_optional_principal),
 ) -> SubmitResponse:
+    if body.player_id:
+        if principal is None:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        require_own_player(principal, body.player_id)
     topic = TOPICS.get(body.topic_id)
     if not topic:
         raise HTTPException(status_code=404, detail=f"Unknown topic: {body.topic_id!r}")

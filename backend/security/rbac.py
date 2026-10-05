@@ -57,6 +57,8 @@ class Permission(StrEnum):
     COURSE_FEEDBACK_WRITE = "course_feedback.write"
     COHORT_MANAGE = "cohort.manage"
     COHORT_READ = "cohort.read"
+    QUESTIONNAIRE_MANAGE = "questionnaire.manage"
+    QUESTIONNAIRE_ATTEMPT = "questionnaire.attempt"
     ANNOUNCEMENT_MANAGE = "announcement.manage"
     HOME_FEED_READ = "home_feed.read"
     TRAINER_EXPERTISE_MANAGE = "trainer_expertise.manage"
@@ -87,6 +89,7 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.COURSE_READ,
             Permission.CERTIFICATE_READ,
             Permission.COURSE_FEEDBACK_WRITE,
+            Permission.QUESTIONNAIRE_ATTEMPT,
             Permission.HOME_FEED_READ,
             Permission.CONTENT_LIBRARY_READ,
         }
@@ -121,6 +124,7 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.COURSE_FEEDBACK_WRITE,
             Permission.HOME_FEED_READ,
             Permission.COHORT_READ,
+            Permission.QUESTIONNAIRE_MANAGE,
             Permission.TRAINER_EXPERTISE_MANAGE,
             Permission.CONTENT_LIBRARY_READ,
             Permission.CONTENT_LIBRARY_WRITE,
@@ -146,6 +150,7 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.ANNOUNCEMENT_MANAGE,
             Permission.HOME_FEED_READ,
             Permission.COHORT_READ,
+            Permission.QUESTIONNAIRE_MANAGE,
             Permission.TRAINER_EXPERTISE_MANAGE,
             # Org-wide trainer ranking. Deliberately NOT granted to
             # department_admin: that role is intentionally empty until a

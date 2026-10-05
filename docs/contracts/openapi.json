@@ -270,6 +270,142 @@
         "title": "AnswerSubmitResponse",
         "type": "object"
       },
+      "AttemptResult": {
+        "properties": {
+          "attempt_id": {
+            "title": "Attempt Id",
+            "type": "string"
+          },
+          "is_late": {
+            "title": "Is Late",
+            "type": "boolean"
+          },
+          "max_score": {
+            "title": "Max Score",
+            "type": "integer"
+          },
+          "player_id": {
+            "title": "Player Id",
+            "type": "string"
+          },
+          "questionnaire_id": {
+            "title": "Questionnaire Id",
+            "type": "string"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionResult"
+            },
+            "title": "Questions",
+            "type": "array"
+          },
+          "score": {
+            "title": "Score",
+            "type": "integer"
+          },
+          "submitted_at": {
+            "format": "date-time",
+            "title": "Submitted At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "attempt_id",
+          "questionnaire_id",
+          "player_id",
+          "score",
+          "max_score",
+          "submitted_at",
+          "is_late",
+          "questions"
+        ],
+        "title": "AttemptResult",
+        "type": "object"
+      },
+      "AvailableQuestionnaire": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "due_at": {
+            "format": "date-time",
+            "title": "Due At",
+            "type": "string"
+          },
+          "is_open": {
+            "title": "Is Open",
+            "type": "boolean"
+          },
+          "max_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Score"
+          },
+          "opens_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opens At"
+          },
+          "question_count": {
+            "title": "Question Count",
+            "type": "integer"
+          },
+          "questionnaire_id": {
+            "title": "Questionnaire Id",
+            "type": "string"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "status": {
+            "enum": [
+              "not_started",
+              "submitted",
+              "closed_missed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "questionnaire_id",
+          "title",
+          "description",
+          "opens_at",
+          "due_at",
+          "status",
+          "is_open",
+          "question_count"
+        ],
+        "title": "AvailableQuestionnaire",
+        "type": "object"
+      },
       "Body_create_quiz_learning_quiz_generate_post": {
         "properties": {
           "difficulty": {
@@ -1304,6 +1440,25 @@
         "title": "ExpertiseUpsertRequest",
         "type": "object"
       },
+      "ExtendDeadlineRequest": {
+        "properties": {
+          "due_at": {
+            "format": "date-time",
+            "title": "Due At",
+            "type": "string"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trainer_id",
+          "due_at"
+        ],
+        "title": "ExtendDeadlineRequest",
+        "type": "object"
+      },
       "FeedAchievement": {
         "properties": {
           "certificate_id": {
@@ -2190,6 +2345,241 @@
         "title": "PlayerCreate",
         "type": "object"
       },
+      "QuestionInput": {
+        "properties": {
+          "correct_index": {
+            "minimum": 0.0,
+            "title": "Correct Index",
+            "type": "integer"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 6,
+            "minItems": 2,
+            "title": "Options",
+            "type": "array"
+          },
+          "prompt": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Prompt",
+            "type": "string"
+          }
+        },
+        "required": [
+          "prompt",
+          "options",
+          "correct_index"
+        ],
+        "title": "QuestionInput",
+        "type": "object"
+      },
+      "QuestionResult": {
+        "properties": {
+          "correct_index": {
+            "title": "Correct Index",
+            "type": "integer"
+          },
+          "is_correct": {
+            "title": "Is Correct",
+            "type": "boolean"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "prompt": {
+            "title": "Prompt",
+            "type": "string"
+          },
+          "question_id": {
+            "title": "Question Id",
+            "type": "string"
+          },
+          "selected_index": {
+            "title": "Selected Index",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "question_id",
+          "position",
+          "prompt",
+          "options",
+          "selected_index",
+          "correct_index",
+          "is_correct"
+        ],
+        "title": "QuestionResult",
+        "type": "object"
+      },
+      "QuestionnaireResponse": {
+        "description": "Trainer's own view; includes the answer key, so it is only ever\nreturned to the owning trainer.",
+        "properties": {
+          "attempt_count": {
+            "title": "Attempt Count",
+            "type": "integer"
+          },
+          "audience_id": {
+            "title": "Audience Id",
+            "type": "string"
+          },
+          "audience_type": {
+            "title": "Audience Type",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "due_at": {
+            "format": "date-time",
+            "title": "Due At",
+            "type": "string"
+          },
+          "is_published": {
+            "title": "Is Published",
+            "type": "boolean"
+          },
+          "opens_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opens At"
+          },
+          "questionnaire_id": {
+            "title": "Questionnaire Id",
+            "type": "string"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/TrainerQuestion"
+            },
+            "title": "Questions",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "questionnaire_id",
+          "trainer_id",
+          "title",
+          "description",
+          "audience_type",
+          "audience_id",
+          "opens_at",
+          "due_at",
+          "is_published",
+          "attempt_count",
+          "questions",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "QuestionnaireResponse",
+        "type": "object"
+      },
+      "QuestionnaireWriteRequest": {
+        "properties": {
+          "audience_id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Audience Id",
+            "type": "string"
+          },
+          "audience_type": {
+            "enum": [
+              "cohort",
+              "course"
+            ],
+            "title": "Audience Type",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Description",
+            "type": "string"
+          },
+          "due_at": {
+            "format": "date-time",
+            "title": "Due At",
+            "type": "string"
+          },
+          "opens_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opens At"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionInput"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Questions",
+            "type": "array"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trainer_id",
+          "title",
+          "audience_type",
+          "audience_id",
+          "due_at",
+          "questions"
+        ],
+        "title": "QuestionnaireWriteRequest",
+        "type": "object"
+      },
       "QuizAnswerIn": {
         "description": "One answer in a POST /learning/quiz/{quiz_id}/submit body.\n\n`time_taken_ms` is optional client-measured wall-clock time, the same\nconvention routes/competency_quiz.py's AnswerIn already uses -- see\nservices/quiz_scoring.py for how a missing value is handled (neutral,\nno penalty or bonus).",
         "properties": {
@@ -2725,6 +3115,147 @@
         "title": "RegistrationResponse",
         "type": "object"
       },
+      "ResultAggregates": {
+        "properties": {
+          "audience_size": {
+            "title": "Audience Size",
+            "type": "integer"
+          },
+          "max_score": {
+            "title": "Max Score",
+            "type": "integer"
+          },
+          "mean_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Score"
+          },
+          "submitted_count": {
+            "title": "Submitted Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "audience_size",
+          "submitted_count",
+          "mean_score",
+          "max_score"
+        ],
+        "title": "ResultAggregates",
+        "type": "object"
+      },
+      "ResultRow": {
+        "properties": {
+          "max_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Score"
+          },
+          "player_id": {
+            "title": "Player Id",
+            "type": "string"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "status": {
+            "enum": [
+              "submitted",
+              "not_submitted",
+              "missed_deadline"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "player_id",
+          "username",
+          "status",
+          "score",
+          "max_score",
+          "submitted_at"
+        ],
+        "title": "ResultRow",
+        "type": "object"
+      },
+      "ResultsResponse": {
+        "properties": {
+          "aggregates": {
+            "$ref": "#/components/schemas/ResultAggregates"
+          },
+          "deadline_passed": {
+            "title": "Deadline Passed",
+            "type": "boolean"
+          },
+          "due_at": {
+            "format": "date-time",
+            "title": "Due At",
+            "type": "string"
+          },
+          "questionnaire_id": {
+            "title": "Questionnaire Id",
+            "type": "string"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ResultRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "questionnaire_id",
+          "title",
+          "due_at",
+          "deadline_passed",
+          "aggregates",
+          "rows"
+        ],
+        "title": "ResultsResponse",
+        "type": "object"
+      },
       "ReviewDecisionRequest": {
         "properties": {
           "decision": {
@@ -3068,49 +3599,6 @@
         "title": "SubmitForReviewRequest",
         "type": "object"
       },
-      "SubmitRequest": {
-        "properties": {
-          "answers": {
-            "items": {
-              "$ref": "#/components/schemas/routes__competency_quiz__AnswerIn"
-            },
-            "maxItems": 10,
-            "minItems": 1,
-            "title": "Answers",
-            "type": "array"
-          },
-          "attempt_id": {
-            "maxLength": 120,
-            "minLength": 1,
-            "title": "Attempt Id",
-            "type": "string"
-          },
-          "player_id": {
-            "anyOf": [
-              {
-                "maxLength": 120,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Player Id"
-          },
-          "topic_id": {
-            "title": "Topic Id",
-            "type": "string"
-          }
-        },
-        "required": [
-          "attempt_id",
-          "topic_id",
-          "answers"
-        ],
-        "title": "SubmitRequest",
-        "type": "object"
-      },
       "SubmitResponse": {
         "properties": {
           "assessment_status": {
@@ -3279,6 +3767,113 @@
           "question_count"
         ],
         "title": "TopicSummary",
+        "type": "object"
+      },
+      "TraineeQuestion": {
+        "description": "No `correct_index` field exists on this type on purpose.",
+        "properties": {
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "prompt": {
+            "title": "Prompt",
+            "type": "string"
+          },
+          "question_id": {
+            "title": "Question Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question_id",
+          "position",
+          "prompt",
+          "options"
+        ],
+        "title": "TraineeQuestion",
+        "type": "object"
+      },
+      "TraineeQuestionnaireDetail": {
+        "properties": {
+          "attempt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AttemptResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "due_at": {
+            "format": "date-time",
+            "title": "Due At",
+            "type": "string"
+          },
+          "is_open": {
+            "title": "Is Open",
+            "type": "boolean"
+          },
+          "opens_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opens At"
+          },
+          "questionnaire_id": {
+            "title": "Questionnaire Id",
+            "type": "string"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/TraineeQuestion"
+            },
+            "title": "Questions",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "not_started",
+              "submitted",
+              "closed_missed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "questionnaire_id",
+          "title",
+          "description",
+          "opens_at",
+          "due_at",
+          "status",
+          "is_open",
+          "questions"
+        ],
+        "title": "TraineeQuestionnaireDetail",
         "type": "object"
       },
       "TrainerExpertiseListResponse": {
@@ -3485,6 +4080,42 @@
           "expertise"
         ],
         "title": "TrainerProfileResponse",
+        "type": "object"
+      },
+      "TrainerQuestion": {
+        "properties": {
+          "correct_index": {
+            "title": "Correct Index",
+            "type": "integer"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "prompt": {
+            "title": "Prompt",
+            "type": "string"
+          },
+          "question_id": {
+            "title": "Question Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question_id",
+          "position",
+          "prompt",
+          "options",
+          "correct_index"
+        ],
+        "title": "TrainerQuestion",
         "type": "object"
       },
       "TrainerScopedRequest": {
@@ -3707,6 +4338,49 @@
         "title": "AnswerIn",
         "type": "object"
       },
+      "routes__competency_quiz__SubmitRequest": {
+        "properties": {
+          "answers": {
+            "items": {
+              "$ref": "#/components/schemas/routes__competency_quiz__AnswerIn"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Answers",
+            "type": "array"
+          },
+          "attempt_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Attempt Id",
+            "type": "string"
+          },
+          "player_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Player Id"
+          },
+          "topic_id": {
+            "title": "Topic Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "attempt_id",
+          "topic_id",
+          "answers"
+        ],
+        "title": "SubmitRequest",
+        "type": "object"
+      },
       "routes__course_enrollment__CompleteRequest": {
         "properties": {
           "player_id": {
@@ -3739,6 +4413,27 @@
           "path_taken"
         ],
         "title": "CompleteRequest",
+        "type": "object"
+      },
+      "routes__questionnaires__SubmitRequest": {
+        "properties": {
+          "answers": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Answers",
+            "type": "object"
+          },
+          "player_id": {
+            "title": "Player Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "player_id",
+          "answers"
+        ],
+        "title": "SubmitRequest",
         "type": "object"
       }
     },
@@ -7328,7 +8023,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SubmitRequest"
+                "$ref": "#/components/schemas/routes__competency_quiz__SubmitRequest"
               }
             }
           },
@@ -9976,6 +10671,713 @@
         "summary": "Upsert Profile",
         "tags": [
           "Learning Profile"
+        ]
+      }
+    },
+    "/learning/questionnaires": {
+      "post": {
+        "operationId": "create_questionnaire_learning_questionnaires_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionnaireWriteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create Questionnaire",
+        "tags": [
+          "Questionnaires"
+        ]
+      }
+    },
+    "/learning/questionnaires/available": {
+      "get": {
+        "operationId": "list_available_questionnaires_learning_questionnaires_available_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "player_id",
+            "required": true,
+            "schema": {
+              "title": "Player Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AvailableQuestionnaire"
+                  },
+                  "title": "Response List Available Questionnaires Learning Questionnaires Available Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List Available Questionnaires",
+        "tags": [
+          "Questionnaires"
+        ]
+      }
+    },
+    "/learning/questionnaires/mine": {
+      "get": {
+        "operationId": "list_my_questionnaires_learning_questionnaires_mine_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/QuestionnaireResponse"
+                  },
+                  "title": "Response List My Questionnaires Learning Questionnaires Mine Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List My Questionnaires",
+        "tags": [
+          "Questionnaires"
+        ]
+      }
+    },
+    "/learning/questionnaires/{questionnaire_id}": {
+      "get": {
+        "operationId": "get_questionnaire_for_trainee_learning_questionnaires__questionnaire_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "player_id",
+            "required": true,
+            "schema": {
+              "title": "Player Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraineeQuestionnaireDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get Questionnaire For Trainee",
+        "tags": [
+          "Questionnaires"
+        ]
+      },
+      "put": {
+        "operationId": "update_questionnaire_learning_questionnaires__questionnaire_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionnaireWriteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Update Questionnaire",
+        "tags": [
+          "Questionnaires"
+        ]
+      }
+    },
+    "/learning/questionnaires/{questionnaire_id}/extend-deadline": {
+      "post": {
+        "description": "The only mutation allowed on a published questionnaire: move `due_at`\nstrictly later. The conditional UPDATE keeps it forward-only even if two\nextensions race.",
+        "operationId": "extend_deadline_learning_questionnaires__questionnaire_id__extend_deadline_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtendDeadlineRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Extend Deadline",
+        "tags": [
+          "Questionnaires"
+        ]
+      }
+    },
+    "/learning/questionnaires/{questionnaire_id}/publish": {
+      "post": {
+        "operationId": "publish_questionnaire_learning_questionnaires__questionnaire_id__publish_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainerScopedRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Publish Questionnaire",
+        "tags": [
+          "Questionnaires"
+        ]
+      }
+    },
+    "/learning/questionnaires/{questionnaire_id}/results": {
+      "get": {
+        "description": "Participation and scores for this trainer's OWN audience only.",
+        "operationId": "questionnaire_results_learning_questionnaires__questionnaire_id__results_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Questionnaire Results",
+        "tags": [
+          "Questionnaires"
+        ]
+      }
+    },
+    "/learning/questionnaires/{questionnaire_id}/submit": {
+      "post": {
+        "operationId": "submit_questionnaire_learning_questionnaires__questionnaire_id__submit_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/routes__questionnaires__SubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Submit Questionnaire",
+        "tags": [
+          "Questionnaires"
+        ]
+      }
+    },
+    "/learning/questionnaires/{questionnaire_id}/unpublish": {
+      "post": {
+        "operationId": "unpublish_questionnaire_learning_questionnaires__questionnaire_id__unpublish_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainerScopedRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Unpublish Questionnaire",
+        "tags": [
+          "Questionnaires"
         ]
       }
     },

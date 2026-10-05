@@ -22,6 +22,7 @@ from routes.course_catalog import router as course_catalog_router
 from routes.course_feedback import router as course_feedback_router
 from routes.certificates import router as certificates_router
 from routes.cohorts import router as cohorts_router
+from routes.questionnaires import router as questionnaires_router
 from routes.announcements import feed_router as home_feed_router, router as announcements_router
 from routes.content_library import router as content_library_router
 from routes.proctoring import router as proctoring_router
@@ -45,6 +46,7 @@ router.include_router(course_catalog_router)
 router.include_router(course_feedback_router)
 router.include_router(certificates_router)
 router.include_router(cohorts_router)
+router.include_router(questionnaires_router)
 router.include_router(announcements_router)
 router.include_router(home_feed_router)
 router.include_router(content_library_router)

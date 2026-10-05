@@ -27,6 +27,7 @@ from models import (
     question_bank,
     session,
     submission,
+    trainer_expertise,
 )
 
 _REGISTERED_MODEL_MODULES = (
@@ -50,9 +51,10 @@ _REGISTERED_MODEL_MODULES = (
     question_bank,
     session,
     submission,
+    trainer_expertise,
 )
 
-# this is the Alembic Config object, which provides
+#this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL.replace("%", "%%"))

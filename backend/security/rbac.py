@@ -57,6 +57,8 @@ class Permission(StrEnum):
     COURSE_FEEDBACK_WRITE = "course_feedback.write"
     COHORT_MANAGE = "cohort.manage"
     COHORT_READ = "cohort.read"
+    TRAINER_EXPERTISE_MANAGE = "trainer_expertise.manage"
+    TRAINER_MATCH_READ = "trainer_match.read"
     DEPARTMENT_ANALYTICS_READ = "analytics.department.read"
     ORGANIZATION_ANALYTICS_READ = "analytics.organization.read"
     ROLE_TARGET_MANAGE = "role_target.manage"
@@ -112,6 +114,7 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.CERTIFICATE_READ,
             Permission.COURSE_FEEDBACK_WRITE,
             Permission.COHORT_READ,
+            Permission.TRAINER_EXPERTISE_MANAGE,
         }
     ),
     "content_reviewer": frozenset(
@@ -130,6 +133,13 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.SUBJECT_DATA_DELETE,
             Permission.COHORT_MANAGE,
             Permission.COHORT_READ,
+            Permission.TRAINER_EXPERTISE_MANAGE,
+            # Org-wide trainer ranking. Deliberately NOT granted to
+            # department_admin: that role is intentionally empty until a
+            # server-derived department scope exists (see its comment
+            # above), and this read is organization-wide, not department-
+            # scoped.
+            Permission.TRAINER_MATCH_READ,
         }
     ),
     "auditor": frozenset({Permission.AUDIT_READ, Permission.SUBJECT_DATA_EXPORT}),

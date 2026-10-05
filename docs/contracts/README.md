@@ -19,9 +19,9 @@ changes to each one.
 | `production-database-hardening.md` | Lane 2 | Lane 6, deployment/security owner | **Specify-only** — three-role PostgreSQL privilege matrix, `search_path` pinning, TLS verification policy, connection-pool budget formula; nothing in it is implemented or dev-drilled, pending real numbers/decisions from Lane 6 |
 | `competency-evidence.md` | Lane 3 | Lanes 1, 5, 6 | **v1** — real, implemented interface: gap/pathway result shape, four-field role-target precedence, evidence-coverage and determinism semantics, bounded lab; persistence, HTTP exposure of the lab and three of five evidence types are explicitly not implemented |
 | `content-ai.md` | Lane 4 | Lanes 1, 5, 6 | Scaffold |
-| `openapi.json` | Lane 5 | Lanes 1, 2, 3, 4, 6 | Scaffold |
+| `openapi.json` | Lane 5 | Lanes 1, 2, 3, 4, 6 | **Generated** from the running app by `python -m scripts.export_openapi`; a backend test fails if it drifts (voice and dev-login routers excluded) |
 | `provider-adapter.md` | Lane 5 | Lanes 1, 2, 3, 4, 6 | Scaffold |
-| `release-gates.md` | Lane 6 | all | Scaffold |
+| `release-gates.md` | Lane 6 | all | **Partially defined** — real CI gates documented; browser E2E, accessibility, load and deployment gates explicitly not implemented |
 
 A **scaffold** is a description of what the contract must eventually say, not a working interface
 yet — it is not permission to skip writing the real contract before another lane depends on it; see

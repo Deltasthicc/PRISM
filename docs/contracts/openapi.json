@@ -1459,6 +1459,47 @@
         "title": "ExtendDeadlineRequest",
         "type": "object"
       },
+      "ExternalCertificateEntry": {
+        "description": "A credential earned outside this platform, as declared by the learner.\nIt is not verified and is never confused with certificates PRISM issues.",
+        "properties": {
+          "credential_id": {
+            "default": "",
+            "maxLength": 100,
+            "title": "Credential Id",
+            "type": "string"
+          },
+          "issuer": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Issuer",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100.0,
+                "minimum": 1950.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ExternalCertificateEntry",
+        "type": "object"
+      },
       "FeedAchievement": {
         "properties": {
           "certificate_id": {
@@ -1969,11 +2010,40 @@
             "title": "Experience Level",
             "type": "string"
           },
+          "external_certificates": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ExternalCertificateEntry"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Certificates"
+          },
           "full_name": {
             "default": "",
             "maxLength": 200,
             "title": "Full Name",
             "type": "string"
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interests"
           },
           "job_role": {
             "default": "",
@@ -1992,12 +2062,56 @@
             "title": "Previous Trainings",
             "type": "array"
           },
+          "qualifications": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/QualificationEntry"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qualifications"
+          },
+          "skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skills"
+          },
           "target_domains": {
             "items": {
               "type": "string"
             },
             "title": "Target Domains",
             "type": "array"
+          },
+          "work_experience": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/WorkExperienceEntry"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Work Experience"
           },
           "years_experience": {
             "default": 0,
@@ -2343,6 +2457,40 @@
           "username"
         ],
         "title": "PlayerCreate",
+        "type": "object"
+      },
+      "QualificationEntry": {
+        "properties": {
+          "degree": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Degree",
+            "type": "string"
+          },
+          "institution": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Institution",
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100.0,
+                "minimum": 1950.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "degree"
+        ],
+        "title": "QualificationEntry",
         "type": "object"
       },
       "QuestionInput": {
@@ -4264,6 +4412,59 @@
           "violation_type"
         ],
         "title": "ViolationRequest",
+        "type": "object"
+      },
+      "WorkExperienceEntry": {
+        "properties": {
+          "description": {
+            "default": "",
+            "maxLength": 1000,
+            "title": "Description",
+            "type": "string"
+          },
+          "end_year": {
+            "anyOf": [
+              {
+                "maximum": 2100.0,
+                "minimum": 1950.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Year"
+          },
+          "organization": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Organization",
+            "type": "string"
+          },
+          "start_year": {
+            "anyOf": [
+              {
+                "maximum": 2100.0,
+                "minimum": 1950.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Year"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "WorkExperienceEntry",
         "type": "object"
       },
       "routes__adaptive_diagnostic__AnswerIn": {

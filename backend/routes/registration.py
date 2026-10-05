@@ -33,6 +33,8 @@ from sqlalchemy.orm import Session
 
 from db.database import get_db
 from models.identity import SELF_SERVICE_REQUESTABLE_ROLES
+from models.learning import LearnerProfile
+from models.player import Player
 from routes.authorization import require_permission_dependency
 from security.identity import AuthenticationError, get_current_subject
 from security.rbac import (
@@ -76,6 +78,17 @@ class PendingRegistrationSummary(BaseModel):
     requested_role: str
     registration_notes: str | None
     created_at: datetime
+    # What the applicant declared about themselves, so an administrator can
+    # decide on more than an opaque id. All self-declared and unverified.
+    username: str | None = None
+    full_name: str = ""
+    designation: str = ""
+    department: str = ""
+    # The identity-provider account behind the request. Approving only
+    # activates the local binding; the matching role must still be granted to
+    # this subject in the identity provider before it has any permissions.
+    issuer: str
+    subject_id: str
 
 
 class RegistrationDecisionRequest(BaseModel):
@@ -177,6 +190,17 @@ def get_pending_registrations(
     db: Session = Depends(get_db),
 ) -> list[PendingRegistrationSummary]:
     pending = list_pending_registrations(db, actor=principal)
+    player_ids = [binding.player_id for binding in pending if binding.player_id]
+    usernames = {
+        player_id: username
+        for player_id, username in db.query(Player.player_id, Player.username)
+        .filter(Player.player_id.in_(player_ids))
+        .all()
+    }
+    profiles = {
+        profile.player_id: profile
+        for profile in db.query(LearnerProfile).filter(LearnerProfile.player_id.in_(player_ids)).all()
+    }
     return [
         PendingRegistrationSummary(
             binding_id=binding.binding_id,
@@ -184,6 +208,12 @@ def get_pending_registrations(
             requested_role=binding.requested_role,
             registration_notes=binding.registration_notes,
             created_at=binding.created_at,
+            username=usernames.get(binding.player_id),
+            full_name=getattr(profiles.get(binding.player_id), "full_name", "") or "",
+            designation=getattr(profiles.get(binding.player_id), "designation", "") or "",
+            department=getattr(profiles.get(binding.player_id), "department", "") or "",
+            issuer=binding.issuer,
+            subject_id=binding.subject_id,
         )
         for binding in pending
     ]

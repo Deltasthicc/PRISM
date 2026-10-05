@@ -219,3 +219,48 @@ def test_decide_over_http_for_unknown_binding_is_404():
     client = TestClient(_app(db, principal=admin))
     response = client.post("/auth/pending-registrations/does-not-exist/decide", json={"decision": "approved"})
     assert response.status_code == 404
+
+
+def test_pending_list_gives_the_admin_enough_context_to_decide():
+    db = _db()
+    subject = SyntheticSubject(subject_id="ctx-subject")
+    TestClient(_app(db, subject=subject)).post(
+        "/auth/register",
+        json={
+            "username": "ctx_user",
+            "full_name": "Context User",
+            "requested_role": "trainer",
+            "designation": "Senior Scientist",
+            "department": "IMD Pune",
+            "notes": "Runs the monsoon forecasting workshop",
+        },
+    )
+    admin = _principal(db, "admin-for-context", None, frozenset({"organization_admin"}))
+
+    rows = TestClient(_app(db, principal=admin)).get("/auth/pending-registrations").json()
+
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["username"] == "ctx_user"
+    assert row["full_name"] == "Context User"
+    assert row["designation"] == "Senior Scientist"
+    assert row["department"] == "IMD Pune"
+    assert row["requested_role"] == "trainer"
+    assert row["registration_notes"] == "Runs the monsoon forecasting workshop"
+    assert row["subject_id"] == "ctx-subject"
+    assert row["issuer"] == ISSUER
+
+
+def test_pending_list_is_empty_once_every_request_is_decided():
+    db = _db()
+    client = TestClient(_app(db, subject=SyntheticSubject(subject_id="decided-subject")))
+    binding_id = client.post(
+        "/auth/register",
+        json={"username": "decided_user", "full_name": "Decided", "requested_role": "learner"},
+    ).json()["binding_id"]
+    admin = _principal(db, "admin-for-decided", None, frozenset({"organization_admin"}))
+    admin_client = TestClient(_app(db, principal=admin))
+
+    admin_client.post(f"/auth/pending-registrations/{binding_id}/decide", json={"decision": "rejected"})
+
+    assert admin_client.get("/auth/pending-registrations").json() == []

@@ -30,7 +30,12 @@ manual evidence in section 2 has been recorded for anything section 1 cannot see
 These cannot be inferred from CI. Record the exact command, count, date and operator.
 
 1. **Browser round trip** of every changed user flow against a running backend and frontend
-   (`CLAUDE.md` "Verification"). A build output is not evidence.
+   (`CLAUDE.md` "Verification"). A build output is not evidence. `npm run build` then
+   `PRISM_PYTHON=<backend venv python> npm run test:live` (from `frontend/`) starts a real backend
+   (SQLite, authentication bypassed as in the hosted demo) and the production frontend and drives
+   the trainee, trainer and admin journeys (home feed, questionnaire attempt, structured profile,
+   library upload and download, trainer expertise and matching, admin pages). It is not part of CI
+   and does not cover real sign-in or PostgreSQL.
 2. **Live identity check** when sign-in, registration, roles or `/auth/*` changed: sign in through
    the real Keycloak realm (`backend/keycloak/README.md`) as an approved user, a pending user and
    an admin. Stubbed identity-provider tests show routing only, not the integration.
@@ -40,7 +45,7 @@ These cannot be inferred from CI. Record the exact command, count, date and oper
 
 ## 3. Not implemented (do not claim)
 
-- A browser suite that runs against a live backend and identity provider, and any Academy → quiz → progress golden-path flow.
+- A browser suite in CI against a live backend, one that exercises real identity-provider sign-in, and the Academy → baseline assessment → pathway golden-path flow.
 - Frontend component-level tests.
 - A full automated accessibility audit, and screen-reader sign-off.
 - Load, soak or failover testing.

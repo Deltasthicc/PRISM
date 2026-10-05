@@ -206,3 +206,66 @@ def test_list_enrollments_returns_only_that_players_rows():
     rows = response.json()["enrollments"]
     assert len(rows) == 1
     assert rows[0]["course_id"] == "igot::os_gis"
+
+
+def test_enroll_that_loses_a_concurrent_insert_race_returns_the_winner_not_a_500(monkeypatch):
+    """A double-click can pass the "already enrolled?" check in two requests
+    at once; the unique constraint rejects the second insert. That must come
+    back as the winner's row, not an unhandled IntegrityError."""
+    import routes.course_enrollment as module
+
+    db = _db()
+    player_id = _make_player(db)
+    client = TestClient(_app(db, _principal(player_id)))
+    payload = {"player_id": player_id, "course_id": "igot::os_gis", "title": "GIS for Officials"}
+    winner = client.post("/learning/catalogue/enroll", json=payload).json()
+
+    real_find = module._find_enrollment
+    calls = {"n": 0}
+
+    def stale_first_lookup(session, pid, cid):
+        calls["n"] += 1
+        return None if calls["n"] == 1 else real_find(session, pid, cid)
+
+    monkeypatch.setattr(module, "_find_enrollment", stale_first_lookup)
+    loser = client.post("/learning/catalogue/enroll", json=payload)
+
+    assert loser.status_code == 200
+    assert loser.json()["enrollment_id"] == winner["enrollment_id"]
+    assert db.query(CourseEnrollment).filter_by(player_id=player_id).count() == 1
+
+
+def test_complete_that_loses_a_concurrent_race_does_not_double_record(monkeypatch):
+    """Two completion requests both read status="enrolled"; only the one
+    that wins the atomic status flip may write evidence."""
+    import routes.course_enrollment as module
+
+    db = _db()
+    player_id = _make_player(db)
+    client = TestClient(_app(db, _principal(player_id)))
+    enrolled = client.post(
+        "/learning/catalogue/enroll",
+        json={"player_id": player_id, "course_id": "igot::os_gis", "title": "GIS for Officials"},
+    ).json()
+    complete_url = f"/learning/catalogue/enrollments/{enrolled['enrollment_id']}/complete"
+    assert client.post(complete_url, json={"player_id": player_id}).status_code == 200
+    assert db.query(EvidenceRecord).filter_by(player_id=player_id).count() == 1
+
+    real_find = module._find_owned_enrollment
+    calls = {"n": 0}
+
+    def stale_first_read(session, eid, pid):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return CourseEnrollment(
+                enrollment_id=eid, player_id=pid, course_id="igot::os_gis", provider="igot",
+                competency_id="os_gis", title="GIS for Officials", status="enrolled",
+            )
+        return real_find(session, eid, pid)
+
+    monkeypatch.setattr(module, "_find_owned_enrollment", stale_first_read)
+    loser = client.post(complete_url, json={"player_id": player_id})
+
+    assert loser.status_code == 200
+    assert loser.json()["status"] == "completed"
+    assert db.query(EvidenceRecord).filter_by(player_id=player_id).count() == 1

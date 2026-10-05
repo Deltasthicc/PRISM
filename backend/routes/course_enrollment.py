@@ -28,9 +28,11 @@ not scored, until that policy decision is made on its own.
 from __future__ import annotations
 
 import uuid
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from db.database import get_db
@@ -74,6 +76,22 @@ def _resolve_internal_course(db: Session, course_id: str) -> Course:
     return course
 
 
+def _find_enrollment(db: Session, player_id: str, course_id: str) -> CourseEnrollment | None:
+    return (
+        db.query(CourseEnrollment)
+        .filter(CourseEnrollment.player_id == player_id, CourseEnrollment.course_id == course_id)
+        .first()
+    )
+
+
+def _find_owned_enrollment(db: Session, enrollment_id: str, player_id: str) -> CourseEnrollment | None:
+    return (
+        db.query(CourseEnrollment)
+        .filter(CourseEnrollment.enrollment_id == enrollment_id, CourseEnrollment.player_id == player_id)
+        .first()
+    )
+
+
 class EnrollRequest(BaseModel):
     player_id: str
     course_id: str
@@ -96,14 +114,7 @@ async def enroll(
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    existing = (
-        db.query(CourseEnrollment)
-        .filter(
-            CourseEnrollment.player_id == body.player_id,
-            CourseEnrollment.course_id == body.course_id,
-        )
-        .first()
-    )
+    existing = _find_enrollment(db, body.player_id, body.course_id)
     if existing:
         return _serialize(existing)
 
@@ -128,7 +139,18 @@ async def enroll(
         status="enrolled",
     )
     db.add(enrollment)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # A concurrent request (double-click, retry) inserted the same
+        # (player, course) row between the check above and this commit; the
+        # unique constraint is the real guard, so enrolling stays idempotent
+        # instead of surfacing a 500.
+        db.rollback()
+        winner = _find_enrollment(db, body.player_id, body.course_id)
+        if winner is None:
+            raise
+        return _serialize(winner)
     db.refresh(enrollment)
     return _serialize(enrollment)
 
@@ -149,14 +171,7 @@ async def complete(
     require_own_player(principal, body.player_id)
     player_or_404(db, body.player_id)
 
-    enrollment = (
-        db.query(CourseEnrollment)
-        .filter(
-            CourseEnrollment.enrollment_id == enrollment_id,
-            CourseEnrollment.player_id == body.player_id,
-        )
-        .first()
-    )
+    enrollment = _find_owned_enrollment(db, enrollment_id, body.player_id)
     if not enrollment:
         raise HTTPException(status_code=404, detail="Enrollment not found")
     if enrollment.status == "completed":
@@ -168,10 +183,26 @@ async def complete(
         if not result.data.get("completed"):
             raise HTTPException(status_code=502, detail="Provider did not confirm completion")
 
-    from datetime import datetime, timezone
-
-    enrollment.status = "completed"
-    enrollment.completed_at = datetime.now(timezone.utc)
+    # Atomic claim: only the one request that flips status away from
+    # "completed" goes on to write evidence and issue the certificate. A
+    # concurrent duplicate sees zero rows updated and just returns the
+    # already-completed enrollment, so completion never double-records.
+    claimed = (
+        db.query(CourseEnrollment)
+        .filter(
+            CourseEnrollment.enrollment_id == enrollment_id,
+            CourseEnrollment.player_id == body.player_id,
+            CourseEnrollment.status != "completed",
+        )
+        .update(
+            {"status": "completed", "completed_at": datetime.now(timezone.utc)},
+            synchronize_session=False,
+        )
+    )
+    if claimed == 0:
+        db.rollback()
+        db.expire_all()
+        return _serialize(_find_owned_enrollment(db, enrollment_id, body.player_id))
 
     db.add(
         EvidenceRecord(
@@ -206,8 +237,8 @@ async def complete(
             )
         )
     db.commit()
-    db.refresh(enrollment)
-    return _serialize(enrollment)
+    db.expire_all()
+    return _serialize(_find_owned_enrollment(db, enrollment_id, body.player_id))
 
 
 @router.get("/enrollments")

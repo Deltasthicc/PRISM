@@ -1,6 +1,155 @@
 {
   "components": {
     "schemas": {
+      "AnnouncementCreateRequest": {
+        "properties": {
+          "audience": {
+            "default": "all",
+            "enum": [
+              "all",
+              "learner",
+              "trainer"
+            ],
+            "title": "Audience",
+            "type": "string"
+          },
+          "body": {
+            "maxLength": 4000,
+            "title": "Body",
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "kind": {
+            "default": "announcement",
+            "enum": [
+              "announcement",
+              "achievement",
+              "new_content"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "publish": {
+            "default": false,
+            "title": "Publish",
+            "type": "boolean"
+          },
+          "title": {
+            "maxLength": 200,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "body"
+        ],
+        "title": "AnnouncementCreateRequest",
+        "type": "object"
+      },
+      "AnnouncementResponse": {
+        "properties": {
+          "announcement_id": {
+            "title": "Announcement Id",
+            "type": "string"
+          },
+          "audience": {
+            "title": "Audience",
+            "type": "string"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "title": "Created By",
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "is_published": {
+            "title": "Is Published",
+            "type": "boolean"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "published",
+              "unpublished",
+              "expired"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "announcement_id",
+          "title",
+          "body",
+          "kind",
+          "audience",
+          "created_by",
+          "is_published",
+          "status",
+          "published_at",
+          "expires_at",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AnnouncementResponse",
+        "type": "object"
+      },
       "AnswerSubmitRequest": {
         "properties": {
           "player_answer": {
@@ -748,6 +897,44 @@
         "title": "CreateSessionRequest",
         "type": "object"
       },
+      "DeclaredFacts": {
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "basis_detail": {
+            "title": "Basis Detail",
+            "type": "string"
+          },
+          "declared_level": {
+            "title": "Declared Level",
+            "type": "integer"
+          },
+          "self_declared": {
+            "title": "Self Declared",
+            "type": "boolean"
+          },
+          "verified": {
+            "title": "Verified",
+            "type": "boolean"
+          },
+          "years_teaching": {
+            "title": "Years Teaching",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "declared_level",
+          "basis",
+          "basis_detail",
+          "years_teaching",
+          "self_declared",
+          "verified"
+        ],
+        "title": "DeclaredFacts",
+        "type": "object"
+      },
       "DifficultyBreakdown": {
         "properties": {
           "accuracy": {
@@ -1143,6 +1330,116 @@
         "title": "EnrollRequest",
         "type": "object"
       },
+      "ExpertiseResponse": {
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "basis_detail": {
+            "title": "Basis Detail",
+            "type": "string"
+          },
+          "competency_id": {
+            "title": "Competency Id",
+            "type": "string"
+          },
+          "competency_label": {
+            "title": "Competency Label",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "declared_level": {
+            "title": "Declared Level",
+            "type": "integer"
+          },
+          "expertise_id": {
+            "title": "Expertise Id",
+            "type": "string"
+          },
+          "self_declared": {
+            "default": true,
+            "title": "Self Declared",
+            "type": "boolean"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "verified": {
+            "default": false,
+            "title": "Verified",
+            "type": "boolean"
+          },
+          "years_teaching": {
+            "title": "Years Teaching",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "expertise_id",
+          "trainer_id",
+          "competency_id",
+          "competency_label",
+          "declared_level",
+          "basis",
+          "basis_detail",
+          "years_teaching",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ExpertiseResponse",
+        "type": "object"
+      },
+      "ExpertiseUpsertRequest": {
+        "properties": {
+          "basis": {
+            "enum": [
+              "degree",
+              "certification",
+              "experience",
+              "other"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "basis_detail": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Basis Detail",
+            "type": "string"
+          },
+          "declared_level": {
+            "description": "Self-declared teaching proficiency, 1-5",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Declared Level",
+            "type": "integer"
+          },
+          "years_teaching": {
+            "default": 0,
+            "maximum": 80.0,
+            "minimum": 0.0,
+            "title": "Years Teaching",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "declared_level",
+          "basis"
+        ],
+        "title": "ExpertiseUpsertRequest",
+        "type": "object"
+      },
       "ExtendDeadlineRequest": {
         "properties": {
           "due_at": {
@@ -1160,6 +1457,123 @@
           "due_at"
         ],
         "title": "ExtendDeadlineRequest",
+        "type": "object"
+      },
+      "FeedAchievement": {
+        "properties": {
+          "certificate_id": {
+            "title": "Certificate Id",
+            "type": "string"
+          },
+          "course_id": {
+            "title": "Course Id",
+            "type": "string"
+          },
+          "issued_at": {
+            "format": "date-time",
+            "title": "Issued At",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "certificate_id",
+          "title",
+          "course_id",
+          "issued_at"
+        ],
+        "title": "FeedAchievement",
+        "type": "object"
+      },
+      "FeedAnnouncement": {
+        "properties": {
+          "announcement_id": {
+            "title": "Announcement Id",
+            "type": "string"
+          },
+          "audience": {
+            "title": "Audience",
+            "type": "string"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "announcement_id",
+          "title",
+          "body",
+          "kind",
+          "audience",
+          "published_at",
+          "expires_at"
+        ],
+        "title": "FeedAnnouncement",
+        "type": "object"
+      },
+      "FeedCourse": {
+        "properties": {
+          "course_id": {
+            "title": "Course Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "course_id",
+          "title",
+          "description",
+          "created_at"
+        ],
+        "title": "FeedCourse",
         "type": "object"
       },
       "FeedbackResponse": {
@@ -1470,6 +1884,44 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "HomeFeedResponse": {
+        "properties": {
+          "announcements": {
+            "items": {
+              "$ref": "#/components/schemas/FeedAnnouncement"
+            },
+            "title": "Announcements",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "my_achievements": {
+            "items": {
+              "$ref": "#/components/schemas/FeedAchievement"
+            },
+            "title": "My Achievements",
+            "type": "array"
+          },
+          "new_courses": {
+            "items": {
+              "$ref": "#/components/schemas/FeedCourse"
+            },
+            "title": "New Courses",
+            "type": "array"
+          }
+        },
+        "required": [
+          "announcements",
+          "new_courses",
+          "my_achievements",
+          "generated_at"
+        ],
+        "title": "HomeFeedResponse",
+        "type": "object"
+      },
       "JoinRequest": {
         "properties": {
           "player_id": {
@@ -1579,6 +2031,64 @@
           "selected_index"
         ],
         "title": "LiveAnswerRequest",
+        "type": "object"
+      },
+      "MatchFacts": {
+        "properties": {
+          "declared": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeclaredFacts"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "learners_completed": {
+            "title": "Learners Completed",
+            "type": "integer"
+          },
+          "mean_rating": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Rating"
+          },
+          "mean_rating_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Rating Reason"
+          },
+          "published_courses": {
+            "title": "Published Courses",
+            "type": "integer"
+          },
+          "rating_count": {
+            "title": "Rating Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "declared",
+          "published_courses",
+          "learners_completed",
+          "rating_count",
+          "mean_rating",
+          "mean_rating_reason"
+        ],
+        "title": "MatchFacts",
         "type": "object"
       },
       "MeResponse": {
@@ -1749,6 +2259,25 @@
             "title": "Created At",
             "type": "string"
           },
+          "department": {
+            "default": "",
+            "title": "Department",
+            "type": "string"
+          },
+          "designation": {
+            "default": "",
+            "title": "Designation",
+            "type": "string"
+          },
+          "full_name": {
+            "default": "",
+            "title": "Full Name",
+            "type": "string"
+          },
+          "issuer": {
+            "title": "Issuer",
+            "type": "string"
+          },
           "player_id": {
             "anyOf": [
               {
@@ -1774,6 +2303,21 @@
           "requested_role": {
             "title": "Requested Role",
             "type": "string"
+          },
+          "subject_id": {
+            "title": "Subject Id",
+            "type": "string"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
           }
         },
         "required": [
@@ -1781,7 +2325,9 @@
           "player_id",
           "requested_role",
           "registration_notes",
-          "created_at"
+          "created_at",
+          "issuer",
+          "subject_id"
         ],
         "title": "PendingRegistrationSummary",
         "type": "object"
@@ -2882,6 +3428,59 @@
         "title": "RoomResponse",
         "type": "object"
       },
+      "ScoreComponent": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "fraction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fraction"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "number"
+          },
+          "raw_value": {
+            "title": "Raw Value"
+          },
+          "weight": {
+            "title": "Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "weight",
+          "fraction",
+          "points",
+          "available",
+          "note"
+        ],
+        "title": "ScoreComponent",
+        "type": "object"
+      },
       "SessionStartRequest": {
         "properties": {
           "dungeon_id": {
@@ -3275,6 +3874,212 @@
           "questions"
         ],
         "title": "TraineeQuestionnaireDetail",
+        "type": "object"
+      },
+      "TrainerExpertiseListResponse": {
+        "properties": {
+          "expertise": {
+            "items": {
+              "$ref": "#/components/schemas/ExpertiseResponse"
+            },
+            "title": "Expertise",
+            "type": "array"
+          },
+          "notice": {
+            "title": "Notice",
+            "type": "string"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trainer_id",
+          "notice",
+          "expertise"
+        ],
+        "title": "TrainerExpertiseListResponse",
+        "type": "object"
+      },
+      "TrainerMatch": {
+        "properties": {
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreComponent"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "evidence_level": {
+            "enum": [
+              "DECLARED_ONLY",
+              "DECLARED_AND_ACTIVITY",
+              "ACTIVITY_ONLY",
+              "NO_EVIDENCE"
+            ],
+            "title": "Evidence Level",
+            "type": "string"
+          },
+          "facts": {
+            "$ref": "#/components/schemas/MatchFacts"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "rationale": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rationale",
+            "type": "array"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rank",
+          "trainer_id",
+          "username",
+          "full_name",
+          "evidence_level",
+          "score",
+          "components",
+          "facts",
+          "rationale"
+        ],
+        "title": "TrainerMatch",
+        "type": "object"
+      },
+      "TrainerMatchResponse": {
+        "properties": {
+          "competency_id": {
+            "title": "Competency Id",
+            "type": "string"
+          },
+          "competency_label": {
+            "title": "Competency Label",
+            "type": "string"
+          },
+          "declared_max_points": {
+            "title": "Declared Max Points",
+            "type": "number"
+          },
+          "max_points": {
+            "title": "Max Points",
+            "type": "integer"
+          },
+          "min_ratings_for_mean": {
+            "title": "Min Ratings For Mean",
+            "type": "integer"
+          },
+          "notice": {
+            "title": "Notice",
+            "type": "string"
+          },
+          "policy_version": {
+            "title": "Policy Version",
+            "type": "string"
+          },
+          "trainers": {
+            "items": {
+              "$ref": "#/components/schemas/TrainerMatch"
+            },
+            "title": "Trainers",
+            "type": "array"
+          },
+          "weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Weights",
+            "type": "object"
+          }
+        },
+        "required": [
+          "policy_version",
+          "max_points",
+          "declared_max_points",
+          "weights",
+          "min_ratings_for_mean",
+          "competency_id",
+          "competency_label",
+          "notice",
+          "trainers"
+        ],
+        "title": "TrainerMatchResponse",
+        "type": "object"
+      },
+      "TrainerProfileResponse": {
+        "properties": {
+          "expertise": {
+            "items": {
+              "$ref": "#/components/schemas/ExpertiseResponse"
+            },
+            "title": "Expertise",
+            "type": "array"
+          },
+          "notice": {
+            "title": "Notice",
+            "type": "string"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trainer_id",
+          "username",
+          "profile",
+          "notice",
+          "expertise"
+        ],
+        "title": "TrainerProfileResponse",
         "type": "object"
       },
       "TrainerQuestion": {
@@ -5948,6 +6753,252 @@
         ]
       }
     },
+    "/learning/announcements": {
+      "get": {
+        "operationId": "list_all_announcements_learning_announcements_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AnnouncementResponse"
+                  },
+                  "title": "Response List All Announcements Learning Announcements Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List All Announcements",
+        "tags": [
+          "Announcements"
+        ]
+      },
+      "post": {
+        "operationId": "create_announcement_learning_announcements_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnnouncementCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create Announcement",
+        "tags": [
+          "Announcements"
+        ]
+      }
+    },
+    "/learning/announcements/{announcement_id}/publish": {
+      "post": {
+        "operationId": "publish_announcement_learning_announcements__announcement_id__publish_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "announcement_id",
+            "required": true,
+            "schema": {
+              "title": "Announcement Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Publish Announcement",
+        "tags": [
+          "Announcements"
+        ]
+      }
+    },
+    "/learning/announcements/{announcement_id}/unpublish": {
+      "post": {
+        "operationId": "unpublish_announcement_learning_announcements__announcement_id__unpublish_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "announcement_id",
+            "required": true,
+            "schema": {
+              "title": "Announcement Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Unpublish Announcement",
+        "tags": [
+          "Announcements"
+        ]
+      }
+    },
     "/learning/assessment/{player_id}": {
       "post": {
         "operationId": "assess_competencies_learning_assessment__player_id__post",
@@ -8101,6 +9152,69 @@
         "summary": "Submit Solution",
         "tags": [
           "DSA Sandbox"
+        ]
+      }
+    },
+    "/learning/home/feed": {
+      "get": {
+        "operationId": "get_home_feed_learning_home_feed_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "player_id",
+            "required": true,
+            "schema": {
+              "title": "Player Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeFeedResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get Home Feed",
+        "tags": [
+          "Home feed"
         ]
       }
     },
@@ -11309,6 +12423,354 @@
         "summary": "Get Node",
         "tags": [
           "Judgment Simulations"
+        ]
+      }
+    },
+    "/learning/trainers/match": {
+      "get": {
+        "operationId": "match_learning_trainers_match_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "competency_id",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Competency Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerMatchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Match",
+        "tags": [
+          "Trainer Expertise"
+        ]
+      }
+    },
+    "/learning/trainers/{trainer_id}/expertise": {
+      "get": {
+        "operationId": "list_expertise_learning_trainers__trainer_id__expertise_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerExpertiseListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List Expertise",
+        "tags": [
+          "Trainer Expertise"
+        ]
+      }
+    },
+    "/learning/trainers/{trainer_id}/expertise/{competency_id}": {
+      "delete": {
+        "operationId": "delete_expertise_learning_trainers__trainer_id__expertise__competency_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "competency_id",
+            "required": true,
+            "schema": {
+              "title": "Competency Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "title": "Response Delete Expertise Learning Trainers  Trainer Id  Expertise  Competency Id  Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete Expertise",
+        "tags": [
+          "Trainer Expertise"
+        ]
+      },
+      "put": {
+        "operationId": "upsert_expertise_learning_trainers__trainer_id__expertise__competency_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "competency_id",
+            "required": true,
+            "schema": {
+              "title": "Competency Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpertiseUpsertRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpertiseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Upsert Expertise",
+        "tags": [
+          "Trainer Expertise"
+        ]
+      }
+    },
+    "/learning/trainers/{trainer_id}/profile": {
+      "get": {
+        "description": "Read-only: the existing LearnerProfile plus declared expertise. The\nbase profile is still edited through PUT /learning/profile/{player_id}.",
+        "operationId": "trainer_profile_learning_trainers__trainer_id__profile_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerProfileResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Trainer Profile",
+        "tags": [
+          "Trainer Expertise"
         ]
       }
     }

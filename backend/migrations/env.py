@@ -8,6 +8,7 @@ from alembic import context
 from db.database import Base, SQLALCHEMY_DATABASE_URL
 from models import (
     accuracy_history,
+    announcement,
     certificate,
     cohort,
     content_library,
@@ -29,10 +30,12 @@ from models import (
     questionnaire,
     session,
     submission,
+    trainer_expertise,
 )
 
 _REGISTERED_MODEL_MODULES = (
     accuracy_history,
+    announcement,
     certificate,
     cohort,
     content_library,
@@ -54,9 +57,10 @@ _REGISTERED_MODEL_MODULES = (
     questionnaire,
     session,
     submission,
+    trainer_expertise,
 )
 
-# this is the Alembic Config object, which provides
+#this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL.replace("%", "%%"))

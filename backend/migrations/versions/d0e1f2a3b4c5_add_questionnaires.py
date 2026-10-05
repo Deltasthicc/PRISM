@@ -1,7 +1,7 @@
 """add questionnaires, questionnaire_questions and questionnaire_attempts
 
-Revision ID: b8c9d0e1f2a3
-Revises: a7b8c9d0e1f2
+Revision ID: d0e1f2a3b4c5
+Revises: c9d0e1f2a3b4
 Create Date: 2026-10-05 00:00:00.000000
 
 SIH26075 PS75-08: trainer-authored MCQ questionnaires with deadlines. See
@@ -14,8 +14,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b8c9d0e1f2a3'
-down_revision: Union[str, None] = 'a7b8c9d0e1f2'
+revision: str = 'd0e1f2a3b4c5'
+down_revision: Union[str, None] = 'c9d0e1f2a3b4'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

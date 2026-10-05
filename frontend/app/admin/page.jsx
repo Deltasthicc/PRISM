@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { ShieldAlert, Users, ClipboardCheck, FileQuestion, Target, TrendingUp, GraduationCap, Activity } from 'lucide-react';
+import { ShieldAlert, Users, ClipboardCheck, FileQuestion, Target, TrendingUp, GraduationCap, Activity, Award, Star, UsersRound, UserCheck } from 'lucide-react';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { learning } from '@/lib/api/client';
@@ -80,6 +81,25 @@ export default function AdminPage() {
         <Stat icon={ClipboardCheck} label={t('admin.profilesCompleted')} value={data.profiles_completed} />
         <Stat icon={Target} label={t('admin.assessmentsRun')} value={data.assessments_completed} />
         <Stat icon={FileQuestion} label={t('admin.quizzesGenerated')} value={data.quizzes_generated} />
+      </div>
+
+      {/* Not yet translated (English only), like the other panels added after the original 11-language pass. */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Stat icon={Award} label={`Certificates issued (${data.certificates.distinct_learners} learners)`} value={data.certificates.issued} />
+        <Stat
+          icon={Star}
+          label={`Mean course rating (${data.course_feedback.distinct_raters} raters)`}
+          value={data.course_feedback.mean_rating ?? 'Withheld'}
+        />
+        <Stat icon={UsersRound} label={`Cohorts (${data.cohorts.learners_in_a_cohort} learners assigned)`} value={data.cohorts.cohorts} />
+        <Panel>
+          <UserCheck className="text-[#00236f] mb-2" aria-hidden="true" />
+          <p className="font-sans text-lg font-bold text-[#131b2e]">{data.pending_registrations}</p>
+          <p className="font-sans text-sm text-[#757682] mt-1">Registrations awaiting approval</p>
+          <Link href="/admin/approvals" className="font-sans text-sm font-semibold text-[#00236f] hover:underline mt-2 inline-block">
+            Review requests
+          </Link>
+        </Panel>
       </div>
 
       {withheldCount > 0 && (

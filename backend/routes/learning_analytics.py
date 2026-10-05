@@ -9,7 +9,11 @@ from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from db.database import get_db
+from models.certificate import Certificate
+from models.cohort import Cohort, CohortMembership
 from models.course_enrollment import CourseEnrollment
+from models.feedback import CourseFeedback
+from models.identity import IdentityBinding
 from models.judgment_scenario import JudgmentScenarioAttempt
 from models.learning import CompetencyAssessment, GeneratedQuiz, GeneratedQuizAttempt, LearnerProfile
 from models.player import Player
@@ -316,6 +320,46 @@ def _emerging_skill_gaps(
     return visible[:top_n], suppressed
 
 
+def _platform_activity(db: Session, min_group: int) -> tuple[dict, int]:
+    """Certificates, course feedback, cohorts and pending approvals -- the
+    remaining SIH26075 admin-dashboard figures, all straight counts or means
+    over real rows. The mean feedback rating is only published when at least
+    `min_group` distinct learners rated, so one person's opinion is never
+    shown as a statistic; the second return value is how many figures that
+    withheld."""
+    certificates_total = db.query(func.count(Certificate.certificate_id)).filter(Certificate.revoked.is_(False)).scalar() or 0
+    certificate_holders = (
+        db.query(func.count(func.distinct(Certificate.player_id))).filter(Certificate.revoked.is_(False)).scalar() or 0
+    )
+
+    ratings_total = db.query(func.count(CourseFeedback.feedback_id)).scalar() or 0
+    raters = db.query(func.count(func.distinct(CourseFeedback.player_id))).scalar() or 0
+    mean_rating = db.query(func.avg(CourseFeedback.rating)).scalar()
+    suppressed = 0
+    if raters < min_group:
+        suppressed = 1 if ratings_total else 0
+        mean_rating = None
+    else:
+        mean_rating = round(float(mean_rating), 2) if mean_rating is not None else None
+
+    cohort_count = db.query(func.count(Cohort.cohort_id)).scalar() or 0
+    cohort_learners = db.query(func.count(func.distinct(CohortMembership.player_id))).scalar() or 0
+
+    pending = (
+        db.query(func.count(IdentityBinding.binding_id))
+        .filter(IdentityBinding.requested_role.isnot(None), IdentityBinding.registration_decision.is_(None))
+        .scalar()
+        or 0
+    )
+
+    return {
+        "certificates": {"issued": certificates_total, "distinct_learners": certificate_holders},
+        "course_feedback": {"ratings": ratings_total, "distinct_raters": raters, "mean_rating": mean_rating},
+        "cohorts": {"cohorts": cohort_count, "learners_in_a_cohort": cohort_learners},
+        "pending_registrations": pending,
+    }, suppressed
+
+
 @router.get("/admin/overview")
 async def admin_overview(
     db: Session = Depends(get_db),
@@ -358,6 +402,7 @@ async def admin_overview(
     training_effectiveness, suppressed_effectiveness = _training_effectiveness(db, min_group)
     course_completion, suppressed_courses = _course_completion(db, min_group)
     emerging_skill_gaps, suppressed_emerging = _emerging_skill_gaps(db, min_group)
+    platform_activity, suppressed_feedback = _platform_activity(db, min_group)
 
     return {
         "learners": db.query(Player).count(),
@@ -372,12 +417,14 @@ async def admin_overview(
         "course_completion": course_completion,
         "activity_trend": _activity_trend(db),
         "emerging_skill_gaps": emerging_skill_gaps,
+        **platform_activity,
         "min_group_size": min_group,
         "suppressed": {
             "top_skill_gaps": len(gap_counts) - len(visible_gaps),
             "training_effectiveness": suppressed_effectiveness,
             "course_completion": suppressed_courses,
             "emerging_skill_gaps": suppressed_emerging,
+            "course_feedback": suppressed_feedback,
         },
         "integration_status": integration_status(lang),
         "privacy_note": _PRIVACY_NOTE.get(lang, _PRIVACY_NOTE["en"]),

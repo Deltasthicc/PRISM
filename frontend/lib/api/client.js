@@ -51,7 +51,10 @@ function dedupe(key, run) {
   return promise;
 }
 
-async function request(path, { method = 'GET', body, headers } = {}) {
+// Exported so feature modules (lib/api/<feature>.js) can add their own API
+// helpers without every feature editing this file -- the browser still only
+// reaches the backend through this one boundary.
+export async function request(path, { method = 'GET', body, headers } = {}) {
   let response;
   try {
     // Real OIDC deployments (DISABLE_AUTH unset) get a real bearer token
@@ -647,7 +650,7 @@ export const liveSessions = {
 // Multipart requests (file upload) can't go through request() above -- the
 // browser must set its own multipart boundary in the Content-Type header,
 // which request()'s hardcoded 'application/json' would clobber.
-async function requestMultipart(path, formData) {
+export async function requestMultipart(path, formData) {
   let response;
   try {
     const accessToken = await getValidAccessToken();

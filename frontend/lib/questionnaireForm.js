@@ -42,9 +42,14 @@ export function formatDeadline(iso) {
   if (!iso) return '';
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return '';
+  // dateStyle/timeStyle cannot be combined with timeZoneName (it throws a
+  // TypeError in browsers), so the fields are spelled out.
   return date.toLocaleString(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
     timeZoneName: 'short',
   });
 }

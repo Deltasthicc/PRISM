@@ -59,6 +59,8 @@ class Permission(StrEnum):
     COHORT_READ = "cohort.read"
     ANNOUNCEMENT_MANAGE = "announcement.manage"
     HOME_FEED_READ = "home_feed.read"
+    TRAINER_EXPERTISE_MANAGE = "trainer_expertise.manage"
+    TRAINER_MATCH_READ = "trainer_match.read"
     CONTENT_LIBRARY_WRITE = "content_library.write"
     CONTENT_LIBRARY_READ = "content_library.read"
     DEPARTMENT_ANALYTICS_READ = "analytics.department.read"
@@ -119,6 +121,7 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.COURSE_FEEDBACK_WRITE,
             Permission.HOME_FEED_READ,
             Permission.COHORT_READ,
+            Permission.TRAINER_EXPERTISE_MANAGE,
             Permission.CONTENT_LIBRARY_READ,
             Permission.CONTENT_LIBRARY_WRITE,
         }
@@ -143,6 +146,13 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.ANNOUNCEMENT_MANAGE,
             Permission.HOME_FEED_READ,
             Permission.COHORT_READ,
+            Permission.TRAINER_EXPERTISE_MANAGE,
+            # Org-wide trainer ranking. Deliberately NOT granted to
+            # department_admin: that role is intentionally empty until a
+            # server-derived department scope exists (see its comment
+            # above), and this read is organization-wide, not department-
+            # scoped.
+            Permission.TRAINER_MATCH_READ,
             Permission.CONTENT_LIBRARY_READ,
             Permission.CONTENT_LIBRARY_WRITE,
         }

@@ -1,7 +1,7 @@
 """add announcements
 
-Revision ID: a7b8c9d0e1f2
-Revises: f6a7b8c9d0e1
+Revision ID: b8c9d0e1f2a3
+Revises: a7b8c9d0e1f2
 Create Date: 2026-10-05 00:00:00.000000
 
 SIH26075 PS75-13: admin-authored announcements for the in-app home feed.
@@ -14,8 +14,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a7b8c9d0e1f2'
-down_revision: Union[str, None] = 'f6a7b8c9d0e1'
+revision: str = 'b8c9d0e1f2a3'
+down_revision: Union[str, None] = 'a7b8c9d0e1f2'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

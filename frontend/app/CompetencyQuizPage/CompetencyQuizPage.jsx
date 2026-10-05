@@ -22,9 +22,11 @@ import {
   XCircle,
 } from 'lucide-react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { learning } from '@/lib/api/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useRequireAuth } from '@/lib/useRequireAuth';
+import { invalidateLearnerData } from '@/lib/invalidateLearnerData';
 import { COMPETENCY_TOPICS } from '@/lib/competencyTopics';
 import ProctoringMonitor, { VIOLATION_LABELS } from '@/components/ProctoringMonitor';
 
@@ -37,6 +39,7 @@ const QUESTIONS_PER_TOPIC = 3;
 export default function CompetencyQuizPage() {
   const router = useRouter();
   const { ready } = useRequireAuth();
+  const queryClient = useQueryClient();
   const player = useAuthStore((state) => state.player);
 
   const [profile, setProfile] = useState(null);
@@ -496,9 +499,9 @@ export default function CompetencyQuizPage() {
       const assessedSlugs = new Set(
         selectedTopics.map((topic) => topic.curriculumSlug).filter(Boolean)
       );
-      assessedSlugs.forEach((slug) => {
-        learning.assess(player.player_id, slug, {}).catch(() => {});
-      });
+      Promise.allSettled(
+        Array.from(assessedSlugs).map((slug) => learning.assess(player.player_id, slug, {}))
+      ).then(() => invalidateLearnerData(queryClient, player.player_id));
     } catch (cause) {
       setSubmitError(cause.message || 'The quiz could not be graded. Please retry.');
       setIsTimerRunning(true);

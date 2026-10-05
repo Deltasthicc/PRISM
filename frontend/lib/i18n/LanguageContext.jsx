@@ -5,6 +5,11 @@ import { DEFAULT_LANGUAGE, TRANSLATIONS } from './translations';
 
 const STORAGE_KEY = 'prism-language';
 
+// Languages written right-to-left. Of the 11 supported UI languages only
+// Urdu is; the layout is not fully mirrored for it yet, but text direction,
+// alignment of text runs and assistive-technology language are set correctly.
+const RTL_LANGUAGES = new Set(['ur']);
+
 const LanguageContext = createContext({
   language: DEFAULT_LANGUAGE,
   setLanguage: () => {},
@@ -54,6 +59,11 @@ export function LanguageProvider({ children }) {
       // localStorage unavailable (private browsing, etc.) -- stay on default.
     }
   }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = RTL_LANGUAGES.has(language) ? 'rtl' : 'ltr';
+  }, [language]);
 
   function setLanguage(next) {
     if (!TRANSLATIONS[next]) return;

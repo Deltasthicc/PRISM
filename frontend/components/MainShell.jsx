@@ -4,9 +4,16 @@ import { usePathname } from 'next/navigation';
 
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function MainShell({ children }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
+  const skipLink = (
+    <a href="#main-content" className="skip-link">
+      {t('nav.skipToContent')}
+    </a>
+  );
 
   // Login and register are both pre-authentication entry pages -- neither
   // should show the navbar, footer, or the 180px top spacing. Without this,
@@ -19,17 +26,21 @@ export default function MainShell({ children }) {
 
   if (isAuthEntryPage) {
     return (
-      <main className="w-full">
-        {children}
-      </main>
+      <>
+        {skipLink}
+        <main id="main-content" tabIndex={-1} className="w-full">
+          {children}
+        </main>
+      </>
     );
   }
 
   return (
     <>
+      {skipLink}
       <NavBar />
 
-      <main className="max-w-6xl mx-auto px-4 py-6 pt-[180px]">
+      <main id="main-content" tabIndex={-1} className="max-w-6xl mx-auto px-4 py-6 pt-[180px]">
         {children}
       </main>
 

@@ -154,3 +154,37 @@ html[data-reduced-motion='true'] *::after {
   transition-duration: 0.001ms !important;
   scroll-behavior: auto !important;
 }
+
+/* ============================================================
+   SKIP LINK + FOCUS TARGET
+   Hidden until keyboard-focused; the first tab stop on every page. The
+   <main> it jumps to is programmatically focusable (tabindex=-1), so its
+   focus ring is suppressed to avoid a distracting outline after a jump.
+   ============================================================ */
+
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -64px;
+  z-index: 10000;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #00236f;
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+main:focus {
+  outline: none;
+}
+
+/* Right-to-left languages (currently Urdu): keep text runs aligned to the
+   reading direction. Full layout mirroring is not done. */
+html[dir='rtl'] body {
+  text-align: right;
+}

@@ -3,12 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BookOpen, BrainCircuit, FileQuestion, ShieldCheck } from 'lucide-react';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { game, learning } from '@/lib/api/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { invalidateLearnerData } from '@/lib/invalidateLearnerData';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -36,6 +37,7 @@ const LINK_BUTTON_CLASS = [
 export default function AcademyHub() {
   const { ready } = useRequireAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const player = useAuthStore((state) => state.player);
   const { t, language } = useLanguage();
   const [profile, setProfile] = useState(EMPTY_PROFILE);
@@ -115,6 +117,7 @@ export default function AcademyHub() {
         previous_trainings: Array.isArray(profile.previous_trainings) ? profile.previous_trainings : [],
       });
       setProfile({ ...EMPTY_PROFILE, ...result.profile });
+      await invalidateLearnerData(queryClient, player.player_id);
     } catch (cause) {
       setError(cause.message);
     } finally {

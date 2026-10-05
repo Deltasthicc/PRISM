@@ -3,8 +3,10 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, CheckCircle2, XCircle } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRequireAuth } from '@/lib/useRequireAuth';
 import { useAuthStore } from '@/store/useAuthStore';
+import { invalidateLearnerData } from '@/lib/invalidateLearnerData';
 import { learning } from '@/lib/api/client';
 import Panel from '@/components/ui/Panel';
 import Badge from '@/components/ui/Badge';
@@ -24,6 +26,7 @@ function PracticeCompetency() {
   const { ready } = useRequireAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const player = useAuthStore((s) => s.player);
 
   const competencyId = searchParams.get('competency_id');
@@ -135,6 +138,7 @@ function PracticeCompetency() {
         player?.player_id
       );
       setResult(response);
+      invalidateLearnerData(queryClient, player?.player_id);
     } catch (cause) {
       setSubmitError(cause.message || 'This attempt could not be graded. Please retry.');
     } finally {

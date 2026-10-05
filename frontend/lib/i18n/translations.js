@@ -66,6 +66,7 @@ export const TRANSLATIONS = {
       "tagline": "Personalized Readiness Intelligence & Skill Mapping"
     },
     "nav": {
+      "skipToContent": "Skip to main content",
       "competencyGapAnalysis": "Competency & Gap Analysis",
       "prerequisitePathways": "Prerequisite Pathways",
       "sourceQuizGenerator": "Source Quiz Generator",
@@ -421,6 +422,7 @@ export const TRANSLATIONS = {
       "tagline": "व्यक्तिगत तत्परता बुद्धिमत्ता और कौशल मानचित्रण"
     },
     "nav": {
+      "skipToContent": "मुख्य सामग्री पर जाएँ",
       "competencyGapAnalysis": "योग्यता और अंतर विश्लेषण",
       "prerequisitePathways": "पूर्वापेक्षा पथ",
       "sourceQuizGenerator": "स्रोत प्रश्नोत्तरी जनरेटर",
@@ -772,6 +774,7 @@ export const TRANSLATIONS = {
       "tagline": "ব্যক্তিগতকৃত প্রস্তুতি বুদ্ধিমত্তা এবং দক্ষতা ম্যাপিং"
     },
     "nav": {
+      "skipToContent": "মূল বিষয়বস্তুতে যান",
       "competencyGapAnalysis": "দক্ষতা এবং ফাঁক বিশ্লেষণ",
       "prerequisitePathways": "পূর্বশর্ত পথ",
       "sourceQuizGenerator": "উৎস কুইজ জেনারেটর",
@@ -1123,6 +1126,7 @@ export const TRANSLATIONS = {
       "tagline": "वैयक्तिक तयारी बुद्धिमत्ता आणि कौशल्य मॅपिंग"
     },
     "nav": {
+      "skipToContent": "मुख्य मजकुराकडे जा",
       "competencyGapAnalysis": "योग्यता आणि अंतर विश्लेषण",
       "prerequisitePathways": "पूर्वापेक्षित मार्ग",
       "sourceQuizGenerator": "स्रोत क्विझ जनरेटर",
@@ -1474,6 +1478,7 @@ export const TRANSLATIONS = {
       "tagline": "వ్యక్తిగతీకరించిన సంసిద్ధత ఇంటెలిజెన్స్ & స్కిల్ మ్యాపింగ్"
     },
     "nav": {
+      "skipToContent": "ప్రధాన కంటెంట్‌కు వెళ్లండి",
       "competencyGapAnalysis": "కాంపిటెన్సీ & గ్యాప్ అనాలిసిస్",
       "prerequisitePathways": "ఆవశ్యక మార్గాలు",
       "sourceQuizGenerator": "సోర్స్ క్విజ్ జనరేటర్",
@@ -1825,6 +1830,7 @@ export const TRANSLATIONS = {
       "tagline": "தனிப்பயனாக்கப்பட்ட தயார்நிலை நுண்ணறிவு & திறன் மேப்பிங்"
     },
     "nav": {
+      "skipToContent": "முதன்மை உள்ளடக்கத்திற்குச் செல்",
       "competencyGapAnalysis": "திறமை மற்றும் இடைவெளி பகுப்பாய்வு",
       "prerequisitePathways": "முன்தேவையான பாதைகள்",
       "sourceQuizGenerator": "மூல வினாடி வினா ஜெனரேட்டர்",
@@ -2176,6 +2182,7 @@ export const TRANSLATIONS = {
       "tagline": "પર્સનલાઇઝ્ડ રેડીનેસ ઇન્ટેલિજન્સ અને સ્કિલ મેપિંગ"
     },
     "nav": {
+      "skipToContent": "મુખ્ય સામગ્રી પર જાઓ",
       "competencyGapAnalysis": "યોગ્યતા અને ગેપ વિશ્લેષણ",
       "prerequisitePathways": "પૂર્વજરૂરીયાતો પાથવે",
       "sourceQuizGenerator": "સ્ત્રોત ક્વિઝ જનરેટર",
@@ -2527,6 +2534,7 @@ export const TRANSLATIONS = {
       "tagline": "ذاتی نوعیت کی تیاری کی ذہانت اور مہارت کی نقشہ سازی"
     },
     "nav": {
+      "skipToContent": "مرکزی مواد پر جائیں",
       "competencyGapAnalysis": "قابلیت اور فرق کا تجزیہ",
       "prerequisitePathways": "پیشگی راستے",
       "sourceQuizGenerator": "ماخذ کوئز جنریٹر",
@@ -2878,6 +2886,7 @@ export const TRANSLATIONS = {
       "tagline": "ವೈಯಕ್ತೀಕರಿಸಿದ ಸಿದ್ದತೆ ಬುದ್ಧಿಮತ್ತೆ ಮತ್ತು ಕೌಶಲ್ಯ ಮ್ಯಾಪಿಂಗ್"
     },
     "nav": {
+      "skipToContent": "ಮುಖ್ಯ ವಿಷಯಕ್ಕೆ ಹೋಗಿ",
       "competencyGapAnalysis": "ಸಾಮರ್ಥ್ಯ ಮತ್ತು ಅಂತರದ ವಿಶ್ಲೇಷಣೆ",
       "prerequisitePathways": "ಪೂರ್ವಾಪೇಕ್ಷಿತ ಮಾರ್ಗಗಳು",
       "sourceQuizGenerator": "ಮೂಲ ರಸಪ್ರಶ್ನೆ ಜನರೇಟರ್",
@@ -3229,6 +3238,7 @@ export const TRANSLATIONS = {
       "tagline": "ବ୍ୟକ୍ତିଗତ ପ୍ରସ୍ତୁତି ଇଣ୍ଟେଲିଜେନ୍ସ ଏବଂ ସ୍କିଲ୍ ମ୍ୟାପିଙ୍ଗ୍ |"
     },
     "nav": {
+      "skipToContent": "ମୁଖ୍ୟ ବିଷୟବସ୍ତୁକୁ ଯାଆନ୍ତୁ",
       "competencyGapAnalysis": "ଦକ୍ଷତା ଏବଂ ଗ୍ୟାପ୍ ବିଶ୍ଳେଷଣ |",
       "prerequisitePathways": "ପୂର୍ବ ପଥ",
       "sourceQuizGenerator": "ଉତ୍ସ କୁଇଜ୍ ଜେନେରେଟର |",
@@ -3580,6 +3590,7 @@ export const TRANSLATIONS = {
       "tagline": "വ്യക്തിപരമാക്കിയ റെഡിനസ് ഇൻ്റലിജൻസും സ്കിൽ മാപ്പിംഗും"
     },
     "nav": {
+      "skipToContent": "പ്രധാന ഉള്ളടക്കത്തിലേക്ക് പോകുക",
       "competencyGapAnalysis": "കഴിവും വിടവ് വിശകലനവും",
       "prerequisitePathways": "ആവശ്യമായ പാതകൾ",
       "sourceQuizGenerator": "ഉറവിട ക്വിസ് ജനറേറ്റർ",

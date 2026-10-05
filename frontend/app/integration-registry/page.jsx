@@ -25,7 +25,7 @@ export default function IntegrationRegistry() {
       connectors: [
         { name: 'iGOT Karmayogi', mode: 'Catalog-fallback (static course list)', status: 'not live-integrated' },
         { name: 'NSSTA / TPAC', mode: 'Static curated catalog', status: 'not live-integrated' },
-        { name: 'Adaptive DSA practice (Pyodide)', mode: 'Client-side WASM', status: 'client-side mockup' },
+        { name: 'DSA Sandbox (Judge0)', mode: 'Server-side submission to an external Judge0 runner; the public ce.judge0.com instance by default (JUDGE0_BASE_URL)', status: 'implemented; execution is not self-hosted' },
         { name: 'Document ingestion / retrieval', mode: 'Extractive + optional Gemini grounding', status: 'implemented, see backend/services/competency_docs.py' },
       ],
     };
@@ -208,7 +208,7 @@ export default function IntegrationRegistry() {
               </tr>
               <tr>
                 <td className="py-3 px-4 font-bold text-[#00236f]">Quest practice mode</td>
-                <td className="py-3 px-4">Client-side WASM (Pyodide), opt-in</td>
+                <td className="py-3 px-4">Server-scored adaptive practice, opt-in; no code runs in the browser</td>
                 <td className="py-3 px-4 text-right">
                   <span className="px-2 py-0.5 rounded bg-[#89f5e7]/40 text-[#00312c] font-bold text-[10px]">
                     IMPLEMENTED, OPT-IN

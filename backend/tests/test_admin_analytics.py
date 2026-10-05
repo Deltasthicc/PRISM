@@ -19,6 +19,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -98,6 +99,14 @@ def _make_player(db, username: str) -> str:
 
 def _ts(*args) -> datetime:
     return datetime(*args, tzinfo=timezone.utc)
+
+
+@pytest.fixture(autouse=True)
+def _small_cohorts_visible(monkeypatch):
+    """The hand-calculated tests below seed 1-3 learners on purpose. Small-
+    group suppression (tested separately at the bottom with the real default)
+    would hide those rows, so it is switched off for them."""
+    monkeypatch.setenv("ANALYTICS_MIN_GROUP_SIZE", "1")
 
 
 def test_training_effectiveness_averages_latest_minus_earliest_per_competency():
@@ -387,3 +396,147 @@ def test_existing_response_fields_are_unchanged_by_the_new_additions():
     assert body["gap_priorities"] == {"high": 1}
     assert "privacy_note" in body
     assert "integration_status" in body
+
+
+def _seed_gap_learners(db, count: int, label: str = "Sampling Design") -> list[str]:
+    players = [_make_player(db, f"gap-learner-{uuid.uuid4().hex[:6]}") for _ in range(count)]
+    for player in players:
+        db.add(
+            CompetencyAssessment(
+                player_id=player, curriculum_slug="official-statistics",
+                skill_gaps=[{"label": label, "priority": "high"}],
+                created_at=_ts(2026, 1, 1),
+            )
+        )
+    db.commit()
+    return players
+
+
+def test_gap_shared_by_fewer_than_the_minimum_is_withheld_by_default(monkeypatch):
+    monkeypatch.delenv("ANALYTICS_MIN_GROUP_SIZE", raising=False)
+    db = _db()
+    _seed_gap_learners(db, 4)
+
+    body = TestClient(_app(db)).get("/learning/admin/overview").json()
+
+    assert body["min_group_size"] == 5
+    assert body["top_skill_gaps"] == []
+    assert body["suppressed"]["top_skill_gaps"] == 1
+    # The unsuppressed totals stay available; only the small group is hidden.
+    assert body["assessments_completed"] == 4
+
+
+def test_gap_reaching_the_minimum_is_published_by_default(monkeypatch):
+    monkeypatch.delenv("ANALYTICS_MIN_GROUP_SIZE", raising=False)
+    db = _db()
+    _seed_gap_learners(db, 5)
+
+    body = TestClient(_app(db)).get("/learning/admin/overview").json()
+
+    assert body["top_skill_gaps"] == [{"competency": "Sampling Design", "learner_count": 5}]
+    assert body["suppressed"]["top_skill_gaps"] == 0
+
+
+def test_one_learner_in_two_curricula_counts_once_toward_a_gap(monkeypatch):
+    monkeypatch.setenv("ANALYTICS_MIN_GROUP_SIZE", "2")
+    db = _db()
+    player = _make_player(db, "two-curricula")
+    for slug in ("official-statistics", "data-analysis"):
+        db.add(
+            CompetencyAssessment(
+                player_id=player, curriculum_slug=slug,
+                skill_gaps=[{"label": "Sampling Design", "priority": "high"}],
+                created_at=_ts(2026, 1, 1),
+            )
+        )
+    db.commit()
+
+    body = TestClient(_app(db)).get("/learning/admin/overview").json()
+
+    assert body["assessments_completed"] == 2
+    assert body["top_skill_gaps"] == []
+    assert body["suppressed"]["top_skill_gaps"] == 1
+
+
+def test_latest_assessment_per_learner_stream_is_chosen_in_sql(monkeypatch):
+    """An old assessment's gap must not count once a newer one for the same
+    learner and curriculum replaces it."""
+    db = _db()
+    player = _make_player(db, "retaker")
+    db.add_all([
+        CompetencyAssessment(
+            player_id=player, curriculum_slug="official-statistics",
+            skill_gaps=[{"label": "Old Gap", "priority": "high"}], created_at=_ts(2026, 1, 1),
+        ),
+        CompetencyAssessment(
+            player_id=player, curriculum_slug="official-statistics",
+            skill_gaps=[{"label": "New Gap", "priority": "low"}], created_at=_ts(2026, 3, 1),
+        ),
+    ])
+    db.commit()
+
+    body = TestClient(_app(db)).get("/learning/admin/overview").json()
+
+    assert body["assessments_completed"] == 1
+    assert body["top_skill_gaps"] == [{"competency": "New Gap", "learner_count": 1}]
+    assert body["gap_priorities"] == {"low": 1}
+
+
+def test_course_row_with_fewer_than_the_minimum_enrollments_is_withheld(monkeypatch):
+    monkeypatch.delenv("ANALYTICS_MIN_GROUP_SIZE", raising=False)
+    db = _db()
+    players = [_make_player(db, f"enrolled-{i}") for i in range(2)]
+    for player in players:
+        db.add(
+            CourseEnrollment(
+                player_id=player, course_id="internal::c1", provider="internal",
+                competency_id="os_gis", title="GIS", status="completed",
+                completed_at=_ts(2026, 1, 1),
+            )
+        )
+    db.commit()
+
+    body = TestClient(_app(db)).get("/learning/admin/overview").json()
+
+    assert body["course_completion"]["by_course"] == []
+    assert body["suppressed"]["course_completion"] == 1
+    assert body["course_completion"]["total_enrollments"] == 2
+
+
+def test_training_effectiveness_and_emerging_gaps_respect_the_minimum(monkeypatch):
+    monkeypatch.delenv("ANALYTICS_MIN_GROUP_SIZE", raising=False)
+    db = _db()
+    player_a = _make_player(db, "eff-a")
+    player_b = _make_player(db, "eff-b")
+    db.add_all([
+        CompetencyAssessment(
+            player_id=pid, curriculum_slug="official-statistics",
+            measured_scores={"os_sampling_design": first}, skill_gaps=[],
+            created_at=_ts(2026, 1, day),
+        )
+        for pid, first, day in ((player_a, 1.0, 1), (player_b, 2.0, 2))
+    ] + [
+        CompetencyAssessment(
+            player_id=pid, curriculum_slug="official-statistics",
+            measured_scores={"os_sampling_design": later}, skill_gaps=[{"label": "Data Quality"}],
+            created_at=_ts(2026, 2, day),
+        )
+        for pid, later, day in ((player_a, 3.0, 1), (player_b, 2.5, 2))
+    ])
+    db.commit()
+
+    body = TestClient(_app(db)).get("/learning/admin/overview").json()
+
+    assert body["training_effectiveness"] == []
+    assert body["suppressed"]["training_effectiveness"] == 1
+    assert body["emerging_skill_gaps"] == []
+    assert body["suppressed"]["emerging_skill_gaps"] == 1
+
+
+def test_invalid_minimum_setting_falls_back_to_the_safe_default(monkeypatch):
+    from routes.learning_analytics import _min_group_size
+
+    monkeypatch.setenv("ANALYTICS_MIN_GROUP_SIZE", "not-a-number")
+    assert _min_group_size() == 5
+    monkeypatch.setenv("ANALYTICS_MIN_GROUP_SIZE", "0")
+    assert _min_group_size() == 1

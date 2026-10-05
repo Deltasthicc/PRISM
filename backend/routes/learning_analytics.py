@@ -1,5 +1,6 @@
 """Privacy-safe aggregate analytics routes."""
 
+import os
 from collections import Counter, defaultdict
 from datetime import date
 
@@ -54,8 +55,25 @@ def _label_for(competency_id: str) -> str:
 # _activity_trend's docstring.
 _TREND_WEEK_CAP = 12
 
+# Smallest number of distinct learners a published group may describe. A row
+# built from fewer people (a gap shared by one learner, an average over two)
+# lets a reader work out who it is, so it is withheld and only counted in
+# `suppressed`. Overridable per deployment; 1 disables suppression.
+_DEFAULT_MIN_GROUP_SIZE = 5
+_STREAM_BATCH = 1000
 
-def _training_effectiveness(db: Session, top_n: int = 8) -> list[dict]:
+
+def _min_group_size() -> int:
+    raw = os.environ.get("ANALYTICS_MIN_GROUP_SIZE")
+    if raw is None or not raw.strip():
+        return _DEFAULT_MIN_GROUP_SIZE
+    try:
+        return max(1, int(raw))
+    except ValueError:
+        return _DEFAULT_MIN_GROUP_SIZE
+
+
+def _training_effectiveness(db: Session, min_group: int, top_n: int = 8) -> tuple[list[dict], int]:
     """For each competency, the average (latest measured_score - earliest
     measured_score) across every player who has at least two assessment
     rows that both touch that competency, plus how many players that
@@ -70,7 +88,11 @@ def _training_effectiveness(db: Session, top_n: int = 8) -> list[dict]:
     a key out of their measured_scores JSON blob -- not something a GROUP
     BY can express portably across this app's SQLite and PostgreSQL
     backends. Only the four columns actually needed are pulled (no full
-    ORM row hydration), and the table is scanned exactly once.
+    ORM row hydration), scanned once and streamed in batches so memory is
+    bounded by the number of (player, competency) pairs, not by history.
+
+    Competencies measured over fewer than `min_group` learners are withheld;
+    the second return value is how many.
     """
     rows = (
         db.query(
@@ -80,7 +102,7 @@ def _training_effectiveness(db: Session, top_n: int = 8) -> list[dict]:
             CompetencyAssessment.assessment_id,
         )
         .order_by(CompetencyAssessment.created_at.asc(), CompetencyAssessment.assessment_id.asc())
-        .all()
+        .yield_per(_STREAM_BATCH)
     )
 
     # (player_id, competency_id) -> {"first": score, "last": score, "count": n}
@@ -111,12 +133,14 @@ def _training_effectiveness(db: Session, top_n: int = 8) -> list[dict]:
             "learner_count": len(deltas),
         }
         for competency_id, deltas in deltas_by_competency.items()
+        if len(deltas) >= min_group
     ]
+    suppressed = len(deltas_by_competency) - len(summaries)
     summaries.sort(key=lambda row: abs(row["avg_improvement"]), reverse=True)
-    return summaries[:top_n]
+    return summaries[:top_n], suppressed
 
 
-def _course_completion(db: Session, top_n: int = 10) -> dict:
+def _course_completion(db: Session, min_group: int, top_n: int = 10) -> tuple[dict, int]:
     """Real enroll/complete funnel from CourseEnrollment -- entirely
     SQL-side grouped aggregation (func.count/func.sum), no per-row Python
     loop needed since this is a plain group-by over a handful of columns."""
@@ -141,6 +165,10 @@ def _course_completion(db: Session, top_n: int = 10) -> dict:
         .limit(top_n)
         .all()
     )
+    # One enrollment row per learner per course, so `enrolled` is the number
+    # of distinct learners behind each per-course rate.
+    visible = [row for row in per_course if row[2] >= min_group]
+    suppressed = len(per_course) - len(visible)
 
     return {
         "total_enrollments": total_enrollments,
@@ -154,14 +182,28 @@ def _course_completion(db: Session, top_n: int = 10) -> dict:
                 "completed": completed or 0,
                 "completion_rate_pct": round((completed or 0) / enrolled * 100, 1) if enrolled else 0.0,
             }
-            for course_id, title, enrolled, completed in per_course
+            for course_id, title, enrolled, completed in visible
         ],
-    }
+    }, suppressed
 
 
 def _week_key(timestamp) -> tuple[int, int]:
     iso = timestamp.isocalendar()
     return (iso[0], iso[1])
+
+
+def _daily_counts(db: Session, column, condition=None) -> list[tuple[date, int]]:
+    """Events per calendar day, grouped in the database so the result has one
+    row per active day instead of one per event. SQLite returns the day as
+    text and PostgreSQL as a date; both are normalised to `date`."""
+    day = func.date(column)
+    query = db.query(day, func.count()).filter(column.isnot(None))
+    if condition is not None:
+        query = query.filter(condition)
+    return [
+        (value if isinstance(value, date) else date.fromisoformat(str(value)), count)
+        for value, count in query.group_by(day).all()
+    ]
 
 
 def _activity_trend(db: Session, week_cap: int = _TREND_WEEK_CAP) -> list[dict]:
@@ -173,9 +215,8 @@ def _activity_trend(db: Session, week_cap: int = _TREND_WEEK_CAP) -> list[dict]:
     AccuracyHistory: none of them store a duration, only timestamps and
     outcome fields).
 
-    Each source query pulls only its own single timestamp column (the DB
-    does the WHERE-filtering; no full-row ORM hydration). The weeks are
-    then bucketed in Python using ISO calendar-week semantics so the result
+    Each source is grouped by day in the database (one row per active day,
+    not one per event). The days are then bucketed into weeks in Python using ISO calendar-week semantics so the result
     is identical regardless of which database backend is running this app:
     SQLite's strftime('%W', ...) and PostgreSQL's date_trunc('week', ...)
     do not agree with each other (or with ISO 8601) on which day a week
@@ -187,27 +228,17 @@ def _activity_trend(db: Session, week_cap: int = _TREND_WEEK_CAP) -> list[dict]:
     Deliberately never zero-fills a missing week: a deployment with two
     real weeks of activity shows two real weeks, not ten fabricated ones.
     """
-    quiz_timestamps = [row[0] for row in db.query(GeneratedQuizAttempt.attempted_at).all() if row[0]]
-    scenario_timestamps = [row[0] for row in db.query(JudgmentScenarioAttempt.completed_at).all() if row[0]]
-    course_completion_timestamps = [
-        row[0]
-        for row in (
-            db.query(CourseEnrollment.completed_at)
-            .filter(CourseEnrollment.status == "completed")
-            .all()
-        )
-        if row[0]
-    ]
-
     buckets: dict[tuple[int, int], dict] = defaultdict(
         lambda: {"quiz_attempts": 0, "scenario_completions": 0, "course_completions": 0}
     )
-    for timestamp in quiz_timestamps:
-        buckets[_week_key(timestamp)]["quiz_attempts"] += 1
-    for timestamp in scenario_timestamps:
-        buckets[_week_key(timestamp)]["scenario_completions"] += 1
-    for timestamp in course_completion_timestamps:
-        buckets[_week_key(timestamp)]["course_completions"] += 1
+    sources = (
+        ("quiz_attempts", GeneratedQuizAttempt.attempted_at, None),
+        ("scenario_completions", JudgmentScenarioAttempt.completed_at, None),
+        ("course_completions", CourseEnrollment.completed_at, CourseEnrollment.status == "completed"),
+    )
+    for field, column, condition in sources:
+        for day, count in _daily_counts(db, column, condition):
+            buckets[_week_key(day)][field] += count
 
     ordered_keys = sorted(buckets.keys())[-week_cap:]
     trend = []
@@ -222,7 +253,9 @@ def _activity_trend(db: Session, week_cap: int = _TREND_WEEK_CAP) -> list[dict]:
     return trend
 
 
-def _emerging_skill_gaps(db: Session, top_n: int = 8, min_assessments: int = 4) -> list[dict]:
+def _emerging_skill_gaps(
+    db: Session, min_group: int, top_n: int = 8, min_assessments: int = 4
+) -> tuple[list[dict], int]:
     """Which skill gaps are becoming MORE common recently vs earlier -- a
     genuine trend signal `top_skill_gaps` cannot show, since that field
     only counts gaps in each learner's single latest assessment (one
@@ -236,28 +269,34 @@ def _emerging_skill_gaps(db: Session, top_n: int = 8, min_assessments: int = 4) 
     Requires at least `min_assessments` total assessment rows before
     computing anything: a two-way split of a handful of rows would be
     noise dressed up as a trend, not a real signal, so this returns an
-    empty list rather than mislead with too little data.
-    """
-    rows = (
-        db.query(
-            CompetencyAssessment.skill_gaps,
-            CompetencyAssessment.created_at,
-            CompetencyAssessment.assessment_id,
-        )
-        .order_by(CompetencyAssessment.created_at.asc(), CompetencyAssessment.assessment_id.asc())
-        .all()
-    )
-    if len(rows) < min_assessments:
-        return []
+    empty list rather than mislead with too little data. Rows are streamed
+    in batches after a COUNT, so the history is never held in memory.
 
-    midpoint = len(rows) // 2
+    A gap is only published when at least `min_group` distinct learners show
+    it in the recent half; the second return value counts withheld gaps.
+    """
+    total = db.query(func.count(CompetencyAssessment.assessment_id)).scalar() or 0
+    if total < min_assessments:
+        return [], 0
+
+    rows = (
+        db.query(CompetencyAssessment.skill_gaps, CompetencyAssessment.player_id)
+        .order_by(CompetencyAssessment.created_at.asc(), CompetencyAssessment.assessment_id.asc())
+        .yield_per(_STREAM_BATCH)
+    )
+
+    midpoint = total // 2
     earlier_counter: Counter = Counter()
     recent_counter: Counter = Counter()
-    for index, (skill_gaps, _created_at, _assessment_id) in enumerate(rows):
-        counter = earlier_counter if index < midpoint else recent_counter
+    recent_learners: dict[str, set[str]] = defaultdict(set)
+    for index, (skill_gaps, player_id) in enumerate(rows):
+        in_recent = index >= midpoint
+        counter = recent_counter if in_recent else earlier_counter
         for gap in skill_gaps or []:
             label = gap.get("label") or gap.get("competency_id", "Unknown")
             counter[label] += 1
+            if in_recent:
+                recent_learners[label].add(player_id)
 
     summaries = [
         {
@@ -271,8 +310,10 @@ def _emerging_skill_gaps(db: Session, top_n: int = 8, min_assessments: int = 4) 
     # Only genuinely emerging gaps -- rising in prevalence, not just
     # currently common (top_skill_gaps already covers "currently common").
     summaries = [row for row in summaries if row["delta"] > 0]
-    summaries.sort(key=lambda row: row["delta"], reverse=True)
-    return summaries[:top_n]
+    visible = [row for row in summaries if len(recent_learners[row["competency"]]) >= min_group]
+    suppressed = len(summaries) - len(visible)
+    visible.sort(key=lambda row: row["delta"], reverse=True)
+    return visible[:top_n], suppressed
 
 
 @router.get("/admin/overview")
@@ -283,36 +324,61 @@ async def admin_overview(
     ),
     lang: str = Query("en", pattern="^(en|hi|bn|mr|te|ta|gu|ur|kn|or|ml)$"),
 ):
-    """Aggregate-only dashboard using the latest assessment per learner stream."""
-    assessments_by_stream = {}
-    for assessment in db.query(CompetencyAssessment).all():
-        key = (assessment.player_id, assessment.curriculum_slug)
-        current = assessments_by_stream.get(key)
-        if current is None or (
-            assessment.created_at, assessment.assessment_id
-        ) > (current.created_at, current.assessment_id):
-            assessments_by_stream[key] = assessment
-    assessments = list(assessments_by_stream.values())
-    gap_counter = Counter()
+    """Aggregate-only dashboard using the latest assessment per learner stream.
+
+    Groups smaller than `min_group_size` distinct learners are withheld and
+    tallied under `suppressed`, so a published row never singles a person
+    out."""
+    min_group = _min_group_size()
+
+    # Latest assessment per (learner, curriculum) chosen in SQL; only its
+    # skill_gaps are read, so memory scales with the number of learner
+    # streams, not with total assessment history.
+    ranked = db.query(
+        CompetencyAssessment.player_id.label("player_id"),
+        CompetencyAssessment.skill_gaps.label("skill_gaps"),
+        func.row_number()
+        .over(
+            partition_by=(CompetencyAssessment.player_id, CompetencyAssessment.curriculum_slug),
+            order_by=(CompetencyAssessment.created_at.desc(), CompetencyAssessment.assessment_id.desc()),
+        )
+        .label("rn"),
+    ).subquery()
+    latest = db.query(ranked.c.player_id, ranked.c.skill_gaps).filter(ranked.c.rn == 1).all()
+
+    gap_learners: dict[str, set[str]] = defaultdict(set)
     priority_counter = Counter()
-    for assessment in assessments:
-        for gap in assessment.skill_gaps or []:
-            gap_counter[gap.get("label") or gap.get("competency_id", "Unknown")] += 1
+    for player_id, skill_gaps in latest:
+        for gap in skill_gaps or []:
+            gap_learners[gap.get("label") or gap.get("competency_id", "Unknown")].add(player_id)
             priority_counter[gap.get("priority", "unknown")] += 1
+    gap_counts = Counter({label: len(people) for label, people in gap_learners.items()})
+    visible_gaps = [(label, count) for label, count in gap_counts.most_common() if count >= min_group]
+
+    training_effectiveness, suppressed_effectiveness = _training_effectiveness(db, min_group)
+    course_completion, suppressed_courses = _course_completion(db, min_group)
+    emerging_skill_gaps, suppressed_emerging = _emerging_skill_gaps(db, min_group)
+
     return {
         "learners": db.query(Player).count(),
         "profiles_completed": db.query(LearnerProfile).count(),
-        "assessments_completed": len(assessments),
+        "assessments_completed": len(latest),
         "quizzes_generated": db.query(GeneratedQuiz).count(),
         "top_skill_gaps": [
-            {"competency": competency, "learner_count": count}
-            for competency, count in gap_counter.most_common(8)
+            {"competency": competency, "learner_count": count} for competency, count in visible_gaps[:8]
         ],
         "gap_priorities": dict(priority_counter),
-        "training_effectiveness": _training_effectiveness(db),
-        "course_completion": _course_completion(db),
+        "training_effectiveness": training_effectiveness,
+        "course_completion": course_completion,
         "activity_trend": _activity_trend(db),
-        "emerging_skill_gaps": _emerging_skill_gaps(db),
+        "emerging_skill_gaps": emerging_skill_gaps,
+        "min_group_size": min_group,
+        "suppressed": {
+            "top_skill_gaps": len(gap_counts) - len(visible_gaps),
+            "training_effectiveness": suppressed_effectiveness,
+            "course_completion": suppressed_courses,
+            "emerging_skill_gaps": suppressed_emerging,
+        },
         "integration_status": integration_status(lang),
         "privacy_note": _PRIVACY_NOTE.get(lang, _PRIVACY_NOTE["en"]),
     }

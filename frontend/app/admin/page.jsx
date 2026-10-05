@@ -51,6 +51,8 @@ export default function AdminPage() {
     );
   }
 
+  const withheldCount = Object.values(data.suppressed || {}).reduce((sum, n) => sum + n, 0);
+
   return (
     <div className="flex flex-col gap-6">
       <header>
@@ -79,6 +81,17 @@ export default function AdminPage() {
         <Stat icon={Target} label={t('admin.assessmentsRun')} value={data.assessments_completed} />
         <Stat icon={FileQuestion} label={t('admin.quizzesGenerated')} value={data.quizzes_generated} />
       </div>
+
+      {withheldCount > 0 && (
+        <Panel role="note">
+          <h2 className="font-sans text-sm font-bold text-[#131b2e]">{t('admin.suppressedHeading')}</h2>
+          <p className="font-sans text-sm text-[#757682] mt-1">
+            {t('admin.suppressedBody')
+              .replace('{min}', String(data.min_group_size))
+              .replace('{count}', String(withheldCount))}
+          </p>
+        </Panel>
+      )}
 
       <Panel>
         <h2 className="font-sans text-base font-bold text-[#131b2e] mb-4">{t('admin.topSkillGaps')}</h2>

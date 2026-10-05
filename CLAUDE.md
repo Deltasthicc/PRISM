@@ -122,10 +122,13 @@ Treat every number below as historical, not current, until this section is itsel
   hardening at `ac5a2e7` passed Codex's narrow immutable re-review with no remaining correctness
   finding. See
   `docs/contracts/identity-authorization.md`, `docs/contracts/data-authorization.md` and
-  `docs/contracts/encryption-key-ownership.md`. **None of this is wired into `backend/routes/**`
-  yet** — every existing route remains an unauthenticated demo interface, and the product must not
-  be described as protected until Lane 5 composes token verification, binding and permission checks
-  into route code; no model currently uses the encryption envelope either. SSO (a real government
+  `docs/contracts/encryption-key-ownership.md`. **Update 2026-10-05: route wiring now exists.** 89 of
+  103 HTTP operations depend on `require_principal` (verified token + active binding + permission /
+  ownership checks); the 14 that do not are pinned, each with a reason, in
+  `backend/tests/test_route_auth_inventory.py`. That shows where enforcement is *wired*. The hosted
+  demo still runs `DISABLE_AUTH=true`, which replaces every principal with a synthetic one, so the
+  hosted demo must still not be described as protected. No model currently uses the encryption
+  envelope. SSO (a real government
   IdP), multi-tenant isolation beyond one-database-per-deployment, production KMS/HSM key custody,
   frontend tests, observability and production authorization remain absent.
 

@@ -63,10 +63,53 @@ def _without_environment_dependent_routes(document: dict) -> dict:
     return document
 
 
+def _api_routes(routes):
+    from fastapi.routing import APIRoute
+
+    for route in routes:
+        if isinstance(route, APIRoute):
+            yield route
+        elif hasattr(route, "original_router"):
+            yield from _api_routes(route.original_router.routes)
+
+
+def _requires_principal(dependant) -> bool:
+    from routes.authorization import require_principal
+
+    return dependant.call is require_principal or any(
+        _requires_principal(child) for child in dependant.dependencies
+    )
+
+
+def _with_bearer_security(document: dict, app) -> dict:
+    """Declare bearer auth on every operation that really depends on
+    `require_principal` (FastAPI only emits `security` for its own OAuth2
+    helpers, which this app does not use), so the contract tells clients which
+    calls need a token."""
+    protected = {
+        (method.lower(), route.path)
+        for route in _api_routes(app.routes)
+        if _requires_principal(route.dependant)
+        for method in route.methods
+    }
+    for path, operations in document["paths"].items():
+        for method, operation in operations.items():
+            if (method, path) in protected:
+                operation["security"] = [{"bearerAuth": []}]
+    document.setdefault("components", {}).setdefault("securitySchemes", {})["bearerAuth"] = {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "OIDC access token from the configured identity provider.",
+    }
+    return document
+
+
 def build_openapi() -> str:
     from main import app
 
     document = _without_environment_dependent_routes(copy.deepcopy(app.openapi()))
+    document = _with_bearer_security(document, app)
     return json.dumps(document, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
 
 

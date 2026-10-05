@@ -2789,6 +2789,14 @@
         "title": "CompleteRequest",
         "type": "object"
       }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "bearerFormat": "JWT",
+        "description": "OIDC access token from the configured identity provider.",
+        "scheme": "bearer",
+        "type": "http"
+      }
     }
   },
   "info": {
@@ -2867,6 +2875,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Judge Answer",
         "tags": [
           "AI (Gemini)"
@@ -2926,6 +2939,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Assistant Query",
         "tags": [
           "AI (Gemini)"
@@ -2983,6 +3001,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Dashboard",
         "tags": [
           "AI (Gemini)"
@@ -3042,6 +3065,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Next Difficulty",
         "tags": [
           "AI (Gemini)"
@@ -3090,6 +3118,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Evaluation Report",
         "tags": [
           "AI (Gemini)"
@@ -3149,6 +3182,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Next Topic",
         "tags": [
           "AI (Gemini)"
@@ -3208,6 +3246,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Generate Question",
         "tags": [
           "AI (Gemini)"
@@ -3267,6 +3310,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Quiz Review Item",
         "tags": [
           "AI (Gemini)"
@@ -3326,6 +3374,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Retrieval Index",
         "tags": [
           "AI (Gemini)"
@@ -3385,6 +3438,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Retrieval Search",
         "tags": [
           "AI (Gemini)"
@@ -3488,6 +3546,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Pending Registrations",
         "tags": [
           "Registration"
@@ -3556,6 +3619,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Decide Registration",
         "tags": [
           "Registration"
@@ -3675,6 +3743,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit Answer",
         "tags": [
           "Game"
@@ -3750,6 +3823,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Dungeon",
         "tags": [
           "Game"
@@ -3816,6 +3894,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Next Topic For Player",
         "tags": [
           "Game"
@@ -3864,6 +3947,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List Dungeons",
         "tags": [
           "Game"
@@ -3924,6 +4012,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Create Guild",
         "tags": [
           "Game"
@@ -3982,6 +4075,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Join Guild",
         "tags": [
           "Game"
@@ -4040,6 +4138,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Join Raid",
         "tags": [
           "Game"
@@ -4097,6 +4200,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Raid Status",
         "tags": [
           "Game"
@@ -4156,6 +4264,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit Raid Answer",
         "tags": [
           "Game"
@@ -4215,6 +4328,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Guild",
         "tags": [
           "Game"
@@ -4274,6 +4392,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Use Hint",
         "tags": [
           "Game"
@@ -4345,6 +4468,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Leaderboard",
         "tags": [
           "Game"
@@ -4405,6 +4533,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Guild Leaderboard",
         "tags": [
           "Game"
@@ -4543,6 +4676,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Player",
         "tags": [
           "Game"
@@ -4610,6 +4748,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Select Hero",
         "tags": [
           "Game"
@@ -4678,6 +4821,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Set Preferred Mode",
         "tags": [
           "Game"
@@ -4737,6 +4885,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Use Powerup",
         "tags": [
           "Game"
@@ -4797,6 +4950,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Enter Room",
         "tags": [
           "Game"
@@ -4857,6 +5015,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Start Session",
         "tags": [
           "Game"
@@ -4932,6 +5095,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Admin Overview",
         "tags": [
           "Learning Analytics"
@@ -5009,6 +5177,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Assess Competencies",
         "tags": [
           "Learning Competency"
@@ -5076,6 +5249,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Latest Assessment",
         "tags": [
           "Learning Competency"
@@ -5133,6 +5311,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Enroll",
         "tags": [
           "Course Enrollment"
@@ -5189,6 +5372,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List Enrollments",
         "tags": [
           "Course Enrollment"
@@ -5255,6 +5443,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Complete",
         "tags": [
           "Course Enrollment"
@@ -5317,6 +5510,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List My Certificates",
         "tags": [
           "Certificates"
@@ -5412,6 +5610,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List All Cohorts",
         "tags": [
           "Cohorts"
@@ -5469,6 +5672,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Create Cohort",
         "tags": [
           "Cohorts"
@@ -5531,6 +5739,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List My Cohorts",
         "tags": [
           "Cohorts"
@@ -5593,6 +5806,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List Members",
         "tags": [
           "Cohorts"
@@ -5658,6 +5876,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Add Member",
         "tags": [
           "Cohorts"
@@ -5726,6 +5949,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Remove Member",
         "tags": [
           "Cohorts"
@@ -5789,6 +6017,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Cohort Performance",
         "tags": [
           "Cohorts"
@@ -6019,6 +6252,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List Published Courses",
         "tags": [
           "Course Catalog"
@@ -6076,6 +6314,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Create Course",
         "tags": [
           "Course Catalog"
@@ -6138,6 +6381,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List My Courses",
         "tags": [
           "Course Catalog"
@@ -6196,6 +6444,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Published Course",
         "tags": [
           "Course Catalog"
@@ -6254,6 +6507,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Feedback Summary",
         "tags": [
           "Course Feedback"
@@ -6320,6 +6578,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit Feedback",
         "tags": [
           "Course Feedback"
@@ -6395,6 +6658,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get My Feedback",
         "tags": [
           "Course Feedback"
@@ -6463,6 +6731,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Publish Course",
         "tags": [
           "Course Catalog"
@@ -6531,6 +6804,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Unpublish Course",
         "tags": [
           "Course Catalog"
@@ -6638,6 +6916,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Session",
         "tags": [
           "Adaptive Diagnostic"
@@ -6695,6 +6978,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Start Stage1",
         "tags": [
           "Adaptive Diagnostic"
@@ -6752,6 +7040,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit Stage1",
         "tags": [
           "Adaptive Diagnostic"
@@ -6809,6 +7102,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Start Stage2",
         "tags": [
           "Adaptive Diagnostic"
@@ -6866,6 +7164,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit Stage2",
         "tags": [
           "Adaptive Diagnostic"
@@ -6948,6 +7251,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit Solution",
         "tags": [
           "DSA Sandbox"
@@ -7048,6 +7356,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Create Session",
         "tags": [
           "Live Quiz Sessions"
@@ -7105,6 +7418,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Resolve Join Code",
         "tags": [
           "Live Quiz Sessions"
@@ -7171,6 +7489,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Session State",
         "tags": [
           "Live Quiz Sessions"
@@ -7227,6 +7550,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Advance Session",
         "tags": [
           "Live Quiz Sessions"
@@ -7294,6 +7622,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit Live Answer",
         "tags": [
           "Live Quiz Sessions"
@@ -7351,6 +7684,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "End Session",
         "tags": [
           "Live Quiz Sessions"
@@ -7417,6 +7755,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Join Session",
         "tags": [
           "Live Quiz Sessions"
@@ -7483,6 +7826,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Session Results",
         "tags": [
           "Live Quiz Sessions"
@@ -7539,6 +7887,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Start Session",
         "tags": [
           "Live Quiz Sessions"
@@ -7617,6 +7970,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Pathway",
         "tags": [
           "Learning Competency"
@@ -7682,6 +8040,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List Violations",
         "tags": [
           "Exam Proctoring"
@@ -7737,6 +8100,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Report Violation",
         "tags": [
           "Exam Proctoring"
@@ -7793,6 +8161,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Profile",
         "tags": [
           "Learning Profile"
@@ -7857,6 +8230,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Upsert Profile",
         "tags": [
           "Learning Profile"
@@ -7925,6 +8303,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Quiz",
         "tags": [
           "Learning Content"
@@ -7984,6 +8367,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Create Quiz",
         "tags": [
           "Learning Content"
@@ -8032,6 +8420,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Quiz Library",
         "tags": [
           "Quiz Review Workflow"
@@ -8080,6 +8473,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Review Queue",
         "tags": [
           "Quiz Review Workflow"
@@ -8148,6 +8546,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List Quizzes",
         "tags": [
           "Learning Content"
@@ -8214,6 +8617,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List Attempts",
         "tags": [
           "Quiz Review Workflow"
@@ -8280,6 +8688,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Review Quiz",
         "tags": [
           "Quiz Review Workflow"
@@ -8349,6 +8762,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit Quiz",
         "tags": [
           "Learning Content"
@@ -8415,6 +8833,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit For Review",
         "tags": [
           "Quiz Review Workflow"
@@ -8475,6 +8898,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Submit Answer",
         "tags": [
           "Sampling Lab"
@@ -8549,6 +8977,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List Scenarios",
         "tags": [
           "Judgment Simulations"
@@ -8618,6 +9051,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "List Attempts",
         "tags": [
           "Judgment Simulations"
@@ -8688,6 +9126,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Choose",
         "tags": [
           "Judgment Simulations"
@@ -8758,6 +9201,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Complete",
         "tags": [
           "Judgment Simulations"
@@ -8827,6 +9275,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get Node",
         "tags": [
           "Judgment Simulations"

@@ -50,9 +50,13 @@ def test_versioned_openapi_lists_current_public_paths():
     contract_path = Path(__file__).parents[2] / "docs" / "contracts" / "openapi.json"
     document = json.loads(contract_path.read_text(encoding="utf-8"))
 
-    assert document["openapi"] == "3.0.3"
-    assert document["info"]["version"] == "0.4.0"
-    assert set(document["paths"]) == EXPECTED_PATHS
+    # The contract is now generated from the running app (see
+    # tests/test_openapi_contract.py for the exact-match drift check), so it
+    # may legitimately contain more paths than this core list; what must never
+    # happen is a documented core path disappearing.
+    assert document["openapi"].startswith("3.")
+    assert document["info"]["title"] == "PRISM API"
+    assert EXPECTED_PATHS <= set(document["paths"])
 
 
 def test_protected_learning_paths_declare_bearer_security():

@@ -50,12 +50,12 @@ export async function arriveFromIdentityProvider(page) {
 
 // A signed-in browser session without going through sign-in, for specs that
 // are about a page rather than about authentication.
-export async function seedSession(page, { onboardingSeen = true } = {}) {
+export async function seedSession(page, { onboardingSeen = true, roles = [] } = {}) {
   await page.addInitScript(
-    ({ player, onboardingSeen }) => {
-      localStorage.setItem('prism-auth', JSON.stringify({ state: { player, isAuthenticated: true, roles: [] }, version: 0 }));
+    ({ player, onboardingSeen, roles }) => {
+      localStorage.setItem('prism-auth', JSON.stringify({ state: { player, isAuthenticated: true, roles }, version: 0 }));
       if (onboardingSeen) localStorage.setItem('prism_onboarding_seen', '1');
     },
-    { player: PLAYER, onboardingSeen }
+    { player: PLAYER, onboardingSeen, roles }
   );
 }

@@ -8,6 +8,7 @@ import { User, LogOut, Gamepad2 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { learning } from '@/lib/api/client';
+import { activeHref, navGroupsForRoles } from '@/lib/navigation';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import AccessibilityMenu from '@/components/AccessibilityMenu';
 
@@ -16,6 +17,7 @@ export default function NavBar() {
   const player = useAuthStore((s) => s.player);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const logout = useAuthStore((s) => s.logout);
+  const roles = useAuthStore((s) => s.roles);
   const setPreferredMode = useAuthStore((s) => s.setPreferredMode);
   const { t } = useLanguage();
 
@@ -40,6 +42,9 @@ export default function NavBar() {
   );
 
   if (!isAuthenticated) return null;
+
+  const areaGroups = navGroupsForRoles(roles);
+  const currentArea = activeHref(areaGroups, pathname);
 
   // Quest mode (character/boss fights/leaderboard) is an explicit opt-in,
   // off by default (models/enums.py's LearningMode, player.preferred_mode).
@@ -183,6 +188,33 @@ export default function NavBar() {
           );
         })}
       </nav>
+
+      {/* Work areas for the three SIH26075 experiences. English only, like the
+          other pages added after the original translation pass. */}
+      {areaGroups.length > 0 && (
+        <nav
+          aria-label="Work areas"
+          className="h-9 px-4 sm:px-8 bg-[#f7f8ff] border-b border-[#c5c5d3]/20 flex items-center gap-5 overflow-x-auto no-scrollbar"
+        >
+          {areaGroups.map((group) => (
+            <div key={group.id} className="flex items-center gap-3 shrink-0" role="group" aria-label={group.label}>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#757682]">{group.label}</span>
+              {group.links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={currentArea === link.href ? 'page' : undefined}
+                  className={`text-xs whitespace-nowrap hover:text-[#00236f] ${
+                    currentArea === link.href ? 'text-[#00236f] font-semibold underline underline-offset-4' : 'text-[#444651]'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }

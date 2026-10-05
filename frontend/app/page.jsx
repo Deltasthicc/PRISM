@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { BarChart3, FileCheck2, ListChecks } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import HomeFeed from '@/components/HomeFeed';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Panel from '@/components/ui/Panel';
 
 export default function LandingPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const player = useAuthStore((s) => s.player);
   const { t } = useLanguage();
 
   const pillars = [
@@ -35,6 +37,12 @@ export default function LandingPage() {
           {isAuthenticated ? t('landing.ctaAuthenticated') : t('landing.ctaGuest')}
         </Button>
       </Link>
+
+      {isAuthenticated && player?.player_id && (
+        <div className="w-full max-w-4xl text-left">
+          <HomeFeed playerId={player.player_id} />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 w-full max-w-4xl">
         {pillars.map(({ icon: Icon, title, body }) => (

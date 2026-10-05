@@ -25,6 +25,7 @@ from models import (
     proctoring,
     question,
     question_bank,
+    questionnaire,
     session,
     submission,
 )
@@ -48,6 +49,7 @@ _REGISTERED_MODEL_MODULES = (
     proctoring,
     question,
     question_bank,
+    questionnaire,
     session,
     submission,
 )

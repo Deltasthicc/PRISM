@@ -1447,6 +1447,25 @@
             "title": "Created At",
             "type": "string"
           },
+          "department": {
+            "default": "",
+            "title": "Department",
+            "type": "string"
+          },
+          "designation": {
+            "default": "",
+            "title": "Designation",
+            "type": "string"
+          },
+          "full_name": {
+            "default": "",
+            "title": "Full Name",
+            "type": "string"
+          },
+          "issuer": {
+            "title": "Issuer",
+            "type": "string"
+          },
           "player_id": {
             "anyOf": [
               {
@@ -1472,6 +1491,21 @@
           "requested_role": {
             "title": "Requested Role",
             "type": "string"
+          },
+          "subject_id": {
+            "title": "Subject Id",
+            "type": "string"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
           }
         },
         "required": [
@@ -1479,7 +1513,9 @@
           "player_id",
           "requested_role",
           "registration_notes",
-          "created_at"
+          "created_at",
+          "issuer",
+          "subject_id"
         ],
         "title": "PendingRegistrationSummary",
         "type": "object"

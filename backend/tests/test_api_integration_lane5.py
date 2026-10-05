@@ -58,7 +58,10 @@ def make_principal(player_id=None):
     )
 
 
-def test_admin_analytics_count_latest_assessment_stream_once():
+def test_admin_analytics_count_latest_assessment_stream_once(monkeypatch):
+    # One learner on purpose; small-group suppression is covered separately
+    # in test_admin_analytics.py.
+    monkeypatch.setenv("ANALYTICS_MIN_GROUP_SIZE", "1")
     db = make_db()
     player = Player(username="learner-1")
     db.add(player)

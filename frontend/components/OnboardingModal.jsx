@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useOnboardingStore } from '@/store/useOnboardingStore';
 import Panel from './ui/Panel';
@@ -44,6 +44,7 @@ export default function OnboardingModal() {
   const closeModal = useOnboardingStore((s) => s.closeModal);
   const openIfUnseen = useOnboardingStore((s) => s.openIfUnseen);
   const [slide, setSlide] = useState(0);
+  const dialogRef = useRef(null);
 
   useEffect(() => {
     if (isAuthenticated) openIfUnseen();
@@ -54,6 +55,44 @@ export default function OnboardingModal() {
     setSlide(0);
   }
 
+  // Modal-dialog behaviour: move focus in on open, keep Tab inside, close on
+  // Escape, and hand focus back to whatever had it before.
+  useEffect(() => {
+    if (!open) return undefined;
+    const previouslyFocused = document.activeElement;
+    const dialog = dialogRef.current;
+    const focusables = () =>
+      dialog ? Array.from(dialog.querySelectorAll('button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')) : [];
+    focusables()[0]?.focus();
+
+    function onKeyDown(event) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeModal();
+        setSlide(0);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const items = focusables();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      if (previouslyFocused && typeof previouslyFocused.focus === 'function') previouslyFocused.focus();
+    };
+  }, [open, closeModal]);
+
   if (!open) return null;
 
   const current = SLIDES[slide];
@@ -61,8 +100,14 @@ export default function OnboardingModal() {
 
   return (
     <div className="fixed inset-0 z-[9997] flex items-center justify-center bg-black/40 px-4">
-      <Panel className="w-full max-w-lg">
-        <h2 className="font-sans text-base font-bold text-[#00236f] mb-2">{current.title}</h2>
+      <Panel
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="onboarding-title"
+        className="w-full max-w-lg"
+      >
+        <h2 id="onboarding-title" className="font-sans text-base font-bold text-[#00236f] mb-2">{current.title}</h2>
         <p className="font-sans text-sm text-[#444651] leading-relaxed">{current.body}</p>
         <div className="flex items-center justify-between mt-6">
           <span className="font-mono text-xs text-[#757682]">

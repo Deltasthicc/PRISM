@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/api/client';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -10,23 +10,26 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Panel from '@/components/ui/Panel';
 
-// Reached after every real OIDC sign-in (app/auth/callback), whether this
-// is a brand-new identity or a returning one -- the frontend has no way
-// to tell those apart without calling something, so this page doubles as
-// that check: submitting to POST /auth/register (security/rbac.py's
-// create_self_service_registration) either succeeds (first time) or comes
-// back 409 "already registered" (returning user), and both are handled
-// below as expected outcomes, not errors.
+// Reached after a real OIDC sign-in whenever the account is not ready to use
+// yet. The page asks the backend (GET /auth/me, via the auth store) which of
+// five states the verified identity is actually in, and renders exactly that
+// state -- it never infers status from a failed registration attempt:
 //
-// Known gap, not silently swallowed: a returning, already-*approved* user
-// still lands here and sees "already registered" rather than going
-// straight to their dashboard, because resolving an existing account's
-// player_id from just a verified token has no endpoint yet (would need a
-// dedicated GET /auth/me -- out of scope for this pass). Approval status
-// itself is real; only the post-approval "skip this screen" polish isn't.
+//   loading           -> status request in flight
+//   not_registered    -> the registration form
+//   pending_approval  -> waiting on an administrator
+//   rejected          -> an administrator declined the request
+//   approved, no role -> binding active, but the identity provider has not
+//                        granted the requested role claim yet
+//   approved + role   -> bound to its player and sent on to the app
 export default function CompleteRegistrationPage() {
   const router = useRouter();
   const { t } = useLanguage();
+  const resolveOidcSession = useAuthStore((s) => s.resolveOidcSession);
+  const logout = useAuthStore((s) => s.logout);
+
+  const [status, setStatus] = useState(null);
+  const [loadError, setLoadError] = useState('');
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [designation, setDesignation] = useState('');
@@ -34,7 +37,31 @@ export default function CompleteRegistrationPage() {
   const [requestedRole, setRequestedRole] = useState('learner');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
-  const [outcome, setOutcome] = useState(null); // 'pending' | 'already-registered'
+  const checked = useRef(false);
+
+  const refreshStatus = useCallback(async () => {
+    setLoadError('');
+    try {
+      const next = await resolveOidcSession();
+      if (next.status === 'approved' && next.roles.length > 0) {
+        router.replace('/');
+        return;
+      }
+      setStatus(next);
+    } catch (cause) {
+      if (cause.code === 401) {
+        router.replace('/login');
+        return;
+      }
+      setLoadError(cause.message || 'Could not check your registration status.');
+    }
+  }, [resolveOidcSession, router]);
+
+  useEffect(() => {
+    if (checked.current) return;
+    checked.current = true;
+    refreshStatus();
+  }, [refreshStatus]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -50,10 +77,11 @@ export default function CompleteRegistrationPage() {
         designation: designation.trim(),
         department: department.trim(),
       });
-      setOutcome('pending');
+      await refreshStatus();
     } catch (cause) {
       if (cause.code === 409) {
-        setOutcome('already-registered');
+        // Registered in another tab or session: show the real status.
+        await refreshStatus();
       } else {
         setFormError(cause.message || 'Registration could not be completed.');
       }
@@ -62,19 +90,55 @@ export default function CompleteRegistrationPage() {
     }
   }
 
-  if (outcome === 'pending') {
+  async function handleSignOut() {
+    await logout();
+    router.push('/login');
+  }
+
+  if (loadError) {
     return (
       <StatusScreen
-        heading="Registration submitted"
-        body="Your account has been created and is waiting on admin approval. You'll be able to sign in with full access once an administrator approves it."
+        heading="Could not check your account"
+        body={loadError}
+        actionLabel="Try again"
+        onAction={refreshStatus}
+        onSignOut={handleSignOut}
       />
     );
   }
-  if (outcome === 'already-registered') {
+  if (!status) {
+    return (
+      <StatusScreen heading="Checking your account" body="One moment while we look up your registration." busy />
+    );
+  }
+  if (status.status === 'pending_approval') {
     return (
       <StatusScreen
-        heading="You're already registered"
-        body="This account has already requested access. If you're still waiting, check with an administrator on its approval status."
+        heading="Waiting for admin approval"
+        body={`Your request to join as ${roleLabel(status.requested_role)} has been submitted. You can sign in with full access once an administrator approves it.`}
+        actionLabel="Check again"
+        onAction={refreshStatus}
+        onSignOut={handleSignOut}
+      />
+    );
+  }
+  if (status.status === 'rejected') {
+    return (
+      <StatusScreen
+        heading="Access request declined"
+        body="An administrator declined this access request. Contact your organization's administrator if you think this is a mistake."
+        onSignOut={handleSignOut}
+      />
+    );
+  }
+  if (status.status === 'approved') {
+    return (
+      <StatusScreen
+        heading="Approved, role not assigned yet"
+        body="Your account is approved, but your organization's identity provider has not granted your role yet, so there is nothing you can open. Ask an administrator to assign it, then check again."
+        actionLabel="Check again"
+        onAction={refreshStatus}
+        onSignOut={handleSignOut}
       />
     );
   }
@@ -108,7 +172,7 @@ export default function CompleteRegistrationPage() {
           <Input id="designation" label="Designation (optional)" value={designation} onChange={(event) => setDesignation(event.target.value)} />
           <Input id="department" label="Department (optional)" value={department} onChange={(event) => setDepartment(event.target.value)} />
           {formError && (
-            <p className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2">
+            <p role="alert" className="font-sans text-sm text-[#b3261e] bg-[#fce8e6] border border-[#f5c6c2] rounded-lg px-3 py-2">
               {formError}
             </p>
           )}
@@ -116,25 +180,48 @@ export default function CompleteRegistrationPage() {
             {submitting ? 'Submitting...' : 'Request access'}
           </Button>
         </form>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="font-sans text-sm text-[#757682] hover:underline mt-4 block mx-auto"
+        >
+          Sign out
+        </button>
       </Panel>
     </div>
   );
 }
 
-function StatusScreen({ heading, body }) {
-  const router = useRouter();
+function roleLabel(role) {
+  if (role === 'trainer') return 'a trainer';
+  if (role === 'learner') return 'a trainee';
+  return 'a member';
+}
+
+function StatusScreen({ heading, body, busy = false, actionLabel, onAction, onSignOut }) {
   return (
     <div className="flex flex-col items-center pt-16 gap-6 px-4 pb-16">
-      <Panel className="w-full max-w-md p-6 text-center">
+      <Panel className="w-full max-w-md p-6 text-center" aria-busy={busy}>
         <h1 className="font-sans text-lg font-bold text-[#00236f] mb-2">{heading}</h1>
-        <p className="font-sans text-sm text-[#757682]">{body}</p>
-        <button
-          type="button"
-          onClick={() => router.push('/login')}
-          className="font-sans text-sm text-[#00236f] font-medium hover:underline mt-5"
-        >
-          Back to sign in
-        </button>
+        <p role="status" className="font-sans text-sm text-[#757682]">{body}</p>
+        {actionLabel && onAction && (
+          <button
+            type="button"
+            onClick={onAction}
+            className="font-sans text-sm text-[#00236f] font-medium hover:underline mt-5 block mx-auto"
+          >
+            {actionLabel}
+          </button>
+        )}
+        {onSignOut && (
+          <button
+            type="button"
+            onClick={onSignOut}
+            className="font-sans text-sm text-[#757682] hover:underline mt-3 block mx-auto"
+          >
+            Sign out
+          </button>
+        )}
       </Panel>
     </div>
   );

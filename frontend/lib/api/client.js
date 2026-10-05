@@ -4,7 +4,7 @@
 import { API_BASE_URL } from '../config';
 import { TOPIC_GRAPH, TOPIC_LABELS } from '../statMap';
 import { monsterForTopic } from '../sprites/monsterSprites';
-import { getValidAccessToken } from '../auth/oidc';
+import { getValidAccessToken, logout as oidcLogout } from '../auth/oidc';
 
 const SESSION_KEY = 'prism-api-session';
 
@@ -192,6 +192,8 @@ export const auth = {
 
   logout: async () => {
     clearLiveState();
+    // No-op when there is no OIDC session (every DISABLE_AUTH deployment).
+    await oidcLogout();
     return { ok: true };
   },
 
@@ -201,6 +203,19 @@ export const auth = {
   // exists (lib/auth/oidc.js::getValidAccessToken), so request() already
   // attaches it; nothing here touches the token directly.
   registerOidcAccount: (body) => request('/auth/register', { method: 'POST', body }),
+
+  // GET /auth/me: registration status of the signed-in OIDC identity --
+  // 'not_registered' | 'pending_approval' | 'rejected' | 'approved' -- plus
+  // the roles carried by the verified token itself.
+  oidcStatus: () => request('/auth/me'),
+
+  // Binds the browser to the player an approved OIDC identity resolves to,
+  // then loads that player's profile through the normal player endpoint.
+  adoptOidcPlayer: async (playerId) => {
+    live.playerId = playerId;
+    persistLiveState();
+    return rememberPlayer(await currentPlayer());
+  },
 
   me: async () => rememberPlayer(await currentPlayer()),
 

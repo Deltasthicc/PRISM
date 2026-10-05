@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { completeLogin } from '@/lib/auth/oidc';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import Badge from '@/components/ui/Badge';
 import Panel from '@/components/ui/Panel';
@@ -17,6 +18,7 @@ function CallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLanguage();
+  const resolveOidcSession = useAuthStore((s) => s.resolveOidcSession);
   const [error, setError] = useState('');
   const attempted = useRef(false);
 
@@ -25,13 +27,15 @@ function CallbackHandler() {
     attempted.current = true;
 
     completeLogin(searchParams)
-      .then(() => {
-        // Player identity isn't known yet -- it's resolved server-side
-        // through the identity binding this account either already has or
-        // is about to request. Always land on the registration-completion
-        // screen next; it detects an already-registered account itself
-        // (see that page's own comment) rather than this page guessing.
-        router.replace('/auth/complete-registration');
+      .then(async ({ returnTo }) => {
+        // Ask the backend (GET /auth/me) who this verified identity is:
+        // an approved account with a role goes straight to where it was
+        // headed; everyone else (new, pending, rejected, or approved but
+        // not yet granted a role) lands on the screen that explains their
+        // actual state.
+        const status = await resolveOidcSession();
+        const ready = status.status === 'approved' && status.roles.length > 0;
+        router.replace(ready ? returnTo || '/' : '/auth/complete-registration');
       })
       .catch((cause) => {
         setError(cause.message || 'Sign-in failed.');

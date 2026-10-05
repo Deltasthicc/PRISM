@@ -39,6 +39,7 @@ from security.rbac import (
     decide_self_registration,
     list_pending_registrations,
     resolve_bound_principal,
+    resolve_subject_registration_status,
 )
 
 ISSUER = "https://identity.example.test/realms/sih"
@@ -259,3 +260,89 @@ def test_invalid_decision_value_rejected(db):
     )
     with pytest.raises(AuthorizationError):
         decide_self_registration(db, actor=admin, binding_id=binding.binding_id, decision="maybe")
+
+
+def test_status_for_a_subject_with_no_binding_is_not_registered(db):
+    status = resolve_subject_registration_status(db, SyntheticSubject(subject_id="never-registered"))
+    assert status.status == "not_registered"
+    assert status.player_id is None
+    assert status.roles == frozenset()
+
+
+def test_status_for_a_pending_registration(db):
+    create_self_service_registration(
+        db,
+        subject=SyntheticSubject(subject_id="pending-me-subject"),
+        username="pending_me",
+        requested_role="trainer",
+        full_name="Pending Me",
+    )
+    status = resolve_subject_registration_status(db, SyntheticSubject(subject_id="pending-me-subject"))
+    assert status.status == "pending_approval"
+    assert status.requested_role == "trainer"
+    assert status.player_id is not None
+    # No permissions implied by a pending binding -- roles stay empty even
+    # though the test subject's own token could claim anything.
+    assert status.roles == frozenset()
+
+
+def test_status_for_a_rejected_registration(db):
+    admin = _admin_principal(db)
+    binding = create_self_service_registration(
+        db,
+        subject=SyntheticSubject(subject_id="rejected-me-subject"),
+        username="rejected_me",
+        requested_role="learner",
+        full_name="Rejected Me",
+    )
+    decide_self_registration(db, actor=admin, binding_id=binding.binding_id, decision="rejected")
+
+    status = resolve_subject_registration_status(db, SyntheticSubject(subject_id="rejected-me-subject"))
+    assert status.status == "rejected"
+    assert status.player_id is not None
+
+
+def test_status_for_an_approved_registration_reports_real_roles_and_username(db):
+    admin = _admin_principal(db)
+    binding = create_self_service_registration(
+        db,
+        subject=SyntheticSubject(subject_id="approved-me-subject"),
+        username="approved_me",
+        requested_role="trainer",
+        full_name="Approved Me",
+    )
+    decide_self_registration(db, actor=admin, binding_id=binding.binding_id, decision="approved")
+
+    # Roles come only from the verified token's own claims, never from the
+    # requested_role on file -- the same boundary create_self_service_
+    # registration's docstring already establishes. Simulating a real
+    # Keycloak-granted "trainer" role being present on this subject's token.
+    status = resolve_subject_registration_status(
+        db, SyntheticSubject(subject_id="approved-me-subject", roles=frozenset({"trainer"}))
+    )
+    assert status.status == "approved"
+    assert status.username == "approved_me"
+    assert status.roles == frozenset({"trainer"})
+
+
+def test_status_for_an_approved_registration_without_a_matching_token_role_has_no_roles(db):
+    """A real, honest edge case: approval activates the local binding, but
+    the token itself still decides what roles are actually asserted. If an
+    operator never granted the matching Keycloak realm role, this subject
+    is locally active but functionally roleless until that catches up --
+    this must be reported truthfully, not papered over."""
+    admin = _admin_principal(db)
+    binding = create_self_service_registration(
+        db,
+        subject=SyntheticSubject(subject_id="approved-no-role-subject"),
+        username="approved_no_role",
+        requested_role="trainer",
+        full_name="Approved No Role",
+    )
+    decide_self_registration(db, actor=admin, binding_id=binding.binding_id, decision="approved")
+
+    status = resolve_subject_registration_status(
+        db, SyntheticSubject(subject_id="approved-no-role-subject", roles=frozenset())
+    )
+    assert status.status == "approved"
+    assert status.roles == frozenset()

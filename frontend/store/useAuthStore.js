@@ -16,6 +16,24 @@ export const useAuthStore = create(
       // login's by-username lookup) from a generic backend/network failure,
       // which `error` alone (a plain message string) can't do.
       errorCode: null,
+      // Roles asserted by the verified OIDC token (display/navigation only --
+      // the backend re-checks every permission). Empty in demo mode.
+      roles: [],
+
+      // Asks the backend who the signed-in OIDC identity is and, only when it
+      // is an approved account that actually holds a role, binds the browser
+      // to that player. Returns the raw /auth/me payload so callers can route
+      // on status ('not_registered' | 'pending_approval' | 'rejected' |
+      // 'approved'); an approved account with no role claim yet is returned
+      // un-hydrated, since it has no usable permissions to act with.
+      async resolveOidcSession() {
+        const status = await auth.oidcStatus();
+        if (status.status === 'approved' && status.player_id && status.roles.length > 0) {
+          const { player } = await auth.adoptOidcPlayer(status.player_id);
+          set({ player, isAuthenticated: true, loading: false, roles: status.roles, error: null });
+        }
+        return status;
+      },
 
       async fetchMe() {
         const isInitialLoad = !get().player;
@@ -72,7 +90,7 @@ export const useAuthStore = create(
 
       async logout() {
         await auth.logout().catch(() => {});
-        set({ player: null, isAuthenticated: false });
+        set({ player: null, isAuthenticated: false, roles: [] });
       },
 
       clearError() {
@@ -121,7 +139,7 @@ export const useAuthStore = create(
     {
       name: 'prism-auth',
       // Persist display data only; the API adapter revalidates the player on load.
-      partialize: (s) => ({ player: s.player, isAuthenticated: s.isAuthenticated }),
+      partialize: (s) => ({ player: s.player, isAuthenticated: s.isAuthenticated, roles: s.roles }),
     }
   )
 );

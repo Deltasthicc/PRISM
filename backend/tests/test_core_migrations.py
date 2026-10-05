@@ -31,7 +31,8 @@ SELF_SERVICE_REGISTRATION_REVISION = "b1c2d3e4f5a6"
 COURSES_REVISION = "d4e5f6a7b8c9"
 CERTIFICATES_AND_FEEDBACK_REVISION = "e5f6a7b8c9d0"
 COHORTS_REVISION = "f6a7b8c9d0e1"
-QUESTIONNAIRES_REVISION = "a7b8c9d0e1f2"
+CONTENT_ITEMS_REVISION = "a7b8c9d0e1f2"
+QUESTIONNAIRES_REVISION = "b8c9d0e1f2a3"
 HEAD_REVISION = QUESTIONNAIRES_REVISION
 GOVERNANCE_TABLES = {
     "audit_events",
@@ -95,10 +96,11 @@ def test_full_migration_chain_upgrades_and_downgrades_fresh_database(tmp_path):
     assert "course_feedback" in names
     assert "cohorts" in names
     assert "cohort_memberships" in names
+    assert "content_items" in names
     assert "questionnaires" in names
     assert "questionnaire_questions" in names
     assert "questionnaire_attempts" in names
-    assert len(names) == 36
+    assert len(names) == 37
 
     _run_alembic(database_url, "downgrade", "base")
     assert inspect(engine).get_table_names() == ["alembic_version"]

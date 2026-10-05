@@ -35,6 +35,9 @@ Thumbs.db
 ClaudeCode_Codex_UwU.md
 backend/data/.doc_cache/
 
+# Trainer content library uploads (untrusted user files; local-disk storage)
+backend/data/content_library/
+
 # Local Piper voice model assets
 backend/models/piper/
 

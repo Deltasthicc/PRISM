@@ -23,6 +23,7 @@ from routes.course_feedback import router as course_feedback_router
 from routes.certificates import router as certificates_router
 from routes.cohorts import router as cohorts_router
 from routes.questionnaires import router as questionnaires_router
+from routes.content_library import router as content_library_router
 from routes.proctoring import router as proctoring_router
 from routes.quiz_review import router as quiz_review_router
 from routes.judgment_scenarios import router as judgment_scenarios_router
@@ -44,6 +45,7 @@ router.include_router(course_feedback_router)
 router.include_router(certificates_router)
 router.include_router(cohorts_router)
 router.include_router(questionnaires_router)
+router.include_router(content_library_router)
 router.include_router(proctoring_router)
 router.include_router(quiz_review_router)
 router.include_router(judgment_scenarios_router)

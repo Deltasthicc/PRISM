@@ -174,6 +174,12 @@ FRONTEND_ORIGIN_REGEX = os.getenv(
     "FRONTEND_ORIGIN_REGEX", r"^https://prism-[a-z0-9-]+\.vercel\.app$"
 )
 
+# Added before CORS so CORS wraps it (middleware added last is outermost) and
+# a 411/413 rejection still carries CORS headers the browser can read.
+from services.content_storage import UploadBodyLimitMiddleware
+
+app.add_middleware(UploadBodyLimitMiddleware)
+
 # Credentialed browser requests require explicit origins.
 app.add_middleware(
     CORSMiddleware,

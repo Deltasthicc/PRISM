@@ -59,6 +59,8 @@ class Permission(StrEnum):
     COHORT_READ = "cohort.read"
     QUESTIONNAIRE_MANAGE = "questionnaire.manage"
     QUESTIONNAIRE_ATTEMPT = "questionnaire.attempt"
+    CONTENT_LIBRARY_WRITE = "content_library.write"
+    CONTENT_LIBRARY_READ = "content_library.read"
     DEPARTMENT_ANALYTICS_READ = "analytics.department.read"
     ORGANIZATION_ANALYTICS_READ = "analytics.organization.read"
     ROLE_TARGET_MANAGE = "role_target.manage"
@@ -84,6 +86,7 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.CERTIFICATE_READ,
             Permission.COURSE_FEEDBACK_WRITE,
             Permission.QUESTIONNAIRE_ATTEMPT,
+            Permission.CONTENT_LIBRARY_READ,
         }
     ),
     # Cross-learner trainer access used to be deliberately absent here
@@ -116,6 +119,8 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.COURSE_FEEDBACK_WRITE,
             Permission.COHORT_READ,
             Permission.QUESTIONNAIRE_MANAGE,
+            Permission.CONTENT_LIBRARY_READ,
+            Permission.CONTENT_LIBRARY_WRITE,
         }
     ),
     "content_reviewer": frozenset(
@@ -135,6 +140,8 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.COHORT_MANAGE,
             Permission.COHORT_READ,
             Permission.QUESTIONNAIRE_MANAGE,
+            Permission.CONTENT_LIBRARY_READ,
+            Permission.CONTENT_LIBRARY_WRITE,
         }
     ),
     "auditor": frozenset({Permission.AUDIT_READ, Permission.SUBJECT_DATA_EXPORT}),

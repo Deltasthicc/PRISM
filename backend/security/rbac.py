@@ -57,6 +57,8 @@ class Permission(StrEnum):
     COURSE_FEEDBACK_WRITE = "course_feedback.write"
     COHORT_MANAGE = "cohort.manage"
     COHORT_READ = "cohort.read"
+    ANNOUNCEMENT_MANAGE = "announcement.manage"
+    HOME_FEED_READ = "home_feed.read"
     TRAINER_EXPERTISE_MANAGE = "trainer_expertise.manage"
     TRAINER_MATCH_READ = "trainer_match.read"
     CONTENT_LIBRARY_WRITE = "content_library.write"
@@ -85,6 +87,7 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.COURSE_READ,
             Permission.CERTIFICATE_READ,
             Permission.COURSE_FEEDBACK_WRITE,
+            Permission.HOME_FEED_READ,
             Permission.CONTENT_LIBRARY_READ,
         }
     ),
@@ -116,6 +119,7 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.COURSE_MANAGE,
             Permission.CERTIFICATE_READ,
             Permission.COURSE_FEEDBACK_WRITE,
+            Permission.HOME_FEED_READ,
             Permission.COHORT_READ,
             Permission.TRAINER_EXPERTISE_MANAGE,
             Permission.CONTENT_LIBRARY_READ,
@@ -127,8 +131,10 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
     ),
     # No department key/scope exists in the schema yet. Keep the named role
     # recognized but grant it nothing until server-derived department scope
-    # and negative row-filter tests exist.
-    "department_admin": frozenset(),
+    # and negative row-filter tests exist. The only exception is
+    # HOME_FEED_READ: the home feed is organization-wide by design (audience
+    # "all"/"learner"/"trainer" only) and carries no department-scoped data.
+    "department_admin": frozenset({Permission.HOME_FEED_READ}),
     "organization_admin": frozenset(
         {
             Permission.ORGANIZATION_ANALYTICS_READ,
@@ -137,6 +143,8 @@ ROLE_PERMISSIONS: dict[str, frozenset[Permission]] = {
             Permission.SUBJECT_DATA_EXPORT,
             Permission.SUBJECT_DATA_DELETE,
             Permission.COHORT_MANAGE,
+            Permission.ANNOUNCEMENT_MANAGE,
+            Permission.HOME_FEED_READ,
             Permission.COHORT_READ,
             Permission.TRAINER_EXPERTISE_MANAGE,
             # Org-wide trainer ranking. Deliberately NOT granted to

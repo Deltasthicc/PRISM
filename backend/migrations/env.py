@@ -8,6 +8,7 @@ from alembic import context
 from db.database import Base, SQLALCHEMY_DATABASE_URL
 from models import (
     accuracy_history,
+    announcement,
     certificate,
     cohort,
     content_library,
@@ -33,6 +34,7 @@ from models import (
 
 _REGISTERED_MODEL_MODULES = (
     accuracy_history,
+    announcement,
     certificate,
     cohort,
     content_library,

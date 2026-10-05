@@ -57,25 +57,26 @@ subjects they're qualified to teach.
 ## Explicit requirement contract
 
 Numbered for use in issues/PRs/the evidence log, same convention as the superseded SIH26101 doc.
-The "Current PRISM state" column is a direct result of an independent code audit performed
-2026-09-29 (grep + direct file reads against `main` at `cec89f6`) — not an assumption.
+The "Current PRISM state" column was first written from an independent code audit on
+2026-09-29 (against `main` at `cec89f6`) and rewritten on 2026-10-05 after the features below were
+built and tested — each row names what exists and what does not.
 
 | ID | Requirement (from the supplied description) | Current PRISM state |
 |---|---|---|
-| **PS75-01** | Secure signup/login with three roles: Trainee, Trainer, Admin | **Partial.** Real roles exist in `security/rbac.py` (`learner`, `trainer`, `department_admin`, `organization_admin`) with real permission sets, but the deployed demo runs `DISABLE_AUTH=true` (documented in every existing doc), and there is no separated three-portal *frontend* experience — today's UI is one shared app surfaced differently by feature flags, not three distinct role-specific portals. |
-| **PS75-02** | Trainee profile: qualifications, work experience, interests, skills, certificates | **Partial.** `LearnerProfile` has designation, department, job role, current assignment, educational qualifications, numeric years of experience, previous trainings, career goal, preferred language. **Missing**: an `interests` field, a `certificates` field, and free-text work-experience detail beyond the numeric years count. |
+| **PS75-01** | Secure signup/login with three roles: Trainee, Trainer, Admin | **Partial.** Real OIDC verification and RBAC on 89 of 103 HTTP operations (the rest pinned with reasons in `tests/test_route_auth_inventory.py`), self-service registration with admin approval, and a role-aware work-areas navigation (Learning / Teaching / Administration). The hosted demo still runs `DISABLE_AUTH=true`, so it must not be called protected; browser sign-in routing is verified with a stubbed identity provider, not a live Keycloak realm; and a role must be granted to the account in the identity provider by hand after approval. |
+| **PS75-02** | Trainee profile: qualifications, work experience, interests, skills, certificates | **Real, self-declared.** Validated lists for qualifications, work experience, skills, interests and certificates earned elsewhere, editable in the Academy form. None of it is verified or used as competency evidence. Uploading a prior credential's document is not built. |
 | **PS75-03** | Enroll in courses | **Real.** `routes/course_enrollment.py` — a real, persisted enroll → complete lifecycle, idempotent on repeat calls. |
 | **PS75-04** | Access learning resources | **Real.** Curricula, source-cited question bank, AI-generated quizzes from uploaded material, a RAG learner assistant, and two hands-on labs. |
 | **PS75-05** | Attempt subject-wise MCQ assessments | **Real, and the strongest single match in this whole requirement list.** A source-cited competency quiz bank, AI-generated quizzes with independent per-option answer derivation (not a trusted model-stated index), and a two-stage adaptive diagnostic — all subject/topic-scoped. |
-| **PS75-06** | Provide feedback on courses and training content | **Absent.** No course/content feedback or rating mechanism exists anywhere in the schema or routes. |
-| **PS75-07** | Trainers manage their own profile | **Partial.** The same `LearnerProfile` mechanism exists for any account; there is no trainer-specific profile shape (e.g., subjects taught, qualifications-to-teach). |
-| **PS75-08** | Trainers create questionnaires with deadlines | **Partial, narrower than the ask.** `routes/quiz_review.py` lets a trainer edit and approve *AI-generated* quiz items before they publish. It does not let a trainer author a fresh questionnaire from a blank page, and there is no deadline/due-date concept anywhere in the quiz or assessment schema. |
-| **PS75-09** | Trainers monitor trainee participation and performance | **Absent by design today**, not just unbuilt — confirmed directly in `security/rbac.py`'s own comment: cross-learner trainer access is deliberately withheld "until a server-side trainer/cohort assignment model exists." The `trainer` role currently carries only `CONTENT_DRAFT_CREATE`. Admin-level aggregate analytics exist (`routes/learning_analytics.py`), but there is no per-trainer, per-assigned-cohort view. |
-| **PS75-10** | Trainer library: upload recorded lectures/presentations/study materials, accessible to trainees | **Absent as a standalone feature.** Document upload exists today only as *input to AI quiz generation* (`ai/ingestion.py`, including a real OCR pipeline for scanned/image content) — there is no browsable materials/media library independent of that quiz-generation flow. |
-| **PS75-11** | Admin: user approval, role management | **Absent (approval); partial (role management).** Any new signup is immediately active — there is no pending/approved account state anywhere. Role assignment exists at the data-model level (`identity_bindings`, `security/rbac.py`) but has no dedicated admin UI for granting/revoking a role. |
-| **PS75-12** | Admin dashboards: courses, enrollments, certifications, assessments, participation | **Mostly real.** `routes/learning_analytics.py` provides real, database-derived training-effectiveness, course-completion, activity-trend, and emerging-skill-gap analytics. **Missing**: "certifications" specifically, since no certificate concept exists anywhere in the schema. |
-| **PS75-13** | Homepage: notifications, announcements, achievements, newly added content | **Absent.** No announcement/notification model, route, or UI exists anywhere in the codebase (confirmed by an exhaustive grep, not inferred). |
-| **PS75-14** | Competency mapping to identify suitable trainers per subject | **Absent in the direction this PS asks for.** PRISM's entire competency engine maps a *learner's* demonstrated capability against a target (the reverse direction). Finding "which trainer is qualified to teach subject X" is a genuinely different query/feature that does not exist today, even though the same underlying competency taxonomy could plausibly power it. |
+| **PS75-06** | Provide feedback on courses and training content | **Real for courses.** One rating and comment per trainee per course, with an anonymized aggregate. Feedback on library items is not built. |
+| **PS75-07** | Trainers manage their own profile | **Partial.** Trainers declare expertise per competency (level, basis, years) and read a combined profile, all labelled self-declared. Availability is not modelled. |
+| **PS75-08** | Trainers create questionnaires with deadlines | **Real.** Trainer-authored MCQ questionnaires for a cohort or course with a server-clock deadline, one attempt per trainee, answers revealed only after submission, and trainer results for their own audience. Scores are not recorded as competency evidence (a separate, versioned policy decision). |
+| **PS75-09** | Trainers monitor trainee participation and performance | **Real, scoped.** Admin-created cohorts with explicit trainer ownership; a trainer sees only their own cohorts and members' enrolment and gap data, with honest zeros where there is no activity. |
+| **PS75-10** | Trainer library: upload recorded lectures/presentations/study materials, accessible to trainees | **Real, with caveats.** Upload with a type allowlist and content sniffing, a size cap enforced before parsing, attachment-only downloads, and visibility limited to enrolled trainees for course-linked items. No malware scanning or transcoding, and storage is local disk (not durable on ephemeral hosts). |
+| **PS75-11** | Admin: user approval, role management | **Partial.** Approval is real, with an audit trail and an `/admin/approvals` page that shows what the applicant declared. Granting or revoking a role happens in the identity provider by hand; there is no in-app role grant, revoke or deactivation UI. |
+| **PS75-12** | Admin dashboards: courses, enrollments, certifications, assessments, participation | **Real.** Database-derived training effectiveness, course completion, activity trend, emerging gaps, plus certificates issued, mean course rating, cohorts and pending approvals. Figures describing fewer than 5 learners (configurable) are withheld and counted. |
+| **PS75-13** | Homepage: notifications, announcements, achievements, newly added content | **Real, in-app only.** Admin-authored announcements by audience, courses created in the last 30 days, and the viewer's own recent certificates, on the home page. No push or email notifications. |
+| **PS75-14** | Competency mapping to identify suitable trainers per subject | **Partial.** A deterministic, versioned (`trainer-match-v1`) ranking from declared expertise and real teaching activity, with a visible score breakdown and an explicit NO_EVIDENCE label instead of a zero. Declared levels are self-declared. Filters and recording an administrator's decision are not built. |
 | **PS75-15** | Scalable, secure, user-friendly, accessible across devices | **Real, with the same honest caveats as everywhere else in this project's docs.** Production-shaped stack (FastAPI, PostgreSQL, Next.js, Docker, real OIDC/RBAC primitives), 1,100+ automated tests, CI with dependency/secret/SAST scanning, a responsive frontend, an 11-language UI. `DISABLE_AUTH=true` on the live demo and the absence of admin-route RBAC enforcement (see `/admin`'s own on-page disclosure) remain open, disclosed gaps — see [Known limitations](../README.md#-known-limitations). |
 
 ## What transfers directly, and what does not
@@ -85,12 +86,18 @@ the entire assessment and quiz-generation engine, including its OCR pipeline and
 safeguards; the real course enrollment lifecycle; the admin analytics engine; the production
 deployment shape (Docker backend, Vercel frontend, real CI); the 1,100+-test discipline.
 
-**Does not transfer, and needs to be built for SIH26075 specifically**: certificate issuance;
-course/content feedback collection; a homepage announcements/notifications feed; admin
-user-approval and a dedicated role-management UI; a trainer content library independent of
-quiz-generation; trainer-authored questionnaires with deadlines; cohort-scoped trainer visibility
-into "their" trainees; and trainer-to-subject competency matching (the reverse of PRISM's existing
-gap-analysis direction).
+**Built for SIH26075 specifically (2026-09-30 to 2026-10-05):** certificate issuance and public
+verification; course feedback; announcements and the home feed; admin approval with a review page;
+a trainer content library; trainer-authored questionnaires with deadlines; cohort-scoped trainer
+visibility; trainer expertise and deterministic trainer matching; structured trainee profiles; and a
+role-aware work-areas navigation.
+
+**Still not done:** a protected hosted demo (it runs with authentication bypassed); in-app role
+grant/revoke; real sign-in verified end to end in a browser against a live identity provider;
+push/email notifications; durable file storage and malware scanning for the library; filters and a
+recorded administrator decision for trainer matching; trainer availability; native-reviewed
+translations for the pages added after the original 11-language pass; a full accessibility audit;
+load testing; and a single scripted seed/reset for the demo story.
 
 ## Truth and safety constraints (carried forward from the SIH26101 doc, unchanged in spirit)
 

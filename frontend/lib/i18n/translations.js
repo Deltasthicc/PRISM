@@ -341,6 +341,8 @@ export const TRANSLATIONS = {
       "quizzesGenerated": "Quizzes generated",
       "topSkillGaps": "TOP SKILL GAPS ACROSS THE ORGANIZATION",
       "noAssessments": "No assessments have been run yet.",
+      "suppressedHeading": "Small groups are hidden",
+      "suppressedBody": "To protect individual learners, any figure based on fewer than the minimum group size is withheld. Minimum group size: {min}. Figures withheld: {count}.",
       "learner": "learner",
       "learnerPlural": "learners",
       "gapPriorityBreakdown": "GAP PRIORITY BREAKDOWN",

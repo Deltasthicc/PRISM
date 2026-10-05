@@ -3,15 +3,15 @@
 Owner: Lane 6 (Quality, Security, Release & Evidence) — `docs/internal/SIH26075_TEAM_ORCHESTRATION.md`
 section 2.
 
-Empty scaffold. No end-to-end test tooling is installed in this repository yet. The next real
-step here (`SIH26075_MASTER_CHECKLIST.md`, P0 golden path) is:
+The browser tests live in [`frontend/e2e/`](../frontend/e2e) so they can use the frontend's own
+`@playwright/test` install. Run them with `npm run build && npm run test:e2e` from `frontend/`; CI
+runs them in the `frontend-checks` job.
 
-- Add Playwright (or an equivalent browser-automation tool) as a frontend/dev dependency.
-- Cover the cross-domain browser smoke: Academy -> each of the four domains -> room renders ->
-  one answer submits -> progress returns.
-- Cover refresh, back navigation, double submit, missing API, empty data and a second learner.
-- Wire the resulting suite into `.github/workflows/ci.yml` as a job — it is deliberately absent
-  from that workflow today; see the comment at the top of that file.
+What exists: sign-in routing for every registration state, skip link, document language and
+direction, and onboarding-dialog focus handling. **Every backend and identity-provider call in
+those specs is stubbed**, so they prove frontend behaviour, not integration.
 
-Do not claim E2E coverage exists in README.md or the master checklist until a real suite runs
-here and its command/result is recorded in the final SIH26075 requirement evidence map.
+Still open (do not claim): a suite against a live backend and Keycloak; the Academy → quiz →
+progress golden path; refresh, back-navigation, double-submit, missing-API and second-learner
+cases; automated accessibility scanning. Record any real run's command and result in the final
+SIH26075 requirement evidence map.

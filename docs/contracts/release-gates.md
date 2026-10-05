@@ -20,7 +20,8 @@ manual evidence in section 2 has been recorded for anything section 1 cannot see
 | Dependency audit | `backend-tests` | `pip-audit -r requirements.txt` finds no known vulnerable pin. New advisories can turn an unrelated PR red; fix by bumping the pin and re-running the affected tests. | Vulnerabilities in the frontend dependency tree. |
 | API contract | `backend-tests` (`tests/test_openapi_contract.py`) | `docs/contracts/openapi.json` equals the document generated from the running app. Regenerate with `python -m scripts.export_openapi` from `backend/`. The voice and dev-login routers are excluded so the file is identical in every environment. | That a documented route behaves correctly. |
 | Contract well-formedness | `contract-checks` | `openapi.json` parses as JSON. | Anything else; the drift check above is the meaningful one. |
-| Frontend lint and build | `frontend-checks` | `npm run lint` and `npm run build` succeed. | Rendered behaviour, accessibility, or any user flow. |
+| Frontend lint, unit tests and build | `frontend-checks` | `npm run lint`, `npm test` (Vitest: PKCE, OIDC token handling, auth-store routing, translation integrity) and `npm run build` succeed. | Rendered behaviour of any component. |
+| Frontend browser tests | `frontend-checks` | `npm run test:e2e` (Playwright, Chromium, against the production build): sign-in routing for every registration state, skip link, document language/direction, onboarding dialog focus handling. | Integration with a live backend or Keycloak (both are stubbed in `frontend/e2e/support.js`); learner golden-path flows; a full accessibility audit. |
 | Secret scan | `security-checks` | `gitleaks` finds no hard-coded secret in history. | Secrets that are not pattern-detectable. |
 | Static analysis | `sast` | Semgrep (`--config=auto --error`) is clean, with one documented rule exclusion (see the workflow). | Logic and authorization flaws. |
 
@@ -39,9 +40,9 @@ These cannot be inferred from CI. Record the exact command, count, date and oper
 
 ## 3. Not implemented (do not claim)
 
-- Automated browser end-to-end suite (the `e2e/` directory is a scaffold with no passing test).
-- Frontend unit or component tests.
-- Automated accessibility audit, and keyboard / screen-reader sign-off.
+- A browser suite that runs against a live backend and identity provider, and any Academy → quiz → progress golden-path flow.
+- Frontend component-level tests.
+- A full automated accessibility audit, and screen-reader sign-off.
 - Load, soak or failover testing.
 - DAST and software bill of materials.
 - Any deployment, rollback or environment-promotion automation.

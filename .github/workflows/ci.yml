@@ -11,13 +11,14 @@ on:
 # gates is docs/contracts/release-gates.md.
 #
 # What this currently covers: backend pytest against PostgreSQL (including the generated-OpenAPI
-# drift test) + a real `pip-audit` dependency scan, frontend lint + production build, a JSON
-# well-formedness check on docs/contracts/openapi.json, a `gitleaks` hardcoded-secret scan, and a
-# Semgrep SAST pass.
+# drift test) + a real `pip-audit` dependency scan, frontend lint + Vitest unit tests + production
+# build + Playwright browser tests (API and identity provider stubbed), a JSON well-formedness
+# check on docs/contracts/openapi.json, a `gitleaks` hardcoded-secret scan, and a Semgrep SAST pass.
 #
 # What this deliberately does NOT cover yet (open items, not silently skipped):
-#   - Browser end-to-end smoke tests -- Playwright is not installed in this repo; e2e/ is a scaffold.
-#   - Frontend unit/component tests and automated accessibility checks.
+#   - Browser tests against a live backend/Keycloak (the Playwright specs stub both), and any
+#     Academy -> quiz -> progress golden-path browser flow.
+#   - Component-level tests and a full automated accessibility audit.
 #   - DAST and an SBOM -- nothing here does dynamic scanning or generates a bill of materials.
 #   - Any deployment step -- there is no deploy target defined yet (see /deploy).
 
@@ -86,8 +87,19 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Unit tests
+        run: npm test
+
       - name: Production build
         run: npm run build
+
+      # Browser tests run against the production build above with the API and
+      # identity provider stubbed inside each spec (frontend/e2e/support.js).
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser tests
+        run: npm run test:e2e
 
   contract-checks:
     runs-on: ubuntu-latest

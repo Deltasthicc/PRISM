@@ -47,3 +47,15 @@ export async function arriveFromIdentityProvider(page) {
   );
   await page.goto('/auth/callback?code=abc&state=state-1');
 }
+
+// A signed-in browser session without going through sign-in, for specs that
+// are about a page rather than about authentication.
+export async function seedSession(page, { onboardingSeen = true } = {}) {
+  await page.addInitScript(
+    ({ player, onboardingSeen }) => {
+      localStorage.setItem('prism-auth', JSON.stringify({ state: { player, isAuthenticated: true, roles: [] }, version: 0 }));
+      if (onboardingSeen) localStorage.setItem('prism_onboarding_seen', '1');
+    },
+    { player: PLAYER, onboardingSeen }
+  );
+}

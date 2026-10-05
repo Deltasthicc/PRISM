@@ -540,3 +540,82 @@ def test_invalid_minimum_setting_falls_back_to_the_safe_default(monkeypatch):
     assert _min_group_size() == 5
     monkeypatch.setenv("ANALYTICS_MIN_GROUP_SIZE", "0")
     assert _min_group_size() == 1
+
+
+def _make_course(db, trainer_id: str, title: str = "Course") -> str:
+    from models.course import Course
+
+    course = Course(trainer_id=trainer_id, title=title, competency_id="os_gis", is_published=True)
+    db.add(course)
+    db.commit()
+    return course.course_id
+
+
+def test_platform_activity_counts_certificates_feedback_cohorts_and_pending(monkeypatch):
+    from models.certificate import Certificate
+    from models.cohort import Cohort, CohortMembership
+    from models.feedback import CourseFeedback
+    from models.identity import IdentityBinding
+
+    monkeypatch.setenv("ANALYTICS_MIN_GROUP_SIZE", "2")
+    db = _db()
+    trainer = _make_player(db, "trainer-1")
+    learners = [_make_player(db, f"learner-{i}") for i in range(3)]
+    course_id = _make_course(db, trainer)
+
+    db.add_all([
+        Certificate(player_id=learners[0], course_id=course_id, title="C"),
+        Certificate(player_id=learners[0], course_id="another", title="C2"),
+        Certificate(player_id=learners[1], course_id=course_id, title="C", revoked=True),
+        CourseFeedback(player_id=learners[0], course_id=course_id, rating=5),
+        CourseFeedback(player_id=learners[1], course_id=course_id, rating=4),
+    ])
+    cohort = Cohort(name="Batch A", trainer_id=trainer)
+    db.add(cohort)
+    db.flush()
+    db.add_all([
+        CohortMembership(cohort_id=cohort.cohort_id, player_id=learners[0]),
+        CohortMembership(cohort_id=cohort.cohort_id, player_id=learners[2]),
+    ])
+    db.add_all([
+        IdentityBinding(binding_id="b-pending", issuer="https://i", subject_id="s1", player_id=None,
+                        active=False, requested_role="learner"),
+        IdentityBinding(binding_id="b-done", issuer="https://i", subject_id="s2", player_id=None,
+                        active=True, requested_role="learner", registration_decision="approved"),
+    ])
+    db.commit()
+
+    body = TestClient(_app(db)).get("/learning/admin/overview").json()
+
+    assert body["certificates"] == {"issued": 2, "distinct_learners": 1}  # revoked excluded
+    assert body["course_feedback"] == {"ratings": 2, "distinct_raters": 2, "mean_rating": 4.5}
+    assert body["cohorts"] == {"cohorts": 1, "learners_in_a_cohort": 2}
+    assert body["pending_registrations"] == 1
+    assert body["suppressed"]["course_feedback"] == 0
+
+
+def test_mean_feedback_rating_is_withheld_below_the_minimum_group(monkeypatch):
+    from models.feedback import CourseFeedback
+
+    monkeypatch.delenv("ANALYTICS_MIN_GROUP_SIZE", raising=False)
+    db = _db()
+    trainer = _make_player(db, "trainer-2")
+    course_id = _make_course(db, trainer)
+    for i in range(4):
+        db.add(CourseFeedback(player_id=_make_player(db, f"rater-{i}"), course_id=course_id, rating=3))
+    db.commit()
+
+    body = TestClient(_app(db)).get("/learning/admin/overview").json()
+
+    assert body["course_feedback"]["ratings"] == 4
+    assert body["course_feedback"]["mean_rating"] is None
+    assert body["suppressed"]["course_feedback"] == 1
+
+
+def test_platform_activity_is_honestly_zero_on_an_empty_platform():
+    db = _db()
+    body = TestClient(_app(db)).get("/learning/admin/overview").json()
+    assert body["certificates"] == {"issued": 0, "distinct_learners": 0}
+    assert body["course_feedback"]["mean_rating"] is None
+    assert body["cohorts"] == {"cohorts": 0, "learners_in_a_cohort": 0}
+    assert body["pending_registrations"] == 0

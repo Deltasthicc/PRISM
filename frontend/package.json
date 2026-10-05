@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint app components lib store --ext .js,.jsx",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:live": "playwright test -c playwright.live.config.js"
   },
   "dependencies": {
     "@codemirror/commands": "^6.11.0",

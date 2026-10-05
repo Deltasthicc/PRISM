@@ -59,24 +59,18 @@ Quest XP, power-ups, heroes, guilds and combat never determine competency profic
 
 ## Current verified baseline
 
-**This section is stale (last updated ~2026-09-03) and describes an early snapshot of the
+**Most of this section is stale (last updated ~2026-09-03, with a 2026-10-05 note on route
+authorization) and describes an early snapshot of the
 codebase, not its current state — README.md has been the actively-maintained source of truth since.
 Treat every number below as historical, not current, until this section is itself refreshed.**
 
 - FastAPI + SQLAlchemy backend; PostgreSQL/Alembic is the migration-managed target, SQLite remains
-  a documented local zero-setup demo profile only. As of Package W (2026-09-03), `pytest -q`
-  reports **442 passed with PostgreSQL stopped and 6 opt-in tests skipped**, and **448 passed with
-  the local `docker-compose.dev.yml` PostgreSQL healthy**. Package W's deterministic read facade,
-  privacy-safe status command and cross-lane integration guide are on `main`; the final
-  legacy-column count repair at `8d0d1de` awaits Claude's immutable review. Both counts are correct,
-  they are not a discrepancy; re-run before repeating either, it changes often. `pytest --cov=db
-  --cov=models --cov=schemas --cov=security --cov=scripts` (requires `pytest-cov`, now in
-  `requirements-dev.txt`) reports 94% line coverage across Lane 2-owned code, up from 84% before
-  this pass — `db/database.py` went from 74% to 100%, and every file that was previously at 0%
-  (`db/seed.py`, `schemas/accuracy.py`, `schemas/learning.py`, `schemas/question.py`) now has
-  direct tests. Prior
-  snapshots in this file's history (267, 299, 337, 339, 341/345, 347) were each taken mid-edit or
-  before a subsequent fix, so treat any count here as a snapshot to re-verify, not a citation.
+  a documented local zero-setup demo profile only. Test counts change constantly, so none are
+  quoted here: README.md's "Tests" section holds the current numbers (backend pytest, Vitest, the
+  stubbed Playwright suite and the manual `npm run test:live` journeys), and an old figure in this
+  file has already misled once. Re-run before repeating any count. `.github/workflows/ci.yml` runs
+  backend tests against PostgreSQL, dependency/secret/SAST scans, and the frontend lint, unit,
+  build and browser checks; confirm a green run on the merge commit before claiming one.
   `.github/workflows/ci.yml` exists, but no run
   against this branch is evidenced (`gh run list --branch <this-branch>` returns nothing as of this
   writing) — do not claim a green CI run without checking.

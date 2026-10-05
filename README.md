@@ -67,17 +67,22 @@ lives in [`docs/SIH26075_PROBLEM_STATEMENT.md`](docs/SIH26075_PROBLEM_STATEMENT.
 - The entire assessment/quiz-generation engine — source-cited questions, AI-generated quizzes from uploaded material (with OCR for scanned pages), a two-stage adaptive diagnostic — is a strong, direct match for "attempt subject-wise MCQ assessments."
 - A real, persisted course enrollment lifecycle (`routes/course_enrollment.py`).
 - Real admin analytics — training-effectiveness, course-completion, activity-trend, emerging-skill-gap dashboards (`routes/learning_analytics.py`).
-- The production deployment shape (Docker backend, Vercel frontend, real CI, 1,100+ tests) and the trainer content-review/edit-before-approve workflow (`routes/quiz_review.py`).
+- The production deployment shape (Docker backend, Vercel frontend, real CI, 1,400+ tests) and the trainer content-review/edit-before-approve workflow (`routes/quiz_review.py`).
 
-**Does not exist yet, and is not described as built anywhere in this README** — confirmed absent by
-grepping the backend, not assumed:
-- Certificate issuance; course/content feedback collection.
-- A homepage announcements/notifications/achievements feed.
-- Admin user-approval (every signup is immediately active today) and a dedicated role-management UI.
-- A standalone trainer content library — document upload today feeds AI quiz generation only, not a browsable materials repository.
-- Trainer-authored questionnaires with deadlines — today's trainer workflow reviews/edits *AI-generated* items, it doesn't author a fresh questionnaire from a blank page, and there's no due-date concept anywhere in the schema.
-- Cohort-scoped trainer visibility into "their" trainees — `security/rbac.py`'s own comment says this is deliberately withheld until a trainer/cohort assignment model exists.
-- Trainer-to-subject competency matching — PRISM's competency engine maps a *learner's* gaps against a target; SIH26075 asks for the reverse direction (finding a qualified trainer for a subject), which is a genuinely different, unbuilt feature.
+**Built for SIH26075 since the pivot** (each with tests; see the requirement table for exact limits):
+- Certificates issued on course completion, with public verification by code; one-per-trainee course feedback with an anonymized aggregate.
+- Self-service registration with admin approval (`/admin/approvals`), and `GET /auth/me` so a returning user lands on the right screen.
+- Cohorts with explicit trainer ownership and a trainer-scoped performance view.
+- Trainer-authored questionnaires with server-clock deadlines, one attempt per trainee, and trainer results.
+- A trainer content library (type allowlist, size cap, attachment-only downloads) that trainees browse and download.
+- Admin announcements and an in-app home feed; certificates, ratings, cohorts and pending approvals on the admin dashboard, with small-group suppression.
+- Trainer expertise and a deterministic, explainable trainer-matching ranking that labels missing evidence `NO_EVIDENCE` instead of scoring it zero.
+- A structured, self-declared trainee profile; a role-aware work-areas navigation; a skip link, document language/direction, and a keyboard-trapped dialog.
+
+**Still not done, and not claimed:**
+- A protected hosted demo: it runs with `DISABLE_AUTH=true`. Real sign-in is verified in a browser only against a stubbed identity provider, and an approved user's role must be granted in the identity provider by hand (no in-app role grant/revoke).
+- Push or email notifications; durable file storage, malware scanning or transcoding for the library; trainer availability; filters and a recorded administrator decision for trainer matching.
+- Native-speaker review and translation of the pages added after the original 11-language pass; a full accessibility audit; load testing; PostgreSQL drills for the newest migrations.
 
 ## 🔐 Auth model — read this before you judge the security
 
@@ -385,8 +390,8 @@ Then open `http://localhost:3000`.
 
 ## 🧪 Tests & CI
 
-- **1,102 backend tests** (1,102 passed, 25 skipped locally; pytest), run against a real `postgres:16` service container in CI. Includes a deterministic regression test for the concurrent-registration race described in [Reliability hardening](#-reliability-hardening-from-a-real-audit) — it forces the exact interleaving rather than relying on real thread timing, and fails with the actual `IntegrityError` against the pre-fix code.
-- **Frontend tests** (added 2026-10-05): 28 Vitest unit tests (`npm test` — PKCE against the RFC 7636 vector, the OIDC token/refresh/logout flow, the auth store's sign-in routing, translation integrity) and 12 Playwright browser tests (`npm run test:e2e` — sign-in routing for every registration state, skip link, document language/direction, the onboarding dialog). The browser tests run against the production build with the API and identity provider **stubbed inside each spec**, so they prove frontend behaviour, not integration with a live backend or Keycloak. There are no component-level tests and no Academy → quiz → progress browser flow yet.
+- **1,403 backend tests** (1,403 passed, 25 skipped locally on 2026-10-05, plus 3 OCR tests that need the `tesseract` binary CI installs; pytest), run against a real `postgres:16` service container in CI. Includes a deterministic regression test for the concurrent-registration race described in [Reliability hardening](#-reliability-hardening-from-a-real-audit) — it forces the exact interleaving rather than relying on real thread timing, and fails with the actual `IntegrityError` against the pre-fix code.
+- **Frontend tests** (added 2026-10-05): 73 Vitest unit tests (`npm test` — PKCE against the RFC 7636 vector, the OIDC token/refresh/logout flow, the auth store's sign-in routing, translation integrity) and 29 Playwright browser tests (`npm run test:e2e` — sign-in routing for every registration state, skip link, document language/direction, the onboarding dialog). The browser tests run against the production build with the API and identity provider **stubbed inside each spec**, so they prove frontend behaviour, not integration with a live backend or Keycloak. A separate manual suite, `npm run test:live`, runs 8 journeys against a real backend and the production frontend (authentication bypassed, SQLite) with nothing stubbed. There are no component-level tests, and nothing exercises real sign-in or PostgreSQL in a browser.
 - [`ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`:
   - `backend-tests` — `pip-audit` + full pytest suite against Postgres (installs `tesseract-ocr` first, so the OCR tests run against the real binary, not a mock)
   - `frontend-checks` — lint + Vitest unit tests + production build + Playwright browser tests (stubbed backend)
@@ -434,7 +439,7 @@ backend/
   models/            SQLAlchemy models (players, learning, governance, dungeon, guild, live_session, ...)
   security/          Real OIDC identity + RBAC (untouched by the demo bypass)
   migrations/        Alembic migrations
-  tests/             1,102 pytest tests
+  tests/             1,400+ pytest tests
 
 frontend/
   app/           Next.js App Router pages (see the real-vs-mockup table above); most routes have a

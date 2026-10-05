@@ -5044,7 +5044,7 @@
     },
     "/learning/admin/overview": {
       "get": {
-        "description": "Aggregate-only dashboard using the latest assessment per learner stream.",
+        "description": "Aggregate-only dashboard using the latest assessment per learner stream.\n\nGroups smaller than `min_group_size` distinct learners are withheld and\ntallied under `suppressed`, so a published row never singles a person\nout.",
         "operationId": "admin_overview_learning_admin_overview_get",
         "parameters": [
           {

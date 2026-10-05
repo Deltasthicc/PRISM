@@ -10,6 +10,8 @@ import { game, learning } from '@/lib/api/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { invalidateLearnerData } from '@/lib/invalidateLearnerData';
+import { EMPTY_STRUCTURED, cleanStructured, structuredProblem } from '@/lib/profileForm';
+import ProfileCredentials from '@/components/ProfileCredentials';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -27,6 +29,7 @@ const EMPTY_PROFILE = {
   preferred_language: 'English',
   experience_level: 'beginner',
   target_domains: [],
+  ...EMPTY_STRUCTURED,
 };
 
 const LINK_BUTTON_CLASS = [
@@ -107,11 +110,17 @@ export default function AcademyHub() {
 
   async function saveProfile(event) {
     event.preventDefault();
+    const problem = structuredProblem(profile);
+    if (problem) {
+      setError(problem);
+      return;
+    }
     setWorking('profile');
     setError('');
     try {
       const result = await learning.updateProfile(player.player_id, {
         ...profile,
+        ...cleanStructured(profile),
         years_experience: Number(profile.years_experience) || 0,
         target_domains: Array.from(new Set([selectedSlug, ...(profile.target_domains || [])])),
         previous_trainings: Array.isArray(profile.previous_trainings) ? profile.previous_trainings : [],
@@ -177,6 +186,7 @@ export default function AcademyHub() {
           <Input id="preferred-language" label={t('academy.preferredLanguageLabel')} value={profile.preferred_language || 'English'} onChange={(event) => setProfile({ ...profile, preferred_language: event.target.value })} placeholder="English" />
           <Input id="qualifications" label={t('academy.qualificationsLabel')} textarea rows="3" value={profile.educational_qualifications || ''} onChange={(event) => setProfile({ ...profile, educational_qualifications: event.target.value })} placeholder="Degrees, certifications, or equivalent experience" />
           <Input id="career-goal" label={t('academy.careerGoalLabel')} textarea rows="3" value={profile.career_goal || ''} onChange={(event) => setProfile({ ...profile, career_goal: event.target.value })} placeholder="What should this pathway help you do?" />
+          <ProfileCredentials key={profile.profile_id || 'new-profile'} profile={profile} onChange={setProfile} />
           <div className="md:col-span-2">
             <Button type="submit" disabled={working === 'profile'}>
               {working === 'profile' ? t('academy.savingButton') : profile.profile_id ? t('academy.saveProfileButton') : t('academy.createProfileButton')}

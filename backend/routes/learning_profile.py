@@ -13,6 +13,10 @@ from services.curricula import get_curriculum
 
 router = APIRouter(prefix="/learning", tags=["Learning Profile"])
 
+OPTIONAL_STRUCTURED_FIELDS = frozenset(
+    {"qualifications", "work_experience", "interests", "skills", "external_certificates"}
+)
+
 
 @router.get("/profile/{player_id}")
 async def get_profile(
@@ -49,6 +53,8 @@ async def upsert_profile(
         profile = LearnerProfile(player_id=player_id)
         db.add(profile)
     for field, value in body.model_dump().items():
+        if field in OPTIONAL_STRUCTURED_FIELDS and value is None:
+            continue
         setattr(profile, field, value)
     db.commit()
     db.refresh(profile)

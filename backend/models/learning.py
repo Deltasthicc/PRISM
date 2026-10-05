@@ -57,6 +57,14 @@ class LearnerProfile(Base):
     experience_level = Column(String, default="beginner")  # beginner | intermediate | advanced | expert
     target_domains = Column(JSON, default=list)  # curriculum slugs (services/curricula.py) this learner is pursuing
 
+    # Structured, self-declared and unverified (SIH26075 PS75-02). Shapes are
+    # validated in schemas/learning.py; nothing here is evidence of competency.
+    qualifications = Column(JSON, default=list)  # [{degree, institution, year}]
+    work_experience = Column(JSON, default=list)  # [{title, organization, start_year, end_year, description}]
+    interests = Column(JSON, default=list)  # [str]
+    skills = Column(JSON, default=list)  # [str]
+    external_certificates = Column(JSON, default=list)  # [{name, issuer, year, credential_id}] earned elsewhere
+
     updated_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

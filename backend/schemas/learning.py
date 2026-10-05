@@ -4,7 +4,68 @@ models/learning.py the same way schemas/player.py mirrors models/player.py.
 """
 from __future__ import annotations
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
+
+
+_MAX_STRUCTURED_ENTRIES = 30
+_YEAR = Field(None, ge=1950, le=2100)
+
+
+def _stripped(value: str) -> str:
+    return value.strip() if isinstance(value, str) else value
+
+
+class QualificationEntry(BaseModel):
+    degree: str = Field(..., min_length=1, max_length=200)
+    institution: str = Field("", max_length=200)
+    year: int | None = _YEAR
+
+    _strip = field_validator("degree", "institution", mode="before")(_stripped)
+
+
+class WorkExperienceEntry(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200)
+    organization: str = Field("", max_length=200)
+    start_year: int | None = _YEAR
+    end_year: int | None = _YEAR
+    description: str = Field("", max_length=1000)
+
+    _strip = field_validator("title", "organization", "description", mode="before")(_stripped)
+
+    @model_validator(mode="after")
+    def _years_in_order(self) -> "WorkExperienceEntry":
+        if self.start_year and self.end_year and self.end_year < self.start_year:
+            raise ValueError("end_year must not be before start_year.")
+        return self
+
+
+class ExternalCertificateEntry(BaseModel):
+    """A credential earned outside this platform, as declared by the learner.
+    It is not verified and is never confused with certificates PRISM issues."""
+
+    name: str = Field(..., min_length=1, max_length=200)
+    issuer: str = Field("", max_length=200)
+    year: int | None = _YEAR
+    credential_id: str = Field("", max_length=100)
+
+    _strip = field_validator("name", "issuer", "credential_id", mode="before")(_stripped)
+
+
+def _short_strings(value: list[str] | None, limit: int) -> list[str] | None:
+    if value is None:
+        return None
+    if len(value) > limit:
+        raise ValueError(f"List has too many entries (max {limit}).")
+    cleaned: list[str] = []
+    for item in value:
+        text = str(item).strip()
+        if not text:
+            continue
+        if len(text) > 80:
+            raise ValueError("Each entry must be 80 characters or fewer.")
+        if text.lower() not in {existing.lower() for existing in cleaned}:
+            cleaned.append(text)
+    return cleaned
 
 
 class LearnerProfileUpsert(BaseModel):
@@ -27,6 +88,25 @@ class LearnerProfileUpsert(BaseModel):
     preferred_language: str = "English"
     experience_level: str = Field("beginner", pattern="^(beginner|intermediate|advanced|expert)$")
     target_domains: list[str] = Field(default_factory=list)
+
+    # Structured PS75-02 fields. None means "not sent": a client that predates
+    # them (or omits them) must not wipe what the learner already saved, so
+    # the route only writes the ones that are present. An empty list clears.
+    qualifications: list[QualificationEntry] | None = Field(None, max_length=_MAX_STRUCTURED_ENTRIES)
+    work_experience: list[WorkExperienceEntry] | None = Field(None, max_length=_MAX_STRUCTURED_ENTRIES)
+    interests: list[str] | None = None
+    skills: list[str] | None = None
+    external_certificates: list[ExternalCertificateEntry] | None = Field(None, max_length=_MAX_STRUCTURED_ENTRIES)
+
+    @field_validator("interests")
+    @classmethod
+    def _interests(cls, value: list[str] | None) -> list[str] | None:
+        return _short_strings(value, 30)
+
+    @field_validator("skills")
+    @classmethod
+    def _skills(cls, value: list[str] | None) -> list[str] | None:
+        return _short_strings(value, 50)
 
     @field_validator("previous_trainings", "target_domains")
     @classmethod

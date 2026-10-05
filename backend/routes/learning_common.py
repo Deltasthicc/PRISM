@@ -31,6 +31,11 @@ def serialize_profile(profile: LearnerProfile) -> dict:
         "preferred_language": profile.preferred_language or "English",
         "experience_level": profile.experience_level or "beginner",
         "target_domains": profile.target_domains or [],
+        "qualifications": profile.qualifications or [],
+        "work_experience": profile.work_experience or [],
+        "interests": profile.interests or [],
+        "skills": profile.skills or [],
+        "external_certificates": profile.external_certificates or [],
         "updated_at": profile.updated_at.isoformat() if profile.updated_at else None,
     }
 

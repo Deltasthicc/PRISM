@@ -46,3 +46,7 @@ backend/scripts/voice_finetuning/audio/
 backend/scripts/voice_finetuning/manifest_*.jsonl
 backend/scripts/voice_finetuning/whisper-domain-finetuned/
 backend/scripts/voice_finetuning/whisper-domain-finetuned-ct2/
+
+# Playwright output
+frontend/test-results/
+frontend/playwright-report/

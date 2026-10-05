@@ -86,8 +86,19 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Unit tests
+        run: npm test
+
       - name: Production build
         run: npm run build
+
+      # Browser tests run against the production build above with the API and
+      # identity provider stubbed inside each spec (frontend/e2e/support.js).
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser tests
+        run: npm run test:e2e
 
   contract-checks:
     runs-on: ubuntu-latest

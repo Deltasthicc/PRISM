@@ -612,6 +612,44 @@
         "title": "CreateSessionRequest",
         "type": "object"
       },
+      "DeclaredFacts": {
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "basis_detail": {
+            "title": "Basis Detail",
+            "type": "string"
+          },
+          "declared_level": {
+            "title": "Declared Level",
+            "type": "integer"
+          },
+          "self_declared": {
+            "title": "Self Declared",
+            "type": "boolean"
+          },
+          "verified": {
+            "title": "Verified",
+            "type": "boolean"
+          },
+          "years_teaching": {
+            "title": "Years Teaching",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "declared_level",
+          "basis",
+          "basis_detail",
+          "years_teaching",
+          "self_declared",
+          "verified"
+        ],
+        "title": "DeclaredFacts",
+        "type": "object"
+      },
       "DifficultyBreakdown": {
         "properties": {
           "accuracy": {
@@ -1005,6 +1043,116 @@
           "title"
         ],
         "title": "EnrollRequest",
+        "type": "object"
+      },
+      "ExpertiseResponse": {
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "basis_detail": {
+            "title": "Basis Detail",
+            "type": "string"
+          },
+          "competency_id": {
+            "title": "Competency Id",
+            "type": "string"
+          },
+          "competency_label": {
+            "title": "Competency Label",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "declared_level": {
+            "title": "Declared Level",
+            "type": "integer"
+          },
+          "expertise_id": {
+            "title": "Expertise Id",
+            "type": "string"
+          },
+          "self_declared": {
+            "default": true,
+            "title": "Self Declared",
+            "type": "boolean"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "verified": {
+            "default": false,
+            "title": "Verified",
+            "type": "boolean"
+          },
+          "years_teaching": {
+            "title": "Years Teaching",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "expertise_id",
+          "trainer_id",
+          "competency_id",
+          "competency_label",
+          "declared_level",
+          "basis",
+          "basis_detail",
+          "years_teaching",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ExpertiseResponse",
+        "type": "object"
+      },
+      "ExpertiseUpsertRequest": {
+        "properties": {
+          "basis": {
+            "enum": [
+              "degree",
+              "certification",
+              "experience",
+              "other"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "basis_detail": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Basis Detail",
+            "type": "string"
+          },
+          "declared_level": {
+            "description": "Self-declared teaching proficiency, 1-5",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Declared Level",
+            "type": "integer"
+          },
+          "years_teaching": {
+            "default": 0,
+            "maximum": 80.0,
+            "minimum": 0.0,
+            "title": "Years Teaching",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "declared_level",
+          "basis"
+        ],
+        "title": "ExpertiseUpsertRequest",
         "type": "object"
       },
       "FeedbackResponse": {
@@ -1424,6 +1572,64 @@
           "selected_index"
         ],
         "title": "LiveAnswerRequest",
+        "type": "object"
+      },
+      "MatchFacts": {
+        "properties": {
+          "declared": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeclaredFacts"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "learners_completed": {
+            "title": "Learners Completed",
+            "type": "integer"
+          },
+          "mean_rating": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Rating"
+          },
+          "mean_rating_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Rating Reason"
+          },
+          "published_courses": {
+            "title": "Published Courses",
+            "type": "integer"
+          },
+          "rating_count": {
+            "title": "Rating Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "declared",
+          "published_courses",
+          "learners_completed",
+          "rating_count",
+          "mean_rating",
+          "mean_rating_reason"
+        ],
+        "title": "MatchFacts",
         "type": "object"
       },
       "MeResponse": {
@@ -2387,6 +2593,59 @@
         "title": "RoomResponse",
         "type": "object"
       },
+      "ScoreComponent": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "fraction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fraction"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "number"
+          },
+          "raw_value": {
+            "title": "Raw Value"
+          },
+          "weight": {
+            "title": "Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "weight",
+          "fraction",
+          "points",
+          "available",
+          "note"
+        ],
+        "title": "ScoreComponent",
+        "type": "object"
+      },
       "SessionStartRequest": {
         "properties": {
           "dungeon_id": {
@@ -2716,6 +2975,212 @@
           "question_count"
         ],
         "title": "TopicSummary",
+        "type": "object"
+      },
+      "TrainerExpertiseListResponse": {
+        "properties": {
+          "expertise": {
+            "items": {
+              "$ref": "#/components/schemas/ExpertiseResponse"
+            },
+            "title": "Expertise",
+            "type": "array"
+          },
+          "notice": {
+            "title": "Notice",
+            "type": "string"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trainer_id",
+          "notice",
+          "expertise"
+        ],
+        "title": "TrainerExpertiseListResponse",
+        "type": "object"
+      },
+      "TrainerMatch": {
+        "properties": {
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreComponent"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "evidence_level": {
+            "enum": [
+              "DECLARED_ONLY",
+              "DECLARED_AND_ACTIVITY",
+              "ACTIVITY_ONLY",
+              "NO_EVIDENCE"
+            ],
+            "title": "Evidence Level",
+            "type": "string"
+          },
+          "facts": {
+            "$ref": "#/components/schemas/MatchFacts"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "rationale": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rationale",
+            "type": "array"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rank",
+          "trainer_id",
+          "username",
+          "full_name",
+          "evidence_level",
+          "score",
+          "components",
+          "facts",
+          "rationale"
+        ],
+        "title": "TrainerMatch",
+        "type": "object"
+      },
+      "TrainerMatchResponse": {
+        "properties": {
+          "competency_id": {
+            "title": "Competency Id",
+            "type": "string"
+          },
+          "competency_label": {
+            "title": "Competency Label",
+            "type": "string"
+          },
+          "declared_max_points": {
+            "title": "Declared Max Points",
+            "type": "number"
+          },
+          "max_points": {
+            "title": "Max Points",
+            "type": "integer"
+          },
+          "min_ratings_for_mean": {
+            "title": "Min Ratings For Mean",
+            "type": "integer"
+          },
+          "notice": {
+            "title": "Notice",
+            "type": "string"
+          },
+          "policy_version": {
+            "title": "Policy Version",
+            "type": "string"
+          },
+          "trainers": {
+            "items": {
+              "$ref": "#/components/schemas/TrainerMatch"
+            },
+            "title": "Trainers",
+            "type": "array"
+          },
+          "weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Weights",
+            "type": "object"
+          }
+        },
+        "required": [
+          "policy_version",
+          "max_points",
+          "declared_max_points",
+          "weights",
+          "min_ratings_for_mean",
+          "competency_id",
+          "competency_label",
+          "notice",
+          "trainers"
+        ],
+        "title": "TrainerMatchResponse",
+        "type": "object"
+      },
+      "TrainerProfileResponse": {
+        "properties": {
+          "expertise": {
+            "items": {
+              "$ref": "#/components/schemas/ExpertiseResponse"
+            },
+            "title": "Expertise",
+            "type": "array"
+          },
+          "notice": {
+            "title": "Notice",
+            "type": "string"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile"
+          },
+          "trainer_id": {
+            "title": "Trainer Id",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trainer_id",
+          "username",
+          "profile",
+          "notice",
+          "expertise"
+        ],
+        "title": "TrainerProfileResponse",
         "type": "object"
       },
       "TrainerScopedRequest": {
@@ -9943,6 +10408,354 @@
         "summary": "Get Node",
         "tags": [
           "Judgment Simulations"
+        ]
+      }
+    },
+    "/learning/trainers/match": {
+      "get": {
+        "operationId": "match_learning_trainers_match_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "competency_id",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Competency Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerMatchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Match",
+        "tags": [
+          "Trainer Expertise"
+        ]
+      }
+    },
+    "/learning/trainers/{trainer_id}/expertise": {
+      "get": {
+        "operationId": "list_expertise_learning_trainers__trainer_id__expertise_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerExpertiseListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List Expertise",
+        "tags": [
+          "Trainer Expertise"
+        ]
+      }
+    },
+    "/learning/trainers/{trainer_id}/expertise/{competency_id}": {
+      "delete": {
+        "operationId": "delete_expertise_learning_trainers__trainer_id__expertise__competency_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "competency_id",
+            "required": true,
+            "schema": {
+              "title": "Competency Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "title": "Response Delete Expertise Learning Trainers  Trainer Id  Expertise  Competency Id  Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete Expertise",
+        "tags": [
+          "Trainer Expertise"
+        ]
+      },
+      "put": {
+        "operationId": "upsert_expertise_learning_trainers__trainer_id__expertise__competency_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "competency_id",
+            "required": true,
+            "schema": {
+              "title": "Competency Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpertiseUpsertRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpertiseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Upsert Expertise",
+        "tags": [
+          "Trainer Expertise"
+        ]
+      }
+    },
+    "/learning/trainers/{trainer_id}/profile": {
+      "get": {
+        "description": "Read-only: the existing LearnerProfile plus declared expertise. The\nbase profile is still edited through PUT /learning/profile/{player_id}.",
+        "operationId": "trainer_profile_learning_trainers__trainer_id__profile_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainer_id",
+            "required": true,
+            "schema": {
+              "title": "Trainer Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerProfileResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Trainer Profile",
+        "tags": [
+          "Trainer Expertise"
         ]
       }
     }
